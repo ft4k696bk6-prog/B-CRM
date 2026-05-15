@@ -5,8 +5,10 @@ import {
   AlertTriangle,
   CalendarDays,
   ClipboardList,
+  ListChecks,
   PhoneCall,
-  RefreshCw
+  RefreshCw,
+  Target
 } from "lucide-react";
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
@@ -18,6 +20,11 @@ import { formatDateTime, isPast, isToday } from "@/lib/date";
 import { supabase } from "@/lib/supabase";
 import type { Lead, LeadStatus } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
+
+function needsNextAction(lead: Pick<Lead, "status" | "callback_at" | "meeting_at">) {
+  if (["Umowa", "Rezygnacja", "Zwrot"].includes(lead.status)) return false;
+  return !lead.callback_at && !lead.meeting_at;
+}
 
 export default function SalesDashboardPage() {
   const { loading, profile } = useAuth("handlowiec");
@@ -83,6 +90,20 @@ export default function SalesDashboardPage() {
     [leads]
   );
 
+  const leadsWithoutNextAction = useMemo(
+    () => leads.filter(needsNextAction),
+    [leads]
+  );
+
+  const workQueue = useMemo(
+    () => [
+      ...overdueCallbacks.map((lead) => ({ lead, reason: "Zaległy callback" })),
+      ...todayMeetings.map((lead) => ({ lead, reason: "Spotkanie dzisiaj" })),
+      ...leadsWithoutNextAction.map((lead) => ({ lead, reason: "Brak następnej akcji" }))
+    ].slice(0, 8),
+    [leadsWithoutNextAction, overdueCallbacks, todayMeetings]
+  );
+
   if (loading || !profile) return <LoadingScreen />;
 
   return (
@@ -99,7 +120,7 @@ export default function SalesDashboardPage() {
           </button>
         </div>
 
-        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <StatTile label="Moje leady" value={leads.length} icon={ClipboardList} tone="sky" />
           <StatTile
             label="Callbacki"
@@ -119,6 +140,41 @@ export default function SalesDashboardPage() {
             icon={AlertTriangle}
             tone="danger"
           />
+          <StatTile
+            label="Bez akcji"
+            value={leadsWithoutNextAction.length}
+            icon={ListChecks}
+            tone="warn"
+          />
+        </section>
+
+        <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="mb-3 flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
+              <Target className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <div>
+              <h2 className="text-base font-bold text-ink">Co zrobić teraz</h2>
+              <p className="mt-1 text-sm text-muted">Najpilniejsze leady do obsłużenia.</p>
+            </div>
+          </div>
+          <div className="grid gap-2">
+            {workQueue.map(({ lead, reason }) => (
+              <Link
+                key={`${reason}-${lead.id}`}
+                href={`/leads/${lead.id}`}
+                className="flex flex-col gap-1 rounded-md border border-line bg-[#f9fbfd] px-3 py-2 text-sm transition hover:border-ink sm:flex-row sm:items-center sm:justify-between"
+              >
+                <span className="font-semibold text-ink">{lead.full_name}</span>
+                <span className="text-muted">{reason}</span>
+              </Link>
+            ))}
+            {workQueue.length === 0 ? (
+              <div className="rounded-md border border-line bg-[#f9fbfd] px-3 py-4 text-center text-sm font-semibold text-muted">
+                Brak pilnych zadań.
+              </div>
+            ) : null}
+          </div>
         </section>
 
         {overdueCallbacks.length > 0 ? (

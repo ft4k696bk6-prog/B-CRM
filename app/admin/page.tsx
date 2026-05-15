@@ -6,11 +6,14 @@ import {
   CalendarDays,
   ChevronDown,
   Database,
+  FileDown,
   FileSignature,
   Inbox,
+  ListChecks,
   PhoneCall,
   RefreshCw,
   Search,
+  Trophy,
   UserCheck
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
@@ -56,6 +59,16 @@ function endOfDay(value: string) {
   return `${value}T23:59:59.999Z`;
 }
 
+function needsNextAction(lead: Pick<Lead, "status" | "callback_at" | "meeting_at">) {
+  if (["Umowa", "Rezygnacja", "Zwrot"].includes(lead.status)) return false;
+  return !lead.callback_at && !lead.meeting_at;
+}
+
+function escapeCsv(value: string | number | null | undefined) {
+  const text = value == null ? "" : String(value);
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
 export default function AdminDashboardPage() {
   const { loading, profile } = useAuth(["admin", "menadzer"]);
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -74,7 +87,8 @@ export default function AdminDashboardPage() {
     callbacks: 0,
     meetings: 0,
     contracts: 0,
-    resignations: 0
+    resignations: 0,
+    noNextAction: 0
   });
 
   const isManager = isManagerRole(profile?.role);
@@ -108,13 +122,13 @@ export default function AdminDashboardPage() {
   async function loadStats() {
     let query = supabase
       .from("leads")
-      .select("id,status,assigned_to,meeting_at");
+      .select("id,status,assigned_to,meeting_at,callback_at");
 
     query = applyManagerScope(query);
 
     const { data } = await query;
 
-    const rows = (data || []) as Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at">[];
+    const rows = (data || []) as Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at" | "callback_at">[];
     setStats({
       all: rows.length,
       unassigned: rows.filter((lead) => !lead.assigned_to && lead.status !== "Zwrot").length,
@@ -122,7 +136,8 @@ export default function AdminDashboardPage() {
       callbacks: rows.filter((lead) => lead.status === "Call back").length,
       meetings: rows.filter((lead) => lead.status === "Spotkanie" || lead.meeting_at).length,
       contracts: rows.filter((lead) => lead.status === "Umowa").length,
-      resignations: rows.filter((lead) => lead.status === "Rezygnacja").length
+      resignations: rows.filter((lead) => lead.status === "Rezygnacja").length,
+      noNextAction: rows.filter(needsNextAction).length
     });
   }
 
@@ -191,6 +206,29 @@ export default function AdminDashboardPage() {
     [filters]
   );
 
+  const teamPerformance = useMemo(
+    () =>
+      salespeople
+        .map((person) => {
+          const assigned = leads.filter((lead) => lead.assigned_to === person.id);
+          return {
+            person,
+            leads: assigned.length,
+            meetings: assigned.filter((lead) => lead.status === "Spotkanie" || lead.meeting_at).length,
+            contracts: assigned.filter((lead) => lead.status === "Umowa").length,
+            overdueCallbacks: assigned.filter(
+              (lead) =>
+                lead.status === "Call back" &&
+                lead.callback_at &&
+                new Date(lead.callback_at).getTime() < Date.now()
+            ).length,
+            noNextAction: assigned.filter(needsNextAction).length
+          };
+        })
+        .sort((a, b) => b.contracts - a.contracts || b.meetings - a.meetings || b.leads - a.leads),
+    [leads, salespeople]
+  );
+
   function updateFilter(key: keyof AdminLeadFilters, value: string) {
     setFilters((current) => ({ ...current, [key]: value }));
   }
@@ -205,6 +243,45 @@ export default function AdminDashboardPage() {
     const allVisibleIds = leads.map((lead) => lead.id);
     const allSelected = allVisibleIds.every((id) => selectedIds.includes(id));
     setSelectedIds(allSelected ? [] : allVisibleIds);
+  }
+
+  function exportCurrentView() {
+    const headers = [
+      "Imię i nazwisko",
+      "Telefon",
+      "Kod pocztowy",
+      "Województwo",
+      "Powiat",
+      "Status",
+      "Handlowiec",
+      "Callback",
+      "Spotkanie",
+      "Źródło",
+      "Utworzony",
+      "Zaktualizowany"
+    ];
+    const rows = leads.map((lead) => [
+      lead.full_name,
+      lead.phone,
+      lead.postal_code,
+      lead.voivodeship,
+      lead.county,
+      lead.status,
+      lead.assigned_profile?.full_name || "Nieprzypisany",
+      lead.callback_at,
+      lead.meeting_at,
+      lead.source,
+      lead.created_at,
+      lead.updated_at
+    ]);
+    const csv = [headers, ...rows].map((row) => row.map(escapeCsv).join(",")).join("\n");
+    const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `b-crm-leady-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   async function assignSelected() {
@@ -248,13 +325,19 @@ export default function AdminDashboardPage() {
                 : "Wszystkie leady, przypisania i bieżące statusy."}
             </p>
           </div>
-          <button type="button" onClick={loadLeads} className="btn-secondary">
-            <RefreshCw className="h-4 w-4" aria-hidden="true" />
-            Odśwież
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" onClick={exportCurrentView} className="btn-secondary">
+              <FileDown className="h-4 w-4" aria-hidden="true" />
+              Eksport CSV
+            </button>
+            <button type="button" onClick={loadLeads} className="btn-secondary">
+              <RefreshCw className="h-4 w-4" aria-hidden="true" />
+              Odśwież
+            </button>
+          </div>
         </div>
 
-        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
           <StatTile label="Wszystkie" value={stats.all} icon={Database} tone="sky" />
           <StatTile label="Nieprzypisane" value={stats.unassigned} icon={Inbox} tone="solar" />
           <StatTile label="Przypisane" value={stats.assigned} icon={UserCheck} tone="leaf" />
@@ -262,7 +345,48 @@ export default function AdminDashboardPage() {
           <StatTile label="Spotkania" value={stats.meetings} icon={CalendarDays} tone="leaf" />
           <StatTile label="Umowy" value={stats.contracts} icon={FileSignature} tone="leaf" />
           <StatTile label="Rezygnacje" value={stats.resignations} icon={Ban} tone="danger" />
+          <StatTile label="Bez akcji" value={stats.noNextAction} icon={ListChecks} tone="warn" />
         </section>
+
+        {teamPerformance.length > 0 ? (
+          <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
+                <Trophy className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <div>
+                <h2 className="text-base font-bold text-ink">Wyniki zespołu</h2>
+                <p className="mt-1 text-sm text-muted">Leady, spotkania, umowy i ryzyka operacyjne.</p>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[720px] text-left text-sm">
+                <thead className="border-b border-line bg-[#f9fbfd] text-xs uppercase tracking-wide text-muted">
+                  <tr>
+                    <th className="px-3 py-3">Handlowiec</th>
+                    <th className="px-3 py-3">Leady</th>
+                    <th className="px-3 py-3">Spotkania</th>
+                    <th className="px-3 py-3">Umowy</th>
+                    <th className="px-3 py-3">Zaległe callbacki</th>
+                    <th className="px-3 py-3">Bez akcji</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line">
+                  {teamPerformance.map((row) => (
+                    <tr key={row.person.id}>
+                      <td className="px-3 py-3 font-semibold text-ink">{row.person.full_name}</td>
+                      <td className="px-3 py-3 text-muted">{row.leads}</td>
+                      <td className="px-3 py-3 text-muted">{row.meetings}</td>
+                      <td className="px-3 py-3 font-semibold text-leaf">{row.contracts}</td>
+                      <td className="px-3 py-3 text-danger">{row.overdueCallbacks}</td>
+                      <td className="px-3 py-3 text-warn">{row.noNextAction}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ) : null}
 
         <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
