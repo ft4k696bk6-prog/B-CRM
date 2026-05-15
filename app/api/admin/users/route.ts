@@ -178,7 +178,7 @@ export async function GET(request: Request) {
 
   let { data, error } = await auth.supabaseAdmin
     .from("profiles")
-    .select("*, manager_profile:profiles!profiles_manager_id_fkey(id,email,full_name,role)")
+    .select("*")
     .order("created_at", { ascending: false });
 
   if (isManagerColumnError(error)) {
