@@ -147,7 +147,7 @@ export default function CalendarPage() {
     const { data } = await supabase
       .from("profiles")
       .select("*")
-      .eq("role", "handlowiec")
+      .in("role", ["handlowiec", "sales"])
       .order("full_name", { ascending: true });
 
     setSalespeople((data || []) as Profile[]);

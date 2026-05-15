@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { AlertCircle, CheckCircle2, Plus, RefreshCw, Save, UserRoundPlus } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
-import { ROLE_LABELS, USER_ROLES } from "@/lib/roles";
+import { normalizeRole, ROLE_LABELS, USER_ROLES } from "@/lib/roles";
 import type { Profile, UserRole } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
 
@@ -33,7 +33,12 @@ export default function UsersPage() {
       return;
     }
 
-    setUsers((body.users || []) as Profile[]);
+    setUsers(
+      ((body.users || []) as Profile[]).map((user) => ({
+        ...user,
+        role: normalizeRole(user.role)
+      }))
+    );
   }
 
   useEffect(() => {
