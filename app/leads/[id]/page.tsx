@@ -40,7 +40,19 @@ function getSalesStatusPath(lead: Lead): LeadStatus[] {
   ];
 
   if (lead.status === "Spotkanie") {
-    return ["Spotkanie", "Umowa", "Call back", "Rezygnacja", "Zwrot", "Nie odebrał"];
+    return [
+      "Spotkanie",
+      "Po spotkaniu",
+      "Umowa",
+      "Call back",
+      "Rezygnacja",
+      "Zwrot",
+      "Nie odebrał"
+    ];
+  }
+
+  if (lead.status === "Po spotkaniu") {
+    return ["Po spotkaniu", "Umowa", "Call back", "Rezygnacja", "Zwrot", "Nie odebrał"];
   }
 
   return base.includes(lead.status) ? base : [lead.status, ...base];
@@ -57,6 +69,7 @@ export default function LeadDetailsPage() {
   const [callbackAt, setCallbackAt] = useState("");
   const [meetingAt, setMeetingAt] = useState("");
   const [meetingAddress, setMeetingAddress] = useState("");
+  const [meetingNote, setMeetingNote] = useState("");
   const [contractNumber, setContractNumber] = useState("");
   const [resignationReason, setResignationReason] = useState("");
   const [postalCode, setPostalCode] = useState("");
@@ -95,6 +108,7 @@ export default function LeadDetailsPage() {
     setCallbackAt(toDatetimeLocalValue(nextLead.callback_at));
     setMeetingAt(toDatetimeLocalValue(nextLead.meeting_at));
     setMeetingAddress(nextLead.meeting_address || nextLead.address || "");
+    setMeetingNote(nextLead.meeting_note || "");
     setContractNumber(nextLead.contract_number || "");
     setResignationReason(nextLead.resignation_reason || "");
     setPostalCode(nextLead.postal_code || "");
@@ -181,6 +195,15 @@ export default function LeadDetailsPage() {
       patch.address = meetingAddress.trim();
     }
 
+    if (status === "Po spotkaniu") {
+      if (!meetingNote.trim()) {
+        setError("Wpisz notatkę po spotkaniu.");
+        setBusy(false);
+        return;
+      }
+      patch.meeting_note = meetingNote.trim();
+    }
+
     if (status === "Rezygnacja") {
       if (!resignationReason.trim()) {
         setError("Wpisz powód rezygnacji.");
@@ -191,8 +214,13 @@ export default function LeadDetailsPage() {
     }
 
     if (status === "Umowa") {
-      if (!isAdmin && lead.status !== "Spotkanie" && lead.status !== "Umowa") {
-        setError("Umowę można oznaczyć dopiero po statusie Spotkanie.");
+      if (
+        !isAdmin &&
+        lead.status !== "Spotkanie" &&
+        lead.status !== "Po spotkaniu" &&
+        lead.status !== "Umowa"
+      ) {
+        setError("Umowę można oznaczyć dopiero po spotkaniu.");
         setBusy(false);
         return;
       }
@@ -429,6 +457,10 @@ export default function LeadDetailsPage() {
                   <dt className="label">Numer umowy</dt>
                   <dd className="text-sm font-semibold text-ink">{lead.contract_number || "—"}</dd>
                 </div>
+                <div className="rounded-md border border-line bg-[#f9fbfd] p-3 sm:col-span-2 xl:col-span-3">
+                  <dt className="label">Notatka po spotkaniu</dt>
+                  <dd className="text-sm font-semibold text-ink">{lead.meeting_note || "—"}</dd>
+                </div>
               </dl>
             </section>
 
@@ -463,19 +495,24 @@ export default function LeadDetailsPage() {
                                 ? "Ustaw termin kontaktu"
                                 : item === "Spotkanie"
                                   ? "Wymaga terminu i adresu"
-                                  : item === "Umowa"
-                                    ? "Wymaga numeru umowy"
-                                    : item === "Zwrot"
-                                      ? "Wraca do bazy leadów"
-                                      : item === "Rezygnacja"
-                                        ? "Wymaga powodu"
-                                        : "Zmień etap leada"}
+                                  : item === "Po spotkaniu"
+                                    ? "Wymaga notatki"
+                                    : item === "Umowa"
+                                      ? "Wymaga numeru umowy"
+                                      : item === "Zwrot"
+                                        ? "Wraca do bazy leadów"
+                                        : item === "Rezygnacja"
+                                          ? "Wymaga powodu"
+                                          : "Zmień etap leada"}
                             </span>
                           </button>
                         );
                       })}
                     </div>
-                    {!isAdmin && lead.status !== "Spotkanie" && lead.status !== "Umowa" ? (
+                    {!isAdmin &&
+                    lead.status !== "Spotkanie" &&
+                    lead.status !== "Po spotkaniu" &&
+                    lead.status !== "Umowa" ? (
                       <p className="mt-2 text-xs font-semibold text-muted">
                         Status Umowa pojawi się dopiero po zapisaniu statusu Spotkanie.
                       </p>
@@ -523,6 +560,18 @@ export default function LeadDetailsPage() {
                         className="field min-h-24"
                         value={resignationReason}
                         onChange={(event) => setResignationReason(event.target.value)}
+                      />
+                    </label>
+                  ) : null}
+
+                  {status === "Po spotkaniu" ? (
+                    <label className="sm:col-span-2">
+                      <span className="label">Notatka po spotkaniu</span>
+                      <textarea
+                        className="field min-h-28"
+                        value={meetingNote}
+                        onChange={(event) => setMeetingNote(event.target.value)}
+                        placeholder="Co ustalono, jaki kolejny krok, uwagi klienta"
                       />
                     </label>
                   ) : null}

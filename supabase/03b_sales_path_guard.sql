@@ -21,8 +21,8 @@ begin
     end if;
   end if;
 
-  if new.status = 'Umowa' and old.status not in ('Spotkanie', 'Umowa') then
-    raise exception 'Umowę można oznaczyć dopiero po statusie Spotkanie.';
+  if new.status = 'Umowa' and old.status not in ('Spotkanie', 'Po spotkaniu', 'Umowa') then
+    raise exception 'Umowę można oznaczyć dopiero po spotkaniu.';
   end if;
 
   if new.status = 'Umowa'
@@ -33,6 +33,11 @@ begin
   if new.status = 'Spotkanie'
     and (new.meeting_at is null or nullif(trim(coalesce(new.meeting_address, new.address, '')), '') is null) then
     raise exception 'Status Spotkanie wymaga terminu i adresu klienta.';
+  end if;
+
+  if new.status = 'Po spotkaniu'
+    and nullif(trim(coalesce(new.meeting_note, '')), '') is null then
+    raise exception 'Status Po spotkaniu wymaga notatki.';
   end if;
 
   if new.status = 'Call back' and new.callback_at is null then

@@ -5,6 +5,7 @@ export type LeadStatus =
   | "Przypisany"
   | "Call back"
   | "Spotkanie"
+  | "Po spotkaniu"
   | "Umowa"
   | "Zwrot"
   | "Rezygnacja"
@@ -38,6 +39,7 @@ export type Lead = {
   callback_at: string | null;
   meeting_at: string | null;
   meeting_address: string | null;
+  meeting_note: string | null;
   contract_number: string | null;
   assigned_profile?: Pick<Profile, "id" | "email" | "full_name" | "role"> | null;
 };

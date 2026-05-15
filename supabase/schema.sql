@@ -27,6 +27,7 @@ create table if not exists public.leads (
   callback_at timestamptz,
   meeting_at timestamptz,
   meeting_address text,
+  meeting_note text,
   contract_number text,
   constraint leads_status_check check (
     status in (
@@ -34,6 +35,7 @@ create table if not exists public.leads (
       'Przypisany',
       'Call back',
       'Spotkanie',
+      'Po spotkaniu',
       'Umowa',
       'Zwrot',
       'Rezygnacja',
@@ -185,6 +187,15 @@ begin
     raise exception 'Handlowiec nie może zmieniać danych importowych leada.';
   end if;
 
+  if new.status = 'Umowa' and old.status not in ('Spotkanie', 'Po spotkaniu', 'Umowa') then
+    raise exception 'Umowę można oznaczyć dopiero po spotkaniu.';
+  end if;
+
+  if new.status = 'Umowa'
+    and nullif(trim(coalesce(new.contract_number, '')), '') is null then
+    raise exception 'Status Umowa wymaga numeru umowy.';
+  end if;
+
   if new.status = 'Call back'
     and (old.status is distinct from new.status or old.callback_at is distinct from new.callback_at)
     and new.callback_at is null then
@@ -200,6 +211,15 @@ begin
     )
     and (new.meeting_at is null or nullif(trim(coalesce(new.meeting_address, new.address, '')), '') is null) then
     raise exception 'Status Spotkanie wymaga terminu i adresu klienta.';
+  end if;
+
+  if new.status = 'Po spotkaniu'
+    and (
+      old.status is distinct from new.status
+      or old.meeting_note is distinct from new.meeting_note
+    )
+    and nullif(trim(coalesce(new.meeting_note, '')), '') is null then
+    raise exception 'Status Po spotkaniu wymaga notatki.';
   end if;
 
   if new.status = 'Rezygnacja'
@@ -348,6 +368,17 @@ begin
     );
   end if;
 
+  if old.meeting_note is distinct from new.meeting_note
+    and nullif(trim(coalesce(new.meeting_note, '')), '') is not null then
+    perform public.insert_lead_history(
+      new.id,
+      'meeting_note',
+      'Notatka po spotkaniu: ' || new.meeting_note,
+      jsonb_build_object('meeting_note', old.meeting_note),
+      jsonb_build_object('meeting_note', new.meeting_note)
+    );
+  end if;
+
   if old.resignation_reason is distinct from new.resignation_reason
     and nullif(trim(coalesce(new.resignation_reason, '')), '') is not null then
     perform public.insert_lead_history(
@@ -415,6 +446,20 @@ create policy "leads_insert_admin"
   for insert
   to authenticated
   with check (public.is_admin());
+
+drop policy if exists "leads_insert_sales_manual" on public.leads;
+create policy "leads_insert_sales_manual"
+  on public.leads
+  for insert
+  to authenticated
+  with check (
+    public.is_admin()
+    or (
+      assigned_to = auth.uid()
+      and source in ('własne', 'polecenie')
+      and status in ('Nowy', 'Przypisany')
+    )
+  );
 
 drop policy if exists "leads_update_owner_or_admin" on public.leads;
 create policy "leads_update_owner_or_admin"

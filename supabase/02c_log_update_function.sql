@@ -52,6 +52,16 @@ begin
     );
   end if;
 
+  if old.meeting_note is distinct from new.meeting_note then
+    perform public.insert_lead_history(
+      new.id,
+      'meeting_note',
+      'Dodano notatkę po spotkaniu.',
+      jsonb_build_object('meeting_note', old.meeting_note),
+      jsonb_build_object('meeting_note', new.meeting_note)
+    );
+  end if;
+
   if old.resignation_reason is distinct from new.resignation_reason then
     perform public.insert_lead_history(
       new.id,

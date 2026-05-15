@@ -53,6 +53,15 @@ export default function SalesDashboardPage() {
     loadLeads();
   }, [statusFilter]);
 
+  useEffect(() => {
+    function refreshLeads() {
+      loadLeads();
+    }
+
+    window.addEventListener("leads:changed", refreshLeads);
+    return () => window.removeEventListener("leads:changed", refreshLeads);
+  }, [statusFilter]);
+
   const overdueCallbacks = useMemo(
     () =>
       leads.filter(

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import {
   BarChart3,
   Calculator,
@@ -10,7 +10,9 @@ import {
   FileUp,
   LogOut,
   PanelLeft,
+  RotateCcw,
   Settings,
+  UserPlus,
   UsersRound
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
@@ -22,13 +24,24 @@ type AppShellProps = {
   children: ReactNode;
 };
 
+const bulkReturnStatuses = [
+  "Nowy",
+  "Przypisany",
+  "Nie odebrał",
+  "Błędny numer",
+  "Do weryfikacji",
+  "Po spotkaniu"
+];
+
 export function AppShell({ profile, children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [returningLeads, setReturningLeads] = useState(false);
   const isAdmin = profile.role === "admin";
   const links = isAdmin
     ? [
         { href: "/admin", label: "Dashboard", icon: BarChart3 },
+        { href: "/leads/new", label: "Nowy lead", icon: UserPlus },
         { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
         { href: "/calculators", label: "Kalkulatory", icon: Calculator },
         { href: "/settings", label: "Ustawienia", icon: Settings },
@@ -37,6 +50,7 @@ export function AppShell({ profile, children }: AppShellProps) {
       ]
     : [
         { href: "/sales", label: "Moje leady", icon: BarChart3 },
+        { href: "/leads/new", label: "Nowy lead", icon: UserPlus },
         { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
         { href: "/calculators", label: "Kalkulatory", icon: Calculator },
         { href: "/settings", label: "Ustawienia", icon: Settings }
@@ -45,6 +59,37 @@ export function AppShell({ profile, children }: AppShellProps) {
   async function signOut() {
     await supabase.auth.signOut();
     router.replace("/login");
+  }
+
+  async function returnOpenLeads() {
+    if (profile.role !== "sales" || returningLeads) return;
+
+    const confirmed = window.confirm(
+      "Zwrócić wszystkie leady bez callbacku i bez spotkania? Leady Call back i Spotkanie zostaną u Ciebie."
+    );
+
+    if (!confirmed) return;
+
+    setReturningLeads(true);
+
+    const { data, error } = await supabase
+      .from("leads")
+      .update({ status: "Zwrot", assigned_to: null })
+      .eq("assigned_to", profile.id)
+      .in("status", bulkReturnStatuses)
+      .select("id");
+
+    setReturningLeads(false);
+
+    if (error) {
+      window.alert(error.message);
+      return;
+    }
+
+    window.alert(`Zwrócono leady: ${data?.length || 0}`);
+    window.dispatchEvent(new Event("leads:changed"));
+    router.replace("/sales");
+    router.refresh();
   }
 
   return (
@@ -66,6 +111,18 @@ export function AppShell({ profile, children }: AppShellProps) {
               <div className="text-sm font-semibold">{profile.full_name}</div>
               <div className="text-xs text-muted">{profile.email}</div>
             </div>
+            {!isAdmin ? (
+              <button
+                type="button"
+                onClick={returnOpenLeads}
+                disabled={returningLeads}
+                className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md border border-line bg-white text-sm font-semibold text-ink transition hover:border-ink disabled:cursor-not-allowed disabled:opacity-55 sm:w-auto sm:px-3"
+                title="Zwróć leady bez callbacku i spotkania"
+              >
+                <RotateCcw className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden sm:inline">Zwrot leadów</span>
+              </button>
+            ) : null}
             <button
               type="button"
               onClick={signOut}

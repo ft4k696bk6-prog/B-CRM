@@ -1,6 +1,8 @@
 export type PackageId = "pv-only" | "me-5" | "me-10" | "me-16" | "me-20" | "me-23" | "me-28";
 export type OfferMode = "pv" | "pv-storage" | "storage";
 export type RainwaterSystem = "none" | "above-2000" | "underground-2000";
+export type BoilerCapacity = "none" | "80" | "150";
+export type BoilerLayout = "vertical" | "horizontal";
 
 export type PriceRow = {
   panelCount: number;

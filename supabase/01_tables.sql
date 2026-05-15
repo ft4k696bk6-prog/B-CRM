@@ -27,6 +27,7 @@ create table if not exists public.leads (
   callback_at timestamptz,
   meeting_at timestamptz,
   meeting_address text,
+  meeting_note text,
   contract_number text,
   constraint leads_status_check check (
     status in (
@@ -34,6 +35,7 @@ create table if not exists public.leads (
       'Przypisany',
       'Call back',
       'Spotkanie',
+      'Po spotkaniu',
       'Umowa',
       'Zwrot',
       'Rezygnacja',

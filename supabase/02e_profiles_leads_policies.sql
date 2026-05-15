@@ -27,6 +27,20 @@ create policy "leads_insert_admin"
   to authenticated
   with check (public.is_admin());
 
+drop policy if exists "leads_insert_sales_manual" on public.leads;
+create policy "leads_insert_sales_manual"
+  on public.leads
+  for insert
+  to authenticated
+  with check (
+    public.is_admin()
+    or (
+      assigned_to = auth.uid()
+      and source in ('własne', 'polecenie')
+      and status in ('Nowy', 'Przypisany')
+    )
+  );
+
 drop policy if exists "leads_update_owner_or_admin" on public.leads;
 create policy "leads_update_owner_or_admin"
   on public.leads
