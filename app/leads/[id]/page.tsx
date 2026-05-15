@@ -23,7 +23,7 @@ import { FileList } from "@/components/file-list";
 import { ReminderList } from "@/components/reminder-list";
 import { ACTION_LABELS, LEAD_STATUSES, STATUS_TILE_TONES } from "@/lib/constants";
 import { formatDateTime, toDatetimeLocalValue } from "@/lib/date";
-import { canManageLeads, homePathForRole, isSalesRole } from "@/lib/roles";
+import { canManageLeads, homePathForRole, isManagerRole, isSalesRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { Lead, LeadHistory, LeadStatus, Profile } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
@@ -86,6 +86,7 @@ export default function LeadDetailsPage() {
   const [error, setError] = useState("");
 
   const canManage = canManageLeads(profile?.role);
+  const isManager = isManagerRole(profile?.role);
   const backHref = homePathForRole(profile?.role);
 
   async function loadLead() {
@@ -143,11 +144,15 @@ export default function LeadDetailsPage() {
   }
 
   async function loadSalespeople() {
-    const { data } = await supabase
+    let query = supabase
       .from("profiles")
       .select("*")
       .in("role", ["handlowiec", "sales"])
       .order("full_name", { ascending: true });
+
+    if (isManager && profile) query = query.eq("manager_id", profile.id);
+
+    const { data } = await query;
 
     setSalespeople((data || []) as Profile[]);
   }

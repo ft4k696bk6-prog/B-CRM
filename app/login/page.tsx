@@ -75,7 +75,7 @@ export default function LoginPage() {
 
         <form onSubmit={onSubmit} className="grid gap-4">
           <label>
-              <span className="label">E-mail lub login demo</span>
+              <span className="label">E-mail</span>
               <input
                 className="field"
                 type="text"
@@ -103,13 +103,6 @@ export default function LoginPage() {
             {loading ? "Logowanie" : "Zaloguj"}
           </button>
         </form>
-
-        <div className="mt-5 rounded-lg border border-line bg-[#f9fbfd] p-3 text-xs leading-5 text-muted">
-          Demo: <span className="font-semibold text-ink">demo</span>,{" "}
-          <span className="font-semibold text-ink">demo-handlowiec</span>,{" "}
-          <span className="font-semibold text-ink">demo-menadzer</span>. Hasło:{" "}
-          <span className="font-semibold text-ink">demo</span>.
-        </div>
       </section>
     </main>
   );

@@ -18,7 +18,9 @@ export type Profile = {
   email: string | null;
   full_name: string;
   role: UserRole;
+  manager_id: string | null;
   created_at: string;
+  manager_profile?: Pick<Profile, "id" | "email" | "full_name" | "role"> | null;
 };
 
 export type Lead = {

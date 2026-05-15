@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { AlertCircle, CheckCircle2, Plus, RefreshCw, Save, UserRoundPlus } from "lucide-react";
+import { AlertCircle, CheckCircle2, GitBranch, Plus, RefreshCw, Save, UserRoundPlus } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { normalizeRole, ROLE_LABELS, USER_ROLES } from "@/lib/roles";
@@ -13,6 +13,7 @@ export default function UsersPage() {
   const [users, setUsers] = useState<Profile[]>([]);
   const [roleFilter, setRoleFilter] = useState<UserRole | "">("");
   const [newRole, setNewRole] = useState<UserRole>("handlowiec");
+  const [newManagerId, setNewManagerId] = useState("");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -63,7 +64,8 @@ export default function UsersPage() {
         fullName,
         email,
         password,
-        role: newRole
+        role: newRole,
+        managerId: newRole === "handlowiec" ? newManagerId || null : null
       })
     });
 
@@ -77,13 +79,14 @@ export default function UsersPage() {
       setEmail("");
       setPassword("");
       setNewRole("handlowiec");
+      setNewManagerId("");
       await loadUsers();
     }
 
     setBusy(false);
   }
 
-  async function updateRole(userId: string, role: UserRole) {
+  async function updateUser(userId: string, role: UserRole, managerId?: string | null) {
     if (!session) return;
 
     setBusy(true);
@@ -96,14 +99,18 @@ export default function UsersPage() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.access_token}`
       },
-      body: JSON.stringify({ id: userId, role })
+      body: JSON.stringify({
+        id: userId,
+        role,
+        managerId: role === "handlowiec" ? managerId || null : null
+      })
     });
     const body = await response.json();
 
     if (!response.ok) {
       setError(body.error || "Nie udało się zmienić roli.");
     } else {
-      setSuccess("Zapisano rolę użytkownika.");
+      setSuccess("Zapisano użytkownika.");
       await loadUsers();
     }
 
@@ -113,6 +120,9 @@ export default function UsersPage() {
   if (loading || !profile) return <LoadingScreen />;
 
   const visibleUsers = roleFilter ? users.filter((user) => user.role === roleFilter) : users;
+  const managers = users.filter((user) => user.role === "menadzer");
+  const salespeople = users.filter((user) => user.role === "handlowiec");
+  const unassignedSalespeople = salespeople.filter((user) => !user.manager_id);
 
   return (
     <AppShell profile={profile}>
@@ -150,7 +160,7 @@ export default function UsersPage() {
             </div>
           ) : null}
 
-          <form onSubmit={createUser} className="grid gap-3 md:grid-cols-[1fr_1fr_1fr_180px_auto]">
+          <form onSubmit={createUser} className="grid gap-3 md:grid-cols-[1fr_1fr_1fr_180px_220px_auto]">
             <label>
               <span className="label">Imię i nazwisko</span>
               <input
@@ -186,11 +196,31 @@ export default function UsersPage() {
               <select
                 className="field"
                 value={newRole}
-                onChange={(event) => setNewRole(event.target.value as UserRole)}
+                onChange={(event) => {
+                  const nextRole = event.target.value as UserRole;
+                  setNewRole(nextRole);
+                  if (nextRole !== "handlowiec") setNewManagerId("");
+                }}
               >
                 {USER_ROLES.map((role) => (
                   <option key={role} value={role}>
                     {ROLE_LABELS[role]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span className="label">Menadżer</span>
+              <select
+                className="field"
+                value={newManagerId}
+                onChange={(event) => setNewManagerId(event.target.value)}
+                disabled={newRole !== "handlowiec"}
+              >
+                <option value="">Bez menadżera</option>
+                {managers.map((manager) => (
+                  <option key={manager.id} value={manager.id}>
+                    {manager.full_name}
                   </option>
                 ))}
               </select>
@@ -222,6 +252,54 @@ export default function UsersPage() {
           </label>
         </section>
 
+        <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <div className="mb-4 flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
+              <GitBranch className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <div>
+              <h2 className="text-base font-bold text-ink">Struktura zespołu</h2>
+              <p className="mt-1 text-sm text-muted">Przypisanie handlowców do menadżerów.</p>
+            </div>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {managers.map((manager) => {
+              const team = salespeople.filter((person) => person.manager_id === manager.id);
+
+              return (
+                <div key={manager.id} className="rounded-md border border-line bg-[#f9fbfd] p-4">
+                  <div className="font-bold text-ink">{manager.full_name}</div>
+                  <div className="mt-1 text-xs text-muted">{manager.email}</div>
+                  <div className="mt-3 grid gap-2">
+                    {team.map((person) => (
+                      <div key={person.id} className="rounded-md border border-line bg-white px-3 py-2 text-sm">
+                        {person.full_name}
+                      </div>
+                    ))}
+                    {team.length === 0 ? (
+                      <div className="rounded-md border border-line bg-white px-3 py-2 text-sm text-muted">
+                        Brak przypisanych handlowców.
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              );
+            })}
+            {unassignedSalespeople.length > 0 ? (
+              <div className="rounded-md border border-line bg-[#f9fbfd] p-4">
+                <div className="font-bold text-ink">Bez menadżera</div>
+                <div className="mt-3 grid gap-2">
+                  {unassignedSalespeople.map((person) => (
+                    <div key={person.id} className="rounded-md border border-line bg-white px-3 py-2 text-sm">
+                      {person.full_name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </section>
+
         <section className="overflow-hidden rounded-lg border border-line bg-white shadow-sm">
           <table className="w-full min-w-[680px] text-left text-sm">
             <thead className="border-b border-line bg-[#f9fbfd] text-xs uppercase tracking-wide text-muted">
@@ -229,6 +307,7 @@ export default function UsersPage() {
                 <th className="px-4 py-3">Imię i nazwisko</th>
                 <th className="px-4 py-3">E-mail</th>
                 <th className="px-4 py-3">Rola</th>
+                <th className="px-4 py-3">Menadżer</th>
                 <th className="px-4 py-3">Utworzony</th>
                 <th className="px-4 py-3">Akcja</th>
               </tr>
@@ -242,12 +321,27 @@ export default function UsersPage() {
                     <select
                       className="field min-w-40"
                       value={person.role}
-                      onChange={(event) => updateRole(person.id, event.target.value as UserRole)}
+                      onChange={(event) => updateUser(person.id, event.target.value as UserRole, person.manager_id)}
                       disabled={busy}
                     >
                       {USER_ROLES.map((role) => (
                         <option key={role} value={role}>
                           {ROLE_LABELS[role]}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="px-4 py-3 text-muted">
+                    <select
+                      className="field min-w-48"
+                      value={person.manager_id || ""}
+                      onChange={(event) => updateUser(person.id, person.role, event.target.value || null)}
+                      disabled={busy || person.role !== "handlowiec"}
+                    >
+                      <option value="">Bez menadżera</option>
+                      {managers.map((manager) => (
+                        <option key={manager.id} value={manager.id}>
+                          {manager.full_name}
                         </option>
                       ))}
                     </select>

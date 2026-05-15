@@ -8,11 +8,13 @@ type CreateUserBody = {
   password?: string;
   fullName?: string;
   role?: UserRole;
+  managerId?: string | null;
 };
 
 type UpdateUserBody = {
   id?: string;
   role?: UserRole;
+  managerId?: string | null;
 };
 
 type ProfileRow = {
@@ -20,6 +22,7 @@ type ProfileRow = {
   email: string | null;
   full_name: string;
   role: string;
+  manager_id: string | null;
   created_at: string;
 };
 
@@ -33,11 +36,27 @@ function isRoleCheckError(error: { message?: string; code?: string } | null) {
   return error?.code === "23514" || error?.message?.includes("profiles_role_check");
 }
 
+function isManagerColumnError(error: { message?: string; code?: string } | null) {
+  return error?.message?.includes("manager_id") || error?.message?.includes("profiles_manager_id");
+}
+
+function normalizedManagerId(value: string | null | undefined, role: UserRole) {
+  if (role !== "handlowiec") return null;
+  const trimmed = value?.trim();
+  return trimmed || null;
+}
+
 async function upsertProfileWithRoleFallback(
   supabaseAdmin: ReturnType<typeof getAdminClient>,
   row: Omit<ProfileRow, "created_at">
 ) {
   const { error } = await supabaseAdmin.from("profiles").upsert(row);
+
+  if (isManagerColumnError(error)) {
+    const { manager_id: _managerId, ...rowWithoutManager } = row;
+    const fallback = await supabaseAdmin.from("profiles").upsert(rowWithoutManager);
+    return { error: fallback.error, storedRole: row.role };
+  }
 
   if (!isRoleCheckError(error)) return { error, storedRole: row.role };
 
@@ -47,20 +66,50 @@ async function upsertProfileWithRoleFallback(
     role: fallbackRole
   });
 
+  if (isManagerColumnError(fallback.error)) {
+    const { manager_id: _managerId, ...rowWithoutManager } = row;
+    const noManagerFallback = await supabaseAdmin.from("profiles").upsert({
+      ...rowWithoutManager,
+      role: fallbackRole
+    });
+    return { error: noManagerFallback.error, storedRole: fallbackRole };
+  }
+
   return { error: fallback.error, storedRole: fallbackRole };
 }
 
 async function updateProfileRoleWithFallback(
   supabaseAdmin: ReturnType<typeof getAdminClient>,
   id: string,
-  role: UserRole
+  role: UserRole,
+  managerId: string | null
 ) {
-  const { error } = await supabaseAdmin.from("profiles").update({ role }).eq("id", id);
+  const patch = {
+    role,
+    manager_id: normalizedManagerId(managerId, role)
+  };
+  const { error } = await supabaseAdmin.from("profiles").update(patch).eq("id", id);
+
+  if (isManagerColumnError(error)) {
+    const fallback = await supabaseAdmin.from("profiles").update({ role }).eq("id", id);
+    return { error: fallback.error, storedRole: role };
+  }
 
   if (!isRoleCheckError(error)) return { error, storedRole: role };
 
   const fallbackRole = dbCompatibleRole(role);
-  const fallback = await supabaseAdmin.from("profiles").update({ role: fallbackRole }).eq("id", id);
+  const fallback = await supabaseAdmin
+    .from("profiles")
+    .update({ ...patch, role: fallbackRole })
+    .eq("id", id);
+
+  if (isManagerColumnError(fallback.error)) {
+    const noManagerFallback = await supabaseAdmin
+      .from("profiles")
+      .update({ role: fallbackRole })
+      .eq("id", id);
+    return { error: noManagerFallback.error, storedRole: fallbackRole };
+  }
 
   return { error: fallback.error, storedRole: fallbackRole };
 }
@@ -127,10 +176,20 @@ export async function GET(request: Request) {
   const auth = await requireAdmin(request);
   if (auth.error) return auth.error;
 
-  const { data, error } = await auth.supabaseAdmin
+  let { data, error } = await auth.supabaseAdmin
     .from("profiles")
-    .select("*")
+    .select("*, manager_profile:profiles!profiles_manager_id_fkey(id,email,full_name,role)")
     .order("created_at", { ascending: false });
+
+  if (isManagerColumnError(error)) {
+    const fallback = await auth.supabaseAdmin
+      .from("profiles")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    data = fallback.data;
+    error = fallback.error;
+  }
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -154,6 +213,7 @@ export async function POST(request: Request) {
     const password = body.password?.trim();
     const fullName = body.fullName?.trim();
     const role = USER_ROLES.includes(body.role as UserRole) ? (body.role as UserRole) : "handlowiec";
+    const managerId = normalizedManagerId(body.managerId, role);
 
     if (!email || !password || !fullName) {
       return NextResponse.json({ error: "Uzupełnij wszystkie pola." }, { status: 400 });
@@ -180,7 +240,8 @@ export async function POST(request: Request) {
       id: data.user.id,
       email,
       full_name: fullName,
-      role
+      role,
+      manager_id: managerId
     });
 
     if (profileResult.error) {
@@ -204,6 +265,7 @@ export async function PATCH(request: Request) {
     const body = (await request.json()) as UpdateUserBody;
     const id = body.id?.trim();
     const role = USER_ROLES.includes(body.role as UserRole) ? (body.role as UserRole) : null;
+    const managerId = normalizedManagerId(body.managerId, role || "handlowiec");
 
     if (!id || !role) {
       return NextResponse.json({ error: "Brak użytkownika lub roli." }, { status: 400 });
@@ -222,7 +284,24 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const { error, storedRole } = await updateProfileRoleWithFallback(auth.supabaseAdmin, id, role);
+    if (role === "handlowiec" && managerId) {
+      const { data: manager } = await auth.supabaseAdmin
+        .from("profiles")
+        .select("role")
+        .eq("id", managerId)
+        .single();
+
+      if (normalizeRole(manager?.role) !== "menadzer") {
+        return NextResponse.json({ error: "Wybrany opiekun nie jest menadżerem." }, { status: 400 });
+      }
+    }
+
+    const { error, storedRole } = await updateProfileRoleWithFallback(
+      auth.supabaseAdmin,
+      id,
+      role,
+      managerId
+    );
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });

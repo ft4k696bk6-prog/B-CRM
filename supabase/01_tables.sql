@@ -5,6 +5,7 @@ create table if not exists public.profiles (
   email text,
   full_name text not null default '',
   role text not null default 'handlowiec',
+  manager_id uuid references public.profiles(id) on delete set null,
   created_at timestamptz not null default now(),
   constraint profiles_role_check check (role in ('admin', 'handlowiec', 'menadzer'))
 );
@@ -70,6 +71,7 @@ create table if not exists public.lead_history (
 );
 
 create index if not exists profiles_role_idx on public.profiles(role);
+create index if not exists profiles_manager_id_idx on public.profiles(manager_id);
 create index if not exists leads_assigned_to_idx on public.leads(assigned_to);
 create index if not exists leads_status_idx on public.leads(status);
 create index if not exists leads_created_at_idx on public.leads(created_at desc);

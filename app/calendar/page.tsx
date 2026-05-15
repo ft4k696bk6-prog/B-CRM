@@ -15,7 +15,7 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { formatDate, formatDateTime } from "@/lib/date";
-import { canManageLeads } from "@/lib/roles";
+import { canManageLeads, isManagerRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { Lead, Profile } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
@@ -140,15 +140,20 @@ export default function CalendarPage() {
   const [error, setError] = useState("");
 
   const canManage = canManageLeads(profile?.role);
+  const isManager = isManagerRole(profile?.role);
 
   async function loadSalespeople() {
     if (!canManage) return;
 
-    const { data } = await supabase
+    let query = supabase
       .from("profiles")
       .select("*")
       .in("role", ["handlowiec", "sales"])
       .order("full_name", { ascending: true });
+
+    if (isManager && profile) query = query.eq("manager_id", profile.id);
+
+    const { data } = await query;
 
     setSalespeople((data || []) as Profile[]);
   }
@@ -177,6 +182,15 @@ export default function CalendarPage() {
     if (canManage && selectedSalesperson) {
       meetingsQuery = meetingsQuery.eq("assigned_to", selectedSalesperson);
       callbacksQuery = callbacksQuery.eq("assigned_to", selectedSalesperson);
+    } else if (isManager) {
+      const teamIds = salespeople.map((person) => person.id);
+      if (teamIds.length === 0) {
+        meetingsQuery = meetingsQuery.in("assigned_to", ["00000000-0000-0000-0000-000000000000"]);
+        callbacksQuery = callbacksQuery.in("assigned_to", ["00000000-0000-0000-0000-000000000000"]);
+      } else {
+        meetingsQuery = meetingsQuery.in("assigned_to", teamIds);
+        callbacksQuery = callbacksQuery.in("assigned_to", teamIds);
+      }
     }
 
     const [meetingsResult, callbacksResult] = await Promise.all([meetingsQuery, callbacksQuery]);
@@ -218,7 +232,7 @@ export default function CalendarPage() {
   useEffect(() => {
     if (!profile) return;
     loadCalendar();
-  }, [profile?.id, month, selectedSalesperson]);
+  }, [profile?.id, month, selectedSalesperson, salespeople.length]);
 
   const days = useMemo(() => buildCalendarDays(month), [month]);
   const todayKey = dateKey(new Date());

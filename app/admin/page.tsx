@@ -19,6 +19,7 @@ import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
 import { StatTile } from "@/components/stat-tile";
 import { LEAD_STATUSES } from "@/lib/constants";
+import { isManagerRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { AdminLeadFilters, Lead, LeadStatus, Profile, SortOption } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
@@ -76,20 +77,42 @@ export default function AdminDashboardPage() {
     resignations: 0
   });
 
+  const isManager = isManagerRole(profile?.role);
+
   async function loadSalespeople() {
-    const { data } = await supabase
+    let query = supabase
       .from("profiles")
       .select("*")
       .in("role", ["handlowiec", "sales"])
       .order("full_name", { ascending: true });
 
+    if (isManager && profile) query = query.eq("manager_id", profile.id);
+
+    const { data } = await query;
+
     setSalespeople((data || []) as Profile[]);
   }
 
+  function applyManagerScope<T extends { in: (column: string, values: string[]) => T; or: (filters: string) => T }>(query: T) {
+    if (!isManager) return query;
+
+    const teamIds = salespeople.map((person) => person.id);
+
+    if (teamIds.length === 0) {
+      return query.or("assigned_to.is.null");
+    }
+
+    return query.or(`assigned_to.in.(${teamIds.join(",")}),assigned_to.is.null`);
+  }
+
   async function loadStats() {
-    const { data } = await supabase
+    let query = supabase
       .from("leads")
       .select("id,status,assigned_to,meeting_at");
+
+    query = applyManagerScope(query);
+
+    const { data } = await query;
 
     const rows = (data || []) as Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at">[];
     setStats({
@@ -126,10 +149,15 @@ export default function AdminDashboardPage() {
     if (filters.county) query = query.ilike("county", `%${filters.county}%`);
     if (filters.status) query = query.eq("status", filters.status as LeadStatus);
 
+    if (isManager && !filters.assignedTo) {
+      query = applyManagerScope(query);
+    }
+
     if (filters.assignedTo === "__unassigned") {
       query = query.is("assigned_to", null).neq("status", "Zwrot");
     } else if (filters.assignedTo === "__returned") {
       query = query.eq("status", "Zwrot");
+      if (isManager) query = applyManagerScope(query);
     } else if (filters.assignedTo) {
       query = query.eq("assigned_to", filters.assignedTo);
     }
@@ -147,13 +175,14 @@ export default function AdminDashboardPage() {
   }
 
   useEffect(() => {
+    if (!profile) return;
     loadSalespeople();
-    loadStats();
-  }, []);
+  }, [profile?.id]);
 
   useEffect(() => {
+    loadStats();
     loadLeads();
-  }, [filters, sort]);
+  }, [filters, sort, salespeople]);
 
   const selectedCount = selectedIds.length;
 
@@ -214,7 +243,9 @@ export default function AdminDashboardPage() {
               Dashboard {profile.role === "menadzer" ? "menadżera" : "admina"}
             </h1>
             <p className="mt-1 text-sm text-muted">
-              Wszystkie leady, przypisania i bieżące statusy.
+              {isManager
+                ? "Leady zespołu, baza do rozdania i bieżące statusy."
+                : "Wszystkie leady, przypisania i bieżące statusy."}
             </p>
           </div>
           <button type="button" onClick={loadLeads} className="btn-secondary">
@@ -223,7 +254,7 @@ export default function AdminDashboardPage() {
           </button>
         </div>
 
-        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-7">
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
           <StatTile label="Wszystkie" value={stats.all} icon={Database} tone="sky" />
           <StatTile label="Nieprzypisane" value={stats.unassigned} icon={Inbox} tone="solar" />
           <StatTile label="Przypisane" value={stats.assigned} icon={UserCheck} tone="leaf" />
