@@ -103,8 +103,8 @@ export function AppShell({ profile, children }: AppShellProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#06110f] text-ink">
-      <header className="sticky top-0 z-20 border-b border-line bg-panel/90 backdrop-blur-xl">
+    <div className="min-h-screen bg-[#f6f8fb] text-ink">
+      <header className="sticky top-0 z-20 border-b border-line bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
           <Link href={homeHref} className="flex items-center gap-3">
             <BrandMark size="sm" />
@@ -126,7 +126,7 @@ export function AppShell({ profile, children }: AppShellProps) {
                 type="button"
                 onClick={returnOpenLeads}
                 disabled={returningLeads}
-                className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md border border-line bg-panel text-sm font-semibold text-ink transition hover:border-leaf hover:text-leaf disabled:cursor-not-allowed disabled:opacity-55 sm:w-auto sm:px-3"
+                className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md border border-line bg-white text-sm font-semibold text-ink transition hover:border-ink disabled:cursor-not-allowed disabled:opacity-55 sm:w-auto sm:px-3"
                 title="Zwróć leady bez callbacku i spotkania"
               >
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
@@ -136,7 +136,7 @@ export function AppShell({ profile, children }: AppShellProps) {
             <button
               type="button"
               onClick={signOut}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-line bg-panel text-muted transition hover:border-leaf hover:text-leaf"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-line bg-white text-muted transition hover:border-ink hover:text-ink"
               title="Wyloguj"
             >
               <LogOut className="h-4 w-4" aria-hidden="true" />
@@ -146,7 +146,7 @@ export function AppShell({ profile, children }: AppShellProps) {
       </header>
 
       <div className="mx-auto grid max-w-7xl gap-5 px-4 py-5 lg:grid-cols-[230px_1fr]">
-        <aside className="app-sidebar rounded-lg border border-line bg-panel/90 p-2 shadow-soft lg:sticky lg:top-20 lg:h-fit">
+        <aside className="app-sidebar rounded-lg border border-line bg-white p-2 shadow-sm lg:sticky lg:top-20 lg:h-fit">
           <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-semibold uppercase tracking-wide text-muted">
             <PanelLeft className="h-4 w-4" aria-hidden="true" />
             Menu
@@ -162,8 +162,8 @@ export function AppShell({ profile, children }: AppShellProps) {
                   href={link.href}
                   className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold transition ${
                     active
-                      ? "bg-leaf text-[#04100d] shadow-[0_12px_28px_rgba(48,211,145,0.16)]"
-                      : "text-muted hover:bg-white/5 hover:text-ink"
+                      ? "bg-ink text-white"
+                      : "text-muted hover:bg-[#eef3f8] hover:text-ink"
                   }`}
                 >
                   <Icon className="h-4 w-4" aria-hidden="true" />

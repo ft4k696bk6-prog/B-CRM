@@ -49,8 +49,8 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-screen place-items-center bg-[#06110f] px-4 py-8">
-      <section className="w-full max-w-md rounded-xl border border-line bg-panel/95 p-6 shadow-soft">
+    <main className="grid min-h-screen place-items-center bg-[#f6f8fb] px-4 py-8">
+      <section className="w-full max-w-md rounded-lg border border-line bg-white p-6 shadow-soft">
         <div className="mb-8 flex items-center gap-3">
           <BrandMark />
           <div>
@@ -104,7 +104,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-5 rounded-lg border border-line bg-white/5 p-3 text-xs leading-5 text-muted">
+        <div className="mt-5 rounded-lg border border-line bg-[#f9fbfd] p-3 text-xs leading-5 text-muted">
           Demo: <span className="font-semibold text-ink">demo</span>,{" "}
           <span className="font-semibold text-ink">demo-handlowiec</span>,{" "}
           <span className="font-semibold text-ink">demo-menadzer</span>. Hasło:{" "}
