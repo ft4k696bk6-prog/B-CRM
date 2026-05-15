@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import {
   BarChart3,
+  Calculator,
+  CalendarDays,
   FileUp,
   LogOut,
   PanelLeft,
@@ -26,10 +28,16 @@ export function AppShell({ profile, children }: AppShellProps) {
   const links = isAdmin
     ? [
         { href: "/admin", label: "Dashboard", icon: BarChart3 },
+        { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
+        { href: "/calculators", label: "Kalkulatory", icon: Calculator },
         { href: "/admin/import", label: "Import CSV", icon: FileUp },
         { href: "/admin/users", label: "Handlowcy", icon: UsersRound }
       ]
-    : [{ href: "/sales", label: "Moje leady", icon: BarChart3 }];
+    : [
+        { href: "/sales", label: "Moje leady", icon: BarChart3 },
+        { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
+        { href: "/calculators", label: "Kalkulatory", icon: Calculator }
+      ];
 
   async function signOut() {
     await supabase.auth.signOut();

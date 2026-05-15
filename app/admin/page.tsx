@@ -16,6 +16,7 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { LeadTable } from "@/components/lead-table";
 import { LoadingScreen } from "@/components/loading-screen";
+import { RegionFields } from "@/components/region-fields";
 import { StatTile } from "@/components/stat-tile";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
@@ -337,22 +338,13 @@ export default function AdminDashboardPage() {
                 placeholder="np. 30-001"
               />
             </label>
-            <label>
-              <span className="label">Województwo</span>
-              <input
-                className="field"
-                value={filters.voivodeship}
-                onChange={(event) => updateFilter("voivodeship", event.target.value)}
-              />
-            </label>
-            <label>
-              <span className="label">Powiat</span>
-              <input
-                className="field"
-                value={filters.county}
-                onChange={(event) => updateFilter("county", event.target.value)}
-              />
-            </label>
+            <RegionFields
+              className="md:col-span-2"
+              voivodeship={filters.voivodeship}
+              county={filters.county}
+              onVoivodeshipChange={(value) => updateFilter("voivodeship", value)}
+              onCountyChange={(value) => updateFilter("county", value)}
+            />
             <label>
               <span className="label">Status</span>
               <select

@@ -7,6 +7,7 @@ import {
   CalendarClock,
   Check,
   FileSignature,
+  MapPin,
   MessageSquarePlus,
   RotateCcw,
   Save,
@@ -15,6 +16,7 @@ import {
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
+import { RegionFields } from "@/components/region-fields";
 import { StatusBadge } from "@/components/status-badge";
 import { ACTION_LABELS, LEAD_STATUSES, STATUS_TILE_TONES } from "@/lib/constants";
 import { formatDateTime, toDatetimeLocalValue } from "@/lib/date";
@@ -57,6 +59,10 @@ export default function LeadDetailsPage() {
   const [meetingAddress, setMeetingAddress] = useState("");
   const [contractNumber, setContractNumber] = useState("");
   const [resignationReason, setResignationReason] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [address, setAddress] = useState("");
+  const [voivodeship, setVoivodeship] = useState("");
+  const [county, setCounty] = useState("");
   const [comment, setComment] = useState("");
   const [selectedAssignee, setSelectedAssignee] = useState("");
   const [busy, setBusy] = useState(false);
@@ -91,6 +97,10 @@ export default function LeadDetailsPage() {
     setMeetingAddress(nextLead.meeting_address || nextLead.address || "");
     setContractNumber(nextLead.contract_number || "");
     setResignationReason(nextLead.resignation_reason || "");
+    setPostalCode(nextLead.postal_code || "");
+    setAddress(nextLead.address || "");
+    setVoivodeship(nextLead.voivodeship || "");
+    setCounty(nextLead.county || "");
     setSelectedAssignee(nextLead.assigned_to || "");
 
     await supabase
@@ -236,6 +246,32 @@ export default function LeadDetailsPage() {
     } else {
       setComment("");
       await loadHistory();
+    }
+
+    setBusy(false);
+  }
+
+  async function saveLeadData(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!lead) return;
+
+    setBusy(true);
+    setError("");
+
+    const { error: updateError } = await supabase
+      .from("leads")
+      .update({
+        postal_code: postalCode.trim() || null,
+        address: address.trim() || null,
+        voivodeship: voivodeship || null,
+        county: county || null
+      })
+      .eq("id", lead.id);
+
+    if (updateError) {
+      setError(updateError.message);
+    } else {
+      await refresh();
     }
 
     setBusy(false);
@@ -517,6 +553,45 @@ export default function LeadDetailsPage() {
               </form>
 
               <div className="grid gap-5">
+                <form onSubmit={saveLeadData} className="rounded-lg border border-line bg-white p-5 shadow-sm">
+                  <div className="mb-4 flex items-center gap-3">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
+                      <MapPin className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <h2 className="text-base font-bold text-ink">Dane adresowe</h2>
+                  </div>
+                  <div className="grid gap-3">
+                    <label>
+                      <span className="label">Kod pocztowy</span>
+                      <input
+                        className="field"
+                        value={postalCode}
+                        onChange={(event) => setPostalCode(event.target.value)}
+                        placeholder="np. 30-001"
+                      />
+                    </label>
+                    <label>
+                      <span className="label">Adres</span>
+                      <input
+                        className="field"
+                        value={address}
+                        onChange={(event) => setAddress(event.target.value)}
+                        placeholder="Ulica, numer, miejscowość"
+                      />
+                    </label>
+                    <RegionFields
+                      voivodeship={voivodeship}
+                      county={county}
+                      onVoivodeshipChange={setVoivodeship}
+                      onCountyChange={setCounty}
+                    />
+                  </div>
+                  <button type="submit" disabled={busy} className="btn-primary mt-4">
+                    <Save className="h-4 w-4" aria-hidden="true" />
+                    Zapisz dane
+                  </button>
+                </form>
+
                 {isAdmin ? (
                   <form onSubmit={assignLead} className="rounded-lg border border-line bg-white p-5 shadow-sm">
                     <div className="mb-4 flex items-center gap-3">
