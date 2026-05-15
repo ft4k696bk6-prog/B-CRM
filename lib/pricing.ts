@@ -1,4 +1,6 @@
 export type PackageId = "pv-only" | "me-5" | "me-10" | "me-16" | "me-20" | "me-23" | "me-28";
+export type OfferMode = "pv" | "pv-storage" | "storage";
+export type RainwaterSystem = "none" | "above-2000" | "underground-2000";
 
 export type PriceRow = {
   panelCount: number;
@@ -29,28 +31,28 @@ export const PACKAGE_OPTIONS: Array<{
     label: "PV + magazyn 5,12 kWh",
     shortLabel: "5,12 kWh",
     storageKwh: 5.12,
-    brands: ["Kon-TEC", "Deye PRO-B"]
+    brands: ["Kon-TEC", "Deye"]
   },
   {
     id: "me-10",
     label: "PV + magazyn 10,24 kWh",
     shortLabel: "10,24 kWh",
     storageKwh: 10.24,
-    brands: ["Kon-TEC", "Deye PRO-B"]
+    brands: ["Kon-TEC", "Deye"]
   },
   {
     id: "me-16",
     label: "PV + magazyn 16 kWh",
     shortLabel: "16 kWh",
     storageKwh: 16,
-    brands: ["Kon-TEC", "Deye SE-G5.1 Pro-B"]
+    brands: ["Kon-TEC", "Deye"]
   },
   {
     id: "me-20",
     label: "PV + magazyn 20 kWh",
     shortLabel: "20 kWh",
     storageKwh: 20,
-    brands: ["Kon-TEC", "Deye PRO-B"]
+    brands: ["Kon-TEC", "Deye"]
   },
   {
     id: "me-23",
@@ -90,16 +92,16 @@ export const PRICE_ROWS: PriceRow[] = [
 ];
 
 export const STORAGE_NET_PRICES = [
-  { label: "Kon-TEC ME 5,12 kWh", net: 30683 },
-  { label: "Kon-TEC ME 10,24 kWh", net: 33082 },
-  { label: "Kon-TEC ME 16 kWh", net: 35016 },
-  { label: "Kon-TEC ME 20 kWh", net: 39474 },
-  { label: "Deye PRO-B 5,12 kWh", net: 30683 },
-  { label: "Deye PRO-B 10,24 kWh", net: 33082 },
-  { label: "Deye SE-G5.1 Pro-B 16 kWh", net: 35016 },
-  { label: "Deye PRO-B 20 kWh", net: 39474 },
-  { label: "Felicity 23,5 kWh", net: 40204 },
-  { label: "Felicity 28 kWh", net: 42129 }
+  { id: "kon-tec-5", brand: "Kon-TEC", label: "Kon-TEC ME 5,12 kWh", kwh: 5.12, net: 30683 },
+  { id: "kon-tec-10", brand: "Kon-TEC", label: "Kon-TEC ME 10,24 kWh", kwh: 10.24, net: 33082 },
+  { id: "kon-tec-16", brand: "Kon-TEC", label: "Kon-TEC ME 16 kWh", kwh: 16, net: 35016 },
+  { id: "kon-tec-20", brand: "Kon-TEC", label: "Kon-TEC ME 20 kWh", kwh: 20, net: 39474 },
+  { id: "deye-5", brand: "Deye", label: "Deye 5,12 kWh", kwh: 5.12, net: 30683 },
+  { id: "deye-10", brand: "Deye", label: "Deye 10,24 kWh", kwh: 10.24, net: 33082 },
+  { id: "deye-16", brand: "Deye", label: "Deye 16 kWh", kwh: 16, net: 35016 },
+  { id: "deye-20", brand: "Deye", label: "Deye 20 kWh", kwh: 20, net: 39474 },
+  { id: "felicity-23", brand: "Felicity", label: "Felicity 23,5 kWh", kwh: 23.5, net: 40204 },
+  { id: "felicity-28", brand: "Felicity", label: "Felicity 28 kWh", kwh: 28, net: 42129 }
 ];
 
 export const INVERTER_NET_PRICES = [
@@ -116,7 +118,9 @@ export const EXTRA_NET_PRICES = {
   boiler150: 2000,
   backup: 1500,
   cablePerMeterAbove8m: 15,
-  referralReward: 500
+  referralReward: 500,
+  rainwaterAbove2000: 3000,
+  rainwaterUnderground2000: 10000
 };
 
 export function recommendedInverter(kwp: number) {
@@ -126,3 +130,6 @@ export function recommendedInverter(kwp: number) {
   return INVERTER_NET_PRICES[3];
 }
 
+export function getPriceRowByPanelCount(panelCount: number) {
+  return PRICE_ROWS.find((row) => row.panelCount === panelCount) || PRICE_ROWS[0];
+}

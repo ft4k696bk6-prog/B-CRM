@@ -54,3 +54,32 @@ textarea {
     @apply text-xl font-bold text-ink;
   }
 }
+
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  header,
+  .app-sidebar,
+  .no-print {
+    display: none !important;
+  }
+
+  main,
+  .offer-document {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .offer-document {
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+}

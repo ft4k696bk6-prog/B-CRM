@@ -10,6 +10,7 @@ import {
   FileUp,
   LogOut,
   PanelLeft,
+  Settings,
   UsersRound
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
@@ -30,13 +31,15 @@ export function AppShell({ profile, children }: AppShellProps) {
         { href: "/admin", label: "Dashboard", icon: BarChart3 },
         { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
         { href: "/calculators", label: "Kalkulatory", icon: Calculator },
+        { href: "/settings", label: "Ustawienia", icon: Settings },
         { href: "/admin/import", label: "Import CSV", icon: FileUp },
         { href: "/admin/users", label: "Handlowcy", icon: UsersRound }
       ]
     : [
         { href: "/sales", label: "Moje leady", icon: BarChart3 },
         { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
-        { href: "/calculators", label: "Kalkulatory", icon: Calculator }
+        { href: "/calculators", label: "Kalkulatory", icon: Calculator },
+        { href: "/settings", label: "Ustawienia", icon: Settings }
       ];
 
   async function signOut() {
@@ -76,7 +79,7 @@ export function AppShell({ profile, children }: AppShellProps) {
       </header>
 
       <div className="mx-auto grid max-w-7xl gap-5 px-4 py-5 lg:grid-cols-[230px_1fr]">
-        <aside className="rounded-lg border border-line bg-white p-2 shadow-sm lg:sticky lg:top-20 lg:h-fit">
+        <aside className="app-sidebar rounded-lg border border-line bg-white p-2 shadow-sm lg:sticky lg:top-20 lg:h-fit">
           <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-semibold uppercase tracking-wide text-muted">
             <PanelLeft className="h-4 w-4" aria-hidden="true" />
             Menu
