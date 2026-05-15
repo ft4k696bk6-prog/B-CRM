@@ -18,6 +18,9 @@ import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
 import { StatusBadge } from "@/components/status-badge";
+import { ActivityLog } from "@/components/activity-log";
+import { FileList } from "@/components/file-list";
+import { ReminderList } from "@/components/reminder-list";
 import { ACTION_LABELS, LEAD_STATUSES, STATUS_TILE_TONES } from "@/lib/constants";
 import { formatDateTime, toDatetimeLocalValue } from "@/lib/date";
 import { supabase } from "@/lib/supabase";
@@ -61,7 +64,7 @@ function getSalesStatusPath(lead: Lead): LeadStatus[] {
 export default function LeadDetailsPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const { loading, profile } = useAuth();
+  const { loading, profile, session } = useAuth();
   const [lead, setLead] = useState<Lead | null>(null);
   const [history, setHistory] = useState<LeadHistory[]>([]);
   const [salespeople, setSalespeople] = useState<Profile[]>([]);
@@ -687,6 +690,42 @@ export default function LeadDetailsPage() {
                     Dodaj komentarz
                   </button>
                 </form>
+              </div>
+            </section>
+
+            <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+              <h2 className="text-base font-bold text-ink">Aktywności</h2>
+              <div className="mt-4">
+                {session?.access_token && (
+                  <ActivityLog
+                    leadId={lead.id}
+                    token={session.access_token}
+                  />
+                )}
+              </div>
+            </section>
+
+            <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+              <h2 className="text-base font-bold text-ink">Pliki</h2>
+              <div className="mt-4">
+                {session?.access_token && (
+                  <FileList
+                    leadId={lead.id}
+                    token={session.access_token}
+                  />
+                )}
+              </div>
+            </section>
+
+            <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+              <h2 className="text-base font-bold text-ink">Przypomnienia</h2>
+              <div className="mt-4">
+                {session?.access_token && (
+                  <ReminderList
+                    leadId={lead.id}
+                    token={session.access_token}
+                  />
+                )}
               </div>
             </section>
 

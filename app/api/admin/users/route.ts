@@ -5,7 +5,7 @@ type CreateUserBody = {
   email?: string;
   password?: string;
   fullName?: string;
-  role?: "sales" | "admin";
+  role?: "sales" | "admin" | "manager";
 };
 
 function getAdminClient() {
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     const email = body.email?.trim().toLowerCase();
     const password = body.password?.trim();
     const fullName = body.fullName?.trim();
-    const role = body.role === "admin" ? "admin" : "sales";
+    const role = ["admin", "manager", "sales"].includes(body.role || "") ? body.role : "sales";
 
     if (!email || !password || !fullName) {
       return NextResponse.json({ error: "Uzupełnij wszystkie pola." }, { status: 400 });

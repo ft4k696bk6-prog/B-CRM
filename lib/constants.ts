@@ -31,6 +31,16 @@ export const STATUS_TONES: Record<LeadStatus, string> = {
 export const ACTION_LABELS: Record<string, string> = {
   comment: "Komentarz",
   status_change: "Zmiana statusu",
+  callback_scheduled: "Callback zaplanowany",
+  meeting_scheduled: "Spotkanie zaplanowane",
+  meeting_address_changed: "Adres spotkania",
+  contract_number_set: "Numer umowy",
+  resignation_recorded: "Rezygnacja",
+  file_uploaded: "Plik przesłany",
+  file_deleted: "Plik usunięty",
+  assigned: "Przypisanie",
+  unassigned: "Odznaczenie",
+  lead_created: "Dodanie leada",
   callback_set: "Callback",
   meeting_set: "Spotkanie",
   meeting_address: "Adres spotkania",
@@ -38,8 +48,7 @@ export const ACTION_LABELS: Record<string, string> = {
   return: "Zwrot",
   resignation: "Rezygnacja",
   assignment: "Przypisanie",
-  contract_number: "Numer umowy",
-  lead_created: "Dodanie leada"
+  contract_number: "Numer umowy"
 };
 
 export const STATUS_TILE_TONES: Record<LeadStatus, string> = {

@@ -64,5 +64,5 @@ export function useAuth(requiredRole?: UserRole) {
     };
   }, [requiredRole, router]);
 
-  return state;
+  return { ...state, loading: state.loading };
 }

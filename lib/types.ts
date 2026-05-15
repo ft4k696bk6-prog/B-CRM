@@ -1,4 +1,4 @@
-export type UserRole = "admin" | "sales";
+export type UserRole = "admin" | "sales" | "manager";
 
 export type LeadStatus =
   | "Nowy"
@@ -81,4 +81,73 @@ export type SortOption = {
     | "status"
   >;
   direction: "asc" | "desc";
+};
+
+export type ActivityType =
+  | "comment"
+  | "status_change"
+  | "callback_scheduled"
+  | "meeting_scheduled"
+  | "meeting_address_changed"
+  | "contract_number_set"
+  | "resignation_recorded"
+  | "file_uploaded"
+  | "file_deleted"
+  | "assigned"
+  | "unassigned"
+  | "lead_created";
+
+export type LeadActivity = {
+  id: string;
+  lead_id: string;
+  user_id: string | null;
+  activity_type: ActivityType;
+  title: string;
+  description: string | null;
+  old_value: Record<string, unknown> | null;
+  new_value: Record<string, unknown> | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+  user_profile?: Pick<Profile, "id" | "email" | "full_name" | "role"> | null;
+};
+
+export type LeadFile = {
+  id: string;
+  lead_id: string;
+  uploaded_by: string | null;
+  file_name: string;
+  file_path: string;
+  file_size: number | null;
+  mime_type: string | null;
+  description: string | null;
+  created_at: string;
+  user_profile?: Pick<Profile, "id" | "email" | "full_name" | "role"> | null;
+};
+
+export type LeadReminder = {
+  id: string;
+  lead_id: string;
+  created_by: string | null;
+  reminder_type: "callback" | "meeting" | "followup" | "custom";
+  title: string;
+  description: string | null;
+  reminder_at: string;
+  is_completed: boolean;
+  completed_at: string | null;
+  created_at: string;
+  user_profile?: Pick<Profile, "id" | "email" | "full_name" | "role"> | null;
+};
+
+export type DailyReport = {
+  id: string;
+  user_id: string;
+  report_date: string;
+  total_leads_worked: number;
+  total_activities: number;
+  calls_made: number;
+  meetings_scheduled: number;
+  contracts_signed: number;
+  resignations_recorded: number;
+  summary: string | null;
+  created_at: string;
 };
