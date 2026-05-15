@@ -29,7 +29,7 @@ AI-assisted CRM dla firmy sprzedającej fotowoltaikę. Projekt powstał jako pra
 - kalendarz spotkań dla admina i handlowca,
 - zależne pola `województwo -> powiat`,
 - kalkulator opłacalności PV / magazynu energii,
-- kalkulator ceny i oferty z wyborem VAT 8% / 23%,
+- kalkulator ceny i oferty z cennikiem netto, VAT 8% / 23% i marżą admin/handlowiec,
 - podstawowe zabezpieczenia RLS w Supabase.
 
 ## Widoki
@@ -115,10 +115,25 @@ Szczegółowa instrukcja jest w [`INSTRUKCJA_CHMURA_VERCEL.md`](./INSTRUKCJA_CHM
 ## Co można rozwinąć dalej
 
 - eksport oferty do PDF,
-- realny cennik sprzętu z panelami, falownikami, magazynami i usługami,
-- zdjęcia sprzętu w konfiguratorze oferty,
+- realne zdjęcia sprzętu w konfiguratorze oferty,
 - integracja z Meta Lead Ads,
 - mapa satelitarna i prosta wizualizacja paneli PV,
 - AI do podsumowania historii leada i sugestii kolejnego kroku,
 - automatyczne uzupełnianie regionu po kodzie pocztowym.
 
+## Logika cennika
+
+Kalkulator oferty korzysta z cennika netto `cennik FINAL - final.pdf`.
+
+Ceny z cennika zawierają łącznie 15 000 zł marży netto:
+
+- 10 000 zł marży admina,
+- 5 000 zł marży handlowca.
+
+W CRM cena bazowa jest liczona jako:
+
+```txt
+cena z cennika netto - 15 000 zł + marża admina + marża handlowca + dodatki
+```
+
+Admin może zmieniać marżę admina. Handlowiec może zmieniać swoją marżę, domyślnie ustawioną na 5 000 zł netto.

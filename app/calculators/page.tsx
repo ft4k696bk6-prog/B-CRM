@@ -8,10 +8,22 @@ import {
   FileText,
   Percent,
   Printer,
+  Settings2,
   Zap
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
+import { ProductVisual } from "@/components/product-visual";
+import {
+  DEFAULT_ADMIN_MARGIN_NET,
+  DEFAULT_SALES_MARGIN_NET,
+  EXTRA_NET_PRICES,
+  INCLUDED_TOTAL_MARGIN_NET,
+  PACKAGE_OPTIONS,
+  PRICE_ROWS,
+  type PackageId,
+  recommendedInverter
+} from "@/lib/pricing";
 import { useAuth } from "@/lib/use-auth";
 
 type VatRate = 8 | 23;
@@ -27,61 +39,48 @@ const formatNumber = new Intl.NumberFormat("pl-PL", {
   maximumFractionDigits: 1
 });
 
-const panels = [
-  { id: "standard", name: "Panel mono 435 W", pricePerKw: 2550, note: "wariant ekonomiczny" },
-  { id: "premium", name: "Panel full black 450 W", pricePerKw: 2950, note: "wariant prezentacyjny" },
-  { id: "top", name: "Panel premium 500 W", pricePerKw: 3350, note: "wyższa moc z m2" }
-];
-
-const inverters = [
-  { id: "basic", name: "Falownik string", price: 5200 },
-  { id: "hybrid", name: "Falownik hybrydowy", price: 8500 },
-  { id: "micro", name: "Mikrofalowniki", price: 11200 }
-];
-
-const storages = [
-  { id: "none", name: "Bez magazynu", capacity: 0, price: 0 },
-  { id: "5", name: "Magazyn 5 kWh", capacity: 5, price: 14500 },
-  { id: "10", name: "Magazyn 10 kWh", capacity: 10, price: 25500 },
-  { id: "15", name: "Magazyn 15 kWh", capacity: 15, price: 36500 }
-];
-
 function gross(value: number, vatRate: VatRate) {
   return value * (1 + vatRate / 100);
 }
 
-function monthlyInstallment(amount: number, months: number, annualRate: number) {
+function simpleInstallment(amount: number, months: number, annualRatePercent: number) {
   if (months <= 0) return 0;
-  const monthlyRate = annualRate / 100 / 12;
-  if (monthlyRate === 0) return amount / months;
-  return (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+  const interest = amount * ((months / 12) * (annualRatePercent / 100));
+  return (amount + interest) / months;
 }
 
 export default function CalculatorsPage() {
   const { loading, profile } = useAuth();
-  const [tab, setTab] = useState<CalculatorTab>("profitability");
+  const [tab, setTab] = useState<CalculatorTab>("offer");
+  const [vatRate, setVatRate] = useState<VatRate>(8);
 
   const [bill, setBill] = useState(420);
-  const [annualConsumption, setAnnualConsumption] = useState(5200);
-  const [energyPrice, setEnergyPrice] = useState(1.15);
-  const [systemKw, setSystemKw] = useState(6.2);
+  const [annualConsumption, setAnnualConsumption] = useState(5000);
+  const [energyPrice, setEnergyPrice] = useState(1);
+  const [systemKw, setSystemKw] = useState(5.5);
   const [productionPerKw, setProductionPerKw] = useState(1000);
-  const [selfConsumption, setSelfConsumption] = useState(32);
-  const [storageKwh, setStorageKwh] = useState(10);
-  const [vatRate, setVatRate] = useState<VatRate>(8);
-  const [netCostPerKw, setNetCostPerKw] = useState(3600);
-  const [netStorageCostPerKwh, setNetStorageCostPerKwh] = useState(2800);
+  const [selfConsumption, setSelfConsumption] = useState(35);
+  const [storageKwh, setStorageKwh] = useState(10.24);
+  const [annualGrowth, setAnnualGrowth] = useState(15);
 
-  const [offerKw, setOfferKw] = useState(6.2);
-  const [selectedPanel, setSelectedPanel] = useState("premium");
-  const [selectedInverter, setSelectedInverter] = useState("hybrid");
-  const [selectedStorage, setSelectedStorage] = useState("10");
-  const [mountingPerKw, setMountingPerKw] = useState(1050);
-  const [electricalPrice, setElectricalPrice] = useState(1900);
-  const [marginPercent, setMarginPercent] = useState(12);
-  const [discount, setDiscount] = useState(1500);
+  const [selectedRowIndex, setSelectedRowIndex] = useState(7);
+  const [selectedPackage, setSelectedPackage] = useState<PackageId>("me-10");
+  const selectedPackageInfo =
+    PACKAGE_OPTIONS.find((item) => item.id === selectedPackage) || PACKAGE_OPTIONS[0];
+  const [storageBrand, setStorageBrand] = useState(selectedPackageInfo.brands[0]);
+  const [adminMargin, setAdminMargin] = useState(DEFAULT_ADMIN_MARGIN_NET);
+  const [salesMargin, setSalesMargin] = useState(DEFAULT_SALES_MARGIN_NET);
+  const [groundMount, setGroundMount] = useState(false);
+  const [triangles, setTriangles] = useState(false);
+  const [boiler, setBoiler] = useState<"none" | "80" | "150">("none");
+  const [backup, setBackup] = useState(false);
+  const [extraCableMeters, setExtraCableMeters] = useState(0);
+  const [manualAdjustment, setManualAdjustment] = useState(0);
+  const [subsidy, setSubsidy] = useState(0);
   const [loanMonths, setLoanMonths] = useState(120);
-  const [loanRate, setLoanRate] = useState(8.9);
+  const [loanRate, setLoanRate] = useState(6);
+
+  const isAdmin = profile?.role === "admin";
 
   const profitability = useMemo(() => {
     const annualProduction = systemKw * productionPerKw;
@@ -89,67 +88,79 @@ export default function CalculatorsPage() {
     const effectiveSelfConsumption = Math.min(selfConsumption + storageBoost, 92);
     const selfUsedEnergy = Math.min(annualProduction, annualConsumption) * (effectiveSelfConsumption / 100);
     const exportedEnergy = Math.max(annualProduction - selfUsedEnergy, 0);
-    const exportValue = exportedEnergy * energyPrice * 0.45;
     const directSavings = selfUsedEnergy * energyPrice;
+    const exportValue = exportedEnergy * energyPrice * 0.45;
     const annualSavings = directSavings + exportValue;
-    const investmentNet = systemKw * netCostPerKw + storageKwh * netStorageCostPerKwh;
-    const investmentGross = gross(investmentNet, vatRate);
+
+    let cumulativeEnergySpend = 0;
+    let currentYearSpend = bill * 12;
+    for (let year = 0; year < 10; year += 1) {
+      cumulativeEnergySpend += currentYearSpend;
+      currentYearSpend *= 1 + annualGrowth / 100;
+    }
 
     return {
       annualProduction,
       effectiveSelfConsumption,
       annualSavings,
-      investmentGross,
-      paybackYears: annualSavings > 0 ? investmentGross / annualSavings : 0,
+      cumulativeEnergySpend,
       billCoverage: Math.min((annualSavings / (bill * 12)) * 100, 100)
     };
   }, [
     annualConsumption,
+    annualGrowth,
     bill,
     energyPrice,
-    netCostPerKw,
-    netStorageCostPerKwh,
     productionPerKw,
     selfConsumption,
     storageKwh,
-    systemKw,
-    vatRate
+    systemKw
   ]);
 
   const offer = useMemo(() => {
-    const panel = panels.find((item) => item.id === selectedPanel) || panels[0];
-    const inverter = inverters.find((item) => item.id === selectedInverter) || inverters[0];
-    const storage = storages.find((item) => item.id === selectedStorage) || storages[0];
-    const equipmentNet =
-      offerKw * panel.pricePerKw +
-      inverter.price +
-      storage.price +
-      offerKw * mountingPerKw +
-      electricalPrice;
-    const marginValue = equipmentNet * (marginPercent / 100);
-    const netAfterMargin = equipmentNet + marginValue - discount;
-    const grossTotal = gross(Math.max(netAfterMargin, 0), vatRate);
+    const row = PRICE_ROWS[selectedRowIndex] || PRICE_ROWS[0];
+    const packageInfo = PACKAGE_OPTIONS.find((item) => item.id === selectedPackage) || PACKAGE_OPTIONS[0];
+    const cennikNet = row.prices[selectedPackage];
+    const baseNet = cennikNet - INCLUDED_TOTAL_MARGIN_NET;
+    const extrasNet =
+      (groundMount ? row.kwp * EXTRA_NET_PRICES.groundPerKw : 0) +
+      (triangles ? row.kwp * EXTRA_NET_PRICES.ekierkiPerKw : 0) +
+      (boiler === "80" ? EXTRA_NET_PRICES.boiler80 : 0) +
+      (boiler === "150" ? EXTRA_NET_PRICES.boiler150 : 0) +
+      (backup ? EXTRA_NET_PRICES.backup : 0) +
+      extraCableMeters * EXTRA_NET_PRICES.cablePerMeterAbove8m +
+      manualAdjustment;
+    const finalNet = Math.max(baseNet + adminMargin + salesMargin + extrasNet, 0);
+    const finalGross = gross(finalNet, vatRate);
+    const creditAfterSubsidy = Math.max(finalGross - subsidy, 0);
 
     return {
-      panel,
-      inverter,
-      storage,
-      equipmentNet,
-      marginValue,
-      grossTotal,
-      installment: monthlyInstallment(grossTotal, loanMonths, loanRate)
+      row,
+      packageInfo,
+      inverter: recommendedInverter(row.kwp),
+      cennikNet,
+      baseNet,
+      extrasNet,
+      finalNet,
+      finalGross,
+      installmentBeforeSubsidy: simpleInstallment(finalGross, loanMonths, loanRate),
+      installmentAfterSubsidy: simpleInstallment(creditAfterSubsidy, loanMonths, loanRate),
+      creditAfterSubsidy
     };
   }, [
-    discount,
-    electricalPrice,
+    adminMargin,
+    backup,
+    boiler,
+    extraCableMeters,
+    groundMount,
     loanMonths,
     loanRate,
-    marginPercent,
-    mountingPerKw,
-    offerKw,
-    selectedInverter,
-    selectedPanel,
-    selectedStorage,
+    manualAdjustment,
+    salesMargin,
+    selectedPackage,
+    selectedRowIndex,
+    subsidy,
+    triangles,
     vatRate
   ]);
 
@@ -162,19 +173,10 @@ export default function CalculatorsPage() {
           <div>
             <h1 className="section-title">Kalkulatory</h1>
             <p className="mt-1 text-sm text-muted">
-              Szybkie liczenie opłacalności, ceny, VAT i raty dla klienta.
+              Cennik FINAL netto, marże admin/handlowiec, VAT oraz prosty abonament z pliku Excel.
             </p>
           </div>
           <div className="inline-flex rounded-lg border border-line bg-white p-1 shadow-sm">
-            <button
-              type="button"
-              onClick={() => setTab("profitability")}
-              className={`rounded-md px-4 py-2 text-sm font-bold transition ${
-                tab === "profitability" ? "bg-ink text-white" : "text-muted hover:bg-[#eef3f8]"
-              }`}
-            >
-              Opłacalność
-            </button>
             <button
               type="button"
               onClick={() => setTab("offer")}
@@ -184,6 +186,15 @@ export default function CalculatorsPage() {
             >
               Oferta
             </button>
+            <button
+              type="button"
+              onClick={() => setTab("profitability")}
+              className={`rounded-md px-4 py-2 text-sm font-bold transition ${
+                tab === "profitability" ? "bg-ink text-white" : "text-muted hover:bg-[#eef3f8]"
+              }`}
+            >
+              Opłacalność
+            </button>
           </div>
         </div>
 
@@ -191,7 +202,7 @@ export default function CalculatorsPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-bold text-ink">Stawka VAT</h2>
-              <p className="mt-1 text-sm text-muted">Wybierz 8% albo 23% dla aktualnych wyliczeń.</p>
+              <p className="mt-1 text-sm text-muted">Ceny z cennika są netto. CRM dolicza VAT 8% albo 23%.</p>
             </div>
             <div className="inline-flex rounded-lg border border-line bg-[#f9fbfd] p-1">
               {[8, 23].map((rate) => (
@@ -210,7 +221,240 @@ export default function CalculatorsPage() {
           </div>
         </section>
 
-        {tab === "profitability" ? (
+        {tab === "offer" ? (
+          <section className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+            <div className="grid gap-5">
+              <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+                <div className="mb-4 flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
+                    <Calculator className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <h2 className="text-base font-bold text-ink">Konfiguracja z cennika</h2>
+                </div>
+
+                <div className="grid gap-4">
+                  <label>
+                    <span className="label">Moc / liczba modułów JA Solar 500 W</span>
+                    <select
+                      className="field"
+                      value={selectedRowIndex}
+                      onChange={(event) => {
+                        const index = Number(event.target.value);
+                        setSelectedRowIndex(index);
+                        setSystemKw(PRICE_ROWS[index]?.kwp || systemKw);
+                      }}
+                    >
+                      {PRICE_ROWS.map((row, index) => (
+                        <option key={row.panelCount} value={index}>
+                          {row.panelCount} modułów · {row.kwp} kWp
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <div>
+                    <span className="label">Wariant</span>
+                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                      {PACKAGE_OPTIONS.map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedPackage(item.id);
+                            setStorageBrand(item.brands[0]);
+                            setStorageKwh(item.storageKwh);
+                          }}
+                          className={`min-h-20 rounded-lg border p-3 text-left transition ${
+                            selectedPackage === item.id
+                              ? "border-ink bg-ink text-white"
+                              : "border-line bg-[#f9fbfd] text-ink hover:border-ink"
+                          }`}
+                        >
+                          <span className="block text-sm font-black">{item.shortLabel}</span>
+                          <span className="mt-1 block text-xs opacity-80">{item.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {selectedPackageInfo.storageKwh > 0 ? (
+                    <label>
+                      <span className="label">Marka magazynu</span>
+                      <select
+                        className="field"
+                        value={storageBrand}
+                        onChange={(event) => setStorageBrand(event.target.value)}
+                      >
+                        {selectedPackageInfo.brands.map((brand) => (
+                          <option key={brand} value={brand}>
+                            {brand}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  ) : null}
+                </div>
+              </section>
+
+              <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+                <div className="mb-4 flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-solar/20 text-[#8a5a00]">
+                    <Settings2 className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <h2 className="text-base font-bold text-ink">Marże i dodatki netto</h2>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label>
+                    <span className="label">Marża admina netto</span>
+                    <input
+                      className="field"
+                      type="number"
+                      value={adminMargin}
+                      disabled={!isAdmin}
+                      onChange={(event) => setAdminMargin(Number(event.target.value))}
+                    />
+                  </label>
+                  <label>
+                    <span className="label">Marża handlowca netto</span>
+                    <input
+                      className="field"
+                      type="number"
+                      value={salesMargin}
+                      min={0}
+                      onChange={(event) => setSalesMargin(Number(event.target.value))}
+                    />
+                  </label>
+
+                  <label className="flex items-center gap-3 rounded-md border border-line bg-[#f9fbfd] p-3 text-sm font-semibold">
+                    <input type="checkbox" checked={groundMount} onChange={(event) => setGroundMount(event.target.checked)} />
+                    Grunt +{EXTRA_NET_PRICES.groundPerKw} zł/kW
+                  </label>
+                  <label className="flex items-center gap-3 rounded-md border border-line bg-[#f9fbfd] p-3 text-sm font-semibold">
+                    <input type="checkbox" checked={triangles} onChange={(event) => setTriangles(event.target.checked)} />
+                    Ekierki +{EXTRA_NET_PRICES.ekierkiPerKw} zł/kW
+                  </label>
+                  <label>
+                    <span className="label">Bojler</span>
+                    <select className="field" value={boiler} onChange={(event) => setBoiler(event.target.value as "none" | "80" | "150")}>
+                      <option value="none">Bez bojlera</option>
+                      <option value="80">Bojler 80L +{EXTRA_NET_PRICES.boiler80} zł</option>
+                      <option value="150">Bojler 150L +{EXTRA_NET_PRICES.boiler150} zł</option>
+                    </select>
+                  </label>
+                  <label className="flex items-center gap-3 rounded-md border border-line bg-[#f9fbfd] p-3 text-sm font-semibold">
+                    <input type="checkbox" checked={backup} onChange={(event) => setBackup(event.target.checked)} />
+                    Backup +{EXTRA_NET_PRICES.backup} zł
+                  </label>
+                  <label>
+                    <span className="label">Kabel powyżej 8 m</span>
+                    <input
+                      className="field"
+                      type="number"
+                      value={extraCableMeters}
+                      min={0}
+                      onChange={(event) => setExtraCableMeters(Number(event.target.value))}
+                    />
+                  </label>
+                  <label>
+                    <span className="label">Korekta ręczna netto</span>
+                    <input
+                      className="field"
+                      type="number"
+                      value={manualAdjustment}
+                      onChange={(event) => setManualAdjustment(Number(event.target.value))}
+                    />
+                  </label>
+                </div>
+
+                {!isAdmin ? (
+                  <p className="mt-3 rounded-md border border-solar/30 bg-solar/10 p-3 text-sm text-[#6f4900]">
+                    Handlowiec zmienia swoją marżę. Marża admina jest widoczna informacyjnie.
+                  </p>
+                ) : null}
+              </section>
+
+              <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+                <div className="mb-4 flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-leaf/10 text-leaf">
+                    <Banknote className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <h2 className="text-base font-bold text-ink">Abonament i dotacja</h2>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <label>
+                    <span className="label">Dotacja / wpłata</span>
+                    <input className="field" type="number" value={subsidy} onChange={(event) => setSubsidy(Number(event.target.value))} />
+                  </label>
+                  <label>
+                    <span className="label">Liczba miesięcy</span>
+                    <input className="field" type="number" value={loanMonths} onChange={(event) => setLoanMonths(Number(event.target.value))} />
+                  </label>
+                  <label>
+                    <span className="label">Oprocentowanie roczne %</span>
+                    <input className="field" type="number" step="0.1" value={loanRate} onChange={(event) => setLoanRate(Number(event.target.value))} />
+                  </label>
+                </div>
+              </section>
+            </div>
+
+            <aside className="grid gap-5">
+              <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-base font-bold text-ink">Podsumowanie oferty</h2>
+                    <p className="mt-1 text-sm text-muted">Cennik netto + marże + VAT.</p>
+                  </div>
+                  <button type="button" onClick={() => window.print()} className="btn-secondary">
+                    <Printer className="h-4 w-4" aria-hidden="true" />
+                    Drukuj
+                  </button>
+                </div>
+
+                <div className="rounded-lg border border-leaf/20 bg-leaf/10 p-4">
+                  <div className="text-sm font-semibold text-[#23682e]">Cena brutto dla klienta</div>
+                  <div className="mt-2 text-3xl font-black text-[#23682e]">
+                    {formatMoney.format(offer.finalGross)}
+                  </div>
+                  <div className="mt-2 text-sm text-[#23682e]">
+                    Rata przed dotacją:{" "}
+                    <span className="font-black">{formatMoney.format(offer.installmentBeforeSubsidy)}</span>
+                  </div>
+                  <div className="text-sm text-[#23682e]">
+                    Rata po dotacji:{" "}
+                    <span className="font-black">{formatMoney.format(offer.installmentAfterSubsidy)}</span>
+                  </div>
+                </div>
+
+                <dl className="mt-4 grid gap-3">
+                  <OfferRow label="Wariant" value={offer.packageInfo.label} />
+                  <OfferRow label="Moduły" value={`${offer.row.panelCount} x JA Solar 500 W`} />
+                  <OfferRow label="Moc" value={`${formatNumber.format(offer.row.kwp)} kWp`} />
+                  <OfferRow label="Falownik" value={offer.inverter.label} />
+                  <OfferRow label="Magazyn" value={offer.packageInfo.storageKwh ? `${storageBrand} ${offer.packageInfo.shortLabel}` : "Brak"} />
+                  <OfferRow label="Cena z cennika netto" value={formatMoney.format(offer.cennikNet)} />
+                  <OfferRow label="Baza netto bez 15k marży" value={formatMoney.format(offer.baseNet)} />
+                  <OfferRow label="Marża admina" value={formatMoney.format(adminMargin)} />
+                  <OfferRow label="Marża handlowca" value={formatMoney.format(salesMargin)} />
+                  <OfferRow label="Dodatki / korekty netto" value={formatMoney.format(offer.extrasNet)} />
+                  <OfferRow label="Cena netto finalna" value={formatMoney.format(offer.finalNet)} />
+                  <OfferRow label="VAT" value={`${vatRate}%`} />
+                  <OfferRow label="Kwota kredytu po dotacji" value={formatMoney.format(offer.creditAfterSubsidy)} />
+                </dl>
+              </section>
+
+              <section className="grid gap-3">
+                <ProductVisual type="panel" title="JA Solar 500 W" subtitle={`${offer.row.panelCount} modułów · ${offer.row.kwp} kWp`} />
+                <ProductVisual type="inverter" title="Deye hybrid LV" subtitle={offer.inverter.label.replace("Deye hybrydowy niskonapięciowy ", "")} />
+                <ProductVisual
+                  type="battery"
+                  title={offer.packageInfo.storageKwh ? storageBrand : "Bez magazynu"}
+                  subtitle={offer.packageInfo.storageKwh ? offer.packageInfo.shortLabel : "wariant samo foto"}
+                />
+              </section>
+            </aside>
+          </section>
+        ) : (
           <section className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
             <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
               <div className="mb-4 flex items-center gap-3">
@@ -220,42 +464,14 @@ export default function CalculatorsPage() {
                 <h2 className="text-base font-bold text-ink">Dane klienta i instalacji</h2>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
-                <label>
-                  <span className="label">Rachunek miesięczny</span>
-                  <input className="field" type="number" value={bill} onChange={(event) => setBill(Number(event.target.value))} />
-                </label>
-                <label>
-                  <span className="label">Zużycie roczne kWh</span>
-                  <input className="field" type="number" value={annualConsumption} onChange={(event) => setAnnualConsumption(Number(event.target.value))} />
-                </label>
-                <label>
-                  <span className="label">Cena energii zł/kWh</span>
-                  <input className="field" type="number" step="0.01" value={energyPrice} onChange={(event) => setEnergyPrice(Number(event.target.value))} />
-                </label>
-                <label>
-                  <span className="label">Moc instalacji kWp</span>
-                  <input className="field" type="number" step="0.1" value={systemKw} onChange={(event) => setSystemKw(Number(event.target.value))} />
-                </label>
-                <label>
-                  <span className="label">Produkcja z 1 kWp</span>
-                  <input className="field" type="number" value={productionPerKw} onChange={(event) => setProductionPerKw(Number(event.target.value))} />
-                </label>
-                <label>
-                  <span className="label">Autokonsumpcja %</span>
-                  <input className="field" type="number" value={selfConsumption} onChange={(event) => setSelfConsumption(Number(event.target.value))} />
-                </label>
-                <label>
-                  <span className="label">Magazyn energii kWh</span>
-                  <input className="field" type="number" step="0.1" value={storageKwh} onChange={(event) => setStorageKwh(Number(event.target.value))} />
-                </label>
-                <label>
-                  <span className="label">Koszt netto 1 kWp</span>
-                  <input className="field" type="number" value={netCostPerKw} onChange={(event) => setNetCostPerKw(Number(event.target.value))} />
-                </label>
-                <label className="sm:col-span-2">
-                  <span className="label">Koszt netto 1 kWh magazynu</span>
-                  <input className="field" type="number" value={netStorageCostPerKwh} onChange={(event) => setNetStorageCostPerKwh(Number(event.target.value))} />
-                </label>
+                <NumberField label="Rachunek miesięczny" value={bill} onChange={setBill} />
+                <NumberField label="Zużycie roczne kWh" value={annualConsumption} onChange={setAnnualConsumption} />
+                <NumberField label="Cena zakupu 1 kWh" value={energyPrice} step="0.01" onChange={setEnergyPrice} />
+                <NumberField label="Moc instalacji kWp" value={systemKw} step="0.1" onChange={setSystemKw} />
+                <NumberField label="Produkcja z 1 kWp" value={productionPerKw} onChange={setProductionPerKw} />
+                <NumberField label="Autokonsumpcja %" value={selfConsumption} onChange={setSelfConsumption} />
+                <NumberField label="Magazyn energii kWh" value={storageKwh} step="0.1" onChange={setStorageKwh} />
+                <NumberField label="Roczny wzrost ceny %" value={annualGrowth} onChange={setAnnualGrowth} />
               </div>
             </div>
 
@@ -265,142 +481,44 @@ export default function CalculatorsPage() {
               <ResultTile icon={Banknote} label="Oszczędność roczna" value={formatMoney.format(profitability.annualSavings)} tone="sky" />
               <ResultTile icon={Percent} label="Pokrycie rachunków" value={`${formatNumber.format(profitability.billCoverage)}%`} tone="leaf" />
               <div className="sm:col-span-2 rounded-lg border border-line bg-white p-5 shadow-sm">
-                <div className="text-sm font-semibold text-muted">Szacowany koszt brutto</div>
+                <div className="text-sm font-semibold text-muted">Prognozowany koszt prądu przez 10 lat</div>
                 <div className="mt-2 text-3xl font-black text-ink">
-                  {formatMoney.format(profitability.investmentGross)}
+                  {formatMoney.format(profitability.cumulativeEnergySpend)}
                 </div>
                 <div className="mt-2 text-sm text-muted">
-                  Szacowany zwrot:{" "}
-                  <span className="font-bold text-ink">
-                    {formatNumber.format(profitability.paybackYears)} lat
-                  </span>
+                  Logika bazuje na prostym arkuszu: zużycie roczne, cena 1 kWh i roczny wzrost ceny.
                 </div>
               </div>
-            </div>
-          </section>
-        ) : (
-          <section className="grid gap-5 xl:grid-cols-[1fr_0.9fr]">
-            <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
-              <div className="mb-4 flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
-                  <Calculator className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <h2 className="text-base font-bold text-ink">Konfiguracja oferty</h2>
-              </div>
-
-              <div className="grid gap-4">
-                <label>
-                  <span className="label">Moc instalacji kWp</span>
-                  <input className="field" type="number" step="0.1" value={offerKw} onChange={(event) => setOfferKw(Number(event.target.value))} />
-                </label>
-
-                <ChoiceGroup
-                  label="Panele"
-                  value={selectedPanel}
-                  options={panels.map((panel) => ({
-                    id: panel.id,
-                    title: panel.name,
-                    meta: `${formatMoney.format(panel.pricePerKw)} / kWp · ${panel.note}`
-                  }))}
-                  onChange={setSelectedPanel}
-                />
-
-                <ChoiceGroup
-                  label="Falownik"
-                  value={selectedInverter}
-                  options={inverters.map((inverter) => ({
-                    id: inverter.id,
-                    title: inverter.name,
-                    meta: formatMoney.format(inverter.price)
-                  }))}
-                  onChange={setSelectedInverter}
-                />
-
-                <ChoiceGroup
-                  label="Magazyn energii"
-                  value={selectedStorage}
-                  options={storages.map((storage) => ({
-                    id: storage.id,
-                    title: storage.name,
-                    meta: storage.capacity ? `${storage.capacity} kWh · ${formatMoney.format(storage.price)}` : "bez dopłaty"
-                  }))}
-                  onChange={setSelectedStorage}
-                />
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <label>
-                    <span className="label">Montaż netto / kWp</span>
-                    <input className="field" type="number" value={mountingPerKw} onChange={(event) => setMountingPerKw(Number(event.target.value))} />
-                  </label>
-                  <label>
-                    <span className="label">Elektryka i zabezpieczenia</span>
-                    <input className="field" type="number" value={electricalPrice} onChange={(event) => setElectricalPrice(Number(event.target.value))} />
-                  </label>
-                  <label>
-                    <span className="label">Marża %</span>
-                    <input className="field" type="number" value={marginPercent} onChange={(event) => setMarginPercent(Number(event.target.value))} />
-                  </label>
-                  <label>
-                    <span className="label">Rabat brutto/netto</span>
-                    <input className="field" type="number" value={discount} onChange={(event) => setDiscount(Number(event.target.value))} />
-                  </label>
-                  <label>
-                    <span className="label">Raty: liczba miesięcy</span>
-                    <input className="field" type="number" value={loanMonths} onChange={(event) => setLoanMonths(Number(event.target.value))} />
-                  </label>
-                  <label>
-                    <span className="label">Oprocentowanie roczne %</span>
-                    <input className="field" type="number" step="0.1" value={loanRate} onChange={(event) => setLoanRate(Number(event.target.value))} />
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-leaf/10 text-leaf">
-                    <FileText className="h-5 w-5" aria-hidden="true" />
-                  </span>
-                  <h2 className="text-base font-bold text-ink">Podsumowanie oferty</h2>
-                </div>
-                <button type="button" onClick={() => window.print()} className="btn-secondary">
-                  <Printer className="h-4 w-4" aria-hidden="true" />
-                  Drukuj
-                </button>
-              </div>
-
-              <div className="rounded-lg border border-leaf/20 bg-leaf/10 p-4">
-                <div className="text-sm font-semibold text-[#23682e]">Cena brutto dla klienta</div>
-                <div className="mt-2 text-3xl font-black text-[#23682e]">
-                  {formatMoney.format(offer.grossTotal)}
-                </div>
-                <div className="mt-2 text-sm text-[#23682e]">
-                  Szacowana rata: <span className="font-black">{formatMoney.format(offer.installment)}</span>
-                </div>
-              </div>
-
-              <dl className="mt-4 grid gap-3">
-                <OfferRow label="Moc" value={`${formatNumber.format(offerKw)} kWp`} />
-                <OfferRow label="Panele" value={offer.panel.name} />
-                <OfferRow label="Falownik" value={offer.inverter.name} />
-                <OfferRow label="Magazyn" value={offer.storage.name} />
-                <OfferRow label="Suma netto przed marżą" value={formatMoney.format(offer.equipmentNet)} />
-                <OfferRow label="Marża" value={formatMoney.format(offer.marginValue)} />
-                <OfferRow label="Rabat" value={`-${formatMoney.format(discount)}`} />
-                <OfferRow label="VAT" value={`${vatRate}%`} />
-                <OfferRow label="Finansowanie" value={`${loanMonths} mies. / ${loanRate}%`} />
-              </dl>
-
-              <p className="mt-4 rounded-md border border-solar/30 bg-solar/10 p-3 text-sm text-[#6f4900]">
-                To są wartości robocze. Po otrzymaniu Twojego cennika podmienimy produkty, zdjęcia,
-                marże i reguły liczenia na realne.
-              </p>
             </div>
           </section>
         )}
       </div>
     </AppShell>
+  );
+}
+
+function NumberField({
+  label,
+  value,
+  onChange,
+  step = "1"
+}: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  step?: string;
+}) {
+  return (
+    <label>
+      <span className="label">{label}</span>
+      <input
+        className="field"
+        type="number"
+        step={step}
+        value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+      />
+    </label>
   );
 }
 
@@ -426,41 +544,6 @@ function ResultTile({
       <Icon className="h-5 w-5" aria-hidden="true" />
       <div className="mt-4 text-sm font-semibold opacity-80">{label}</div>
       <div className="mt-1 text-2xl font-black">{value}</div>
-    </div>
-  );
-}
-
-function ChoiceGroup({
-  label,
-  value,
-  options,
-  onChange
-}: {
-  label: string;
-  value: string;
-  options: Array<{ id: string; title: string; meta: string }>;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <div>
-      <span className="label">{label}</span>
-      <div className="grid gap-2 sm:grid-cols-3">
-        {options.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            onClick={() => onChange(option.id)}
-            className={`rounded-lg border p-3 text-left transition ${
-              value === option.id
-                ? "border-ink bg-ink text-white"
-                : "border-line bg-[#f9fbfd] text-ink hover:border-ink"
-            }`}
-          >
-            <span className="block text-sm font-black">{option.title}</span>
-            <span className="mt-1 block text-xs opacity-80">{option.meta}</span>
-          </button>
-        ))}
-      </div>
     </div>
   );
 }
