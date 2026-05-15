@@ -56,7 +56,7 @@ function endOfDay(value: string) {
 }
 
 export default function AdminDashboardPage() {
-  const { loading, profile } = useAuth("admin");
+  const { loading, profile } = useAuth(["admin", "menadzer"]);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [salespeople, setSalespeople] = useState<Profile[]>([]);
   const [filters, setFilters] = useState<AdminLeadFilters>(initialFilters);
@@ -80,7 +80,7 @@ export default function AdminDashboardPage() {
     const { data } = await supabase
       .from("profiles")
       .select("*")
-      .eq("role", "sales")
+      .eq("role", "handlowiec")
       .order("full_name", { ascending: true });
 
     setSalespeople((data || []) as Profile[]);
@@ -210,7 +210,9 @@ export default function AdminDashboardPage() {
       <div className="grid gap-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="section-title">Dashboard admina</h1>
+            <h1 className="section-title">
+              Dashboard {profile.role === "menadzer" ? "menadżera" : "admina"}
+            </h1>
             <p className="mt-1 text-sm text-muted">
               Wszystkie leady, przypisania i bieżące statusy.
             </p>

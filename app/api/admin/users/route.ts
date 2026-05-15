@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { USER_ROLES } from "@/lib/roles";
+import type { UserRole } from "@/lib/types";
 
 type CreateUserBody = {
   email?: string;
   password?: string;
   fullName?: string;
-  role?: "sales" | "admin" | "manager";
+  role?: UserRole;
+};
+
+type UpdateUserBody = {
+  id?: string;
+  role?: UserRole;
 };
 
 function getAdminClient() {
@@ -24,7 +31,7 @@ function getAdminClient() {
   });
 }
 
-export async function POST(request: Request) {
+async function requireAdmin(request: Request) {
   try {
     const authHeader = request.headers.get("authorization");
     const token = authHeader?.startsWith("Bearer ")
@@ -32,7 +39,7 @@ export async function POST(request: Request) {
       : null;
 
     if (!token) {
-      return NextResponse.json({ error: "Brak sesji admina." }, { status: 401 });
+      return { error: NextResponse.json({ error: "Brak sesji admina." }, { status: 401 }) };
     }
 
     const supabaseAdmin = getAdminClient();
@@ -42,7 +49,7 @@ export async function POST(request: Request) {
     } = await supabaseAdmin.auth.getUser(token);
 
     if (userError || !user) {
-      return NextResponse.json({ error: "Sesja wygasła." }, { status: 401 });
+      return { error: NextResponse.json({ error: "Sesja wygasła." }, { status: 401 }) };
     }
 
     const { data: profile } = await supabaseAdmin
@@ -52,20 +59,52 @@ export async function POST(request: Request) {
       .single();
 
     if (profile?.role !== "admin") {
-      return NextResponse.json({ error: "Brak uprawnień admina." }, { status: 403 });
+      return { error: NextResponse.json({ error: "Brak uprawnień admina." }, { status: 403 }) };
     }
+
+    return { supabaseAdmin, user };
+  } catch (error) {
+    return {
+      error: NextResponse.json(
+        { error: error instanceof Error ? error.message : "Nieznany błąd." },
+        { status: 500 }
+      )
+    };
+  }
+}
+
+export async function GET(request: Request) {
+  const auth = await requireAdmin(request);
+  if (auth.error) return auth.error;
+
+  const { data, error } = await auth.supabaseAdmin
+    .from("profiles")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
+  return NextResponse.json({ users: data || [] });
+}
+
+export async function POST(request: Request) {
+  try {
+    const auth = await requireAdmin(request);
+    if (auth.error) return auth.error;
 
     const body = (await request.json()) as CreateUserBody;
     const email = body.email?.trim().toLowerCase();
     const password = body.password?.trim();
     const fullName = body.fullName?.trim();
-    const role = ["admin", "manager", "sales"].includes(body.role || "") ? body.role : "sales";
+    const role = USER_ROLES.includes(body.role as UserRole) ? (body.role as UserRole) : "handlowiec";
 
     if (!email || !password || !fullName) {
       return NextResponse.json({ error: "Uzupełnij wszystkie pola." }, { status: 400 });
     }
 
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    const { data, error } = await auth.supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
@@ -82,7 +121,7 @@ export async function POST(request: Request) {
       );
     }
 
-    await supabaseAdmin.from("profiles").upsert({
+    await auth.supabaseAdmin.from("profiles").upsert({
       id: data.user.id,
       email,
       full_name: fullName,
@@ -90,6 +129,54 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ id: data.user.id, email, fullName, role });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Nieznany błąd." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const auth = await requireAdmin(request);
+    if (auth.error) return auth.error;
+
+    const body = (await request.json()) as UpdateUserBody;
+    const id = body.id?.trim();
+    const role = USER_ROLES.includes(body.role as UserRole) ? (body.role as UserRole) : null;
+
+    if (!id || !role) {
+      return NextResponse.json({ error: "Brak użytkownika lub roli." }, { status: 400 });
+    }
+
+    const { data: target } = await auth.supabaseAdmin
+      .from("profiles")
+      .select("role")
+      .eq("id", id)
+      .single();
+
+    if (target?.role === "admin" && role !== "admin" && id !== auth.user.id) {
+      return NextResponse.json(
+        { error: "Nie można odebrać roli admina innemu administratorowi." },
+        { status: 403 }
+      );
+    }
+
+    const { error } = await auth.supabaseAdmin
+      .from("profiles")
+      .update({ role })
+      .eq("id", id);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    await auth.supabaseAdmin.auth.admin.updateUserById(id, {
+      user_metadata: { role }
+    });
+
+    return NextResponse.json({ id, role });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Nieznany błąd." },

@@ -4,7 +4,14 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, LogIn } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
+import { homePathForRole } from "@/lib/roles";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+
+const demoAliases: Record<string, string> = {
+  demo: "demo@example.com",
+  "demo-handlowiec": "demo-handlowiec@example.com",
+  "demo-menadzer": "demo-menadzer@example.com"
+};
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,8 +25,11 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
+    const normalizedLogin = email.trim().toLowerCase();
+    const signInEmail = demoAliases[normalizedLogin] || normalizedLogin;
+
     const { data, error: signInError } = await supabase.auth.signInWithPassword({
-      email,
+      email: signInEmail,
       password
     });
 
@@ -35,17 +45,17 @@ export default function LoginPage() {
       .eq("id", data.user.id)
       .single();
 
-    router.replace(profile?.role === "admin" ? "/admin" : "/sales");
+    router.replace(homePathForRole(profile?.role));
   }
 
   return (
-    <main className="grid min-h-screen place-items-center bg-[#f6f8fb] px-4 py-8">
-      <section className="w-full max-w-md rounded-lg border border-line bg-white p-6 shadow-soft">
+    <main className="grid min-h-screen place-items-center bg-[#06110f] px-4 py-8">
+      <section className="w-full max-w-md rounded-xl border border-line bg-panel/95 p-6 shadow-soft">
         <div className="mb-8 flex items-center gap-3">
           <BrandMark />
           <div>
             <h1 className="text-xl font-bold text-ink">B-CRM</h1>
-            <p className="text-sm text-muted">Logowanie</p>
+            <p className="text-sm text-muted">Logowanie do panelu</p>
           </div>
         </div>
 
@@ -65,15 +75,15 @@ export default function LoginPage() {
 
         <form onSubmit={onSubmit} className="grid gap-4">
           <label>
-            <span className="label">E-mail</span>
-            <input
-              className="field"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-            />
+              <span className="label">E-mail lub login demo</span>
+              <input
+                className="field"
+                type="text"
+                autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+              />
           </label>
 
           <label>
@@ -93,6 +103,13 @@ export default function LoginPage() {
             {loading ? "Logowanie" : "Zaloguj"}
           </button>
         </form>
+
+        <div className="mt-5 rounded-lg border border-line bg-white/5 p-3 text-xs leading-5 text-muted">
+          Demo: <span className="font-semibold text-ink">demo</span>,{" "}
+          <span className="font-semibold text-ink">demo-handlowiec</span>,{" "}
+          <span className="font-semibold text-ink">demo-menadzer</span>. Hasło:{" "}
+          <span className="font-semibold text-ink">demo</span>.
+        </div>
       </section>
     </main>
   );

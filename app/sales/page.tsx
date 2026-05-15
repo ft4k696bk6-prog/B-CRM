@@ -20,7 +20,7 @@ import type { Lead, LeadStatus } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
 
 export default function SalesDashboardPage() {
-  const { loading, profile } = useAuth("sales");
+  const { loading, profile } = useAuth("handlowiec");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "">("");
   const [busy, setBusy] = useState(false);

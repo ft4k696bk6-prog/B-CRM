@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 * {
@@ -12,8 +12,10 @@
 
 body {
   margin: 0;
-  background: #f6f8fb;
-  color: #172033;
+  background:
+    radial-gradient(circle at 20% -10%, rgba(48, 211, 145, 0.13), transparent 32rem),
+    linear-gradient(135deg, #030806 0%, #07110f 48%, #0b1714 100%);
+  color: #eef7f1;
 }
 
 button,
@@ -26,12 +28,12 @@ textarea {
 input,
 select,
 textarea {
-  border-radius: 0.375rem;
+  border-radius: 0.625rem;
 }
 
 @layer components {
   .field {
-    @apply w-full border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition placeholder:text-[#99a3b4] focus:border-sky focus:ring-2 focus:ring-sky/15;
+    @apply w-full border border-line bg-[#07110f] px-3 py-2 text-sm text-ink outline-none transition placeholder:text-muted/70 focus:border-leaf focus:ring-2 focus:ring-leaf/15;
   }
 
   .label {
@@ -39,20 +41,43 @@ textarea {
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#253048] disabled:cursor-not-allowed disabled:opacity-55;
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-leaf px-4 py-2 text-sm font-semibold text-[#04100d] shadow-[0_12px_30px_rgba(48,211,145,0.18)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#48e0a3] disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-55;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:border-ink disabled:cursor-not-allowed disabled:opacity-55;
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-line bg-panel px-4 py-2 text-sm font-semibold text-ink transition duration-200 hover:-translate-y-0.5 hover:border-leaf hover:text-leaf disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-55;
   }
 
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 rounded-md bg-danger px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#a93131] disabled:cursor-not-allowed disabled:opacity-55;
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-danger px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#d94f4f] disabled:cursor-not-allowed disabled:opacity-55;
   }
 
   .section-title {
     @apply text-xl font-bold text-ink;
   }
+
+  .surface {
+    @apply rounded-lg border border-line bg-panel p-5 shadow-soft;
+  }
+}
+
+.bg-white {
+  background-color: #0d1815 !important;
+}
+
+.bg-\[\#f9fbfd\],
+.bg-\[\#eef3f8\],
+.hover\:bg-\[\#eef3f8\]:hover {
+  background-color: rgba(255, 255, 255, 0.045) !important;
+}
+
+.border-line {
+  border-color: rgba(159, 191, 176, 0.18) !important;
+}
+
+.offer-document,
+.offer-document .bg-white {
+  background-color: #ffffff !important;
 }
 
 @media print {
@@ -63,6 +88,7 @@ textarea {
 
   body {
     background: white !important;
+    color: #111827 !important;
   }
 
   header,
@@ -71,15 +97,63 @@ textarea {
     display: none !important;
   }
 
-  main,
+  main {
+    display: block !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+
+  .offer-print-shell {
+    display: block !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+
   .offer-document {
-    width: 100% !important;
-    max-width: none !important;
+    width: 186mm !important;
+    max-width: 186mm !important;
+    min-height: 273mm !important;
+    margin: 0 auto !important;
+    color: #1f2024 !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   .offer-document {
     border: 0 !important;
     box-shadow: none !important;
     padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .offer-specs,
+  .offer-prices,
+  .offer-footer,
+  .offer-signature {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .offer-products {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .offer-document * {
+    color-adjust: exact;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .pdf-avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }

@@ -8,11 +8,12 @@ export function BrandMark({ size = "md" }: BrandMarkProps) {
 
   return (
     <span
-      className={`relative flex ${box} items-center justify-center overflow-hidden rounded-lg bg-[#10131a] shadow-sm`}
+      className={`relative flex ${box} items-center justify-center overflow-hidden rounded-xl border border-leaf/25 bg-[#050b09] shadow-[0_16px_38px_rgba(0,0,0,0.32)]`}
       aria-hidden="true"
     >
-      <span className="absolute inset-x-2 top-1 h-1 rounded-full bg-solar/80" />
-      <span className={`${text} font-black leading-none text-solar`}>B</span>
+      <span className="absolute inset-x-2 top-1 h-px rounded-full bg-leaf/70" />
+      <span className="absolute bottom-0 h-7 w-7 rounded-full bg-leaf/10 blur-md" />
+      <span className={`${text} font-black leading-none tracking-tight text-leaf`}>B</span>
     </span>
   );
 }

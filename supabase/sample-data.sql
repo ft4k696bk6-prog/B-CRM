@@ -4,7 +4,7 @@ declare
 begin
   select id into seller
   from public.profiles
-  where role = 'sales'
+  where role = 'handlowiec'
   order by created_at asc
   limit 1;
 

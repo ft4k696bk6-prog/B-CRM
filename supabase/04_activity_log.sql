@@ -103,12 +103,12 @@ create table if not exists public.daily_reports (
   constraint daily_reports_unique_user_date unique (user_id, report_date)
 );
 
--- Update profiles table to add manager role
+-- Update profiles table to add menadzer role
 alter table public.profiles
   drop constraint if exists profiles_role_check;
 
 alter table public.profiles
-  add constraint profiles_role_check check (role in ('admin', 'sales', 'manager'));
+  add constraint profiles_role_check check (role in ('admin', 'handlowiec', 'menadzer'));
 
 -- Create indexes for performance
 create index if not exists lead_activities_lead_id_idx on public.lead_activities(lead_id, created_at desc);

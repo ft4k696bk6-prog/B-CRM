@@ -23,6 +23,7 @@ import { FileList } from "@/components/file-list";
 import { ReminderList } from "@/components/reminder-list";
 import { ACTION_LABELS, LEAD_STATUSES, STATUS_TILE_TONES } from "@/lib/constants";
 import { formatDateTime, toDatetimeLocalValue } from "@/lib/date";
+import { canManageLeads, homePathForRole, isSalesRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { Lead, LeadHistory, LeadStatus, Profile } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
@@ -84,8 +85,8 @@ export default function LeadDetailsPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  const isAdmin = profile?.role === "admin";
-  const backHref = isAdmin ? "/admin" : "/sales";
+  const canManage = canManageLeads(profile?.role);
+  const backHref = homePathForRole(profile?.role);
 
   async function loadLead() {
     if (!params.id) return;
@@ -145,7 +146,7 @@ export default function LeadDetailsPage() {
     const { data } = await supabase
       .from("profiles")
       .select("*")
-      .eq("role", "sales")
+      .eq("role", "handlowiec")
       .order("full_name", { ascending: true });
 
     setSalespeople((data || []) as Profile[]);
@@ -155,7 +156,7 @@ export default function LeadDetailsPage() {
     if (!profile) return;
     loadLead();
     loadHistory();
-    if (profile.role === "admin") loadSalespeople();
+    if (canManageLeads(profile.role)) loadSalespeople();
   }, [profile, params.id]);
 
   async function refresh() {
@@ -170,7 +171,7 @@ export default function LeadDetailsPage() {
     setError("");
 
     const patch: Partial<Lead> = { status };
-    const availableStatuses = isAdmin ? LEAD_STATUSES : getSalesStatusPath(lead);
+    const availableStatuses = canManage ? LEAD_STATUSES : getSalesStatusPath(lead);
 
     if (!availableStatuses.includes(status)) {
       setError("Ten status nie jest dostępny na obecnym etapie leada.");
@@ -218,7 +219,7 @@ export default function LeadDetailsPage() {
 
     if (status === "Umowa") {
       if (
-        !isAdmin &&
+        !canManage &&
         lead.status !== "Spotkanie" &&
         lead.status !== "Po spotkaniu" &&
         lead.status !== "Umowa"
@@ -249,7 +250,7 @@ export default function LeadDetailsPage() {
       return;
     }
 
-    if (status === "Zwrot" && profile?.role === "sales") {
+    if (status === "Zwrot" && isSalesRole(profile?.role)) {
       router.replace("/sales");
       return;
     }
@@ -328,7 +329,7 @@ export default function LeadDetailsPage() {
       return;
     }
 
-    if (profile?.role === "sales") {
+    if (isSalesRole(profile?.role)) {
       router.replace("/sales");
     } else {
       await refresh();
@@ -338,7 +339,7 @@ export default function LeadDetailsPage() {
 
   async function assignLead(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!lead || !isAdmin) return;
+    if (!lead || !canManage) return;
 
     setBusy(true);
     setError("");
@@ -361,7 +362,7 @@ export default function LeadDetailsPage() {
   }
 
   if (loading || !profile) return <LoadingScreen />;
-  const availableStatuses = lead ? (isAdmin ? LEAD_STATUSES : getSalesStatusPath(lead)) : [];
+  const availableStatuses = lead ? (canManage ? LEAD_STATUSES : getSalesStatusPath(lead)) : [];
 
   return (
     <AppShell profile={profile}>
@@ -512,7 +513,7 @@ export default function LeadDetailsPage() {
                         );
                       })}
                     </div>
-                    {!isAdmin &&
+                    {!canManage &&
                     lead.status !== "Spotkanie" &&
                     lead.status !== "Po spotkaniu" &&
                     lead.status !== "Umowa" ? (
@@ -644,7 +645,7 @@ export default function LeadDetailsPage() {
                   </button>
                 </form>
 
-                {isAdmin ? (
+                {canManage ? (
                   <form onSubmit={assignLead} className="rounded-lg border border-line bg-white p-5 shadow-sm">
                     <div className="mb-4 flex items-center gap-3">
                       <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-leaf/10 text-leaf">

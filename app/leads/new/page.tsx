@@ -7,6 +7,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
+import { canManageLeads, homePathForRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/use-auth";
 
@@ -25,8 +26,8 @@ export default function NewLeadPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  const isAdmin = profile?.role === "admin";
-  const backHref = isAdmin ? "/admin" : "/sales";
+  const canManage = canManageLeads(profile?.role);
+  const backHref = homePathForRole(profile?.role);
 
   async function createLead(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -49,8 +50,8 @@ export default function NewLeadPage() {
       voivodeship: voivodeship || null,
       county: county || null,
       source,
-      status: isAdmin ? "Nowy" : "Przypisany",
-      assigned_to: isAdmin ? null : profile.id
+      status: canManage ? "Nowy" : "Przypisany",
+      assigned_to: canManage ? null : profile.id
     };
 
     const { data, error: createError } = await supabase

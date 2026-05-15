@@ -4,9 +4,9 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text,
   full_name text not null default '',
-  role text not null default 'sales',
+  role text not null default 'handlowiec',
   created_at timestamptz not null default now(),
-  constraint profiles_role_check check (role in ('admin', 'sales'))
+  constraint profiles_role_check check (role in ('admin', 'handlowiec', 'menadzer'))
 );
 
 create table if not exists public.leads (

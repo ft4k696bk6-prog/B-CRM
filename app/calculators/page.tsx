@@ -244,7 +244,7 @@ export default function CalculatorsPage() {
         </div>
 
         {tab === "offer" ? (
-          <section className="grid gap-5 xl:grid-cols-[1fr_1fr]">
+          <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(560px,0.9fr)]">
             <div className="no-print grid gap-5">
               <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
                 <div className="mb-4 flex items-center gap-3">
@@ -500,7 +500,7 @@ function OfferDocument({
   installmentAfter: number;
 }) {
   return (
-    <section className="offer-document relative overflow-hidden rounded-lg border border-line bg-white p-0 shadow-sm">
+    <section className="offer-document relative mx-auto w-full max-w-[794px] overflow-hidden rounded-lg border border-line bg-white p-0 shadow-sm">
       <div className="pointer-events-none absolute bottom-0 right-0 top-0 w-7 bg-[#1f2024]" />
       <div
         className="pointer-events-none absolute right-0 top-10 h-24 w-10 bg-[#00a651]"
@@ -535,7 +535,7 @@ function OfferDocument({
 
         <div className="mb-4 text-lg font-black text-[#1f2024]">{title}</div>
 
-        <dl className="grid text-sm">
+        <dl className="offer-specs grid text-sm">
           {mode !== "storage" ? <OfferSpecRow label="Moc systemu" value={`${formatNumber.format(row.kwp)} kWp`} shaded /> : null}
           <OfferSpecRow label="Moc magazynu energii" value={mode !== "pv" ? storageLabel : "brak magazynu"} />
           <OfferSpecRow label="Pojemność magazynu ciepła" value={boilerLabel || "brak bojlera"} shaded />
@@ -553,7 +553,7 @@ function OfferDocument({
           {rainwaterLabel ? <OfferSpecRow label="System magazynowania deszczówki" value={rainwaterLabel} shaded /> : null}
         </dl>
 
-        <div className="my-5 grid gap-3 sm:grid-cols-4">
+        <div className="offer-products my-5 grid grid-cols-2 gap-3 md:grid-cols-4">
           {mode !== "storage" ? (
             <OfferProduct image="/products/ja-solar-panel.webp" title="JA Solar" subtitle={`${row.panelCount} modułów`} />
           ) : null}
@@ -563,7 +563,7 @@ function OfferDocument({
           {rainwaterLabel ? <OfferProduct image="/products/rainwater-system.png" title="Deszczówka" subtitle="System 2000L" /> : null}
         </div>
 
-        <div className="overflow-hidden bg-[#00a651] text-sm text-black">
+        <div className="offer-prices overflow-hidden bg-[#00a651] text-sm text-black">
           <GreenPriceRow label="Cena netto" value={formatMoney.format(net)} />
           <GreenPriceRow label="Cena brutto z VAT" value={formatMoney.format(gross)} />
           <GreenPriceRow label="Wysokość dotacji" value={subsidy > 0 ? formatMoney.format(subsidy) : "do ustalenia"} />
@@ -578,12 +578,12 @@ function OfferDocument({
           </div>
         </div>
 
-        <div className="mt-7 grid gap-3 text-base text-[#1f2024]">
+        <div className="offer-signature mt-7 grid gap-3 text-base text-[#1f2024]">
           <div>Oferta przygotowana przez: ______________________________</div>
           <div>Nr. Tel.: _______________________________________________</div>
         </div>
 
-        <footer className="mt-12 grid gap-3 border-t border-line pt-4 text-[10px] leading-4 text-[#2f3440] sm:grid-cols-3">
+        <footer className="offer-footer mt-12 grid gap-3 border-t border-line pt-4 text-[10px] leading-4 text-[#2f3440] sm:grid-cols-3">
           <div>Re-Energy System Sp. z o. o.<br />ul. Kowalska 5/203, 20-115 Lublin<br />NIP: {COMPANY_NIP}</div>
           <div>Biuro@re-energysystem.pl<br />www.re-energysystem.pl</div>
           <div>+48 729 796 441</div>

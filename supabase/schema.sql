@@ -4,9 +4,9 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text,
   full_name text not null default '',
-  role text not null default 'sales',
+  role text not null default 'handlowiec',
   created_at timestamptz not null default now(),
-  constraint profiles_role_check check (role in ('admin', 'sales'))
+  constraint profiles_role_check check (role in ('admin', 'handlowiec', 'menadzer'))
 );
 
 create table if not exists public.leads (
@@ -106,9 +106,9 @@ security definer
 set search_path = public
 as $$
 declare
-  requested_role text := 'sales';
+  requested_role text := 'handlowiec';
 begin
-  if new.raw_user_meta_data ->> 'role' in ('admin', 'sales') then
+  if new.raw_user_meta_data ->> 'role' in ('admin', 'handlowiec', 'menadzer') then
     requested_role := new.raw_user_meta_data ->> 'role';
   end if;
 

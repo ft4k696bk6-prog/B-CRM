@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingScreen } from "@/components/loading-screen";
+import { homePathForRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 
 export default function HomePage() {
@@ -24,7 +25,7 @@ export default function HomePage() {
         .eq("id", session.user.id)
         .single();
 
-      router.replace(profile?.role === "admin" ? "/admin" : "/sales");
+      router.replace(homePathForRole(profile?.role));
     }
 
     routeUser();

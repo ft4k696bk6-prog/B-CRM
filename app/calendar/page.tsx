@@ -15,6 +15,7 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { formatDate, formatDateTime } from "@/lib/date";
+import { canManageLeads } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { Lead, Profile } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
@@ -138,15 +139,15 @@ export default function CalendarPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  const isAdmin = profile?.role === "admin";
+  const canManage = canManageLeads(profile?.role);
 
   async function loadSalespeople() {
-    if (!isAdmin) return;
+    if (!canManage) return;
 
     const { data } = await supabase
       .from("profiles")
       .select("*")
-      .eq("role", "sales")
+      .eq("role", "handlowiec")
       .order("full_name", { ascending: true });
 
     setSalespeople((data || []) as Profile[]);
@@ -173,7 +174,7 @@ export default function CalendarPage() {
       .lt("callback_at", startOfNextMonthIso(month))
       .order("callback_at", { ascending: true });
 
-    if (isAdmin && selectedSalesperson) {
+    if (canManage && selectedSalesperson) {
       meetingsQuery = meetingsQuery.eq("assigned_to", selectedSalesperson);
       callbacksQuery = callbacksQuery.eq("assigned_to", selectedSalesperson);
     }
@@ -255,7 +256,7 @@ export default function CalendarPage() {
             <p className="mt-1 text-sm text-muted">Spotkania i callbacki z kart leadów.</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {isAdmin ? (
+            {canManage ? (
               <select
                 className="field w-full sm:w-64"
                 value={selectedSalesperson}

@@ -22,9 +22,9 @@ create or replace function public.handle_new_user()
 returns trigger
 as $$
 declare
-  requested_role text := 'sales';
+  requested_role text := 'handlowiec';
 begin
-  if new.raw_user_meta_data ->> 'role' in ('admin', 'sales') then
+  if new.raw_user_meta_data ->> 'role' in ('admin', 'handlowiec', 'menadzer') then
     requested_role := new.raw_user_meta_data ->> 'role';
   end if;
 
