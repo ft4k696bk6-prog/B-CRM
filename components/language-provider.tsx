@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { AutoTranslator } from "@/components/auto-translator";
 import { copy, isAppLanguage, LANGUAGE_STORAGE_KEY, type AppLanguage } from "@/lib/i18n";
 
 type LanguageContextValue = {
@@ -36,7 +37,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     [language]
   );
 
-  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
+  return (
+    <LanguageContext.Provider value={value}>
+      <AutoTranslator language={language} />
+      {children}
+    </LanguageContext.Provider>
+  );
 }
 
 export function useLanguage() {

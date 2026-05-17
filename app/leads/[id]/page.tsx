@@ -457,7 +457,7 @@ export default function LeadDetailsPage() {
                   <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.updated_at)}</dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
-                  <dt className="label">Oddzwonienie</dt>
+                  <dt className="label">Call-back</dt>
                   <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.callback_at)}</dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
@@ -533,7 +533,7 @@ export default function LeadDetailsPage() {
 
                   {status === "Call back" ? (
                     <label>
-                      <span className="label">Data i godzina oddzwonienia</span>
+                      <span className="label">Data i godzina call-backu</span>
                       <input
                         className="field"
                         type="datetime-local"

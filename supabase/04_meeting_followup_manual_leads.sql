@@ -174,7 +174,7 @@ create policy "leads_insert_sales_manual"
     public.is_admin()
     or (
       assigned_to = auth.uid()
-      and source in ('własne', 'polecenie')
+      and source in ('własne', 'polecenie', 'B2B', 'B2C')
       and status in ('Nowy', 'Przypisany')
     )
   );

@@ -47,7 +47,7 @@ export async function logCallbackScheduled(
   userId: string,
   callbackAt: string
 ) {
-  return createActivity(leadId, userId, "callback_scheduled", `Oddzwonienie zaplanowane na ${callbackAt}`, {
+  return createActivity(leadId, userId, "callback_scheduled", `Call-back zaplanowany na ${callbackAt}`, {
     metadata: { callback_at: callbackAt }
   });
 }

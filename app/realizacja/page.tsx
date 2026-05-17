@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useRef, useState } from "react";
 import {
   BadgeCheck,
   Calculator,
@@ -14,8 +14,11 @@ import {
   Hammer,
   PackageCheck,
   ReceiptText,
+  Send,
   Sparkles,
   Truck,
+  Upload,
+  X,
   UsersRound
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
@@ -30,11 +33,21 @@ import {
   type DemoCustomerRecord
 } from "@/lib/demo-documents";
 import { canUseOperations, ROLE_LABELS } from "@/lib/roles";
-import { downloadAnnexPdf, downloadContractPdf, type AnnexValues } from "@/lib/pdf-documents";
+import { downloadAnnexPdf, downloadInvoicePdf, type AnnexValues } from "@/lib/pdf-documents";
 import type { UserRole } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
 
 type WorkflowStatus = "pending" | "active" | "done";
+type KsefAction = "prepare_accounting_package" | "send_ksef_invoice";
+type KsefModal = {
+  mode: "demo" | "live" | "error";
+  sent: boolean;
+  title: string;
+  message: string;
+  status?: number;
+  payload: unknown;
+  response?: string;
+};
 
 const initialWorkflow = {
   sales: "done" as WorkflowStatus,
@@ -196,7 +209,7 @@ function PreviewField({ label, value }: { label: string; value: string }) {
 }
 
 export default function RealizacjaPage() {
-  const { loading, profile } = useAuth([
+  const { loading, profile, session } = useAuth([
     "owner",
     "admin",
     "menadzer",
@@ -208,6 +221,7 @@ export default function RealizacjaPage() {
   const [contractData, setContractData] = useState<DemoCustomerRecord>(emptyContractData);
   const [previewRecord, setPreviewRecord] = useState<DemoCustomerRecord | null>(null);
   const [previewTitle, setPreviewTitle] = useState("Podgląd umowy");
+  const [contractFileName, setContractFileName] = useState("");
   const [creditLoaded, setCreditLoaded] = useState(false);
   const [workflow, setWorkflow] = useState(initialWorkflow);
   const [ksefReady, setKsefReady] = useState(false);
@@ -218,8 +232,11 @@ export default function RealizacjaPage() {
     "Zmiana finansowania"
   ]);
   const [annexValues, setAnnexValues] = useState<AnnexValues>(annexValuesFromContract(demoContractData));
-  const [documentBusy, setDocumentBusy] = useState<"contract" | "annex" | null>(null);
+  const [documentBusy, setDocumentBusy] = useState<"annex" | "invoice" | null>(null);
+  const [integrationBusy, setIntegrationBusy] = useState<KsefAction | null>(null);
+  const [integrationModal, setIntegrationModal] = useState<KsefModal | null>(null);
   const [documentMessage, setDocumentMessage] = useState("");
+  const contractInputRef = useRef<HTMLInputElement | null>(null);
 
   const currentRoleLabel = profile ? ROLE_LABELS[profile.role] : "";
   const accountingToolsAllowed = profile ? canUseAccountingTools(profile.role) : false;
@@ -245,6 +262,7 @@ export default function RealizacjaPage() {
   function showDemoContract() {
     setPreviewRecord(demoContractData);
     setPreviewTitle("Umowa demo");
+    setDocumentMessage("");
   }
 
   function fillDemoContract() {
@@ -258,6 +276,14 @@ export default function RealizacjaPage() {
   function showCurrentContractPreview() {
     setPreviewRecord(contractData);
     setPreviewTitle("Podgląd z danych formularza");
+  }
+
+  function addContractFile(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setContractFileName(file.name);
+    setDocumentMessage(`Dodano umowę: ${file.name}. Plik jest gotowy do powiązania z rekordem klienta.`);
+    event.target.value = "";
   }
 
   function toggleChange(option: string) {
@@ -274,33 +300,74 @@ export default function RealizacjaPage() {
     });
   }
 
-  async function generateContract() {
-    if (!contractReady || documentBusy) return;
-    setDocumentBusy("contract");
-    setDocumentMessage("");
-
-    try {
-      await downloadContractPdf(contractData);
-      setDocumentMessage("Umowa PDF została wygenerowana.");
-    } catch (error) {
-      setDocumentMessage(error instanceof Error ? error.message : "Nie udało się wygenerować umowy PDF.");
-    } finally {
-      setDocumentBusy(null);
-    }
-  }
-
   async function generateAnnex() {
-    if (!contractReady || !accountingToolsAllowed || documentBusy) return;
+    if (!accountingToolsAllowed || documentBusy) return;
+    const sourceData = contractReady ? contractData : demoContractData;
     setDocumentBusy("annex");
     setDocumentMessage("");
 
     try {
-      await downloadAnnexPdf(contractData, annexValues, selectedChanges, annexMode);
+      await downloadAnnexPdf(sourceData, annexValues, selectedChanges, annexMode);
       setDocumentMessage("Aneks PDF został wygenerowany.");
     } catch (error) {
       setDocumentMessage(error instanceof Error ? error.message : "Nie udało się wygenerować aneksu PDF.");
     } finally {
       setDocumentBusy(null);
+    }
+  }
+
+  async function generateInvoice() {
+    if (!accountingToolsAllowed || documentBusy) return;
+    setDocumentBusy("invoice");
+    setDocumentMessage("");
+
+    try {
+      await downloadInvoicePdf(contractReady ? contractData : demoContractData);
+      setDocumentMessage("Faktura PDF została wygenerowana.");
+    } catch (error) {
+      setDocumentMessage(error instanceof Error ? error.message : "Nie udało się wygenerować faktury PDF.");
+    } finally {
+      setDocumentBusy(null);
+    }
+  }
+
+  async function runKsefAction(action: KsefAction) {
+    if (!accountingToolsAllowed || integrationBusy || !session) return;
+
+    setIntegrationBusy(action);
+    setDocumentMessage("");
+
+    try {
+      const response = await fetch("/api/integrations/ksef", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          action,
+          contract: contractReady ? contractData : demoContractData
+        })
+      });
+      const body = await response.json();
+
+      if (!response.ok) {
+        throw new Error(body.error || body.message || "Nie udało się obsłużyć integracji KSeF.");
+      }
+
+      if (action === "prepare_accounting_package") setInvoiceReady(true);
+      if (action === "send_ksef_invoice") setKsefReady(true);
+      setIntegrationModal(body as KsefModal);
+    } catch (error) {
+      setIntegrationModal({
+        mode: "error",
+        sent: false,
+        title: "Integracja KSeF",
+        message: error instanceof Error ? error.message : "Nieznany błąd integracji.",
+        payload: null
+      });
+    } finally {
+      setIntegrationBusy(null);
     }
   }
 
@@ -317,7 +384,7 @@ export default function RealizacjaPage() {
               <h1 className="section-title">Panel realizacji</h1>
               <p className="mt-2 max-w-3xl text-sm text-muted">
                 Operacyjny widok dla działów odpowiedzialnych za umowę, rozliczenie, kompletację i montaż.
-                Dane można wprowadzić ręcznie, pobrać jako PDF oraz zaprezentować na bezpiecznym zestawie demo.
+                Dane można wprowadzić ręcznie, dodać plik umowy i zaprezentować na bezpiecznym zestawie demo.
               </p>
             </div>
             <div className="grid gap-2 rounded-lg border border-line bg-[#f8fafc] px-4 py-3 text-sm sm:min-w-[260px]">
@@ -365,16 +432,28 @@ export default function RealizacjaPage() {
                 <FileSignature className="h-4 w-4" aria-hidden="true" />
                 Podgląd z formularza
               </button>
+              <input
+                ref={contractInputRef}
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                onChange={addContractFile}
+              />
               <button
                 type="button"
-                onClick={generateContract}
-                disabled={!contractReady || Boolean(documentBusy)}
+                onClick={() => contractInputRef.current?.click()}
                 className="btn-primary"
               >
-                <Download className="h-4 w-4" aria-hidden="true" />
-                {documentBusy === "contract" ? "Generowanie" : "Pobierz umowę PDF"}
+                <Upload className="h-4 w-4" aria-hidden="true" />
+                Dodaj umowę PDF
               </button>
             </div>
+
+            {contractFileName ? (
+              <div className="mb-4 rounded-md border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
+                Dodana umowa: {contractFileName}
+              </div>
+            ) : null}
 
             {documentMessage ? (
               <div className="mb-4 rounded-md border border-leaf/20 bg-leaf/10 p-3 text-sm font-semibold text-leaf">
@@ -452,25 +531,6 @@ export default function RealizacjaPage() {
           </div>
         </section>
 
-        {previewRecord ? (
-          <section className="grid gap-3 xl:grid-cols-[0.82fr_1.18fr]">
-            <ContractPreview record={previewRecord} title={previewTitle} />
-            <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
-              <h2 className="mb-4 text-base font-bold text-ink">Dane w podglądzie</h2>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {contractFields.map((field) => (
-                  <div key={field} className="rounded-lg border border-line bg-[#f9fbfd] p-3">
-                    <div className="text-xs font-semibold uppercase tracking-wide text-muted">
-                      {contractFieldLabels[field]}
-                    </div>
-                    <div className="mt-1 text-sm font-semibold text-ink">{previewRecord[field] || "-"}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        ) : null}
-
         <section className="grid gap-3 xl:grid-cols-[1fr_1fr]">
           <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-center gap-3">
@@ -495,13 +555,30 @@ export default function RealizacjaPage() {
 
               <button
                 type="button"
-                onClick={() => setInvoiceReady(true)}
+                onClick={() => runKsefAction("prepare_accounting_package")}
                 disabled={!accountingToolsAllowed}
                 className="btn-primary mt-4"
               >
                 <ReceiptText className="h-4 w-4" aria-hidden="true" />
-                {invoiceReady ? "Paczka gotowa" : accountingToolsAllowed ? "Przygotuj paczkę księgową" : "Tylko księgowość"}
+                {integrationBusy === "prepare_accounting_package"
+                  ? "Przygotowanie"
+                  : invoiceReady
+                    ? "Paczka gotowa"
+                    : accountingToolsAllowed
+                      ? "Przygotuj paczkę księgową"
+                      : "Tylko księgowość"}
               </button>
+              {accountingToolsAllowed ? (
+                <button
+                  type="button"
+                  onClick={generateInvoice}
+                  disabled={Boolean(documentBusy)}
+                  className="btn-secondary mt-3"
+                >
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                  {documentBusy === "invoice" ? "Generowanie" : "Pobierz fakturę PDF"}
+                </button>
+              ) : null}
             </div>
           </section>
 
@@ -522,12 +599,18 @@ export default function RealizacjaPage() {
 
             <button
               type="button"
-              onClick={() => setKsefReady(true)}
+              onClick={() => runKsefAction("send_ksef_invoice")}
               disabled={!accountingToolsAllowed}
               className="btn-secondary mt-4"
             >
-              <FileDigit className="h-4 w-4" aria-hidden="true" />
-              {ksefReady ? "Dane KSeF gotowe" : accountingToolsAllowed ? "Przygotuj dane KSeF" : "Tylko księgowość"}
+              <Send className="h-4 w-4" aria-hidden="true" />
+              {integrationBusy === "send_ksef_invoice"
+                ? "Łączenie"
+                : ksefReady
+                  ? "KSeF sprawdzony"
+                  : accountingToolsAllowed
+                    ? "Wyślij do KSeF"
+                    : "Tylko księgowość"}
             </button>
           </section>
         </section>
@@ -548,7 +631,7 @@ export default function RealizacjaPage() {
             <button
               type="button"
               onClick={generateAnnex}
-              disabled={!accountingToolsAllowed || !contractReady || Boolean(documentBusy)}
+              disabled={!accountingToolsAllowed || Boolean(documentBusy)}
               className="btn-primary"
             >
               <Download className="h-4 w-4" aria-hidden="true" />
@@ -712,6 +795,78 @@ export default function RealizacjaPage() {
             {creditLoaded ? "Ukryj finansowanie demo" : "Pokaż finansowanie demo"}
           </button>
         </div>
+
+        {previewRecord ? (
+          <div className="fixed inset-0 z-50 grid place-items-center bg-[#0f1724]/70 px-4 py-6">
+            <section className="max-h-[92vh] w-full max-w-6xl overflow-y-auto rounded-lg border border-line bg-white p-4 shadow-soft">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="text-lg font-black text-ink">{previewTitle}</h2>
+                  <p className="text-sm text-muted">
+                    Podgląd otwiera się w osobnym oknie, bez automatycznego pobierania danych klienta.
+                  </p>
+                </div>
+                <button type="button" onClick={() => setPreviewRecord(null)} className="btn-secondary w-fit">
+                  <X className="h-4 w-4" aria-hidden="true" />
+                  Zamknij
+                </button>
+              </div>
+
+              <div className="grid gap-4 xl:grid-cols-[0.82fr_1.18fr]">
+                <ContractPreview record={previewRecord} title={previewTitle} />
+                <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+                  <h3 className="mb-4 text-base font-bold text-ink">Dane w podglądzie</h3>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {contractFields.map((field) => (
+                      <div key={field} className="rounded-lg border border-line bg-[#f9fbfd] p-3">
+                        <div className="text-xs font-semibold uppercase tracking-wide text-muted">
+                          {contractFieldLabels[field]}
+                        </div>
+                        <div className="mt-1 text-sm font-semibold text-ink">{previewRecord[field] || "-"}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        ) : null}
+
+        {integrationModal ? (
+          <div className="fixed inset-0 z-50 grid place-items-center bg-[#0f1724]/70 px-4 py-6">
+            <section className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg border border-line bg-white p-5 shadow-soft">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h2 className="text-lg font-black text-ink">{integrationModal.title}</h2>
+                  <p className="mt-1 text-sm text-muted">{integrationModal.message}</p>
+                </div>
+                <button type="button" onClick={() => setIntegrationModal(null)} className="btn-secondary w-fit">
+                  <X className="h-4 w-4" aria-hidden="true" />
+                  Zamknij
+                </button>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <PreviewField label="Tryb" value={integrationModal.mode === "live" ? "Produkcja" : integrationModal.mode === "demo" ? "Demo" : "Błąd"} />
+                <PreviewField label="Wysłano" value={integrationModal.sent ? "Tak" : "Nie"} />
+                <PreviewField label="Status" value={integrationModal.status ? String(integrationModal.status) : "-"} />
+              </div>
+              <div className="mt-4 rounded-lg border border-line bg-[#f9fbfd] p-4">
+                <div className="text-xs font-semibold uppercase tracking-wide text-muted">Payload repozytorium</div>
+                <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap text-xs leading-5 text-ink">
+                  {JSON.stringify(integrationModal.payload, null, 2)}
+                </pre>
+              </div>
+              {integrationModal.response ? (
+                <div className="mt-4 rounded-lg border border-line bg-[#f9fbfd] p-4">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted">Odpowiedź API</div>
+                  <pre className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap text-xs leading-5 text-ink">
+                    {integrationModal.response}
+                  </pre>
+                </div>
+              ) : null}
+            </section>
+          </div>
+        ) : null}
       </div>
     </AppShell>
   );

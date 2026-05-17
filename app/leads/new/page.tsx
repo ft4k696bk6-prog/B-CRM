@@ -7,22 +7,20 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
+import { LEAD_SOURCES, type LeadSource } from "@/lib/lead-sources";
 import { canCreateManualLead, canManageLeads, homePathForRole } from "@/lib/roles";
-import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/use-auth";
-
-const leadSources = ["własne", "polecenie"] as const;
 
 export default function NewLeadPage() {
   const router = useRouter();
-  const { loading, profile } = useAuth();
+  const { loading, profile, session } = useAuth();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [address, setAddress] = useState("");
   const [voivodeship, setVoivodeship] = useState("");
   const [county, setCounty] = useState("");
-  const [source, setSource] = useState<(typeof leadSources)[number]>("własne");
+  const [source, setSource] = useState<LeadSource>("własne");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -55,14 +53,18 @@ export default function NewLeadPage() {
       assigned_to: canManage ? null : profile.id
     };
 
-    const { data, error: createError } = await supabase
-      .from("leads")
-      .insert(payload)
-      .select("id")
-      .single();
+    const response = await fetch("/api/leads", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token || ""}`
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json();
 
-    if (createError || !data) {
-      setError(createError?.message || "Nie udało się dodać leada.");
+    if (!response.ok || !data?.id) {
+      setError(data.error || "Nie udało się dodać leada.");
       setBusy(false);
       return;
     }
@@ -90,7 +92,7 @@ export default function NewLeadPage() {
           <div>
             <h1 className="section-title">Nowy lead</h1>
             <p className="mt-1 text-sm text-muted">
-              Ręczne dodanie kontaktu z własnego źródła albo polecenia.
+              Ręczne dodanie kontaktu z własnego źródła, polecenia, B2B albo B2C.
             </p>
           </div>
           <Link href={backHref} className="btn-secondary w-fit">
@@ -113,7 +115,7 @@ export default function NewLeadPage() {
             <div>
               <h2 className="text-base font-bold text-ink">Dane kontaktowe</h2>
               <p className="text-sm text-muted">
-                Źródło można wybrać tylko jako własne albo polecenie.
+                Źródło można wybrać jako własne, polecenie, B2B albo B2C.
               </p>
             </div>
           </div>
@@ -142,9 +144,9 @@ export default function NewLeadPage() {
               <select
                 className="field"
                 value={source}
-                onChange={(event) => setSource(event.target.value as typeof source)}
+                onChange={(event) => setSource(event.target.value as LeadSource)}
               >
-                {leadSources.map((item) => (
+                {LEAD_SOURCES.map((item) => (
                   <option key={item} value={item}>
                     {item}
                   </option>

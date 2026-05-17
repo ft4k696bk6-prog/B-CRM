@@ -23,6 +23,7 @@ import { LeadTable } from "@/components/lead-table";
 import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
 import { StatTile } from "@/components/stat-tile";
+import { useLanguage } from "@/components/language-provider";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { hasPermission } from "@/lib/permissions";
 import { canManageLeads, isManagerRole } from "@/lib/roles";
@@ -74,6 +75,7 @@ function escapeCsv(value: string | number | null | undefined) {
 
 export default function AdminDashboardPage() {
   const { loading, profile } = useAuth(["owner", "admin", "menadzer", "finance", "viewer"]);
+  const { language } = useLanguage();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [salespeople, setSalespeople] = useState<Profile[]>([]);
   const [filters, setFilters] = useState<AdminLeadFilters>(initialFilters);
@@ -97,6 +99,7 @@ export default function AdminDashboardPage() {
   const isManager = isManagerRole(profile?.role);
   const canAssignLeads = canManageLeads(profile?.role);
   const canExportCurrentView = hasPermission(profile?.role, "data:export");
+  const isEnglish = language === "en";
 
   async function loadSalespeople() {
     let query = supabase
@@ -259,7 +262,7 @@ export default function AdminDashboardPage() {
       "Powiat",
       "Status",
       "Handlowiec",
-      "Oddzwonienie",
+      "Call-back",
       "Spotkanie",
       "Źródło",
       "Utworzony",
@@ -322,7 +325,23 @@ export default function AdminDashboardPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="section-title">
-              Panel {profile.role === "menadzer" ? "menadżera" : profile.role === "finance" ? "finansowy" : profile.role === "viewer" ? "podglądu" : "admina"}
+              {isEnglish
+                ? profile.role === "menadzer"
+                  ? "Manager dashboard"
+                  : profile.role === "finance"
+                    ? "Finance dashboard"
+                    : profile.role === "viewer"
+                      ? "Viewer dashboard"
+                      : "Admin dashboard"
+                : `Panel ${
+                    profile.role === "menadzer"
+                      ? "menadżera"
+                      : profile.role === "finance"
+                        ? "finansowy"
+                        : profile.role === "viewer"
+                          ? "podglądu"
+                          : "admina"
+                  }`}
             </h1>
             <p className="mt-1 text-sm text-muted">
               {isManager
@@ -344,11 +363,11 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-8">
           <StatTile label="Wszystkie" value={stats.all} icon={Database} tone="sky" />
           <StatTile label="Nieprzypisane" value={stats.unassigned} icon={Inbox} tone="solar" />
           <StatTile label="Przypisane" value={stats.assigned} icon={UserCheck} tone="leaf" />
-          <StatTile label="Oddzwonienia" value={stats.callbacks} icon={PhoneCall} tone="warn" />
+          <StatTile label="Call-back" value={stats.callbacks} icon={PhoneCall} tone="warn" />
           <StatTile label="Spotkania" value={stats.meetings} icon={CalendarDays} tone="leaf" />
           <StatTile label="Umowy" value={stats.contracts} icon={FileSignature} tone="leaf" />
           <StatTile label="Rezygnacje" value={stats.resignations} icon={Ban} tone="danger" />
@@ -393,7 +412,7 @@ export default function AdminDashboardPage() {
                     <th className="px-3 py-3">Leady</th>
                     <th className="px-3 py-3">Spotkania</th>
                     <th className="px-3 py-3">Umowy</th>
-                    <th className="px-3 py-3">Zaległe oddzwonienia</th>
+                    <th className="px-3 py-3">Zaległe call-backi</th>
                     <th className="px-3 py-3">Bez akcji</th>
                   </tr>
                 </thead>
@@ -418,7 +437,9 @@ export default function AdminDashboardPage() {
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-bold text-ink">Filtry i sortowanie</h2>
-              <p className="mt-1 text-sm text-muted">Aktywne filtry: {activeFilterCount}</p>
+              <p className="mt-1 text-sm text-muted">
+                {isEnglish ? "Active filters" : "Aktywne filtry"}: {activeFilterCount}
+              </p>
             </div>
             <div className="flex flex-wrap gap-2">
               <button
@@ -589,7 +610,9 @@ export default function AdminDashboardPage() {
           <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <h2 className="text-base font-bold text-ink">Masowe przypisanie</h2>
-              <p className="mt-1 text-sm text-muted">Zaznaczone leady: {selectedCount}</p>
+              <p className="mt-1 text-sm text-muted">
+                {isEnglish ? "Selected leads" : "Zaznaczone leady"}: {selectedCount}
+              </p>
             </div>
             <div className="grid gap-2 sm:grid-cols-[260px_auto]">
               <select
@@ -629,7 +652,7 @@ export default function AdminDashboardPage() {
             <h2 className="text-base font-bold text-ink">Leady</h2>
             <div className="flex items-center gap-2 text-sm text-muted">
               <Search className="h-4 w-4" aria-hidden="true" />
-              {busy ? "Odświeżanie" : `${leads.length} rekordów`}
+              {busy ? (isEnglish ? "Refreshing" : "Odświeżanie") : `${leads.length} ${isEnglish ? "records" : "rekordów"}`}
             </div>
           </div>
           <LeadTable

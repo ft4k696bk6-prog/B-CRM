@@ -222,7 +222,7 @@ create policy "leads_insert_sales_manual"
     public.can_manage_lead(assigned_to)
     or (
       assigned_to = auth.uid()
-      and source in ('własne', 'polecenie')
+      and source in ('własne', 'polecenie', 'B2B', 'B2C')
       and status in ('Nowy', 'Przypisany')
     )
   );

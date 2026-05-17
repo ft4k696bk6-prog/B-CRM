@@ -43,9 +43,9 @@ export const copy = {
     menu: "Menu",
     signOut: "Wyloguj",
     returnLeads: "Zwrot leadów",
-    returnLeadsTitle: "Zwróć leady bez oddzwonienia i spotkania",
+    returnLeadsTitle: "Zwróć leady bez call-backu i spotkania",
     returnLeadsConfirm:
-      "Zwrócić wszystkie leady bez zaplanowanego oddzwonienia i spotkania? Leady ze statusem Oddzwonienie i Spotkanie zostaną u Ciebie."
+      "Zwrócić wszystkie leady bez zaplanowanego call-backu i spotkania? Leady ze statusem Call-back i Spotkanie zostaną u Ciebie."
   },
   en: {
     loginSubtitle: "Sign in to the workspace",

@@ -1,12 +1,12 @@
 {
   "name": "B-CRM",
   "short_name": "B-CRM",
-  "description": "Prosty CRM dla firmy sprzedającej fotowoltaikę.",
+  "description": "Enterprise CRM dla sprzedaży, realizacji i rozliczeń.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#101827",
-  "theme_color": "#101827",
+  "background_color": "#111722",
+  "theme_color": "#111722",
   "icons": [
     {
       "src": "/icons/bcrm-icon-192.png",

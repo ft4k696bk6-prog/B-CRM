@@ -9,7 +9,7 @@ export type AnnexValues = {
   financing: string;
 };
 
-type DocumentType = "contract" | "annex";
+type DocumentType = "contract" | "annex" | "invoice";
 
 const page = {
   width: 1240,
@@ -176,7 +176,7 @@ function drawContract(context: CanvasRenderingContext2D, data: DemoCustomerRecor
   y += 178;
   drawText(
     context,
-    "Dokument został wygenerowany automatycznie na podstawie danych w CRM. Po pobraniu może zostać podpisany kwalifikowanym podpisem elektronicznym albo wydrukowany do podpisu tradycyjnego.",
+    "Dokument jest prezentowany na podstawie danych w CRM. Umowa pozostaje w bezpiecznym podglądzie, bez automatycznego pobierania danych klienta.",
     page.margin,
     y,
     { size: 24, color: "#334155", maxWidth: page.width - page.margin * 2, lineHeight: 34 }
@@ -243,9 +243,54 @@ function drawAnnex(
   drawText(context, "Podpis sprzedawcy", page.width - 390, y + 90, { size: 22, color: "#5f6f82" });
 }
 
+function drawInvoice(context: CanvasRenderingContext2D, data: DemoCustomerRecord) {
+  drawHeader(context, "Faktura VAT", `Umowa: ${data.contractNumber}\nData: ${data.contractDate}`);
+
+  let y = 302;
+  drawText(context, "Dane rozliczeniowe", page.margin, y, { size: 32, weight: "900" });
+  y += 34;
+  drawRule(context, y);
+  y += 40;
+
+  drawField(context, "Sprzedawca", data.companyName, page.margin, y, 500);
+  drawField(context, "NIP", data.companyNip, page.margin + 530, y, 260);
+  drawField(context, "Numer umowy", data.contractNumber, page.margin + 820, y, 236);
+  y += 132;
+  drawField(context, "Nabywca", data.clientName, page.margin, y, 500);
+  drawField(context, "Telefon", data.phone, page.margin + 530, y, 260);
+  drawField(context, "E-mail", data.email, page.margin + 820, y, 236);
+  y += 132;
+  drawField(context, "Adres inwestycji", `${data.address}, ${data.postalCode} ${data.city}`, page.margin, y, 640);
+  drawField(context, "Finansowanie", data.financing, page.margin + 670, y, 386);
+
+  y += 172;
+  drawText(context, "Pozycje faktury", page.margin, y, { size: 32, weight: "900" });
+  y += 34;
+  drawRule(context, y);
+  y += 40;
+
+  drawField(context, "Usługa", "Instalacja OZE wraz z montażem", page.margin, y, 500);
+  drawField(context, "Netto", data.netPrice, page.margin + 530, y, 250);
+  drawField(context, "Brutto", data.grossPrice, page.margin + 810, y, 246);
+  y += 148;
+  drawField(context, "Termin montażu", data.montageDate, page.margin, y, 330);
+  drawField(context, "Moc instalacji", `${data.installationPowerKw} kW`, page.margin + 360, y, 330);
+  drawField(context, "Panele", data.panelsCount, page.margin + 720, y, 336);
+
+  y += 178;
+  drawText(
+    context,
+    "Faktura została przygotowana w CRM na podstawie zatwierdzonej umowy. Eksport faktury jest dostępny wyłącznie dla księgowości, administratora i właściciela.",
+    page.margin,
+    y,
+    { size: 24, color: "#334155", maxWidth: page.width - page.margin * 2, lineHeight: 34 }
+  );
+}
+
 function fileName(type: DocumentType, data: DemoCustomerRecord) {
   const safeNumber = data.contractNumber.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "");
-  return `${type === "contract" ? "umowa" : "aneks"}-${safeNumber || "b-crm"}.pdf`;
+  const prefix = type === "contract" ? "umowa" : type === "annex" ? "aneks" : "faktura";
+  return `${prefix}-${safeNumber || "b-crm"}.pdf`;
 }
 
 async function downloadPdf(canvas: HTMLCanvasElement, type: DocumentType, data: DemoCustomerRecord) {
@@ -253,12 +298,6 @@ async function downloadPdf(canvas: HTMLCanvasElement, type: DocumentType, data: 
   const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, 297);
   pdf.save(fileName(type, data));
-}
-
-export async function downloadContractPdf(data: DemoCustomerRecord) {
-  const { canvas, context } = createCanvas();
-  drawContract(context, data);
-  await downloadPdf(canvas, "contract", data);
 }
 
 export async function downloadAnnexPdf(
@@ -270,4 +309,10 @@ export async function downloadAnnexPdf(
   const { canvas, context } = createCanvas();
   drawAnnex(context, data, annexValues, selectedChanges, annexMode);
   await downloadPdf(canvas, "annex", data);
+}
+
+export async function downloadInvoicePdf(data: DemoCustomerRecord) {
+  const { canvas, context } = createCanvas();
+  drawInvoice(context, data);
+  await downloadPdf(canvas, "invoice", data);
 }

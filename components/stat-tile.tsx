@@ -17,13 +17,15 @@ const toneClasses = {
 
 export function StatTile({ label, value, icon: Icon, tone = "sky" }: StatTileProps) {
   return (
-    <div className="min-h-[104px] rounded-lg border border-line bg-white p-4 shadow-sm">
-      <div className="flex h-full items-center justify-between gap-3">
-        <div>
-          <div className="text-sm text-muted">{label}</div>
-          <div className="mt-1 text-2xl font-bold text-ink">{value}</div>
+    <div className="min-h-[128px] rounded-lg border border-line bg-white p-5 shadow-sm">
+      <div className="grid h-full grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+        <div className="min-w-0">
+          <div className="text-sm font-semibold leading-5 text-muted">{label}</div>
+          <div className="mt-5 text-3xl font-black leading-none text-ink">{value}</div>
         </div>
-        <div className={`flex h-9 w-9 flex-none items-center justify-center rounded-lg border border-line bg-[#f9fbfd] ${toneClasses[tone]}`}>
+        <div
+          className={`flex h-12 w-12 flex-none items-center justify-center rounded-lg border border-line bg-[#f9fbfd] ${toneClasses[tone]}`}
+        >
           <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
       </div>

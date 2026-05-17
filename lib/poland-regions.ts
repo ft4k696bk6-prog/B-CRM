@@ -25,11 +25,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "wroclawski",
     "zabkowicki",
     "zgorzelecki",
-    "zlotoryjski",
-    "Jelenia Gora",
-    "Legnica",
-    "Walbrzych",
-    "Wroclaw"
+    "zlotoryjski"
   ],
   "kujawsko-pomorskie": [
     "aleksandrowski",
@@ -50,11 +46,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "tucholski",
     "wabrzeski",
     "wloclawski",
-    "zninski",
-    "Bydgoszcz",
-    "Grudziadz",
-    "Torun",
-    "Wloclawek"
+    "zninski"
   ],
   lubelskie: [
     "bialski",
@@ -76,11 +68,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "swidnicki",
     "tomaszowski",
     "wlodawski",
-    "zamojski",
-    "Biala Podlaska",
-    "Chelm",
-    "Lublin",
-    "Zamosc"
+    "zamojski"
   ],
   lubuskie: [
     "gorzowski",
@@ -94,9 +82,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "wschowski",
     "zielonogorski",
     "zaganski",
-    "zarski",
-    "Gorzow Wielkopolski",
-    "Zielona Gora"
+    "zarski"
   ],
   lodzkie: [
     "belchatowski",
@@ -119,10 +105,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "wielunski",
     "wieruszowski",
     "zdunskowolski",
-    "zgierski",
-    "Lodz",
-    "Piotrkow Trybunalski",
-    "Skierniewice"
+    "zgierski"
   ],
   malopolskie: [
     "bocheński",
@@ -143,10 +126,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "tarnowski",
     "tatrzański",
     "wadowicki",
-    "wielicki",
-    "Krakow",
-    "Nowy Sacz",
-    "Tarnow"
+    "wielicki"
   ],
   mazowieckie: [
     "białobrzeski",
@@ -185,12 +165,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "wyszkowski",
     "zwoleński",
     "żuromiński",
-    "żyrardowski",
-    "Ostroleka",
-    "Plock",
-    "Radom",
-    "Siedlce",
-    "Warszawa"
+    "żyrardowski"
   ],
   opolskie: [
     "brzeski",
@@ -203,8 +178,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "oleski",
     "opolski",
     "prudnicki",
-    "strzelecki",
-    "Opole"
+    "strzelecki"
   ],
   podkarpackie: [
     "bieszczadzki",
@@ -227,11 +201,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "sanocki",
     "stalowowolski",
     "strzyżowski",
-    "tarnobrzeski",
-    "Krosno",
-    "Przemysl",
-    "Rzeszow",
-    "Tarnobrzeg"
+    "tarnobrzeski"
   ],
   podlaskie: [
     "augustowski",
@@ -247,10 +217,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "sokólski",
     "suwalski",
     "wysokomazowiecki",
-    "zambrowski",
-    "Bialystok",
-    "Lomza",
-    "Suwalki"
+    "zambrowski"
   ],
   pomorskie: [
     "bytowski",
@@ -268,11 +235,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "starogardzki",
     "sztumski",
     "tczewski",
-    "wejherowski",
-    "Gdansk",
-    "Gdynia",
-    "Slupsk",
-    "Sopot"
+    "wejherowski"
   ],
   slaskie: [
     "będziński",
@@ -291,26 +254,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "tarnogórski",
     "wodzisławski",
     "zawierciański",
-    "żywiecki",
-    "Bielsko-Biala",
-    "Bytom",
-    "Chorzow",
-    "Czestochowa",
-    "Dabrowa Gornicza",
-    "Gliwice",
-    "Jastrzebie-Zdroj",
-    "Jaworzno",
-    "Katowice",
-    "Myslowice",
-    "Piekary Slaskie",
-    "Ruda Slaska",
-    "Rybnik",
-    "Siemianowice Slaskie",
-    "Sosnowiec",
-    "Swietochlowice",
-    "Tychy",
-    "Zabrze",
-    "Zory"
+    "żywiecki"
   ],
   swietokrzyskie: [
     "buski",
@@ -325,8 +269,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "skarżyski",
     "starachowicki",
     "staszowski",
-    "włoszczowski",
-    "Kielce"
+    "włoszczowski"
   ],
   "warminsko-mazurskie": [
     "bartoszycki",
@@ -347,9 +290,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "ostródzki",
     "piski",
     "szczycieński",
-    "węgorzewski",
-    "Elblag",
-    "Olsztyn"
+    "węgorzewski"
   ],
   wielkopolskie: [
     "chodzieski",
@@ -382,11 +323,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "wągrowiecki",
     "wolsztyński",
     "wrzesiński",
-    "złotowski",
-    "Kalisz",
-    "Konin",
-    "Leszno",
-    "Poznan"
+    "złotowski"
   ],
   zachodniopomorskie: [
     "białogardzki",
@@ -406,10 +343,7 @@ export const POLISH_REGIONS: Record<string, string[]> = {
     "stargardzki",
     "szczecinecki",
     "świdwiński",
-    "wałecki",
-    "Koszalin",
-    "Szczecin",
-    "Swinoujscie"
+    "wałecki"
   ]
 };
 

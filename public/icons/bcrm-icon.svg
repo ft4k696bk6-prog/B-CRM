@@ -1,29 +1,32 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <rect x="48" y="48" width="416" height="416" rx="88" fill="url(#panel)" fill-opacity="0.18" stroke="url(#stroke)" stroke-width="2"/>
-  <path d="M171 116H277C356.529 116 407 156.954 407 222.048C407 263.162 386.49 293.729 351.76 308.85C392.159 322.891 416 356.698 416 404.234C416 474.731 362.286 512 276.872 512H171V116Z" fill="#0D1423"/>
-  <path d="M228 173V254H271.29C311.243 254 334 240.269 334 212.88C334 186.582 314.404 173 276.103 173H228Z" fill="#F6C14D"/>
-  <path d="M228 308V395H281.163C323.947 395 348 380.028 348 351.623C348 323.367 324.989 308 282.359 308H228Z" fill="#F6C14D"/>
-  <path d="M176 392H412" stroke="url(#gold)" stroke-width="10" stroke-linecap="round"/>
-  <text x="256" y="454" text-anchor="middle" fill="#D7DEE8" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="700" letter-spacing="8">CRM</text>
+  <rect width="512" height="512" rx="104" fill="#111722"/>
+  <rect width="512" height="512" rx="104" fill="url(#bg)"/>
+  <rect x="44" y="44" width="424" height="424" rx="82" fill="url(#glass)" stroke="url(#rim)" stroke-width="2.5"/>
+  <path d="M142 96h147c69 0 114 35 114 94 0 37-18 65-51 80 41 14 62 46 62 90 0 64-50 104-126 104H142V96Z" fill="url(#gold)"/>
+  <path d="M210 159v82h72c36 0 56-14 56-42 0-26-19-40-55-40h-73Z" fill="#111722"/>
+  <path d="M210 304v94h83c40 0 61-16 61-47 0-30-22-47-62-47h-82Z" fill="#111722"/>
+  <path d="M114 416h278" stroke="white" stroke-opacity=".72" stroke-width="18" stroke-linecap="round"/>
+  <path d="M78 84h70" stroke="#F2D18A" stroke-opacity=".84" stroke-width="8" stroke-linecap="round"/>
+  <path d="M364 428h70" stroke="#B8832F" stroke-opacity=".84" stroke-width="8" stroke-linecap="round"/>
   <defs>
-    <linearGradient id="bg" x1="52" y1="36" x2="454" y2="472" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#172439"/>
-      <stop offset="0.58" stop-color="#101827"/>
-      <stop offset="1" stop-color="#31415D"/>
+    <linearGradient id="bg" x1="61" y1="33" x2="450" y2="489" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#253147"/>
+      <stop offset=".55" stop-color="#111722"/>
+      <stop offset="1" stop-color="#2B3449"/>
     </linearGradient>
-    <linearGradient id="panel" x1="92" y1="74" x2="432" y2="446" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFFFFF" stop-opacity="0.36"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.08"/>
+    <linearGradient id="glass" x1="77" y1="60" x2="446" y2="468" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity=".16"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity=".04"/>
     </linearGradient>
-    <linearGradient id="stroke" x1="79" y1="66" x2="430" y2="458" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#E6EDF7" stop-opacity="0.32"/>
-      <stop offset="1" stop-color="#D7B14D" stop-opacity="0.18"/>
+    <linearGradient id="rim" x1="68" y1="58" x2="448" y2="459" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F6DA96" stop-opacity=".55"/>
+      <stop offset=".5" stop-color="#FFFFFF" stop-opacity=".12"/>
+      <stop offset="1" stop-color="#B8832F" stop-opacity=".42"/>
     </linearGradient>
-    <linearGradient id="gold" x1="176" y1="392" x2="412" y2="392" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#D69A31"/>
-      <stop offset="0.52" stop-color="#F3C153"/>
-      <stop offset="1" stop-color="#C48828"/>
+    <linearGradient id="gold" x1="151" y1="103" x2="396" y2="458" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE6A7"/>
+      <stop offset=".45" stop-color="#F1C76F"/>
+      <stop offset="1" stop-color="#B8832F"/>
     </linearGradient>
   </defs>
 </svg>
