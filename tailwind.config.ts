@@ -9,15 +9,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#172033",
-        muted: "#5b667a",
-        line: "#dde4ee",
-        panel: "#ffffff",
-        solar: "#f5b52e",
-        leaf: "#2f9d75",
-        sky: "#2d7dd2",
-        warn: "#d76a03",
-        danger: "#c93c3c"
+        ink: "rgb(var(--ink) / <alpha-value>)",
+        muted: "rgb(var(--muted) / <alpha-value>)",
+        line: "rgb(var(--line) / <alpha-value>)",
+        panel: "rgb(var(--panel) / <alpha-value>)",
+        solar: "rgb(var(--solar) / <alpha-value>)",
+        leaf: "rgb(var(--leaf) / <alpha-value>)",
+        sky: "rgb(var(--sky) / <alpha-value>)",
+        warn: "rgb(var(--warn) / <alpha-value>)",
+        danger: "rgb(var(--danger) / <alpha-value>)"
       },
       boxShadow: {
         soft: "0 18px 45px rgba(23, 32, 51, 0.08)"

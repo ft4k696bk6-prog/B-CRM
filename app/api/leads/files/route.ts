@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { optionalNumber, optionalString, requiredString, uuidString } from "@/lib/api-validation";
 
 type CreateFileBody = {
   lead_id: string;
@@ -91,17 +92,27 @@ export async function POST(request: Request) {
     }
 
     const body = (await request.json()) as CreateFileBody;
+    const leadId = uuidString(body.lead_id, "lead_id");
+    const fileName = requiredString(body.file_name, "file_name", 240);
+    const filePath = requiredString(body.file_path, "file_path", 600);
+    const fileSize = optionalNumber(body.file_size, "file_size");
+    const mimeType = optionalString(body.mime_type, "mime_type", 120);
+    const description = optionalString(body.description, "description", 1000);
+
+    for (const result of [leadId, fileName, filePath, fileSize, mimeType, description]) {
+      if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 });
+    }
 
     const { data: file, error } = await supabase
       .from("lead_files")
       .insert({
-        lead_id: body.lead_id,
+        lead_id: leadId.data!,
         uploaded_by: user.user.id,
-        file_name: body.file_name,
-        file_path: body.file_path,
-        file_size: body.file_size || null,
-        mime_type: body.mime_type || null,
-        description: body.description || null
+        file_name: fileName.data!,
+        file_path: filePath.data!,
+        file_size: fileSize.data!,
+        mime_type: mimeType.data!,
+        description: description.data!
       })
       .select(
         `

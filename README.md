@@ -92,6 +92,7 @@ Dla świeżej instalacji uruchom migracje kolejno:
 6. [`supabase/04_meeting_followup_manual_leads.sql`](./supabase/04_meeting_followup_manual_leads.sql)
 7. [`supabase/05_roles_users_demo.sql`](./supabase/05_roles_users_demo.sql)
 8. [`supabase/06_manager_hierarchy.sql`](./supabase/06_manager_hierarchy.sql)
+9. [`supabase/07_roles_permissions_security.sql`](./supabase/07_roles_permissions_security.sql)
 
 Opcjonalne dane testowe:
 
@@ -106,6 +107,7 @@ Utwórz `.env.local` na podstawie `.env.example`:
 NEXT_PUBLIC_SUPABASE_URL=https://twoj-projekt.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
+NEXT_PUBLIC_DEMO_MODE=false
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` jest używany wyłącznie po stronie serwera do operacji administracyjnych.
@@ -256,6 +258,7 @@ For a fresh setup, run migrations in this order:
 6. [`supabase/04_meeting_followup_manual_leads.sql`](./supabase/04_meeting_followup_manual_leads.sql)
 7. [`supabase/05_roles_users_demo.sql`](./supabase/05_roles_users_demo.sql)
 8. [`supabase/06_manager_hierarchy.sql`](./supabase/06_manager_hierarchy.sql)
+9. [`supabase/07_roles_permissions_security.sql`](./supabase/07_roles_permissions_security.sql)
 
 Optional test data:
 
@@ -270,6 +273,7 @@ Create `.env.local` from `.env.example`:
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
+NEXT_PUBLIC_DEMO_MODE=false
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` is used only on the server side for administrative operations.

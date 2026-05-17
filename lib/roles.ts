@@ -1,35 +1,186 @@
-import type { UserRole } from "@/lib/types";
+import type { LegacyUserRole, UserRole } from "@/lib/types";
 
-export const USER_ROLES: UserRole[] = ["admin", "handlowiec", "menadzer"];
+export const USER_ROLES = [
+  "owner",
+  "admin",
+  "menadzer",
+  "handlowiec",
+  "finance",
+  "viewer",
+  "ksiegowosc",
+  "logistyk",
+  "monter"
+] as const satisfies readonly UserRole[];
 
 export const ROLE_LABELS: Record<UserRole, string> = {
+  owner: "Właściciel",
   admin: "Admin",
+  menadzer: "Menadżer",
   handlowiec: "Handlowiec",
-  menadzer: "Menadżer"
+  finance: "Finanse",
+  viewer: "Podgląd",
+  ksiegowosc: "Księgowość",
+  logistyk: "Logistyka",
+  monter: "Monter"
 };
 
-export function isAdminRole(role?: string | null) {
-  return role === "admin";
+export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
+  owner: "Pełna kontrola nad CRM, rolami, danymi, ustawieniami i eksportem.",
+  admin: "Zarządza operacyjnie CRM, użytkownikami, importem, leadami i ustawieniami.",
+  menadzer: "Prowadzi zespół handlowców, rozdziela leady i kontroluje wyniki zespołu.",
+  handlowiec: "Pracuje na własnych leadach, zadaniach, spotkaniach, ofertach i aktywnościach.",
+  finance: "Widok finansowy: umowy, raporty i dane potrzebne do rozliczeń.",
+  viewer: "Bezpieczny tryb tylko do odczytu dla audytu, zarządu lub obserwatorów.",
+  ksiegowosc: "Obsługuje dokumenty, faktury, aneksy i rozliczenia po podpisaniu umowy.",
+  logistyk: "Koordynuje zamówienia, kompletację oraz przygotowanie realizacji.",
+  monter: "Obsługuje etap montażu i potwierdza wykonanie prac w terenie."
+};
+
+const DEMO_EMAIL_ROLES: Record<string, UserRole> = {
+  "demo@example.com": "admin",
+  "demo-menadzer@example.com": "menadzer",
+  "demo-handlowiec@example.com": "handlowiec",
+  "demo-ksiegowy@example.com": "ksiegowosc",
+  "demo-logistyk@example.com": "logistyk",
+  "demo-monter@example.com": "monter"
+};
+
+export const DEMO_USER_EMAILS = Object.keys(DEMO_EMAIL_ROLES);
+
+type RoleInput = UserRole | LegacyUserRole | string;
+
+export function isDemoUserEmail(email?: string | null) {
+  return Boolean(email && DEMO_USER_EMAILS.includes(email.toLowerCase()));
 }
 
-export function isManagerRole(role?: string | null) {
-  return role === "menadzer" || role === "manager";
+function mapRole(role?: RoleInput | null): UserRole | null {
+  switch (role) {
+    case "owner":
+    case "admin":
+    case "menadzer":
+    case "handlowiec":
+    case "finance":
+    case "viewer":
+    case "ksiegowosc":
+    case "logistyk":
+    case "monter":
+      return role;
+    case "manager":
+      return "menadzer";
+    case "sales":
+      return "handlowiec";
+    case "accounting":
+    case "ksiegowy":
+      return "ksiegowosc";
+    case "logistics":
+    case "logistyka":
+      return "logistyk";
+    case "installer":
+      return "monter";
+    default:
+      return null;
+  }
 }
 
-export function isSalesRole(role?: string | null) {
-  return role === "handlowiec" || role === "sales";
+export function normalizeRole(
+  role?: RoleInput | null,
+  email?: string | null,
+  trustedRole?: RoleInput | null
+): UserRole {
+  const demoRole = email ? DEMO_EMAIL_ROLES[email.toLowerCase()] : null;
+  if (demoRole) return demoRole;
+
+  return mapRole(trustedRole) || mapRole(role) || "handlowiec";
 }
 
-export function canManageLeads(role?: string | null) {
-  return role === "admin" || role === "menadzer" || role === "manager";
+export function isOwnerRole(role?: RoleInput | null) {
+  return normalizeRole(role) === "owner";
 }
 
-export function homePathForRole(role?: string | null) {
-  return canManageLeads(role) ? "/admin" : "/sales";
+export function isAdminRole(role?: RoleInput | null) {
+  return normalizeRole(role) === "admin";
 }
 
-export function normalizeRole(role?: string | null): UserRole {
-  if (role === "admin" || role === "menadzer" || role === "handlowiec") return role;
-  if (role === "manager") return "menadzer";
-  return "handlowiec";
+export function isSystemAdminRole(role?: RoleInput | null) {
+  const normalized = normalizeRole(role);
+  return normalized === "owner" || normalized === "admin";
+}
+
+export function isManagerRole(role?: RoleInput | null) {
+  return normalizeRole(role) === "menadzer";
+}
+
+export function isSalesRole(role?: RoleInput | null) {
+  return normalizeRole(role) === "handlowiec";
+}
+
+export function isFinanceRole(role?: RoleInput | null) {
+  return normalizeRole(role) === "finance";
+}
+
+export function isViewerRole(role?: RoleInput | null) {
+  return normalizeRole(role) === "viewer";
+}
+
+export function isAccountingRole(role?: RoleInput | null) {
+  return normalizeRole(role) === "ksiegowosc";
+}
+
+export function isLogisticsRole(role?: RoleInput | null) {
+  return normalizeRole(role) === "logistyk";
+}
+
+export function isInstallerRole(role?: RoleInput | null) {
+  return normalizeRole(role) === "monter";
+}
+
+export function canManageLeads(role?: RoleInput | null) {
+  const normalized = normalizeRole(role);
+  return normalized === "owner" || normalized === "admin" || normalized === "menadzer";
+}
+
+export function canUseOperations(role?: RoleInput | null) {
+  return (
+    canManageLeads(role) ||
+    isSalesRole(role) ||
+    isAccountingRole(role) ||
+    isLogisticsRole(role) ||
+    isInstallerRole(role)
+  );
+}
+
+export function canViewManagementDashboard(role?: RoleInput | null) {
+  const normalized = normalizeRole(role);
+  return (
+    normalized === "owner" ||
+    normalized === "admin" ||
+    normalized === "menadzer" ||
+    normalized === "finance" ||
+    normalized === "viewer"
+  );
+}
+
+export function canManageUsers(role?: RoleInput | null) {
+  return isSystemAdminRole(role);
+}
+
+export function canManageSystemSettings(role?: RoleInput | null) {
+  return isSystemAdminRole(role);
+}
+
+export function canExportData(role?: RoleInput | null) {
+  const normalized = normalizeRole(role);
+  return normalized === "owner" || normalized === "admin" || normalized === "menadzer" || normalized === "finance";
+}
+
+export function canCreateManualLead(role?: RoleInput | null) {
+  const normalized = normalizeRole(role);
+  return normalized === "owner" || normalized === "admin" || normalized === "menadzer" || normalized === "handlowiec";
+}
+
+export function homePathForRole(role?: RoleInput | null) {
+  const normalized = normalizeRole(role);
+  if (normalized === "handlowiec") return "/sales";
+  if (normalized === "ksiegowosc" || normalized === "logistyk" || normalized === "monter") return "/realizacja";
+  return "/admin";
 }

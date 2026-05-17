@@ -22,6 +22,7 @@ import { ActivityLog } from "@/components/activity-log";
 import { FileList } from "@/components/file-list";
 import { ReminderList } from "@/components/reminder-list";
 import { ACTION_LABELS, LEAD_STATUSES, STATUS_TILE_TONES } from "@/lib/constants";
+import { hasAnyPermission } from "@/lib/permissions";
 import { formatDateTime, toDatetimeLocalValue } from "@/lib/date";
 import { canManageLeads, homePathForRole, isManagerRole, isSalesRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
@@ -86,6 +87,7 @@ export default function LeadDetailsPage() {
   const [error, setError] = useState("");
 
   const canManage = canManageLeads(profile?.role);
+  const canEditLead = hasAnyPermission(profile?.role, ["leads:edit:own", "leads:edit:team", "leads:edit:all"]);
   const isManager = isManagerRole(profile?.role);
   const backHref = homePathForRole(profile?.role);
 
@@ -367,7 +369,7 @@ export default function LeadDetailsPage() {
   }
 
   if (loading || !profile) return <LoadingScreen />;
-  const availableStatuses = lead ? (canManage ? LEAD_STATUSES : getSalesStatusPath(lead)) : [];
+  const availableStatuses = lead ? (canManage ? LEAD_STATUSES : canEditLead ? getSalesStatusPath(lead) : [lead.status]) : [];
 
   return (
     <AppShell profile={profile}>
@@ -493,8 +495,9 @@ export default function LeadDetailsPage() {
                           <button
                             key={item}
                             type="button"
-                            onClick={() => setStatus(item)}
-                            className={`min-h-20 rounded-lg border p-3 text-left transition ${
+                            onClick={() => canEditLead && setStatus(item)}
+                            disabled={!canEditLead}
+                            className={`min-h-20 rounded-lg border p-3 text-left transition disabled:cursor-not-allowed disabled:opacity-60 ${
                               STATUS_TILE_TONES[item]
                             } ${active ? "ring-2 ring-ink ring-offset-2" : ""}`}
                           >
@@ -599,11 +602,11 @@ export default function LeadDetailsPage() {
                 </div>
 
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <button type="submit" disabled={busy} className="btn-primary">
+                  <button type="submit" disabled={busy || !canEditLead} className="btn-primary">
                     <Save className="h-4 w-4" aria-hidden="true" />
                     Zapisz
                   </button>
-                  <button type="button" onClick={returnLead} disabled={busy} className="btn-secondary">
+                  <button type="button" onClick={returnLead} disabled={busy || !canEditLead} className="btn-secondary">
                     <RotateCcw className="h-4 w-4" aria-hidden="true" />
                     Zwrot
                   </button>
@@ -644,7 +647,7 @@ export default function LeadDetailsPage() {
                       onCountyChange={setCounty}
                     />
                   </div>
-                  <button type="submit" disabled={busy} className="btn-primary mt-4">
+                  <button type="submit" disabled={busy || !canEditLead} className="btn-primary mt-4">
                     <Save className="h-4 w-4" aria-hidden="true" />
                     Zapisz dane
                   </button>
@@ -680,6 +683,7 @@ export default function LeadDetailsPage() {
                   </form>
                 ) : null}
 
+                {canEditLead ? (
                 <form onSubmit={addComment} className="rounded-lg border border-line bg-white p-5 shadow-sm">
                   <div className="mb-4 flex items-center gap-3">
                     <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-solar/20 text-[#8a5a00]">
@@ -696,6 +700,9 @@ export default function LeadDetailsPage() {
                     Dodaj komentarz
                   </button>
                 </form>
+                ) : (
+                  <div className="rounded-lg border border-line bg-white p-5 text-sm font-semibold text-muted shadow-sm">Tryb tylko do odczytu: komentarze i edycja są zablokowane dla tej roli.</div>
+                )}
               </div>
             </section>
 

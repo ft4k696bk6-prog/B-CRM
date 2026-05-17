@@ -8,21 +8,34 @@ import {
   Calculator,
   CalendarDays,
   FileUp,
+  FolderKanban,
   LogOut,
   PanelLeft,
   RotateCcw,
   Settings,
   UserPlus,
-  UsersRound
+  UsersRound,
+  type LucideIcon
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
-import { canManageLeads, homePathForRole, isAdminRole, isSalesRole, ROLE_LABELS } from "@/lib/roles";
+import { hasAnyPermission } from "@/lib/permissions";
+import type { Permission } from "@/lib/permissions";
+import { homePathForRole, isSalesRole, ROLE_LABELS } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { Profile } from "@/lib/types";
 
 type AppShellProps = {
   profile: Profile;
   children: ReactNode;
+};
+
+type NavigationLink = {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  permissions: Permission[];
+  hideWhenAnyPermission?: Permission[];
+  salesOnly?: boolean;
 };
 
 const bulkReturnStatuses = [
@@ -34,37 +47,41 @@ const bulkReturnStatuses = [
   "Po spotkaniu"
 ];
 
+const navigationLinks: NavigationLink[] = [
+  { href: "/admin", label: "Dashboard", icon: BarChart3, permissions: ["dashboard:view:all"] },
+  {
+    href: "/admin",
+    label: "Dashboard zespołu",
+    icon: BarChart3,
+    permissions: ["dashboard:view:team"],
+    hideWhenAnyPermission: ["dashboard:view:all"]
+  },
+  {
+    href: "/sales",
+    label: "Moje leady",
+    icon: BarChart3,
+    permissions: ["dashboard:view:own"],
+    salesOnly: true
+  },
+  { href: "/realizacja", label: "Realizacja", icon: FolderKanban, permissions: ["operations:view"] },
+  { href: "/leads/new", label: "Nowy lead", icon: UserPlus, permissions: ["leads:create:own", "leads:create:pool"] },
+  { href: "/calendar", label: "Kalendarz", icon: CalendarDays, permissions: ["calendar:view"] },
+  { href: "/calculators", label: "Kalkulatory", icon: Calculator, permissions: ["offers:calculate"] },
+  { href: "/settings", label: "Ustawienia", icon: Settings, permissions: ["settings:view"] },
+  { href: "/admin/import", label: "Import CSV", icon: FileUp, permissions: ["data:import"] },
+  { href: "/admin/users", label: "Użytkownicy", icon: UsersRound, permissions: ["users:manage"] }
+];
+
 export function AppShell({ profile, children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [returningLeads, setReturningLeads] = useState(false);
-  const isAdmin = isAdminRole(profile.role);
-  const canManage = canManageLeads(profile.role);
   const homeHref = homePathForRole(profile.role);
-  const links = isAdmin
-    ? [
-        { href: "/admin", label: "Dashboard", icon: BarChart3 },
-        { href: "/leads/new", label: "Nowy lead", icon: UserPlus },
-        { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
-        { href: "/calculators", label: "Kalkulatory", icon: Calculator },
-        { href: "/settings", label: "Ustawienia", icon: Settings },
-        { href: "/admin/import", label: "Import CSV", icon: FileUp },
-        { href: "/admin/users", label: "Użytkownicy", icon: UsersRound }
-      ]
-    : canManage
-      ? [
-          { href: "/admin", label: "Dashboard", icon: BarChart3 },
-          { href: "/leads/new", label: "Nowy lead", icon: UserPlus },
-          { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
-          { href: "/calculators", label: "Kalkulatory", icon: Calculator }
-        ]
-      : [
-          { href: "/sales", label: "Moje leady", icon: BarChart3 },
-          { href: "/leads/new", label: "Nowy lead", icon: UserPlus },
-          { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
-          { href: "/calculators", label: "Kalkulatory", icon: Calculator },
-          { href: "/settings", label: "Ustawienia", icon: Settings }
-        ];
+  const links = navigationLinks.filter((link) => {
+    if (link.salesOnly && !isSalesRole(profile.role)) return false;
+    if (link.hideWhenAnyPermission && hasAnyPermission(profile.role, link.hideWhenAnyPermission)) return false;
+    return hasAnyPermission(profile.role, link.permissions);
+  });
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -110,9 +127,7 @@ export function AppShell({ profile, children }: AppShellProps) {
             <BrandMark size="sm" />
             <span>
               <span className="block text-sm font-bold leading-4">B-CRM</span>
-              <span className="block text-xs text-muted">
-                Panel: {ROLE_LABELS[profile.role]}
-              </span>
+              <span className="block text-xs text-muted">Panel: {ROLE_LABELS[profile.role]}</span>
             </span>
           </Link>
 
@@ -145,7 +160,7 @@ export function AppShell({ profile, children }: AppShellProps) {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-7xl gap-5 px-4 py-5 lg:grid-cols-[230px_1fr]">
+      <div className="app-layout mx-auto grid max-w-7xl gap-5 px-4 py-5 lg:grid-cols-[230px_1fr]">
         <aside className="app-sidebar rounded-lg border border-line bg-white p-2 shadow-sm lg:sticky lg:top-20 lg:h-fit">
           <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-semibold uppercase tracking-wide text-muted">
             <PanelLeft className="h-4 w-4" aria-hidden="true" />
@@ -158,12 +173,10 @@ export function AppShell({ profile, children }: AppShellProps) {
 
               return (
                 <Link
-                  key={link.href}
+                  key={`${link.href}-${link.label}`}
                   href={link.href}
                   className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold transition ${
-                    active
-                      ? "bg-ink text-white"
-                      : "text-muted hover:bg-[#eef3f8] hover:text-ink"
+                    active ? "bg-ink text-white" : "text-muted hover:bg-[#eef3f8] hover:text-ink"
                   }`}
                 >
                   <Icon className="h-4 w-4" aria-hidden="true" />

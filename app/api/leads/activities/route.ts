@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { enumValue, optionalRecord, optionalString, requiredString, uuidString } from "@/lib/api-validation";
 
 type CreateActivityBody = {
   lead_id: string;
@@ -104,18 +105,29 @@ export async function POST(request: Request) {
     }
 
     const body = (await request.json()) as CreateActivityBody;
+    const leadId = uuidString(body.lead_id, "lead_id");
+    const type = enumValue(body.activity_type, "activity_type", ["comment", "status_change", "callback_scheduled", "meeting_scheduled", "meeting_address_changed", "contract_number_set", "resignation_recorded", "file_uploaded", "file_deleted", "assigned", "unassigned", "lead_created"] as const);
+    const title = requiredString(body.title, "title", 160);
+    const description = optionalString(body.description, "description", 4000);
+    const oldValue = optionalRecord(body.old_value, "old_value");
+    const newValue = optionalRecord(body.new_value, "new_value");
+    const metadata = optionalRecord(body.metadata, "metadata");
+
+    for (const result of [leadId, type, title, description, oldValue, newValue, metadata]) {
+      if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 });
+    }
 
     const { data: activity, error } = await supabase
       .from("lead_activities")
       .insert({
-        lead_id: body.lead_id,
+        lead_id: leadId.data!,
         user_id: user.user.id,
-        activity_type: body.activity_type,
-        title: body.title,
-        description: body.description || null,
-        old_value: body.old_value || null,
-        new_value: body.new_value || null,
-        metadata: body.metadata || null
+        activity_type: type.data!,
+        title: title.data!,
+        description: description.data!,
+        old_value: oldValue.data!,
+        new_value: newValue.data!,
+        metadata: metadata.data!
       })
       .select(
         `

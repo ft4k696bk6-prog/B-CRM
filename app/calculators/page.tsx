@@ -70,6 +70,8 @@ export default function CalculatorsPage() {
   const { settings } = usePricingSettings(profile?.role);
   const [tab, setTab] = useState<CalculatorTab>("offer");
   const [vatRate, setVatRate] = useState<VatRate>(8);
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
 
   const [bill, setBill] = useState(420);
   const [annualConsumption, setAnnualConsumption] = useState(5000);
@@ -218,7 +220,7 @@ export default function CalculatorsPage() {
 
   function printOffer() {
     const previousTitle = document.title;
-    document.title = " ";
+    document.title = `Oferta B-CRM ${customerName.trim() || offerTitle}`;
     window.print();
     window.setTimeout(() => {
       document.title = previousTitle;
@@ -255,6 +257,17 @@ export default function CalculatorsPage() {
                 </div>
 
                 <div className="grid gap-4">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label>
+                      <span className="label">Klient / adresat oferty</span>
+                      <input className="field" value={customerName} onChange={(event) => setCustomerName(event.target.value)} placeholder="np. Jan Kowalski" />
+                    </label>
+                    <label>
+                      <span className="label">Telefon klienta</span>
+                      <input className="field" value={customerPhone} onChange={(event) => setCustomerPhone(event.target.value)} placeholder="np. 500 600 700" />
+                    </label>
+                  </div>
+
                   <div>
                     <span className="label">Wariant oferty</span>
                     <div className="grid gap-2 sm:grid-cols-3">
@@ -370,7 +383,7 @@ export default function CalculatorsPage() {
                 </div>
                 <button type="button" onClick={printOffer} className="btn-primary mt-4">
                   <Printer className="h-4 w-4" aria-hidden="true" />
-                  Zapisz ofertę
+Drukuj / zapisz PDF
                 </button>
               </section>
             </div>
@@ -390,6 +403,9 @@ export default function CalculatorsPage() {
               subsidy={subsidy}
               installmentBefore={offer.installmentBeforeSubsidy}
               installmentAfter={offer.installmentAfterSubsidy}
+              customerName={customerName}
+              customerPhone={customerPhone}
+              preparedBy={profile.full_name}
             />
           </section>
         ) : (
@@ -482,7 +498,10 @@ function OfferDocument({
   gross,
   subsidy,
   installmentBefore,
-  installmentAfter
+  installmentAfter,
+  customerName,
+  customerPhone,
+  preparedBy
 }: {
   title: string;
   mode: OfferMode;
@@ -498,6 +517,9 @@ function OfferDocument({
   subsidy: number;
   installmentBefore: number;
   installmentAfter: number;
+  customerName: string;
+  customerPhone: string;
+  preparedBy: string;
 }) {
   return (
     <section className="offer-document relative mx-auto w-full max-w-[794px] overflow-hidden rounded-lg border border-line bg-white p-0 shadow-sm">
@@ -533,7 +555,17 @@ function OfferDocument({
           </div>
         </header>
 
-        <div className="mb-4 text-lg font-black text-[#1f2024]">{title}</div>
+        <div className="mb-4 grid gap-2 border-b border-line pb-4 text-[#1f2024] sm:grid-cols-[1fr_auto]">
+          <div>
+            <div className="text-lg font-black">{title}</div>
+            <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-[#6b7280]">Oferta ważna 14 dni · przygotowana w B-CRM</div>
+          </div>
+          <div className="text-left text-xs font-semibold sm:text-right">
+            <div>Data: {new Intl.DateTimeFormat("pl-PL").format(new Date())}</div>
+            <div>Klient: {customerName.trim() || "do uzupełnienia"}</div>
+            {customerPhone.trim() ? <div>Tel.: {customerPhone.trim()}</div> : null}
+          </div>
+        </div>
 
         <dl className="offer-specs grid text-sm">
           {mode !== "storage" ? <OfferSpecRow label="Moc systemu" value={`${formatNumber.format(row.kwp)} kWp`} shaded /> : null}
@@ -579,8 +611,8 @@ function OfferDocument({
         </div>
 
         <div className="offer-signature mt-7 grid gap-3 text-base text-[#1f2024]">
-          <div>Oferta przygotowana przez: ______________________________</div>
-          <div>Nr. Tel.: _______________________________________________</div>
+          <div>Oferta przygotowana przez: <strong>{preparedBy || "______________________________"}</strong></div>
+          <div>Akceptacja klienta: ______________________________________</div>
         </div>
 
         <footer className="offer-footer mt-12 grid gap-3 border-t border-line pt-4 text-[10px] leading-4 text-[#2f3440] sm:grid-cols-3">

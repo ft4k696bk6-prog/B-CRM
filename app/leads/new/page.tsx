@@ -7,7 +7,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
-import { canManageLeads, homePathForRole } from "@/lib/roles";
+import { canCreateManualLead, canManageLeads, homePathForRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/use-auth";
 
@@ -27,6 +27,7 @@ export default function NewLeadPage() {
   const [error, setError] = useState("");
 
   const canManage = canManageLeads(profile?.role);
+  const canCreate = canCreateManualLead(profile?.role);
   const backHref = homePathForRole(profile?.role);
 
   async function createLead(event: FormEvent<HTMLFormElement>) {
@@ -70,6 +71,17 @@ export default function NewLeadPage() {
   }
 
   if (loading || !profile) return <LoadingScreen />;
+
+  if (!canCreate) {
+    return (
+      <AppShell profile={profile}>
+        <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <h1 className="section-title">Brak dostępu</h1>
+          <p className="mt-2 text-sm text-muted">Twoja rola nie pozwala tworzyć leadów. Poproś administratora o zmianę uprawnień, jeśli to błąd.</p>
+        </div>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell profile={profile}>

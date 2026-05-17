@@ -1,4 +1,22 @@
-export type UserRole = "admin" | "handlowiec" | "menadzer";
+export type UserRole =
+  | "owner"
+  | "admin"
+  | "menadzer"
+  | "handlowiec"
+  | "finance"
+  | "viewer"
+  | "ksiegowosc"
+  | "logistyk"
+  | "monter";
+
+export type LegacyUserRole =
+  | "manager"
+  | "sales"
+  | "accounting"
+  | "ksiegowy"
+  | "logistics"
+  | "logistyka"
+  | "installer";
 
 export type LeadStatus =
   | "Nowy"

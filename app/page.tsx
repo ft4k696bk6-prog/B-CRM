@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingScreen } from "@/components/loading-screen";
-import { homePathForRole } from "@/lib/roles";
+import { homePathForRole, normalizeRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 
 export default function HomePage() {
@@ -21,11 +21,19 @@ export default function HomePage() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("role")
+        .select("role,email")
         .eq("id", session.user.id)
         .single();
 
-      router.replace(homePathForRole(profile?.role));
+      router.replace(
+        homePathForRole(
+          normalizeRole(
+            profile?.role,
+            profile?.email,
+            typeof session.user.app_metadata?.role === "string" ? session.user.app_metadata.role : null
+          )
+        )
+      );
     }
 
     routeUser();

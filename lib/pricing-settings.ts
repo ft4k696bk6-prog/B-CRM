@@ -47,7 +47,7 @@ export function usePricingSettings(role?: UserRole) {
 
   function setSettings(next: PricingSettings) {
     const normalized = {
-      adminMargin: role === "admin" ? Math.max(Number(next.adminMargin) || 0, 0) : settings.adminMargin,
+      adminMargin: role === "owner" || role === "admin" ? Math.max(Number(next.adminMargin) || 0, 0) : settings.adminMargin,
       salesMargin: Math.max(Number(next.salesMargin) || 0, 0)
     };
     setSettingsState(normalized);

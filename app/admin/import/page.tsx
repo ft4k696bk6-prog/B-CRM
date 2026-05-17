@@ -21,7 +21,7 @@ type CsvLead = {
 const requiredColumns = ["full_name", "phone", "postal_code", "source"];
 
 export default function ImportPage() {
-  const { loading, profile } = useAuth("admin");
+  const { loading, profile } = useAuth(["owner", "admin", "menadzer"]);
   const [fileName, setFileName] = useState("");
   const [rows, setRows] = useState<CsvLead[]>([]);
   const [error, setError] = useState("");

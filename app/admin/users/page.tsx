@@ -1,15 +1,24 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { AlertCircle, CheckCircle2, GitBranch, Plus, RefreshCw, Save, UserRoundPlus } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  GitBranch,
+  Plus,
+  RefreshCw,
+  Save,
+  Trash2,
+  UserRoundPlus
+} from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
-import { normalizeRole, ROLE_LABELS, USER_ROLES } from "@/lib/roles";
+import { normalizeRole, ROLE_DESCRIPTIONS, ROLE_LABELS, USER_ROLES } from "@/lib/roles";
 import type { Profile, UserRole } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
 
 export default function UsersPage() {
-  const { loading, profile, session } = useAuth("admin");
+  const { loading, profile, session } = useAuth(["owner", "admin"]);
   const [users, setUsers] = useState<Profile[]>([]);
   const [roleFilter, setRoleFilter] = useState<UserRole | "">("");
   const [newRole, setNewRole] = useState<UserRole>("handlowiec");
@@ -37,7 +46,7 @@ export default function UsersPage() {
     setUsers(
       ((body.users || []) as Profile[]).map((user) => ({
         ...user,
-        role: normalizeRole(user.role)
+        role: normalizeRole(user.role, user.email)
       }))
     );
   }
@@ -117,6 +126,35 @@ export default function UsersPage() {
     setBusy(false);
   }
 
+  async function deleteUser(userId: string, fullNameValue: string) {
+    if (!session || busy) return;
+    const confirmed = window.confirm(`Usunąć konto użytkownika: ${fullNameValue}?`);
+    if (!confirmed) return;
+
+    setBusy(true);
+    setError("");
+    setSuccess("");
+
+    const response = await fetch("/api/admin/users", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify({ id: userId })
+    });
+    const body = await response.json();
+
+    if (!response.ok) {
+      setError(body.error || "Nie udało się usunąć użytkownika.");
+    } else {
+      setSuccess("Usunięto konto użytkownika.");
+      await loadUsers();
+    }
+
+    setBusy(false);
+  }
+
   if (loading || !profile) return <LoadingScreen />;
 
   const visibleUsers = roleFilter ? users.filter((user) => user.role === roleFilter) : users;
@@ -130,13 +168,23 @@ export default function UsersPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="section-title">Użytkownicy</h1>
-            <p className="mt-1 text-sm text-muted">Konta i role dostępu w CRM.</p>
+            <p className="mt-1 text-sm text-muted">Konta, role i przypisania w CRM.</p>
           </div>
           <button type="button" onClick={loadUsers} className="btn-secondary">
             <RefreshCw className="h-4 w-4" aria-hidden="true" />
             Odśwież
           </button>
         </div>
+
+
+        <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {USER_ROLES.map((role) => (
+            <div key={role} className="rounded-lg border border-line bg-white p-4 shadow-sm">
+              <div className="text-sm font-black text-ink">{ROLE_LABELS[role]}</div>
+              <p className="mt-2 text-sm leading-6 text-muted">{ROLE_DESCRIPTIONS[role]}</p>
+            </div>
+          ))}
+        </section>
 
         <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-center gap-3">
@@ -301,7 +349,7 @@ export default function UsersPage() {
         </section>
 
         <section className="overflow-hidden rounded-lg border border-line bg-white shadow-sm">
-          <table className="w-full min-w-[680px] text-left text-sm">
+          <table className="w-full min-w-[760px] text-left text-sm">
             <thead className="border-b border-line bg-[#f9fbfd] text-xs uppercase tracking-wide text-muted">
               <tr>
                 <th className="px-4 py-3">Imię i nazwisko</th>
@@ -321,7 +369,9 @@ export default function UsersPage() {
                     <select
                       className="field min-w-40"
                       value={person.role}
-                      onChange={(event) => updateUser(person.id, event.target.value as UserRole, person.manager_id)}
+                      onChange={(event) =>
+                        updateUser(person.id, event.target.value as UserRole, person.manager_id)
+                      }
                       disabled={busy}
                     >
                       {USER_ROLES.map((role) => (
@@ -352,11 +402,22 @@ export default function UsersPage() {
                       timeStyle: "short"
                     }).format(new Date(person.created_at))}
                   </td>
-                  <td className="px-4 py-3 text-muted">
-                    <span className="inline-flex items-center gap-2 text-xs font-semibold text-leaf">
-                      <Save className="h-3.5 w-3.5" aria-hidden="true" />
-                      Autozapis
-                    </span>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center gap-2 text-xs font-semibold text-leaf">
+                        <Save className="h-3.5 w-3.5" aria-hidden="true" />
+                        Autozapis
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => deleteUser(person.id, person.full_name)}
+                        disabled={busy}
+                        className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-danger/20 bg-danger/5 px-3 text-xs font-semibold text-danger transition hover:border-danger/40 hover:bg-danger/10 disabled:cursor-not-allowed disabled:opacity-55"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                        Usuń
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { normalizeRole, USER_ROLES } from "@/lib/roles";
+import { isDemoUserEmail, isSystemAdminRole, normalizeRole, USER_ROLES } from "@/lib/roles";
 import type { UserRole } from "@/lib/types";
 
 type CreateUserBody = {
@@ -17,6 +17,10 @@ type UpdateUserBody = {
   managerId?: string | null;
 };
 
+type DeleteUserBody = {
+  id?: string;
+};
+
 type ProfileRow = {
   id: string;
   email: string | null;
@@ -29,7 +33,13 @@ type ProfileRow = {
 function dbCompatibleRole(role: UserRole) {
   if (role === "handlowiec") return "sales";
   if (role === "menadzer") return "manager";
+  if (role === "owner" || role === "finance" || role === "viewer") return "admin";
+  if (role === "ksiegowosc" || role === "logistyk" || role === "monter") return "admin";
   return role;
+}
+
+function trustedAuthRole(role: unknown) {
+  return typeof role === "string" ? role : null;
 }
 
 function isRoleCheckError(error: { message?: string; code?: string } | null) {
@@ -153,12 +163,18 @@ async function requireAdmin(request: Request) {
 
     const { data: profile } = await supabaseAdmin
       .from("profiles")
-      .select("role")
+      .select("role,email")
       .eq("id", user.id)
       .single();
 
-    if (profile?.role !== "admin") {
-      return { error: NextResponse.json({ error: "Brak uprawnień admina." }, { status: 403 }) };
+    const requesterRole = normalizeRole(
+      profile?.role,
+      profile?.email,
+      trustedAuthRole(user.app_metadata?.role)
+    );
+
+    if (!isSystemAdminRole(requesterRole)) {
+      return { error: NextResponse.json({ error: "Brak uprawnień administratora." }, { status: 403 }) };
     }
 
     return { supabaseAdmin, user };
@@ -195,10 +211,20 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
-  const users = ((data || []) as ProfileRow[]).map((user) => ({
-    ...user,
-    role: normalizeRole(user.role)
-  }));
+  const { data: authUsersData } = await auth.supabaseAdmin.auth.admin.listUsers({
+    page: 1,
+    perPage: 1000
+  });
+  const roleByUserId = new Map(
+    (authUsersData?.users || []).map((user) => [user.id, trustedAuthRole(user.app_metadata?.role)])
+  );
+
+  const users = ((data || []) as ProfileRow[])
+    .filter((user) => !isDemoUserEmail(user.email))
+    .map((user) => ({
+      ...user,
+      role: normalizeRole(user.role, user.email, roleByUserId.get(user.id))
+    }));
 
   return NextResponse.json({ users });
 }
@@ -226,6 +252,9 @@ export async function POST(request: Request) {
       user_metadata: {
         full_name: fullName,
         role
+      },
+      app_metadata: {
+        role
       }
     });
 
@@ -247,6 +276,14 @@ export async function POST(request: Request) {
     if (profileResult.error) {
       return NextResponse.json({ error: profileResult.error.message }, { status: 400 });
     }
+
+    await auth.supabaseAdmin.from("audit_events").insert({
+      actor_id: auth.user.id,
+      event_type: "user.created",
+      entity_type: "profile",
+      entity_id: data.user.id,
+      metadata: { email, fullName, role }
+    });
 
     return NextResponse.json({ id: data.user.id, email, fullName, role });
   } catch (error) {
@@ -273,13 +310,19 @@ export async function PATCH(request: Request) {
 
     const { data: target } = await auth.supabaseAdmin
       .from("profiles")
-      .select("role")
+      .select("role,email")
       .eq("id", id)
       .single();
+    const { data: targetAuth } = await auth.supabaseAdmin.auth.admin.getUserById(id);
+    const targetRole = normalizeRole(
+      target?.role,
+      target?.email,
+      trustedAuthRole(targetAuth.user?.app_metadata?.role)
+    );
 
-    if (target?.role === "admin" && role !== "admin" && id !== auth.user.id) {
+    if (isSystemAdminRole(targetRole) && role !== targetRole && id !== auth.user.id) {
       return NextResponse.json(
-        { error: "Nie można odebrać roli admina innemu administratorowi." },
+        { error: "Nie można odebrać roli właściciela lub admina innemu administratorowi." },
         { status: 403 }
       );
     }
@@ -287,11 +330,11 @@ export async function PATCH(request: Request) {
     if (role === "handlowiec" && managerId) {
       const { data: manager } = await auth.supabaseAdmin
         .from("profiles")
-        .select("role")
+        .select("role,email")
         .eq("id", managerId)
         .single();
 
-      if (normalizeRole(manager?.role) !== "menadzer") {
+      if (normalizeRole(manager?.role, manager?.email) !== "menadzer") {
         return NextResponse.json({ error: "Wybrany opiekun nie jest menadżerem." }, { status: 400 });
       }
     }
@@ -308,10 +351,64 @@ export async function PATCH(request: Request) {
     }
 
     await auth.supabaseAdmin.auth.admin.updateUserById(id, {
-      user_metadata: { role: storedRole }
+      app_metadata: { ...(targetAuth.user?.app_metadata || {}), role },
+      user_metadata: { ...(targetAuth.user?.user_metadata || {}), role: storedRole }
+    });
+
+    await auth.supabaseAdmin.from("audit_events").insert({
+      actor_id: auth.user.id,
+      event_type: "user.role_updated",
+      entity_type: "profile",
+      entity_id: id,
+      metadata: { role, managerId }
     });
 
     return NextResponse.json({ id, role });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Nieznany błąd." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const auth = await requireAdmin(request);
+    if (auth.error) return auth.error;
+
+    const body = (await request.json().catch(() => ({}))) as DeleteUserBody;
+    const id = body.id?.trim();
+
+    if (!id) {
+      return NextResponse.json({ error: "Brak użytkownika do usunięcia." }, { status: 400 });
+    }
+
+    if (id === auth.user.id) {
+      return NextResponse.json({ error: "Nie możesz usunąć własnego konta." }, { status: 403 });
+    }
+
+    const { data: target } = await auth.supabaseAdmin
+      .from("profiles")
+      .select("email,role")
+      .eq("id", id)
+      .single();
+
+    if (!target) {
+      return NextResponse.json({ error: "Nie znaleziono użytkownika." }, { status: 404 });
+    }
+
+    if (isDemoUserEmail(target.email)) {
+      return NextResponse.json({ error: "Konta demo są zarządzane automatycznie." }, { status: 403 });
+    }
+
+    const { error } = await auth.supabaseAdmin.auth.admin.deleteUser(id);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ id });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Nieznany błąd." },

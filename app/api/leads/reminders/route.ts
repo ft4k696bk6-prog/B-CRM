@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { enumValue, optionalString, requiredString, uuidString } from "@/lib/api-validation";
 
 type CreateReminderBody = {
   lead_id: string;
@@ -90,16 +91,29 @@ export async function POST(request: Request) {
     }
 
     const body = (await request.json()) as CreateReminderBody;
+    const leadId = uuidString(body.lead_id, "lead_id");
+    const reminderType = enumValue(body.reminder_type, "reminder_type", ["callback", "meeting", "followup", "custom"] as const);
+    const title = requiredString(body.title, "title", 160);
+    const description = optionalString(body.description, "description", 1000);
+    const reminderAt = requiredString(body.reminder_at, "reminder_at", 80);
+
+    for (const result of [leadId, reminderType, title, description, reminderAt]) {
+      if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 });
+    }
+
+    if (Number.isNaN(Date.parse(reminderAt.data!))) {
+      return NextResponse.json({ error: "Pole reminder_at ma niepoprawną datę." }, { status: 400 });
+    }
 
     const { data: reminder, error } = await supabase
       .from("lead_reminders")
       .insert({
-        lead_id: body.lead_id,
+        lead_id: leadId.data!,
         created_by: user.user.id,
-        reminder_type: body.reminder_type,
-        title: body.title,
-        description: body.description || null,
-        reminder_at: body.reminder_at
+        reminder_type: reminderType.data!,
+        title: title.data!,
+        description: description.data!,
+        reminder_at: new Date(reminderAt.data!).toISOString()
       })
       .select(
         `
@@ -136,15 +150,20 @@ export async function PATCH(request: Request) {
     const supabase = getSupabaseClient(token);
 
     const body = await request.json();
-    const { id, is_completed } = body;
+    const id = uuidString(body.id, "id");
+
+    if (!id.ok) return NextResponse.json({ error: id.error }, { status: 400 });
+    if (typeof body.is_completed !== "boolean") {
+      return NextResponse.json({ error: "Pole is_completed musi być typu boolean." }, { status: 400 });
+    }
 
     const { data: reminder, error } = await supabase
       .from("lead_reminders")
       .update({
-        is_completed,
-        completed_at: is_completed ? new Date().toISOString() : null
+        is_completed: body.is_completed,
+        completed_at: body.is_completed ? new Date().toISOString() : null
       })
-      .eq("id", id)
+      .eq("id", id.data!)
       .select(
         `
         *,

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { optionalString, requiredString } from "@/lib/api-validation";
 
 function getSupabaseClient(token: string) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -82,30 +83,30 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const {
-      report_date,
-      total_leads_worked,
-      total_activities,
-      calls_made,
-      meetings_scheduled,
-      contracts_signed,
-      resignations_recorded,
-      summary
-    } = body;
+    const reportDate = requiredString(body.report_date, "report_date", 20);
+    const summary = optionalString(body.summary, "summary", 4000);
+
+    if (!reportDate.ok) return NextResponse.json({ error: reportDate.error }, { status: 400 });
+    if (!summary.ok) return NextResponse.json({ error: summary.error }, { status: 400 });
+    if (Number.isNaN(Date.parse(`${reportDate.data!}T00:00:00.000Z`))) {
+      return NextResponse.json({ error: "Pole report_date ma niepoprawną datę." }, { status: 400 });
+    }
+
+    const safeNumber = (value: unknown) => Math.max(Number(value) || 0, 0);
 
     const { data: report, error } = await supabase
       .from("daily_reports")
       .upsert(
         {
           user_id: user.user.id,
-          report_date,
-          total_leads_worked: total_leads_worked || 0,
-          total_activities: total_activities || 0,
-          calls_made: calls_made || 0,
-          meetings_scheduled: meetings_scheduled || 0,
-          contracts_signed: contracts_signed || 0,
-          resignations_recorded: resignations_recorded || 0,
-          summary: summary || null
+          report_date: reportDate.data!,
+          total_leads_worked: safeNumber(body.total_leads_worked),
+          total_activities: safeNumber(body.total_activities),
+          calls_made: safeNumber(body.calls_made),
+          meetings_scheduled: safeNumber(body.meetings_scheduled),
+          contracts_signed: safeNumber(body.contracts_signed),
+          resignations_recorded: safeNumber(body.resignations_recorded),
+          summary: summary.data!
         },
         {
           onConflict: "user_id,report_date"

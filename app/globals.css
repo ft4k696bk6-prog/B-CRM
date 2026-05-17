@@ -4,6 +4,68 @@
 
 :root {
   color-scheme: light;
+  --canvas: 246 248 251;
+  --panel: 255 255 255;
+  --ink: 23 32 51;
+  --muted: 91 102 122;
+  --line: 221 228 238;
+  --solar: 245 181 46;
+  --leaf: 47 157 117;
+  --sky: 45 125 210;
+  --warn: 215 106 3;
+  --danger: 201 60 60;
+}
+
+html[data-theme="premium"] {
+  --canvas: 242 243 247;
+  --panel: 255 255 255;
+  --ink: 22 28 42;
+  --muted: 92 100 116;
+  --line: 220 225 234;
+  --solar: 190 144 37;
+  --leaf: 40 125 109;
+  --sky: 46 107 184;
+  --warn: 198 103 19;
+  --danger: 177 58 66;
+}
+
+html[data-theme="forest"] {
+  --canvas: 243 248 246;
+  --panel: 255 255 255;
+  --ink: 22 42 38;
+  --muted: 90 112 107;
+  --line: 214 228 223;
+  --solar: 202 160 67;
+  --leaf: 42 133 97;
+  --sky: 53 120 144;
+  --warn: 185 107 22;
+  --danger: 177 70 70;
+}
+
+html[data-theme="graphite"] {
+  --canvas: 240 242 246;
+  --panel: 252 253 255;
+  --ink: 24 31 45;
+  --muted: 89 98 116;
+  --line: 213 220 231;
+  --solar: 214 162 65;
+  --leaf: 52 129 122;
+  --sky: 61 99 178;
+  --warn: 191 105 33;
+  --danger: 185 73 79;
+}
+
+html[data-theme="berry"] {
+  --canvas: 249 244 247;
+  --panel: 255 255 255;
+  --ink: 48 32 50;
+  --muted: 116 90 110;
+  --line: 230 217 227;
+  --solar: 224 154 87;
+  --leaf: 80 143 116;
+  --sky: 134 93 150;
+  --warn: 201 112 59;
+  --danger: 186 79 93;
 }
 
 * {
@@ -12,8 +74,11 @@
 
 body {
   margin: 0;
-  background: #f6f8fb;
-  color: #172033;
+  background:
+    radial-gradient(circle at top left, rgb(var(--solar) / 0.08), transparent 28%),
+    radial-gradient(circle at top right, rgb(var(--sky) / 0.08), transparent 24%),
+    rgb(var(--canvas));
+  color: rgb(var(--ink));
 }
 
 button,
@@ -29,6 +94,26 @@ textarea {
   border-radius: 0.375rem;
 }
 
+[data-theme] .bg-white {
+  background-color: rgb(var(--panel)) !important;
+}
+
+[data-theme] .bg-\[\#f9fbfd\] {
+  background-color: rgb(var(--panel) / 0.72) !important;
+}
+
+[data-theme] .bg-\[\#f8fafc\] {
+  background-color: rgb(var(--panel) / 0.75) !important;
+}
+
+[data-theme] .bg-\[\#fbfcfe\] {
+  background-color: rgb(var(--panel) / 0.88) !important;
+}
+
+[data-theme] .hover\:bg-\[\#eef3f8\]:hover {
+  background-color: rgb(var(--sky) / 0.08) !important;
+}
+
 @layer components {
   .field {
     @apply w-full border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition placeholder:text-[#99a3b4] focus:border-sky focus:ring-2 focus:ring-sky/15;
@@ -39,7 +124,7 @@ textarea {
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#253048] disabled:cursor-not-allowed disabled:opacity-55;
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-55;
   }
 
   .btn-secondary {
@@ -47,7 +132,7 @@ textarea {
   }
 
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 rounded-md bg-danger px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#a93131] disabled:cursor-not-allowed disabled:opacity-55;
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-danger px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-55;
   }
 
   .section-title {
@@ -130,5 +215,62 @@ textarea {
   .pdf-avoid-break {
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html,
+  body {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    background: #ffffff !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .offer-document,
+  .offer-document * {
+    visibility: visible !important;
+  }
+
+  .app-layout,
+  main {
+    display: block !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .offer-document {
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+  }
+
+  .offer-document > .relative {
+    padding: 10mm 14mm 14mm 12mm !important;
+  }
+
+  .offer-products > div {
+    min-height: 30mm !important;
+  }
+
+  .offer-products img {
+    max-height: 20mm !important;
   }
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   Ban,
@@ -8,6 +9,7 @@ import {
   Database,
   FileDown,
   FileSignature,
+  FolderKanban,
   Inbox,
   ListChecks,
   PhoneCall,
@@ -22,7 +24,8 @@ import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
 import { StatTile } from "@/components/stat-tile";
 import { LEAD_STATUSES } from "@/lib/constants";
-import { isManagerRole } from "@/lib/roles";
+import { hasPermission } from "@/lib/permissions";
+import { canManageLeads, isManagerRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { AdminLeadFilters, Lead, LeadStatus, Profile, SortOption } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
@@ -70,7 +73,7 @@ function escapeCsv(value: string | number | null | undefined) {
 }
 
 export default function AdminDashboardPage() {
-  const { loading, profile } = useAuth(["admin", "menadzer"]);
+  const { loading, profile } = useAuth(["owner", "admin", "menadzer", "finance", "viewer"]);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [salespeople, setSalespeople] = useState<Profile[]>([]);
   const [filters, setFilters] = useState<AdminLeadFilters>(initialFilters);
@@ -92,6 +95,8 @@ export default function AdminDashboardPage() {
   });
 
   const isManager = isManagerRole(profile?.role);
+  const canAssignLeads = canManageLeads(profile?.role);
+  const canExportCurrentView = hasPermission(profile?.role, "data:export");
 
   async function loadSalespeople() {
     let query = supabase
@@ -317,7 +322,7 @@ export default function AdminDashboardPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="section-title">
-              Dashboard {profile.role === "menadzer" ? "menadżera" : "admina"}
+              Dashboard {profile.role === "menadzer" ? "menadżera" : profile.role === "finance" ? "finansowy" : profile.role === "viewer" ? "podglądu" : "admina"}
             </h1>
             <p className="mt-1 text-sm text-muted">
               {isManager
@@ -326,10 +331,12 @@ export default function AdminDashboardPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={exportCurrentView} className="btn-secondary">
-              <FileDown className="h-4 w-4" aria-hidden="true" />
-              Eksport CSV
-            </button>
+            {canExportCurrentView ? (
+              <button type="button" onClick={exportCurrentView} className="btn-secondary">
+                <FileDown className="h-4 w-4" aria-hidden="true" />
+                Eksport CSV
+              </button>
+            ) : null}
             <button type="button" onClick={loadLeads} className="btn-secondary">
               <RefreshCw className="h-4 w-4" aria-hidden="true" />
               Odśwież
@@ -346,6 +353,25 @@ export default function AdminDashboardPage() {
           <StatTile label="Umowy" value={stats.contracts} icon={FileSignature} tone="leaf" />
           <StatTile label="Rezygnacje" value={stats.resignations} icon={Ban} tone="danger" />
           <StatTile label="Bez akcji" value={stats.noNextAction} icon={ListChecks} tone="warn" />
+        </section>
+
+        <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
+                <FolderKanban className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <div>
+                <h2 className="text-base font-bold text-ink">Realizacja po umowie</h2>
+                <p className="mt-1 text-sm text-muted">
+                  Faktura, KSeF demo, logistyka, monter i generator aneksu w jednym miejscu.
+                </p>
+              </div>
+            </div>
+            <Link href="/realizacja" className="btn-primary">
+              Otwórz realizację
+            </Link>
+          </div>
         </section>
 
         {teamPerformance.length > 0 ? (
@@ -558,6 +584,7 @@ export default function AdminDashboardPage() {
           ) : null}
         </section>
 
+        {canAssignLeads ? (
         <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -589,6 +616,7 @@ export default function AdminDashboardPage() {
             </div>
           </div>
         </section>
+        ) : null}
 
         {error ? (
           <div className="rounded-md border border-danger/20 bg-danger/10 p-3 text-sm font-semibold text-danger">
@@ -606,7 +634,7 @@ export default function AdminDashboardPage() {
           </div>
           <LeadTable
             leads={leads}
-            selectable
+            selectable={canAssignLeads}
             selectedIds={selectedIds}
             onToggle={toggleLead}
             onToggleAll={toggleAllVisible}
