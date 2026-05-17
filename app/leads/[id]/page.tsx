@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, type ChangeEvent } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -82,6 +82,11 @@ export default function LeadDetailsPage() {
   const [county, setCounty] = useState("");
   const [comment, setComment] = useState("");
   const [selectedAssignee, setSelectedAssignee] = useState("");
+  const [agreementFile, setAgreementFile] = useState<File | null>(null);
+  const [agreementUploadMessage, setAgreementUploadMessage] = useState("");
+  const [agreementUploadError, setAgreementUploadError] = useState("");
+  const [agreementUploading, setAgreementUploading] = useState(false);
+  const [fileListKey, setFileListKey] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -366,6 +371,55 @@ export default function LeadDetailsPage() {
     setBusy(false);
   }
 
+  async function uploadAgreement(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!lead || !profile) return;
+    if (!agreementFile) {
+      setAgreementUploadError("Wybierz plik PDF umowy.");
+      return;
+    }
+    if (!agreementFile.name.toLowerCase().endsWith(".pdf")) {
+      setAgreementUploadError("Wybierz plik PDF.");
+      return;
+    }
+
+    setAgreementUploading(true);
+    setAgreementUploadError("");
+    setAgreementUploadMessage(`Wysyłam umowę ${agreementFile.name} do systemu...`);
+
+    try {
+      const response = await fetch("/api/leads/files", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${session?.access_token}`
+        },
+        body: JSON.stringify({
+          lead_id: lead.id,
+          file_name: agreementFile.name,
+          file_path: `demo/${agreementFile.name}`,
+          file_size: agreementFile.size,
+          mime_type: agreementFile.type,
+          description: "Umowa dodana ręcznie"
+        })
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result?.error || "Nie udało się dodać pliku.");
+      }
+
+      setAgreementUploadMessage(`Umowa została dodana: ${result.file_name}`);
+      setAgreementFile(null);
+      setFileListKey((current) => current + 1);
+      setTimeout(() => setAgreementUploadMessage(""), 8000);
+    } catch (uploadError) {
+      setAgreementUploadError(uploadError instanceof Error ? uploadError.message : "Nieznany błąd podczas dodawania pliku.");
+    } finally {
+      setAgreementUploading(false);
+    }
+  }
+
   if (loading || !profile) return <LoadingScreen />;
   const availableStatuses = lead ? (canManage ? LEAD_STATUSES : getSalesStatusPath(lead)) : [];
 
@@ -390,7 +444,7 @@ export default function LeadDetailsPage() {
           <LoadingScreen label={busy ? "Ładowanie leada" : "Brak danych"} />
         ) : (
           <>
-            <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+            <section className="rounded-lg border border-line bg-panel p-5 shadow-sm">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                   <h1 className="text-2xl font-bold text-ink">{lead.full_name}</h1>
@@ -424,49 +478,49 @@ export default function LeadDetailsPage() {
               ) : null}
 
               <dl className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
+                <div className="rounded-md border border-line bg-panel/80 p-3">
                   <dt className="label">Adres</dt>
                   <dd className="text-sm font-semibold text-ink">{lead.address || "—"}</dd>
                 </div>
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
+                <div className="rounded-md border border-line bg-panel/80 p-3">
                   <dt className="label">Region</dt>
                   <dd className="text-sm font-semibold text-ink">
                     {lead.voivodeship || "—"} / {lead.county || "—"}
                   </dd>
                 </div>
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
+                <div className="rounded-md border border-line bg-panel/80 p-3">
                   <dt className="label">Handlowiec</dt>
                   <dd className="text-sm font-semibold text-ink">
                     {lead.assigned_profile?.full_name || "Nieprzypisany"}
                   </dd>
                 </div>
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
+                <div className="rounded-md border border-line bg-panel/80 p-3">
                   <dt className="label">Ostatnie otwarcie</dt>
                   <dd className="text-sm font-semibold text-ink">
                     {formatDateTime(lead.last_opened_at)}
                   </dd>
                 </div>
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
+                <div className="rounded-md border border-line bg-panel/80 p-3">
                   <dt className="label">Dodany</dt>
                   <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.created_at)}</dd>
                 </div>
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
+                <div className="rounded-md border border-line bg-panel/80 p-3">
                   <dt className="label">Modyfikacja</dt>
                   <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.updated_at)}</dd>
                 </div>
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
+                <div className="rounded-md border border-line bg-panel/80 p-3">
                   <dt className="label">Callback</dt>
                   <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.callback_at)}</dd>
                 </div>
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
+                <div className="rounded-md border border-line bg-panel/80 p-3">
                   <dt className="label">Spotkanie</dt>
                   <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.meeting_at)}</dd>
                 </div>
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
+                <div className="rounded-md border border-line bg-panel/80 p-3">
                   <dt className="label">Numer umowy</dt>
                   <dd className="text-sm font-semibold text-ink">{lead.contract_number || "—"}</dd>
                 </div>
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-3 sm:col-span-2 xl:col-span-3">
+                <div className="rounded-md border border-line bg-panel/80 p-3 sm:col-span-2 xl:col-span-3">
                   <dt className="label">Notatka po spotkaniu</dt>
                   <dd className="text-sm font-semibold text-ink">{lead.meeting_note || "—"}</dd>
                 </div>
@@ -474,7 +528,7 @@ export default function LeadDetailsPage() {
             </section>
 
             <section className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
-              <form onSubmit={saveStatus} className="rounded-lg border border-line bg-white p-5 shadow-sm">
+              <form onSubmit={saveStatus} className="rounded-lg border border-line bg-panel p-5 shadow-sm">
                 <div className="mb-4 flex items-center gap-3">
                   <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
                     <CalendarClock className="h-5 w-5" aria-hidden="true" />
@@ -611,7 +665,7 @@ export default function LeadDetailsPage() {
               </form>
 
               <div className="grid gap-5">
-                <form onSubmit={saveLeadData} className="rounded-lg border border-line bg-white p-5 shadow-sm">
+                <form onSubmit={saveLeadData} className="rounded-lg border border-line bg-panel p-5 shadow-sm">
                   <div className="mb-4 flex items-center gap-3">
                     <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
                       <MapPin className="h-5 w-5" aria-hidden="true" />
@@ -651,7 +705,7 @@ export default function LeadDetailsPage() {
                 </form>
 
                 {canManage ? (
-                  <form onSubmit={assignLead} className="rounded-lg border border-line bg-white p-5 shadow-sm">
+                  <form onSubmit={assignLead} className="rounded-lg border border-line bg-panel p-5 shadow-sm">
                     <div className="mb-4 flex items-center gap-3">
                       <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-leaf/10 text-leaf">
                         <UserCheck className="h-5 w-5" aria-hidden="true" />
@@ -680,7 +734,7 @@ export default function LeadDetailsPage() {
                   </form>
                 ) : null}
 
-                <form onSubmit={addComment} className="rounded-lg border border-line bg-white p-5 shadow-sm">
+                <form onSubmit={addComment} className="rounded-lg border border-line bg-panel p-5 shadow-sm">
                   <div className="mb-4 flex items-center gap-3">
                     <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-solar/20 text-[#8a5a00]">
                       <MessageSquarePlus className="h-5 w-5" aria-hidden="true" />
@@ -699,7 +753,7 @@ export default function LeadDetailsPage() {
               </div>
             </section>
 
-            <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+            <section className="rounded-lg border border-line bg-panel p-5 shadow-sm">
               <h2 className="text-base font-bold text-ink">Aktywności</h2>
               <div className="mt-4">
                 {session?.access_token && (
@@ -711,11 +765,52 @@ export default function LeadDetailsPage() {
               </div>
             </section>
 
-            <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+            <section className="rounded-lg border border-line bg-panel p-5 shadow-sm">
               <h2 className="text-base font-bold text-ink">Pliki</h2>
-              <div className="mt-4">
+              <div className="mt-4 space-y-4">
+                {(profile.role === "admin" || profile.role === "menadzer" || profile.role === "handlowiec" || profile.role === "ksiegowosc") && (
+                  <form onSubmit={uploadAgreement} className="rounded-lg border border-line bg-panel p-4">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-sm font-black text-ink">Dodaj umowę</h3>
+                        <p className="mt-1 text-sm text-muted">Admin, menadżer, handlowiec lub księgowość może dodać plik umowy PDF.</p>
+                      </div>
+                    </div>
+                    <label className="grid gap-2">
+                      <span className="label">Wybierz plik PDF</span>
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        className="field"
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                          setAgreementFile(event.target.files?.[0] || null);
+                          setAgreementUploadError("");
+                          setAgreementUploadMessage("");
+                        }}
+                      />
+                    </label>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button type="submit" disabled={agreementUploading} className="btn-primary">
+                        <FileSignature className="h-4 w-4" aria-hidden="true" />
+                        Dodaj umowę
+                      </button>
+                      {agreementUploading ? <span className="text-sm text-muted">Trwa przesyłanie...</span> : null}
+                    </div>
+                    {agreementUploadMessage ? (
+                      <div className="mt-3 rounded-md border border-sky/20 bg-sky/10 p-3 text-sm text-sky">
+                        {agreementUploadMessage}
+                      </div>
+                    ) : null}
+                    {agreementUploadError ? (
+                      <div className="mt-3 rounded-md border border-danger/20 bg-danger/10 p-3 text-sm text-danger">
+                        {agreementUploadError}
+                      </div>
+                    ) : null}
+                  </form>
+                )}
                 {session?.access_token && (
                   <FileList
+                    key={fileListKey}
                     leadId={lead.id}
                     token={session.access_token}
                   />
@@ -723,7 +818,7 @@ export default function LeadDetailsPage() {
               </div>
             </section>
 
-            <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+            <section className="rounded-lg border border-line bg-panel p-5 shadow-sm">
               <h2 className="text-base font-bold text-ink">Przypomnienia</h2>
               <div className="mt-4">
                 {session?.access_token && (
@@ -735,11 +830,11 @@ export default function LeadDetailsPage() {
               </div>
             </section>
 
-            <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+            <section className="rounded-lg border border-line bg-panel p-5 shadow-sm">
               <h2 className="text-base font-bold text-ink">Historia leada</h2>
               <div className="mt-4 grid gap-3">
                 {history.map((item) => (
-                  <div key={item.id} className="rounded-md border border-line bg-[#f9fbfd] p-3">
+                  <div key={item.id} className="rounded-md border border-line bg-panel/80 p-3">
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                       <div className="font-semibold text-ink">
                         {ACTION_LABELS[item.action_type] || item.action_type}
@@ -753,7 +848,7 @@ export default function LeadDetailsPage() {
                   </div>
                 ))}
                 {history.length === 0 ? (
-                  <div className="rounded-md border border-line bg-[#f9fbfd] p-6 text-center text-sm font-semibold text-muted">
+                  <div className="rounded-md border border-line bg-panel/80 p-6 text-center text-sm font-semibold text-muted">
                     Brak historii.
                   </div>
                 ) : null}

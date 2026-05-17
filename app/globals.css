@@ -4,6 +4,71 @@
 
 :root {
   color-scheme: light;
+  --color-ink: 23 32 51;
+  --color-muted: 91 102 122;
+  --color-line: 221 228 238;
+  --color-panel: 255 255 255;
+  --color-solar: 245 181 46;
+  --color-leaf: 47 157 117;
+  --color-sky: 45 125 210;
+  --color-warn: 215 106 3;
+  --color-danger: 201 60 60;
+  --color-app-bg: #f6f8fb;
+  --color-panel-bg: #ffffff;
+}
+
+:root[data-theme="energy"] {
+  --color-ink: 23 51 43;
+  --color-muted: 78 95 89;
+  --color-line: 208 222 216;
+  --color-panel: 255 255 255;
+  --color-solar: 230 179 55;
+  --color-leaf: 40 145 100;
+  --color-sky: 35 120 112;
+  --color-warn: 194 105 27;
+  --color-danger: 187 58 65;
+  --color-app-bg: #f4f9f6;
+}
+
+:root[data-theme="premium"] {
+  --color-ink: 17 28 58;
+  --color-muted: 83 91 116;
+  --color-line: 222 225 236;
+  --color-panel: 255 255 255;
+  --color-solar: 197 139 27;
+  --color-leaf: 61 139 107;
+  --color-sky: 48 78 151;
+  --color-warn: 197 139 27;
+  --color-danger: 181 60 68;
+  --color-app-bg: #f7f7fb;
+}
+
+:root[data-theme="minimal"] {
+  --color-ink: 35 49 66;
+  --color-muted: 100 111 125;
+  --color-line: 218 225 232;
+  --color-panel: 255 255 255;
+  --color-solar: 188 150 55;
+  --color-leaf: 70 142 128;
+  --color-sky: 86 124 157;
+  --color-warn: 184 110 41;
+  --color-danger: 176 64 64;
+  --color-app-bg: #f7f9fb;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-ink: 230 238 246;
+  --color-muted: 160 174 190;
+  --color-line: 59 74 90;
+  --color-panel: 24 34 44;
+  --color-solar: 231 181 82;
+  --color-leaf: 79 209 165;
+  --color-sky: 82 158 219;
+  --color-warn: 238 151 73;
+  --color-danger: 238 108 112;
+  --color-app-bg: #101820;
+  --color-panel-bg: #18222c;
 }
 
 * {
@@ -12,8 +77,8 @@
 
 body {
   margin: 0;
-  background: #f6f8fb;
-  color: #172033;
+  background: var(--color-app-bg);
+  color: rgb(var(--color-ink));
 }
 
 button,
@@ -31,7 +96,7 @@ textarea {
 
 @layer components {
   .field {
-    @apply w-full border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition placeholder:text-[#99a3b4] focus:border-sky focus:ring-2 focus:ring-sky/15;
+    @apply w-full border border-line bg-panel px-3 py-2 text-sm text-ink outline-none transition placeholder:text-[#99a3b4] focus:border-sky focus:ring-2 focus:ring-sky/15;
   }
 
   .label {
@@ -43,7 +108,7 @@ textarea {
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:border-ink disabled:cursor-not-allowed disabled:opacity-55;
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-line bg-panel px-4 py-2 text-sm font-semibold text-ink transition hover:border-ink disabled:cursor-not-allowed disabled:opacity-55;
   }
 
   .btn-danger {

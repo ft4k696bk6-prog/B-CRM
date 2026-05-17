@@ -1,0 +1,24 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="116" fill="#101827"/>
+  <rect x="28" y="28" width="456" height="456" rx="96" fill="url(#paint0_linear)"/>
+  <rect x="52" y="52" width="408" height="408" rx="78" stroke="url(#paint1_linear)" stroke-width="4" opacity="0.9"/>
+  <path d="M157 126H276.5C318.5 126 347 150.5 347 186.5C347 211.5 333.5 230 309.5 240.5C339.5 249.5 357 271 357 301.5C357 345 324.5 373 277.5 373H157V126ZM210.5 226H270C285.5 226 296 216.5 296 201.5C296 186.5 285.5 177 270 177H210.5V226ZM210.5 322H276.5C293.5 322 304.5 312 304.5 295.5C304.5 279 293.5 269 276.5 269H210.5V322Z" fill="#F8FAFC"/>
+  <path d="M159 398H353" stroke="url(#paint2_linear)" stroke-width="8" stroke-linecap="round"/>
+  <text x="256" y="429" fill="#D9B35F" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="800" text-anchor="middle" letter-spacing="6">CRM</text>
+  <defs>
+    <linearGradient id="paint0_linear" x1="78" y1="54" x2="432" y2="464" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#17233C"/>
+      <stop offset="0.55" stop-color="#111A2D"/>
+      <stop offset="1" stop-color="#090E18"/>
+    </linearGradient>
+    <linearGradient id="paint1_linear" x1="86" y1="64" x2="427" y2="457" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F1D28A"/>
+      <stop offset="0.5" stop-color="#B8892D"/>
+      <stop offset="1" stop-color="#5F6F92"/>
+    </linearGradient>
+    <linearGradient id="paint2_linear" x1="159" y1="402" x2="353" y2="402" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D9B35F"/>
+      <stop offset="1" stop-color="#5EA7D9"/>
+    </linearGradient>
+  </defs>
+</svg>

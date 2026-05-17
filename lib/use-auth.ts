@@ -15,6 +15,7 @@ type AuthState = {
 
 export function useAuth(requiredRole?: UserRole | UserRole[]) {
   const router = useRouter();
+  const requiredRoleKey = Array.isArray(requiredRole) ? requiredRole.join("|") : requiredRole || "";
   const [state, setState] = useState<AuthState>({
     loading: true,
     session: null,
@@ -47,10 +48,14 @@ export function useAuth(requiredRole?: UserRole | UserRole[]) {
 
       const normalizedProfile = {
         ...profile,
-        role: normalizeRole(profile.role)
+        role: normalizeRole(
+          profile.role,
+          profile.email,
+          typeof session.user.app_metadata?.role === "string" ? session.user.app_metadata.role : null
+        )
       };
 
-      const allowedRoles = Array.isArray(requiredRole) ? requiredRole : requiredRole ? [requiredRole] : [];
+      const allowedRoles = requiredRoleKey ? (requiredRoleKey.split("|") as UserRole[]) : [];
 
       if (allowedRoles.length > 0 && !allowedRoles.includes(normalizedProfile.role)) {
         router.replace(homePathForRole(normalizedProfile.role));
@@ -70,7 +75,7 @@ export function useAuth(requiredRole?: UserRole | UserRole[]) {
       mounted = false;
       listener.subscription.unsubscribe();
     };
-  }, [requiredRole, router]);
+  }, [requiredRoleKey, router]);
 
   return { ...state, loading: state.loading };
 }

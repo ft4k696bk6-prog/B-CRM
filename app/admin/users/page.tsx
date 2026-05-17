@@ -1,7 +1,16 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { AlertCircle, CheckCircle2, GitBranch, Plus, RefreshCw, Save, UserRoundPlus } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  GitBranch,
+  Plus,
+  RefreshCw,
+  Save,
+  Trash2,
+  UserRoundPlus
+} from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { normalizeRole, ROLE_LABELS, USER_ROLES } from "@/lib/roles";
@@ -37,7 +46,7 @@ export default function UsersPage() {
     setUsers(
       ((body.users || []) as Profile[]).map((user) => ({
         ...user,
-        role: normalizeRole(user.role)
+        role: normalizeRole(user.role, user.email)
       }))
     );
   }
@@ -111,6 +120,36 @@ export default function UsersPage() {
       setError(body.error || "Nie udało się zmienić roli.");
     } else {
       setSuccess("Zapisano użytkownika.");
+      await loadUsers();
+    }
+
+    setBusy(false);
+  }
+
+  async function deleteUser(user: Profile) {
+    if (!session || busy) return;
+
+    const confirmed = window.confirm(`Usunąć konto ${user.full_name}? Tej operacji nie da się cofnąć.`);
+    if (!confirmed) return;
+
+    setBusy(true);
+    setError("");
+    setSuccess("");
+
+    const response = await fetch("/api/admin/users", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify({ id: user.id })
+    });
+    const body = await response.json();
+
+    if (!response.ok) {
+      setError(body.error || "Nie udało się usunąć użytkownika.");
+    } else {
+      setSuccess("Usunięto konto użytkownika.");
       await loadUsers();
     }
 
@@ -353,10 +392,21 @@ export default function UsersPage() {
                     }).format(new Date(person.created_at))}
                   </td>
                   <td className="px-4 py-3 text-muted">
-                    <span className="inline-flex items-center gap-2 text-xs font-semibold text-leaf">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center gap-2 text-xs font-semibold text-leaf">
                       <Save className="h-3.5 w-3.5" aria-hidden="true" />
                       Autozapis
-                    </span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => deleteUser(person)}
+                        disabled={busy || person.id === profile.id}
+                        className="inline-flex items-center gap-1 rounded-md border border-danger/20 px-2 py-1 text-xs font-semibold text-danger transition hover:border-danger disabled:cursor-not-allowed disabled:opacity-45"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                        Usuń
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

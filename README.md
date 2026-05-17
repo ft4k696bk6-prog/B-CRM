@@ -92,6 +92,7 @@ Dla świeżej instalacji uruchom migracje kolejno:
 6. [`supabase/04_meeting_followup_manual_leads.sql`](./supabase/04_meeting_followup_manual_leads.sql)
 7. [`supabase/05_roles_users_demo.sql`](./supabase/05_roles_users_demo.sql)
 8. [`supabase/06_manager_hierarchy.sql`](./supabase/06_manager_hierarchy.sql)
+9. [`supabase/07_operations_roles.sql`](./supabase/07_operations_roles.sql)
 
 Opcjonalne dane testowe:
 
@@ -256,6 +257,7 @@ For a fresh setup, run migrations in this order:
 6. [`supabase/04_meeting_followup_manual_leads.sql`](./supabase/04_meeting_followup_manual_leads.sql)
 7. [`supabase/05_roles_users_demo.sql`](./supabase/05_roles_users_demo.sql)
 8. [`supabase/06_manager_hierarchy.sql`](./supabase/06_manager_hierarchy.sql)
+9. [`supabase/07_operations_roles.sql`](./supabase/07_operations_roles.sql)
 
 Optional test data:
 

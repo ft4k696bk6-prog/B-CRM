@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   Ban,
   CalendarDays,
   ChevronDown,
+  ClipboardCheck,
   Database,
   FileDown,
   FileSignature,
@@ -346,6 +348,25 @@ export default function AdminDashboardPage() {
           <StatTile label="Umowy" value={stats.contracts} icon={FileSignature} tone="leaf" />
           <StatTile label="Rezygnacje" value={stats.resignations} icon={Ban} tone="danger" />
           <StatTile label="Bez akcji" value={stats.noNextAction} icon={ListChecks} tone="warn" />
+        </section>
+
+        <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-ink text-white">
+                <ClipboardCheck className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <div>
+                <h2 className="text-base font-bold text-ink">Realizacja po umowie</h2>
+                <p className="mt-1 text-sm text-muted">
+                  Akceptacje, księgowość, faktury, KSeF, logistyka i montaż w jednym prostym widoku.
+                </p>
+              </div>
+            </div>
+            <Link href="/realizacja" className="btn-primary w-full md:w-auto">
+              Otwórz realizację
+            </Link>
+          </div>
         </section>
 
         {teamPerformance.length > 0 ? (

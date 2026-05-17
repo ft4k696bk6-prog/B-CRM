@@ -5,6 +5,7 @@ import { CheckCircle2, Save, Settings } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { usePricingSettings } from "@/lib/pricing-settings";
+import { applyTheme, isThemeId, THEME_OPTIONS, THEME_STORAGE_KEY, type ThemeId } from "@/lib/theme";
 import { useAuth } from "@/lib/use-auth";
 
 export default function SettingsPage() {
@@ -12,12 +13,18 @@ export default function SettingsPage() {
   const { settings, setSettings } = usePricingSettings(profile?.role);
   const [adminMargin, setAdminMargin] = useState(settings.adminMargin);
   const [salesMargin, setSalesMargin] = useState(settings.salesMargin);
+  const [themeId, setThemeId] = useState<ThemeId>("default");
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     setAdminMargin(settings.adminMargin);
     setSalesMargin(settings.salesMargin);
   }, [settings.adminMargin, settings.salesMargin]);
+
+  useEffect(() => {
+    const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+    setThemeId(isThemeId(storedTheme) ? storedTheme : "default");
+  }, []);
 
   if (loading || !profile) return <LoadingScreen />;
 
@@ -27,6 +34,8 @@ export default function SettingsPage() {
       adminMargin,
       salesMargin
     });
+    window.localStorage.setItem(THEME_STORAGE_KEY, themeId);
+    applyTheme(themeId);
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2500);
   }
@@ -36,10 +45,10 @@ export default function SettingsPage() {
       <div className="grid gap-5">
         <div>
           <h1 className="section-title">Ustawienia</h1>
-          <p className="mt-1 text-sm text-muted">Preferencje używane przy przygotowaniu ofert.</p>
+          <p className="mt-1 text-sm text-muted">Oferta i wygląd panelu.</p>
         </div>
 
-        <form onSubmit={save} className="max-w-2xl rounded-lg border border-line bg-white p-5 shadow-sm">
+        <form onSubmit={save} className="max-w-4xl rounded-lg border border-line bg-panel p-5 shadow-sm">
           <div className="mb-4 flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-ink text-white">
               <Settings className="h-5 w-5" aria-hidden="true" />
@@ -76,6 +85,44 @@ export default function SettingsPage() {
                 onChange={(event) => setSalesMargin(Number(event.target.value))}
               />
             </label>
+          </div>
+
+          <div className="mt-6 border-t border-line pt-5">
+            <div className="mb-3">
+              <h3 className="text-sm font-black text-ink">Wygląd panelu</h3>
+              <p className="mt-1 text-sm text-muted">Gotowe pakiety kolorystyczne bez rozbudowanych ustawień.</p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              {THEME_OPTIONS.map((theme) => {
+                const active = themeId === theme.id;
+
+                return (
+                  <button
+                    key={theme.id}
+                    type="button"
+                    onClick={() => {
+                      setThemeId(theme.id);
+                      applyTheme(theme.id);
+                    }}
+                    className={`min-h-28 rounded-lg border p-3 text-left transition ${
+                      active ? "border-ink ring-2 ring-ink ring-offset-2" : "border-line hover:border-ink"
+                    }`}
+                  >
+                    <span className="flex gap-1">
+                      {theme.swatches.map((swatch) => (
+                        <span
+                          key={swatch}
+                          className="h-7 w-7 rounded-full border border-line"
+                          style={{ backgroundColor: swatch }}
+                        />
+                      ))}
+                    </span>
+                    <span className="mt-3 block text-sm font-black text-ink">{theme.name}</span>
+                    <span className="mt-1 block text-xs font-semibold text-muted">{theme.description}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {saved ? (

@@ -148,7 +148,7 @@ export default function CalendarPage() {
     let query = supabase
       .from("profiles")
       .select("*")
-      .in("role", ["handlowiec", "sales"])
+      .in("role", ["handlowiec", "sales", "monter"])
       .order("full_name", { ascending: true });
 
     if (isManager && profile) query = query.eq("manager_id", profile.id);
@@ -292,22 +292,22 @@ export default function CalendarPage() {
         </div>
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="rounded-lg border border-line bg-panel p-4 shadow-sm">
             <div className="label">Wybrany dzień</div>
             <div className="text-2xl font-black text-ink">{selectedDayEvents.length}</div>
             <div className="mt-1 text-sm text-muted">{formatDate(selectedDate.toISOString())}</div>
           </div>
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="rounded-lg border border-line bg-panel p-4 shadow-sm">
             <div className="label">Ten tydzień</div>
             <div className="text-2xl font-black text-ink">{weekMeetings}</div>
             <div className="mt-1 text-sm text-muted">{weekCallbacks} callbacków</div>
           </div>
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="rounded-lg border border-line bg-panel p-4 shadow-sm">
             <div className="label">Ten miesiąc</div>
             <div className="text-2xl font-black text-ink">{meetings.length}</div>
             <div className="mt-1 text-sm text-muted">{callbacks.length} callbacków</div>
           </div>
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="rounded-lg border border-line bg-panel p-4 shadow-sm">
             <div className="label">Zaplanowane</div>
             <div className="flex items-center gap-2 text-2xl font-black text-ink">
               <Clock3 className="h-5 w-5 text-sky" aria-hidden="true" />
@@ -315,7 +315,7 @@ export default function CalendarPage() {
             </div>
             <div className="mt-1 text-sm text-muted">spotkania</div>
           </div>
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="rounded-lg border border-line bg-panel p-4 shadow-sm">
             <div className="label">Odbyte</div>
             <div className="flex items-center gap-2 text-2xl font-black text-ink">
               <CheckCircle2 className="h-5 w-5 text-leaf" aria-hidden="true" />
@@ -325,7 +325,7 @@ export default function CalendarPage() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
+        <section className="rounded-lg border border-line bg-panel p-4 shadow-sm">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-leaf/10 text-leaf">
@@ -366,7 +366,7 @@ export default function CalendarPage() {
 
           <div className="grid grid-cols-7 border-l border-t border-line text-xs font-bold uppercase tracking-wide text-muted">
             {["Pon", "Wt", "Sr", "Czw", "Pt", "Sob", "Nd"].map((item) => (
-              <div key={item} className="border-b border-r border-line bg-[#f9fbfd] p-2">
+              <div key={item} className="border-b border-r border-line bg-panel/80 p-2">
                 {item}
               </div>
             ))}
@@ -386,7 +386,7 @@ export default function CalendarPage() {
                   type="button"
                   onClick={() => setSelectedDay(key)}
                   className={`min-h-24 border-b border-r border-line p-2 text-left transition hover:bg-[#fbfcfe] sm:min-h-28 ${
-                    isCurrentMonth ? "bg-white" : "bg-[#f9fbfd] text-muted"
+                    isCurrentMonth ? "bg-panel" : "bg-panel/80 text-muted"
                   } ${key === todayKey ? "ring-2 ring-inset ring-solar" : ""} ${
                     isSelected ? "bg-sky/5" : ""
                   }`}
@@ -414,7 +414,7 @@ export default function CalendarPage() {
         </section>
 
         <section className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="rounded-lg border border-line bg-panel p-4 shadow-sm">
             <h2 className="text-base font-bold text-ink">Wybrany dzień</h2>
             <div className="mt-1 text-sm text-muted">{formatDate(selectedDate.toISOString())}</div>
             <div className="mt-3 grid gap-2">
@@ -422,21 +422,21 @@ export default function CalendarPage() {
                 <EventRow key={event.id} event={event} />
               ))}
               {!busy && selectedDayEvents.length === 0 ? (
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-6 text-center text-sm font-semibold text-muted">
+                <div className="rounded-md border border-line bg-panel/80 p-6 text-center text-sm font-semibold text-muted">
                   Brak spotkań i callbacków.
                 </div>
               ) : null}
             </div>
           </div>
 
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="rounded-lg border border-line bg-panel p-4 shadow-sm">
             <h2 className="text-base font-bold text-ink">Najbliższe w miesiącu</h2>
             <div className="mt-3 grid gap-2">
               {events.slice(0, 12).map((event) => (
                 <Link
                   key={event.id}
                   href={`/leads/${event.lead.id}`}
-                  className="grid gap-2 rounded-md border border-line bg-[#f9fbfd] p-3 text-sm transition hover:border-ink sm:grid-cols-[auto_1fr_auto]"
+                  className="grid gap-2 rounded-md border border-line bg-panel/80 p-3 text-sm transition hover:border-ink sm:grid-cols-[auto_1fr_auto]"
                 >
                   <span
                     className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${
@@ -461,7 +461,7 @@ export default function CalendarPage() {
                 </Link>
               ))}
               {!busy && events.length === 0 ? (
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-6 text-center text-sm font-semibold text-muted">
+                <div className="rounded-md border border-line bg-panel/80 p-6 text-center text-sm font-semibold text-muted">
                   Brak zaplanowanych działań w tym miesiącu.
                 </div>
               ) : null}

@@ -7,6 +7,7 @@ import {
   BarChart3,
   Calculator,
   CalendarDays,
+  ClipboardCheck,
   FileUp,
   LogOut,
   PanelLeft,
@@ -16,7 +17,13 @@ import {
   UsersRound
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
-import { canManageLeads, homePathForRole, isAdminRole, isSalesRole, ROLE_LABELS } from "@/lib/roles";
+import {
+  canManageLeads,
+  homePathForRole,
+  isAdminRole,
+  isSalesRole,
+  ROLE_LABELS
+} from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { Profile } from "@/lib/types";
 
@@ -44,6 +51,7 @@ export function AppShell({ profile, children }: AppShellProps) {
   const links = isAdmin
     ? [
         { href: "/admin", label: "Dashboard", icon: BarChart3 },
+        { href: "/realizacja", label: "Realizacja", icon: ClipboardCheck },
         { href: "/leads/new", label: "Nowy lead", icon: UserPlus },
         { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
         { href: "/calculators", label: "Kalkulatory", icon: Calculator },
@@ -54,17 +62,26 @@ export function AppShell({ profile, children }: AppShellProps) {
     : canManage
       ? [
           { href: "/admin", label: "Dashboard", icon: BarChart3 },
-          { href: "/leads/new", label: "Nowy lead", icon: UserPlus },
-          { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
-          { href: "/calculators", label: "Kalkulatory", icon: Calculator }
-        ]
-      : [
-          { href: "/sales", label: "Moje leady", icon: BarChart3 },
+          { href: "/realizacja", label: "Realizacja", icon: ClipboardCheck },
           { href: "/leads/new", label: "Nowy lead", icon: UserPlus },
           { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
           { href: "/calculators", label: "Kalkulatory", icon: Calculator },
           { href: "/settings", label: "Ustawienia", icon: Settings }
-        ];
+        ]
+      : isSalesRole(profile.role)
+        ? [
+            { href: "/sales", label: "Moje leady", icon: BarChart3 },
+            { href: "/realizacja", label: "Realizacja", icon: ClipboardCheck },
+            { href: "/leads/new", label: "Nowy lead", icon: UserPlus },
+            { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
+            { href: "/calculators", label: "Kalkulatory", icon: Calculator },
+            { href: "/settings", label: "Ustawienia", icon: Settings }
+          ]
+        : [
+            { href: "/realizacja", label: "Realizacja", icon: ClipboardCheck },
+            { href: "/calendar", label: "Kalendarz", icon: CalendarDays },
+            { href: "/settings", label: "Ustawienia", icon: Settings }
+          ];
 
   async function signOut() {
     await supabase.auth.signOut();

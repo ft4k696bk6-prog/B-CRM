@@ -14,7 +14,8 @@
     "next": "^15.0.3",
     "papaparse": "^5.4.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "jspdf": "^2.5.1"
   },
   "devDependencies": {
     "@next/swc-wasm-nodejs": "^15.5.18",
