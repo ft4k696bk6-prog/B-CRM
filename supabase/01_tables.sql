@@ -8,7 +8,7 @@ create table if not exists public.profiles (
   manager_id uuid references public.profiles(id) on delete set null,
   created_at timestamptz not null default now(),
   constraint profiles_role_check check (
-    role in ('admin', 'handlowiec', 'menadzer', 'ksiegowosc', 'logistyk', 'monter')
+    role in ('owner', 'admin', 'handlowiec', 'menadzer', 'finance', 'viewer', 'ksiegowosc', 'logistyk', 'monter', 'sales', 'manager')
   )
 );
 

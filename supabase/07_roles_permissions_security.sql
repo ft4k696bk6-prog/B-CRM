@@ -6,7 +6,19 @@ alter table public.profiles
 
 alter table public.profiles
   add constraint profiles_role_check check (
-    role in ('owner', 'admin', 'handlowiec', 'menadzer', 'finance', 'viewer', 'sales', 'manager')
+    role in (
+      'owner',
+      'admin',
+      'handlowiec',
+      'menadzer',
+      'finance',
+      'viewer',
+      'ksiegowosc',
+      'logistyk',
+      'monter',
+      'sales',
+      'manager'
+    )
   );
 
 create table if not exists public.audit_events (

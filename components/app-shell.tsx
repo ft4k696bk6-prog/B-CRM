@@ -18,6 +18,8 @@ import {
   type LucideIcon
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
+import { useLanguage } from "@/components/language-provider";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { hasAnyPermission } from "@/lib/permissions";
 import type { Permission } from "@/lib/permissions";
 import { homePathForRole, isSalesRole, ROLE_LABELS } from "@/lib/roles";
@@ -31,7 +33,17 @@ type AppShellProps = {
 
 type NavigationLink = {
   href: string;
-  label: string;
+  labelKey:
+    | "navDashboard"
+    | "navTeamDashboard"
+    | "navMyLeads"
+    | "navOperations"
+    | "navNewLead"
+    | "navCalendar"
+    | "navCalculators"
+    | "navSettings"
+    | "navImport"
+    | "navUsers";
   icon: LucideIcon;
   permissions: Permission[];
   hideWhenAnyPermission?: Permission[];
@@ -48,33 +60,34 @@ const bulkReturnStatuses = [
 ];
 
 const navigationLinks: NavigationLink[] = [
-  { href: "/admin", label: "Dashboard", icon: BarChart3, permissions: ["dashboard:view:all"] },
+  { href: "/admin", labelKey: "navDashboard", icon: BarChart3, permissions: ["dashboard:view:all"] },
   {
     href: "/admin",
-    label: "Dashboard zespołu",
+    labelKey: "navTeamDashboard",
     icon: BarChart3,
     permissions: ["dashboard:view:team"],
     hideWhenAnyPermission: ["dashboard:view:all"]
   },
   {
     href: "/sales",
-    label: "Moje leady",
+    labelKey: "navMyLeads",
     icon: BarChart3,
     permissions: ["dashboard:view:own"],
     salesOnly: true
   },
-  { href: "/realizacja", label: "Realizacja", icon: FolderKanban, permissions: ["operations:view"] },
-  { href: "/leads/new", label: "Nowy lead", icon: UserPlus, permissions: ["leads:create:own", "leads:create:pool"] },
-  { href: "/calendar", label: "Kalendarz", icon: CalendarDays, permissions: ["calendar:view"] },
-  { href: "/calculators", label: "Kalkulatory", icon: Calculator, permissions: ["offers:calculate"] },
-  { href: "/settings", label: "Ustawienia", icon: Settings, permissions: ["settings:view"] },
-  { href: "/admin/import", label: "Import CSV", icon: FileUp, permissions: ["data:import"] },
-  { href: "/admin/users", label: "Użytkownicy", icon: UsersRound, permissions: ["users:manage"] }
+  { href: "/realizacja", labelKey: "navOperations", icon: FolderKanban, permissions: ["operations:view"] },
+  { href: "/leads/new", labelKey: "navNewLead", icon: UserPlus, permissions: ["leads:create:own", "leads:create:pool"] },
+  { href: "/calendar", labelKey: "navCalendar", icon: CalendarDays, permissions: ["calendar:view"] },
+  { href: "/calculators", labelKey: "navCalculators", icon: Calculator, permissions: ["offers:calculate"] },
+  { href: "/settings", labelKey: "navSettings", icon: Settings, permissions: ["settings:view"] },
+  { href: "/admin/import", labelKey: "navImport", icon: FileUp, permissions: ["data:import"] },
+  { href: "/admin/users", labelKey: "navUsers", icon: UsersRound, permissions: ["users:manage"] }
 ];
 
 export function AppShell({ profile, children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useLanguage();
   const [returningLeads, setReturningLeads] = useState(false);
   const homeHref = homePathForRole(profile.role);
   const links = navigationLinks.filter((link) => {
@@ -92,7 +105,7 @@ export function AppShell({ profile, children }: AppShellProps) {
     if (!isSalesRole(profile.role) || returningLeads) return;
 
     const confirmed = window.confirm(
-      "Zwrócić wszystkie leady bez callbacku i bez spotkania? Leady Call back i Spotkanie zostaną u Ciebie."
+      t("returnLeadsConfirm")
     );
 
     if (!confirmed) return;
@@ -125,9 +138,11 @@ export function AppShell({ profile, children }: AppShellProps) {
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
           <Link href={homeHref} className="flex items-center gap-3">
             <BrandMark size="sm" />
-            <span>
-              <span className="block text-sm font-bold leading-4">B-CRM</span>
-              <span className="block text-xs text-muted">Panel: {ROLE_LABELS[profile.role]}</span>
+              <span>
+                <span className="block text-sm font-bold leading-4">B-CRM</span>
+              <span className="block text-xs text-muted">
+                {t("panelPrefix")}: {ROLE_LABELS[profile.role]}
+              </span>
             </span>
           </Link>
 
@@ -142,17 +157,20 @@ export function AppShell({ profile, children }: AppShellProps) {
                 onClick={returnOpenLeads}
                 disabled={returningLeads}
                 className="inline-flex h-10 w-10 items-center justify-center gap-2 rounded-md border border-line bg-white text-sm font-semibold text-ink transition hover:border-ink disabled:cursor-not-allowed disabled:opacity-55 sm:w-auto sm:px-3"
-                title="Zwróć leady bez callbacku i spotkania"
+                title={t("returnLeadsTitle")}
               >
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                <span className="hidden sm:inline">Zwrot leadów</span>
+                <span className="hidden sm:inline">{t("returnLeads")}</span>
               </button>
             ) : null}
+            <div className="hidden md:block">
+              <LanguageSwitcher />
+            </div>
             <button
               type="button"
               onClick={signOut}
               className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-line bg-white text-muted transition hover:border-ink hover:text-ink"
-              title="Wyloguj"
+              title={t("signOut")}
             >
               <LogOut className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -164,7 +182,7 @@ export function AppShell({ profile, children }: AppShellProps) {
         <aside className="app-sidebar rounded-lg border border-line bg-white p-2 shadow-sm lg:sticky lg:top-20 lg:h-fit">
           <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-semibold uppercase tracking-wide text-muted">
             <PanelLeft className="h-4 w-4" aria-hidden="true" />
-            Menu
+            {t("menu")}
           </div>
           <nav className="grid gap-1">
             {links.map((link) => {
@@ -173,14 +191,14 @@ export function AppShell({ profile, children }: AppShellProps) {
 
               return (
                 <Link
-                  key={`${link.href}-${link.label}`}
+                  key={`${link.href}-${link.labelKey}`}
                   href={link.href}
                   className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold transition ${
                     active ? "bg-ink text-white" : "text-muted hover:bg-[#eef3f8] hover:text-ink"
                   }`}
                 >
                   <Icon className="h-4 w-4" aria-hidden="true" />
-                  {link.label}
+                  {t(link.labelKey)}
                 </Link>
               );
             })}

@@ -1,4 +1,9 @@
 export type DemoCustomerRecord = {
+  contractNumber: string;
+  contractDate: string;
+  sellerName: string;
+  companyName: string;
+  companyNip: string;
   clientName: string;
   phone: string;
   email: string;
@@ -19,6 +24,11 @@ export type DemoCustomerRecord = {
 };
 
 export const demoContractData: DemoCustomerRecord = {
+  contractNumber: "BCRM/05/2026/017",
+  contractDate: "2026-05-17",
+  sellerName: "Anna Nowak",
+  companyName: "B-CRM Energy Sp. z o.o.",
+  companyNip: "9480000000",
   clientName: "Jan Kowalski",
   phone: "600 700 800",
   email: "jan.kowalski@example.com",
@@ -38,6 +48,31 @@ export const demoContractData: DemoCustomerRecord = {
   warehouseNote: "Konstrukcja na dachówkę, czarne ramy paneli."
 };
 
+export const contractFieldLabels: Record<keyof DemoCustomerRecord, string> = {
+  contractNumber: "Numer umowy",
+  contractDate: "Data umowy",
+  sellerName: "Opiekun",
+  companyName: "Sprzedawca",
+  companyNip: "NIP sprzedawcy",
+  clientName: "Klient",
+  phone: "Telefon",
+  email: "E-mail",
+  address: "Adres",
+  city: "Miasto",
+  postalCode: "Kod pocztowy",
+  pesel: "PESEL",
+  identityDocument: "Dokument tożsamości",
+  installationPowerKw: "Moc instalacji",
+  panelsCount: "Liczba paneli",
+  inverterModel: "Falownik",
+  netPrice: "Cena netto",
+  grossPrice: "Cena brutto",
+  financing: "Finansowanie",
+  creditInstallment: "Rata",
+  montageDate: "Termin montażu",
+  warehouseNote: "Uwagi magazynowe"
+};
+
 export const demoCreditData = {
   bank: "Bank Zielonej Energii",
   loanAmount: "39 237 PLN",
@@ -46,6 +81,16 @@ export const demoCreditData = {
   period: "120 miesięcy",
   decision: "Wstępna zgoda",
   scoring: "Bardzo dobry"
+};
+
+export const creditFieldLabels: Record<keyof typeof demoCreditData, string> = {
+  bank: "Bank",
+  loanAmount: "Kwota kredytu",
+  ownPayment: "Wpłata własna",
+  installment: "Rata",
+  period: "Okres",
+  decision: "Decyzja",
+  scoring: "Scoring"
 };
 
 export const annexChangeOptions = [
@@ -58,4 +103,4 @@ export const annexChangeOptions = [
 ];
 
 export const ksefDisclaimer =
-  "To jest gotowa symulacja procesu KSeF. Produkcyjna wysyłka wymaga podpięcia danych konkretnej firmy, certyfikatów oraz osobnej walidacji prawno-księgowej.";
+  "CRM przygotowuje dane faktury w strukturze wymaganej do dalszej obsługi KSeF. Produkcyjna wysyłka wymaga aktywnej integracji z kontem firmy i uprawnieniami księgowymi.";

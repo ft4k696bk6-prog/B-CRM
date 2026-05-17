@@ -259,7 +259,7 @@ export default function AdminDashboardPage() {
       "Powiat",
       "Status",
       "Handlowiec",
-      "Callback",
+      "Oddzwonienie",
       "Spotkanie",
       "Źródło",
       "Utworzony",
@@ -322,7 +322,7 @@ export default function AdminDashboardPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="section-title">
-              Dashboard {profile.role === "menadzer" ? "menadżera" : profile.role === "finance" ? "finansowy" : profile.role === "viewer" ? "podglądu" : "admina"}
+              Panel {profile.role === "menadzer" ? "menadżera" : profile.role === "finance" ? "finansowy" : profile.role === "viewer" ? "podglądu" : "admina"}
             </h1>
             <p className="mt-1 text-sm text-muted">
               {isManager
@@ -348,7 +348,7 @@ export default function AdminDashboardPage() {
           <StatTile label="Wszystkie" value={stats.all} icon={Database} tone="sky" />
           <StatTile label="Nieprzypisane" value={stats.unassigned} icon={Inbox} tone="solar" />
           <StatTile label="Przypisane" value={stats.assigned} icon={UserCheck} tone="leaf" />
-          <StatTile label="Call back" value={stats.callbacks} icon={PhoneCall} tone="warn" />
+          <StatTile label="Oddzwonienia" value={stats.callbacks} icon={PhoneCall} tone="warn" />
           <StatTile label="Spotkania" value={stats.meetings} icon={CalendarDays} tone="leaf" />
           <StatTile label="Umowy" value={stats.contracts} icon={FileSignature} tone="leaf" />
           <StatTile label="Rezygnacje" value={stats.resignations} icon={Ban} tone="danger" />
@@ -364,7 +364,7 @@ export default function AdminDashboardPage() {
               <div>
                 <h2 className="text-base font-bold text-ink">Realizacja po umowie</h2>
                 <p className="mt-1 text-sm text-muted">
-                  Faktura, KSeF demo, logistyka, monter i generator aneksu w jednym miejscu.
+                  Dokumenty, księgowość, logistyka, montaż i generator aneksu w jednym miejscu.
                 </p>
               </div>
             </div>
@@ -393,7 +393,7 @@ export default function AdminDashboardPage() {
                     <th className="px-3 py-3">Leady</th>
                     <th className="px-3 py-3">Spotkania</th>
                     <th className="px-3 py-3">Umowy</th>
-                    <th className="px-3 py-3">Zaległe callbacki</th>
+                    <th className="px-3 py-3">Zaległe oddzwonienia</th>
                     <th className="px-3 py-3">Bez akcji</th>
                   </tr>
                 </thead>

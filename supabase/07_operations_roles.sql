@@ -5,7 +5,7 @@ alter table public.profiles
 
 alter table public.profiles
   add constraint profiles_role_check check (
-    role in ('admin', 'handlowiec', 'menadzer', 'ksiegowosc', 'logistyk', 'monter')
+    role in ('owner', 'admin', 'handlowiec', 'menadzer', 'finance', 'viewer', 'ksiegowosc', 'logistyk', 'monter', 'sales', 'manager')
   );
 
 create or replace function public.handle_new_user()
@@ -21,9 +21,14 @@ begin
     'admin',
     'handlowiec',
     'menadzer',
+    'owner',
+    'finance',
+    'viewer',
     'ksiegowosc',
     'logistyk',
-    'monter'
+    'monter',
+    'sales',
+    'manager'
   ) then
     requested_role := new.raw_user_meta_data ->> 'role';
   end if;

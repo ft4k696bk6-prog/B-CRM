@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { LanguageProvider } from "@/components/language-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "B-CRM",
-  description: "Prosty CRM dla firmy sprzedającej fotowoltaikę",
+  description: "CRM sprzedażowo-operacyjny dla firm OZE",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [
@@ -24,7 +25,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="pl">
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <LanguageProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

@@ -130,7 +130,7 @@ function EventRow({ event }: { event: CalendarEvent }) {
 }
 
 export default function CalendarPage() {
-  const { loading, profile } = useAuth();
+  const { loading, profile } = useAuth(["owner", "admin", "menadzer", "handlowiec"]);
   const [month, setMonth] = useState(() => new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [salespeople, setSalespeople] = useState<Profile[]>([]);
@@ -267,7 +267,7 @@ export default function CalendarPage() {
         <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
           <div>
             <h1 className="section-title">Kalendarz</h1>
-            <p className="mt-1 text-sm text-muted">Spotkania i callbacki z kart leadów.</p>
+            <p className="mt-1 text-sm text-muted">Spotkania i oddzwonienia z kart leadów.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {canManage ? (
@@ -300,12 +300,12 @@ export default function CalendarPage() {
           <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
             <div className="label">Ten tydzień</div>
             <div className="text-2xl font-black text-ink">{weekMeetings}</div>
-            <div className="mt-1 text-sm text-muted">{weekCallbacks} callbacków</div>
+            <div className="mt-1 text-sm text-muted">{weekCallbacks} oddzwonień</div>
           </div>
           <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
             <div className="label">Ten miesiąc</div>
             <div className="text-2xl font-black text-ink">{meetings.length}</div>
-            <div className="mt-1 text-sm text-muted">{callbacks.length} callbacków</div>
+            <div className="mt-1 text-sm text-muted">{callbacks.length} oddzwonień</div>
           </div>
           <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
             <div className="label">Zaplanowane</div>
@@ -334,7 +334,7 @@ export default function CalendarPage() {
               <div>
                 <h2 className="text-base font-bold capitalize text-ink">{monthLabel(month)}</h2>
                 <p className="text-sm text-muted">
-                  {meetings.length} spotkań · {callbacks.length} callbacków
+                  {meetings.length} spotkań · {callbacks.length} oddzwonień
                 </p>
               </div>
             </div>
@@ -423,7 +423,7 @@ export default function CalendarPage() {
               ))}
               {!busy && selectedDayEvents.length === 0 ? (
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-6 text-center text-sm font-semibold text-muted">
-                  Brak spotkań i callbacków.
+                  Brak spotkań i oddzwonień.
                 </div>
               ) : null}
             </div>
@@ -454,7 +454,7 @@ export default function CalendarPage() {
                   <span>
                     <span className="block font-bold text-ink">{event.lead.full_name}</span>
                     <span className="text-muted">
-                      {event.type === "meeting" ? "Spotkanie" : "Call back"} · {timeLabel(event.at)}
+                      {event.type === "meeting" ? "Spotkanie" : "Oddzwonienie"} · {timeLabel(event.at)}
                     </span>
                   </span>
                   <span className="font-semibold text-ink sm:text-right">{formatDateTime(event.at)}</span>

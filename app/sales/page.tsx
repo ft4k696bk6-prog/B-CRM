@@ -97,7 +97,7 @@ export default function SalesDashboardPage() {
 
   const workQueue = useMemo(
     () => [
-      ...overdueCallbacks.map((lead) => ({ lead, reason: "Zaległy callback" })),
+      ...overdueCallbacks.map((lead) => ({ lead, reason: "Zaległe oddzwonienie" })),
       ...todayMeetings.map((lead) => ({ lead, reason: "Spotkanie dzisiaj" })),
       ...leadsWithoutNextAction.map((lead) => ({ lead, reason: "Brak następnej akcji" }))
     ].slice(0, 8),
@@ -111,8 +111,8 @@ export default function SalesDashboardPage() {
       <div className="grid gap-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="section-title">Dashboard handlowca</h1>
-            <p className="mt-1 text-sm text-muted">Leady, callbacki i spotkania.</p>
+            <h1 className="section-title">Panel handlowca</h1>
+            <p className="mt-1 text-sm text-muted">Leady, oddzwonienia i spotkania.</p>
           </div>
           <button type="button" onClick={loadLeads} className="btn-secondary">
             <RefreshCw className="h-4 w-4" aria-hidden="true" />
@@ -123,7 +123,7 @@ export default function SalesDashboardPage() {
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <StatTile label="Moje leady" value={leads.length} icon={ClipboardList} tone="sky" />
           <StatTile
-            label="Callbacki"
+            label="Oddzwonienia"
             value={upcomingCallbacks.length}
             icon={PhoneCall}
             tone="warn"
@@ -135,7 +135,7 @@ export default function SalesDashboardPage() {
             tone="leaf"
           />
           <StatTile
-            label="Zaległe callbacki"
+            label="Zaległe oddzwonienia"
             value={overdueCallbacks.length}
             icon={AlertTriangle}
             tone="danger"
@@ -179,7 +179,7 @@ export default function SalesDashboardPage() {
 
         {overdueCallbacks.length > 0 ? (
           <section className="rounded-lg border border-danger/20 bg-danger/10 p-4">
-            <h2 className="text-base font-bold text-danger">Zaległe callbacki</h2>
+            <h2 className="text-base font-bold text-danger">Zaległe oddzwonienia</h2>
             <div className="mt-3 grid gap-2">
               {overdueCallbacks.slice(0, 5).map((lead) => (
                 <Link

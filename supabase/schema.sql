@@ -8,7 +8,7 @@ create table if not exists public.profiles (
   manager_id uuid references public.profiles(id) on delete set null,
   created_at timestamptz not null default now(),
   constraint profiles_role_check check (
-    role in ('admin', 'handlowiec', 'menadzer', 'ksiegowosc', 'logistyk', 'monter')
+    role in ('owner', 'admin', 'handlowiec', 'menadzer', 'finance', 'viewer', 'ksiegowosc', 'logistyk', 'monter', 'sales', 'manager')
   )
 );
 
@@ -113,12 +113,17 @@ declare
   requested_role text := 'handlowiec';
 begin
   if new.raw_user_meta_data ->> 'role' in (
+    'owner',
     'admin',
     'handlowiec',
     'menadzer',
+    'finance',
+    'viewer',
     'ksiegowosc',
     'logistyk',
-    'monter'
+    'monter',
+    'sales',
+    'manager'
   ) then
     requested_role := new.raw_user_meta_data ->> 'role';
   end if;

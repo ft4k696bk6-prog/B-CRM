@@ -14,6 +14,8 @@ import {
   UsersRound
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
+import { useLanguage } from "@/components/language-provider";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { homePathForRole, normalizeRole } from "@/lib/roles";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
@@ -24,48 +26,54 @@ const demoOptions = [
     key: "demo",
     email: "demo@example.com",
     password: "demo-admin",
-    label: "Admin",
-    description: "Pełny podgląd CRM",
+    labelPl: "Administrator",
+    labelEn: "Admin",
+    descriptionKey: "fullAccess",
     icon: ShieldCheck
   },
   {
     key: "demo-menadzer",
     email: "demo-menadzer@example.com",
     password: "demo-menadzer",
-    label: "Menadżer",
-    description: "Akceptacje i zespół",
+    labelPl: "Menadżer",
+    labelEn: "Manager",
+    descriptionKey: "managerDemo",
     icon: UsersRound
   },
   {
     key: "demo-handlowiec",
     email: "demo-handlowiec@example.com",
     password: "demo-handlowiec",
-    label: "Handlowiec",
-    description: "Leady i umowy",
+    labelPl: "Handlowiec",
+    labelEn: "Sales",
+    descriptionKey: "salespersonDemo",
     icon: BriefcaseBusiness
   },
   {
     key: "demo-ksiegowy",
     email: "demo-ksiegowy@example.com",
     password: "demo-ksiegowy",
-    label: "Księgowość",
-    description: "Faktury, aneksy, KSeF",
+    labelPl: "Księgowość",
+    labelEn: "Accounting",
+    descriptionKey: "accountingDemo",
     icon: Calculator
   },
   {
     key: "demo-logistyk",
     email: "demo-logistyk@example.com",
     password: "demo-logistyk",
-    label: "Logistyka",
-    description: "Zamówienia i kompletacja",
+    labelPl: "Logistyka",
+    labelEn: "Logistics",
+    descriptionKey: "logisticsDemo",
     icon: Truck
   },
   {
     key: "demo-monter",
     email: "demo-monter@example.com",
     password: "demo-monter",
-    label: "Monter",
-    description: "Terminy i montaż",
+    labelPl: "Monter",
+    labelEn: "Installer",
+    descriptionKey: "installerDemo",
     icon: Hammer
   }
 ] as const;
@@ -92,6 +100,7 @@ function resolveCredentials(identifier: string, typedPassword: string) {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { language, t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -109,7 +118,7 @@ export default function LoginPage() {
 
     if (signInError || !data.user) {
       setLoading(false);
-      setError("Nie udało się zalogować. Sprawdź e-mail i hasło.");
+      setError(t("loginError"));
       return;
     }
 
@@ -146,24 +155,27 @@ export default function LoginPage() {
   return (
     <main className="grid min-h-screen place-items-center bg-[#f6f8fb] px-4 py-8">
       <section className="w-full max-w-md rounded-lg border border-line bg-white p-6 shadow-soft">
-        <div className="mb-8 flex items-center gap-3">
-          <BrandMark />
-          <div>
-            <h1 className="text-xl font-bold text-ink">B-CRM</h1>
-            <p className="text-sm text-muted">Logowanie do panelu</p>
+        <div className="mb-8 flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <BrandMark />
+            <div>
+              <h1 className="text-xl font-bold text-ink">B-CRM</h1>
+              <p className="text-sm text-muted">{t("loginSubtitle")}</p>
+            </div>
           </div>
+          <LanguageSwitcher />
         </div>
 
         {!isSupabaseConfigured ? (
           <div className="mb-4 flex gap-3 rounded-md border border-warn/30 bg-warn/10 p-3 text-sm text-[#8a4300]">
             <AlertCircle className="mt-0.5 h-4 w-4 flex-none" aria-hidden="true" />
-            <span>Brakuje danych Supabase w pliku .env.local.</span>
+            <span>{t("supabaseMissing")}</span>
           </div>
         ) : null}
 
         {demoModeEnabled ? (
           <div className="mb-4 rounded-md border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
-            Demo: kliknij wybraną rolę albo wpisz alias, np. <strong>demo-handlowiec</strong>, z hasłem <strong>demo</strong>.
+            {t("demoIntro")}
           </div>
         ) : null}
 
@@ -176,7 +188,7 @@ export default function LoginPage() {
 
         <form onSubmit={onSubmit} className="grid gap-4">
           <label>
-            <span className="label">E-mail</span>
+            <span className="label">{t("email")}</span>
             <input
               className="field"
               type="text"
@@ -188,7 +200,7 @@ export default function LoginPage() {
           </label>
 
           <label>
-            <span className="label">Hasło</span>
+            <span className="label">{t("password")}</span>
             <input
               className="field"
               type="password"
@@ -205,7 +217,7 @@ export default function LoginPage() {
             className="btn-primary"
           >
             <LogIn className="h-4 w-4" aria-hidden="true" />
-            {loading ? "Logowanie" : "Zaloguj"}
+            {loading ? t("signingIn") : t("signIn")}
           </button>
         </form>
 
@@ -217,7 +229,7 @@ export default function LoginPage() {
             className="btn-secondary w-full"
           >
             <Sparkles className="h-4 w-4" aria-hidden="true" />
-            {showDemoMenu ? "Ukryj demo" : "Wypróbuj demo"}
+            {showDemoMenu ? t("hideDemo") : t("showDemo")}
           </button>
 
           {showDemoMenu ? (
@@ -237,8 +249,10 @@ export default function LoginPage() {
                       <Icon className="h-4 w-4" aria-hidden="true" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-sm font-bold text-ink">{option.label}</span>
-                      <span className="block truncate text-xs text-muted">{option.description}</span>
+                      <span className="block text-sm font-bold text-ink">
+                        {language === "pl" ? option.labelPl : option.labelEn}
+                      </span>
+                      <span className="block truncate text-xs text-muted">{t(option.descriptionKey)}</span>
                     </span>
                   </button>
                 );

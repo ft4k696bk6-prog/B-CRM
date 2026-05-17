@@ -21,7 +21,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { ActivityLog } from "@/components/activity-log";
 import { FileList } from "@/components/file-list";
 import { ReminderList } from "@/components/reminder-list";
-import { ACTION_LABELS, LEAD_STATUSES, STATUS_TILE_TONES } from "@/lib/constants";
+import { ACTION_LABELS, LEAD_STATUSES, STATUS_LABELS, STATUS_TILE_TONES } from "@/lib/constants";
 import { hasAnyPermission } from "@/lib/permissions";
 import { formatDateTime, toDatetimeLocalValue } from "@/lib/date";
 import { canManageLeads, homePathForRole, isManagerRole, isSalesRole } from "@/lib/roles";
@@ -457,7 +457,7 @@ export default function LeadDetailsPage() {
                   <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.updated_at)}</dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
-                  <dt className="label">Callback</dt>
+                  <dt className="label">Oddzwonienie</dt>
                   <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.callback_at)}</dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
@@ -501,7 +501,7 @@ export default function LeadDetailsPage() {
                               STATUS_TILE_TONES[item]
                             } ${active ? "ring-2 ring-ink ring-offset-2" : ""}`}
                           >
-                            <span className="block text-sm font-black">{item}</span>
+                            <span className="block text-sm font-black">{STATUS_LABELS[item]}</span>
                             <span className="mt-1 block text-xs opacity-80">
                               {item === "Call back"
                                 ? "Ustaw termin kontaktu"
@@ -533,7 +533,7 @@ export default function LeadDetailsPage() {
 
                   {status === "Call back" ? (
                     <label>
-                      <span className="label">Data i godzina callbacku</span>
+                      <span className="label">Data i godzina oddzwonienia</span>
                       <input
                         className="field"
                         type="datetime-local"

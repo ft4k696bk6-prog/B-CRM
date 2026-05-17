@@ -9,12 +9,12 @@ export const themePacks = [
   {
     id: "premium",
     name: "Premium",
-    description: "Głębszy granat, złoty akcent i bardziej executive vibe."
+    description: "Głębszy granat, złoty akcent i formalny charakter."
   },
   {
     id: "forest",
     name: "Forest",
-    description: "Zieleń i chłodne tła pod firmy nastawione na eco."
+    description: "Zieleń i chłodne tła dla firm z obszaru OZE."
   },
   {
     id: "graphite",
@@ -24,7 +24,7 @@ export const themePacks = [
   {
     id: "berry",
     name: "Berry",
-    description: "Nowocześniejsza, cieplejsza paleta dla portfolio."
+    description: "Nowoczesna, cieplejsza paleta dla pracy operacyjnej."
   }
 ] as const;
 

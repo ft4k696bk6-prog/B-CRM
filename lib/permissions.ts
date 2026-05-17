@@ -159,24 +159,17 @@ export const PERMISSIONS: PermissionMatrix = {
   ],
   ksiegowosc: [
     "activities:view",
-    "calendar:view",
     "operations:view",
-    "offers:calculate",
     "reports:view:own",
-    "settings:view",
     "data:export"
   ],
   logistyk: [
     "activities:view",
-    "calendar:view",
-    "operations:view",
-    "settings:view"
+    "operations:view"
   ],
   monter: [
     "activities:view",
-    "calendar:view",
-    "operations:view",
-    "settings:view"
+    "operations:view"
   ]
 };
 

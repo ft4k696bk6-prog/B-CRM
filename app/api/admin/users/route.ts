@@ -30,6 +30,11 @@ type ProfileRow = {
   created_at: string;
 };
 
+type AdminProfile = {
+  role: string | null;
+  email: string | null;
+};
+
 function dbCompatibleRole(role: UserRole) {
   if (role === "handlowiec") return "sales";
   if (role === "menadzer") return "manager";
@@ -165,7 +170,7 @@ async function requireAdmin(request: Request) {
       .from("profiles")
       .select("role,email")
       .eq("id", user.id)
-      .single();
+      .single<AdminProfile>();
 
     const requesterRole = normalizeRole(
       profile?.role,
@@ -177,7 +182,12 @@ async function requireAdmin(request: Request) {
       return { error: NextResponse.json({ error: "Brak uprawnień administratora." }, { status: 403 }) };
     }
 
-    return { supabaseAdmin, user };
+    return {
+      supabaseAdmin,
+      user,
+      requesterEmail: profile?.email || user.email || null,
+      requesterIsDemo: isDemoUserEmail(profile?.email || user.email)
+    };
   } catch (error) {
     return {
       error: NextResponse.json(
@@ -220,7 +230,7 @@ export async function GET(request: Request) {
   );
 
   const users = ((data || []) as ProfileRow[])
-    .filter((user) => !isDemoUserEmail(user.email))
+    .filter((user) => (auth.requesterIsDemo ? isDemoUserEmail(user.email) : !isDemoUserEmail(user.email)))
     .map((user) => ({
       ...user,
       role: normalizeRole(user.role, user.email, roleByUserId.get(user.id))
@@ -243,6 +253,13 @@ export async function POST(request: Request) {
 
     if (!email || !password || !fullName) {
       return NextResponse.json({ error: "Uzupełnij wszystkie pola." }, { status: 400 });
+    }
+
+    if (auth.requesterIsDemo) {
+      return NextResponse.json(
+        { error: "Konto demo nie może tworzyć prawdziwych użytkowników." },
+        { status: 403 }
+      );
     }
 
     const { data, error } = await auth.supabaseAdmin.auth.admin.createUser({
@@ -320,6 +337,13 @@ export async function PATCH(request: Request) {
       trustedAuthRole(targetAuth.user?.app_metadata?.role)
     );
 
+    if (auth.requesterIsDemo && !isDemoUserEmail(target?.email || targetAuth.user?.email)) {
+      return NextResponse.json(
+        { error: "Konto demo może zmieniać wyłącznie konta demo." },
+        { status: 403 }
+      );
+    }
+
     if (isSystemAdminRole(targetRole) && role !== targetRole && id !== auth.user.id) {
       return NextResponse.json(
         { error: "Nie można odebrać roli właściciela lub admina innemu administratorowi." },
@@ -336,6 +360,13 @@ export async function PATCH(request: Request) {
 
       if (normalizeRole(manager?.role, manager?.email) !== "menadzer") {
         return NextResponse.json({ error: "Wybrany opiekun nie jest menadżerem." }, { status: 400 });
+      }
+
+      if (auth.requesterIsDemo && !isDemoUserEmail(manager?.email)) {
+        return NextResponse.json(
+          { error: "Konto demo może przypisywać tylko demo menadżerów." },
+          { status: 403 }
+        );
       }
     }
 
@@ -400,6 +431,13 @@ export async function DELETE(request: Request) {
 
     if (isDemoUserEmail(target.email)) {
       return NextResponse.json({ error: "Konta demo są zarządzane automatycznie." }, { status: 403 });
+    }
+
+    if (auth.requesterIsDemo) {
+      return NextResponse.json(
+        { error: "Konto demo nie może usuwać prawdziwych użytkowników." },
+        { status: 403 }
+      );
     }
 
     const { error } = await auth.supabaseAdmin.auth.admin.deleteUser(id);

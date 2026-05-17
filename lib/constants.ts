@@ -28,10 +28,24 @@ export const STATUS_TONES: Record<LeadStatus, string> = {
   "Do weryfikacji": "bg-[#edf0ff] text-[#4254b8] border-[#cfd6ff]"
 };
 
+export const STATUS_LABELS: Record<LeadStatus, string> = {
+  Nowy: "Nowy",
+  Przypisany: "Przypisany",
+  "Call back": "Oddzwonienie",
+  Spotkanie: "Spotkanie",
+  "Po spotkaniu": "Po spotkaniu",
+  Umowa: "Umowa",
+  Zwrot: "Zwrot",
+  Rezygnacja: "Rezygnacja",
+  "Nie odebrał": "Nie odebrał",
+  "Błędny numer": "Błędny numer",
+  "Do weryfikacji": "Do weryfikacji"
+};
+
 export const ACTION_LABELS: Record<string, string> = {
   comment: "Komentarz",
   status_change: "Zmiana statusu",
-  callback_scheduled: "Callback zaplanowany",
+  callback_scheduled: "Oddzwonienie zaplanowane",
   meeting_scheduled: "Spotkanie zaplanowane",
   meeting_address_changed: "Adres spotkania",
   contract_number_set: "Numer umowy",
@@ -41,7 +55,7 @@ export const ACTION_LABELS: Record<string, string> = {
   assigned: "Przypisanie",
   unassigned: "Odznaczenie",
   lead_created: "Dodanie leada",
-  callback_set: "Callback",
+  callback_set: "Oddzwonienie",
   meeting_set: "Spotkanie",
   meeting_address: "Adres spotkania",
   meeting_note: "Notatka po spotkaniu",
