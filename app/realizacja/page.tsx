@@ -14,7 +14,6 @@ import {
   FileSignature,
   FolderKanban,
   Hammer,
-  MousePointer2,
   PackageCheck,
   Play,
   ReceiptText,
@@ -22,7 +21,8 @@ import {
   Sparkles,
   Truck,
   Upload,
-  UsersRound
+  UsersRound,
+  X
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { useLanguage } from "@/components/language-provider";
@@ -1004,7 +1004,8 @@ function DemoProcessGuidePanel({
   canContinue,
   autofilling,
   contract,
-  onStart
+  onStart,
+  onFinish
 }: {
   copy: RealizationCopy;
   currentStep: DemoGuideStep;
@@ -1015,39 +1016,18 @@ function DemoProcessGuidePanel({
   autofilling: boolean;
   contract: DemoCustomerRecord;
   onStart: () => void;
+  onFinish: () => void;
 }) {
-  const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
-
   useEffect(() => {
     if (!open) return;
 
-    const updateTarget = (shouldScroll = false) => {
+    const timer = window.setTimeout(() => {
       const element = document.querySelector(currentStep.target);
-      if (shouldScroll) element?.scrollIntoView({ block: "center", behavior: "smooth" });
-      setTargetRect(element?.getBoundingClientRect() || null);
-    };
+      element?.scrollIntoView({ block: "center", behavior: "smooth" });
+    }, 160);
 
-    const timer = window.setTimeout(() => updateTarget(true), 120);
-    const lateTimer = window.setTimeout(() => updateTarget(), 700);
-    const updateWithoutScroll = () => updateTarget();
-    updateTarget(true);
-    window.addEventListener("resize", updateWithoutScroll);
-    window.addEventListener("scroll", updateWithoutScroll, true);
-
-    return () => {
-      window.clearTimeout(timer);
-      window.clearTimeout(lateTimer);
-      window.removeEventListener("resize", updateWithoutScroll);
-      window.removeEventListener("scroll", updateWithoutScroll, true);
-    };
-  }, [currentStep, open]);
-
-  const cursorStyle = targetRect
-    ? {
-        left: targetRect.left + Math.min(targetRect.width * 0.78, targetRect.width - 18),
-        top: targetRect.top + Math.min(targetRect.height * 0.62, targetRect.height - 18)
-      }
-    : { left: "52%", top: "52%" };
+    return () => window.clearTimeout(timer);
+  }, [currentStep.target, open]);
 
   return (
     <section className="app-card relative" data-guide-target="tutorial-launcher">
@@ -1072,29 +1052,26 @@ function DemoProcessGuidePanel({
 
       {open ? (
         <div className="fixed inset-0 z-50 pointer-events-none">
-          {targetRect ? (
-            <div
-              className="demo-guide-spotlight"
-              style={{
-                left: Math.max(targetRect.left - 10, 8),
-                top: Math.max(targetRect.top - 10, 8),
-                width: targetRect.width + 20,
-                height: targetRect.height + 20
-              }}
-            />
-          ) : null}
-          <div className="demo-guide-cursor z-[60]" style={cursorStyle}>
-            <MousePointer2 className="h-8 w-8" aria-hidden="true" />
-          </div>
-          <aside className="absolute inset-x-3 bottom-4 z-[61] sm:inset-x-auto sm:right-6 sm:top-1/2 sm:bottom-auto sm:w-[390px] sm:-translate-y-1/2">
+          <aside className="pointer-events-auto absolute inset-x-3 bottom-4 z-[61] sm:inset-x-auto sm:right-6 sm:top-1/2 sm:bottom-auto sm:w-[390px] sm:-translate-y-1/2">
             <div className="rounded-lg border border-white/70 bg-white/75 p-4 shadow-soft backdrop-blur-md">
               <div className="mb-3 flex items-center justify-between gap-3">
-                <span className={`rounded-md border px-2 py-1 text-xs font-bold ${guideRoleToneClasses[currentStep.role]}`}>
-                  {copy.roles[currentStep.role]}
-                </span>
-                <span className="text-xs font-bold text-muted">
-                  {stepIndex + 1}/{stepCount}
-                </span>
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className={`rounded-md border px-2 py-1 text-xs font-bold ${guideRoleToneClasses[currentStep.role]}`}>
+                    {copy.roles[currentStep.role]}
+                  </span>
+                  <span className="text-xs font-bold text-muted">
+                    {stepIndex + 1}/{stepCount}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={onFinish}
+                  className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-md border border-line bg-white/80 text-muted transition hover:border-ink hover:text-ink"
+                  aria-label={copy.demoGuide.finish}
+                  title={copy.demoGuide.finish}
+                >
+                  <X className="h-4 w-4" aria-hidden="true" />
+                </button>
               </div>
               <h3 className="text-base font-black text-ink">{currentStep.title}</h3>
               {autofilling ? (
@@ -1540,6 +1517,7 @@ export default function RealizacjaPage() {
             autofilling={demoGuideAutofilling}
             contract={contractReady ? contractData : contractDataFromProcess(selectedProcess)}
             onStart={startDemoGuide}
+            onFinish={finishDemoGuide}
           />
         ) : null}
 
