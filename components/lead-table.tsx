@@ -16,6 +16,20 @@ type LeadTableProps = {
   showAssignee?: boolean;
 };
 
+function formatPhone(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+  const withoutCountry = digits.startsWith("48") ? digits.slice(2) : digits;
+  const grouped = withoutCountry.replace(/(\d{3})(?=\d)/g, "$1 ").trim();
+
+  if (!grouped) return phone;
+  return digits.startsWith("48") ? `+48 ${grouped}` : grouped;
+}
+
+function phoneHref(phone: string) {
+  const normalized = phone.replace(/[^\d+]/g, "");
+  return normalized.startsWith("+") ? normalized : `+${normalized}`;
+}
+
 export function LeadTable({
   leads,
   selectable = false,
@@ -95,11 +109,11 @@ export function LeadTable({
                 </td>
                 <td className="px-4 py-3 align-top">
                   <a
-                    href={`tel:${lead.phone}`}
-                    className="inline-flex items-center gap-2 font-semibold text-ink hover:text-sky"
+                    href={`tel:${phoneHref(lead.phone)}`}
+                    className="inline-flex min-w-[154px] items-center gap-2 whitespace-nowrap font-semibold text-ink hover:text-sky"
                   >
                     <Phone className="h-4 w-4 text-muted" aria-hidden="true" />
-                    {lead.phone}
+                    {formatPhone(lead.phone)}
                   </a>
                 </td>
                 <td className="px-4 py-3 align-top text-muted">
@@ -175,9 +189,12 @@ export function LeadTable({
             </div>
 
             <div className="mt-4 grid gap-3 text-sm">
-              <a href={`tel:${lead.phone}`} className="inline-flex min-h-11 items-center gap-2 font-bold text-ink">
+              <a
+                href={`tel:${phoneHref(lead.phone)}`}
+                className="inline-flex min-h-11 w-fit min-w-[154px] items-center gap-2 whitespace-nowrap font-bold text-ink"
+              >
                 <Phone className="h-4 w-4 text-muted" aria-hidden="true" />
-                {lead.phone}
+                {formatPhone(lead.phone)}
               </a>
               <div className="grid gap-1 rounded-lg border border-line bg-[#f8fafc] p-3 text-xs font-semibold text-muted">
                 <div>Region: {lead.voivodeship || "—"} / {lead.county || "—"}</div>

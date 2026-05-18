@@ -4,6 +4,7 @@ import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   BadgeCheck,
   Calculator,
+  ChevronDown,
   CheckCircle2,
   ClipboardCheck,
   Download,
@@ -88,7 +89,7 @@ type DemoGuideStep = {
   problem: string;
   crmAction: string;
   effect: string;
-  cursor: { x: number; y: number };
+  target: string;
 };
 
 const workflowStorageKeyPrefix = "bcrm-process-workflows";
@@ -601,6 +602,19 @@ function saveStoredWorkflows(storageKey: string, workflows: Record<string, Workf
   window.localStorage.setItem(storageKey, JSON.stringify(workflows));
 }
 
+function demoWorkflowForProcess(client: ProcessClient): WorkflowMap {
+  const seed = client.id.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  const variants: WorkflowMap[] = [
+    { sales: "done", manager: "active", accounting: "pending", logistics: "pending", installer: "pending" },
+    { sales: "done", manager: "done", accounting: "active", logistics: "pending", installer: "pending" },
+    { sales: "done", manager: "done", accounting: "done", logistics: "active", installer: "pending" },
+    { sales: "done", manager: "done", accounting: "done", logistics: "done", installer: "active" },
+    { sales: "done", manager: "done", accounting: "done", logistics: "done", installer: "done" }
+  ];
+
+  return variants[seed % variants.length];
+}
+
 function toggleWorkflowStatus(current: WorkflowMap, step: WorkflowKey): WorkflowMap {
   const next: WorkflowMap = { ...current };
   const stepIndex = workflowSteps.findIndex((item) => item.key === step);
@@ -624,8 +638,8 @@ function toggleWorkflowStatus(current: WorkflowMap, step: WorkflowKey): Workflow
   return next;
 }
 
-function workflowForProcess(id: string, workflows: Record<string, WorkflowMap>) {
-  return normalizeWorkflowState(workflows[id] || initialWorkflow);
+function workflowForProcess(client: ProcessClient, workflows: Record<string, WorkflowMap>) {
+  return normalizeWorkflowState(workflows[client.id] || demoWorkflowForProcess(client));
 }
 
 function leadToProcessClient(lead: Lead): ProcessClient {
@@ -685,7 +699,7 @@ function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): Demo
         "CRM accepts the contract PDF, shows quick autofill, and fills the operations form.",
       effect:
         "Client data, contract number, and installation parameters are ready for the next departments.",
-      cursor: { x: 32, y: 54 }
+      target: "[data-guide-target=contract-data]"
     },
     {
       key: "manager-check",
@@ -697,7 +711,7 @@ function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): Demo
         "The manager sees the process stage, owner, required fields, and can mark the review as complete.",
       effect:
         "Accounting and operations receive only cases that are ready to execute.",
-      cursor: { x: 68, y: 43 }
+      target: "[data-guide-target=workflow-manager]"
     },
     {
       key: "finance",
@@ -709,7 +723,7 @@ function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): Demo
         "CRM shows financing with client and contract data without typing the same details again.",
       effect:
         "Finance gets a fast view of decision, amount, and installment before settlement continues.",
-      cursor: { x: 50, y: 76 }
+      target: "[data-guide-target=finance-panel]"
     },
     {
       key: "accounting",
@@ -721,7 +735,7 @@ function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): Demo
         "CRM builds the accounting package and shows the KSeF payload in demo mode without production submission.",
       effect:
         "Invoice and annex use the same data approved in the process.",
-      cursor: { x: 24, y: 66 }
+      target: "[data-guide-target=accounting-panel]"
     },
     {
       key: "logistics",
@@ -733,7 +747,7 @@ function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): Demo
         "CRM passes system power, panels, inverter, and installation date. PZ is planned and WZ is reserved for installation day.",
       effect:
         "After installation, confirming the date is enough for the final WZ to use the correct goods issue day.",
-      cursor: { x: 70, y: 66 }
+      target: "[data-guide-target=workflow-logistics]"
     },
     {
       key: "installer",
@@ -745,7 +759,7 @@ function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): Demo
         "CRM guides the team through the ready record and connects installation with final documents.",
       effect:
         "The process ends with the final invoice and WZ dated on the installation day.",
-      cursor: { x: 78, y: 82 }
+      target: "[data-guide-target=workflow-installer]"
     }
   ] : [
     {
@@ -758,7 +772,7 @@ function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): Demo
         "CRM przyjmuje PDF umowy, pokazuje szybkie autouzupełnianie i podstawia dane do formularza realizacji.",
       effect:
         "Dane klienta, numer umowy i parametry instalacji są gotowe dla następnych działów.",
-      cursor: { x: 32, y: 54 }
+      target: "[data-guide-target=contract-data]"
     },
     {
       key: "manager-check",
@@ -770,7 +784,7 @@ function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): Demo
         "Menadżer widzi etap procesu, opiekuna, komplet pól i może oznaczyć swoją akceptację.",
       effect:
         "Księgowość i operacje dostają tylko sprawy gotowe do realizacji.",
-      cursor: { x: 68, y: 43 }
+      target: "[data-guide-target=workflow-manager]"
     },
     {
       key: "finance",
@@ -782,7 +796,7 @@ function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): Demo
         "CRM pokazuje finansowanie z danymi klienta i umowy, bez ponownego wpisywania tych samych informacji.",
       effect:
         "Dział finansowy ma szybki obraz decyzji, kwoty i raty przed dalszym rozliczeniem.",
-      cursor: { x: 50, y: 76 }
+      target: "[data-guide-target=finance-panel]"
     },
     {
       key: "accounting",
@@ -794,7 +808,7 @@ function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): Demo
         "CRM buduje paczkę księgową i pokazuje payload KSeF w trybie demo bez wysyłania danych na produkcję.",
       effect:
         "Faktura i aneks powstają z tych samych danych, które zatwierdził proces.",
-      cursor: { x: 24, y: 66 }
+      target: "[data-guide-target=accounting-panel]"
     },
     {
       key: "logistics",
@@ -806,7 +820,7 @@ function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): Demo
         "CRM przekazuje moc, panele, falownik i termin montażu. PZ jest planowane, a WZ rezerwowane do dnia montażu.",
       effect:
         "Po montażu wystarczy potwierdzić datę, a finalne WZ ma właściwy dzień wyjścia towaru.",
-      cursor: { x: 70, y: 66 }
+      target: "[data-guide-target=workflow-logistics]"
     },
     {
       key: "installer",
@@ -818,7 +832,7 @@ function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): Demo
         "CRM prowadzi ekipę po gotowym rekordzie i spina montaż z dokumentami końcowymi.",
       effect:
         "Proces kończy się finalną fakturą i WZ z datą wykonania montażu.",
-      cursor: { x: 78, y: 82 }
+      target: "[data-guide-target=workflow-installer]"
     }
   ];
 
@@ -983,6 +997,7 @@ function DemoProcessGuidePanel({
   stepIndex,
   stepCount,
   open,
+  canContinue,
   autofilling,
   contract,
   onStart,
@@ -994,14 +1009,48 @@ function DemoProcessGuidePanel({
   stepIndex: number;
   stepCount: number;
   open: boolean;
+  canContinue: boolean;
   autofilling: boolean;
   contract: DemoCustomerRecord;
   onStart: () => void;
   onNext: () => void;
   onRequestClose: () => void;
 }) {
+  const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const updateTarget = (shouldScroll = false) => {
+      const element = document.querySelector(currentStep.target);
+      if (shouldScroll) element?.scrollIntoView({ block: "center", behavior: "smooth" });
+      setTargetRect(element?.getBoundingClientRect() || null);
+    };
+
+    const timer = window.setTimeout(() => updateTarget(true), 120);
+    const lateTimer = window.setTimeout(() => updateTarget(), 700);
+    const updateWithoutScroll = () => updateTarget();
+    updateTarget(true);
+    window.addEventListener("resize", updateWithoutScroll);
+    window.addEventListener("scroll", updateWithoutScroll, true);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.clearTimeout(lateTimer);
+      window.removeEventListener("resize", updateWithoutScroll);
+      window.removeEventListener("scroll", updateWithoutScroll, true);
+    };
+  }, [currentStep, open]);
+
+  const cursorStyle = targetRect
+    ? {
+        left: targetRect.left + Math.min(targetRect.width * 0.78, targetRect.width - 18),
+        top: targetRect.top + Math.min(targetRect.height * 0.62, targetRect.height - 18)
+      }
+    : { left: "52%", top: "52%" };
+
   return (
-    <section className={`app-card relative ${open ? "z-50 ring-2 ring-sky/20" : ""}`}>
+    <section className="app-card relative" data-guide-target="tutorial-launcher">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div className="min-w-0">
           <div className="mb-3 inline-flex items-center gap-2 rounded-md border border-leaf/20 bg-leaf/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-leaf">
@@ -1022,7 +1071,14 @@ function DemoProcessGuidePanel({
               <button type="button" onClick={onRequestClose} className="btn-secondary">
                 {copy.demoGuide.finish}
               </button>
-              <button type="button" onClick={onNext} className="btn-primary">
+              <button
+                type="button"
+                onClick={onNext}
+                disabled={!canContinue}
+                className={`btn-primary transition ${
+                  canContinue ? "opacity-100" : "pointer-events-none opacity-0"
+                }`}
+              >
                 {stepIndex >= stepCount - 1 ? copy.demoGuide.finish : copy.demoGuide.next}
               </button>
             </>
@@ -1031,54 +1087,86 @@ function DemoProcessGuidePanel({
       </div>
 
       {open ? (
-        <div className="mt-5 grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-lg border border-line bg-[#f8fafc] p-4">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className={`rounded-md border px-2 py-1 text-xs font-bold ${guideRoleToneClasses[currentStep.role]}`}>
-                {copy.roles[currentStep.role]}
-              </span>
-              <span className="text-xs font-bold text-muted">
-                {stepIndex + 1}/{stepCount}
-              </span>
-            </div>
-            <h3 className="text-base font-black text-ink">{currentStep.title}</h3>
-            <div className="mt-4 grid gap-3">
-              <GuidePoint label={copy.demoGuide.problem} value={currentStep.problem} />
-              <GuidePoint label={copy.demoGuide.crmAction} value={currentStep.crmAction} />
-              <GuidePoint label={copy.demoGuide.effect} value={currentStep.effect} />
-            </div>
-            <div className="mt-4 rounded-lg border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
-              {copy.demoGuide.note}
-            </div>
+        <div className="fixed inset-0 z-50 pointer-events-none">
+          <div className="absolute inset-0 bg-[#0f172a]/15 backdrop-blur-[1px]" />
+          {targetRect ? (
+            <div
+              className="demo-guide-spotlight"
+              style={{
+                left: Math.max(targetRect.left - 10, 8),
+                top: Math.max(targetRect.top - 10, 8),
+                width: targetRect.width + 20,
+                height: targetRect.height + 20
+              }}
+            />
+          ) : null}
+          <div className="demo-guide-cursor z-[60]" style={cursorStyle}>
+            <MousePointer2 className="h-8 w-8" aria-hidden="true" />
           </div>
-
-          <div className="grid gap-3">
-            <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
-              <div className="mb-3 flex items-center gap-2 text-sm font-black text-ink">
-                <FileSignature className="h-4 w-4 text-sky" aria-hidden="true" />
-                {contract.contractNumber}
-              </div>
-              {autofilling ? (
-                <div className="mb-3 overflow-hidden rounded-full bg-[#e8edf4]">
-                  <div className="h-2 w-2/3 rounded-full bg-sky demo-guide-loading" />
+          <div className="absolute inset-x-3 bottom-3 z-[61] mx-auto max-w-6xl pointer-events-auto sm:inset-x-6 sm:bottom-6">
+            <div className="grid gap-4 rounded-lg border border-line bg-white/95 p-4 shadow-soft backdrop-blur md:grid-cols-[1.2fr_0.8fr]">
+              <div>
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <span className={`rounded-md border px-2 py-1 text-xs font-bold ${guideRoleToneClasses[currentStep.role]}`}>
+                    {copy.roles[currentStep.role]}
+                  </span>
+                  <span className="text-xs font-bold text-muted">
+                    {stepIndex + 1}/{stepCount}
+                  </span>
                 </div>
-              ) : null}
-              <div className="grid gap-2 text-sm">
-                <PreviewField label={copy.buyer} value={contract.clientName} />
-                <PreviewField label={copy.grossAmount} value={contract.grossPrice} />
-                <PreviewField label={copy.financing} value={contract.financing} />
+                <h3 className="text-base font-black text-ink">{currentStep.title}</h3>
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                  <GuidePoint label={copy.demoGuide.problem} value={currentStep.problem} />
+                  <GuidePoint label={copy.demoGuide.crmAction} value={currentStep.crmAction} />
+                  <GuidePoint label={copy.demoGuide.effect} value={currentStep.effect} />
+                </div>
+                <div className="mt-3 rounded-lg border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
+                  {copy.demoGuide.note}
+                </div>
               </div>
-            </div>
-
-            <div className="rounded-lg border border-line bg-[#f9fbfd] p-4">
-              <div className="mb-3 flex items-center gap-2 text-sm font-black text-ink">
-                <PackagePlus className="h-4 w-4 text-leaf" aria-hidden="true" />
-                {copy.demoGuide.logisticsPreview}
-              </div>
-              <div className="grid gap-2 text-sm">
-                <PreviewField label={copy.demoGuide.pz} value={contract.inverterModel} />
-                <PreviewField label={copy.demoGuide.wz} value={`${contract.panelsCount} ${copy.panelsUnit}`} />
-                <PreviewField label={copy.demoGuide.finalWz} value={contract.montageDate} />
+              <div className="grid gap-3">
+                <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+                  <div className="mb-3 flex items-center gap-2 text-sm font-black text-ink">
+                    <FileSignature className="h-4 w-4 text-sky" aria-hidden="true" />
+                    {contract.contractNumber}
+                  </div>
+                  {autofilling ? (
+                    <div className="mb-3 overflow-hidden rounded-full bg-[#e8edf4]">
+                      <div className="h-2 w-2/3 rounded-full bg-sky demo-guide-loading" />
+                    </div>
+                  ) : null}
+                  <div className="grid gap-2 text-sm">
+                    <PreviewField label={copy.buyer} value={contract.clientName} />
+                    <PreviewField label={copy.grossAmount} value={contract.grossPrice} />
+                    <PreviewField label={copy.financing} value={contract.financing} />
+                  </div>
+                </div>
+                <div className="rounded-lg border border-line bg-[#f9fbfd] p-4">
+                  <div className="mb-3 flex items-center gap-2 text-sm font-black text-ink">
+                    <PackagePlus className="h-4 w-4 text-leaf" aria-hidden="true" />
+                    {copy.demoGuide.logisticsPreview}
+                  </div>
+                  <div className="grid gap-2 text-sm">
+                    <PreviewField label={copy.demoGuide.pz} value={contract.inverterModel} />
+                    <PreviewField label={copy.demoGuide.wz} value={`${contract.panelsCount} ${copy.panelsUnit}`} />
+                    <PreviewField label={copy.demoGuide.finalWz} value={contract.montageDate} />
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <button type="button" onClick={onRequestClose} className="btn-secondary">
+                    {copy.demoGuide.finish}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onNext}
+                    disabled={!canContinue}
+                    className={`btn-primary transition duration-500 ${
+                      canContinue ? "opacity-100" : "pointer-events-none translate-y-1 opacity-0"
+                    }`}
+                  >
+                    {stepIndex >= stepCount - 1 ? copy.demoGuide.finish : copy.demoGuide.next}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1135,8 +1223,11 @@ export default function RealizacjaPage() {
   const [documentMessage, setDocumentMessage] = useState("");
   const [demoGuideOpen, setDemoGuideOpen] = useState(false);
   const [demoGuideStepIndex, setDemoGuideStepIndex] = useState(0);
+  const [demoGuideCanContinue, setDemoGuideCanContinue] = useState(false);
   const [demoGuideAutofilling, setDemoGuideAutofilling] = useState(false);
   const [demoGuideExitOpen, setDemoGuideExitOpen] = useState(false);
+  const [showProcessList, setShowProcessList] = useState(false);
+  const [showContractData, setShowContractData] = useState(false);
   const contractInputRef = useRef<HTMLInputElement | null>(null);
 
   const demoGuideSteps = useMemo(() => buildDemoGuideSteps(copy, language), [copy, language]);
@@ -1148,7 +1239,7 @@ export default function RealizacjaPage() {
   }, [processLeads, profile]);
   const selectedProcess = processClients.find((client) => client.id === selectedProcessId) || processClients[0] || demoProcessClient();
   const hasProcessClients = processClients.length > 0;
-  const selectedWorkflow = workflowForProcess(selectedProcess.id, workflowByProcess);
+  const selectedWorkflow = workflowForProcess(selectedProcess, workflowByProcess);
   const completion = hasProcessClients ? workflowCompletion(selectedWorkflow) : 0;
   const currentRoleLabel = profile ? copy.roles[profile.role] : "";
   const accountingToolsAllowed = profile ? canUseAccountingTools(profile.role) : false;
@@ -1163,6 +1254,7 @@ export default function RealizacjaPage() {
 
   useEffect(() => {
     if (!demoGuideOpen || !activeDemoGuideStep) return;
+    setDemoGuideCanContinue(false);
 
     if (activeDemoGuideStep.key === "sales-pdf") {
       setDemoGuideAutofilling(true);
@@ -1173,6 +1265,7 @@ export default function RealizacjaPage() {
         setContractFileName(`${next.contractNumber || demoContractData.contractNumber}.pdf`);
         setDocumentMessage(copy.demoGuide.autofill);
         setDemoGuideAutofilling(false);
+        window.setTimeout(() => setDemoGuideCanContinue(true), 650);
       }, 650);
 
       return () => window.clearTimeout(timer);
@@ -1189,6 +1282,9 @@ export default function RealizacjaPage() {
     if (activeDemoGuideStep.key === "logistics") {
       setKsefReady(true);
     }
+
+    const timer = window.setTimeout(() => setDemoGuideCanContinue(true), 1800);
+    return () => window.clearTimeout(timer);
   }, [activeDemoGuideStep, copy.demoGuide.autofill, demoGuideOpen, selectedProcess]);
 
   if (loading || !profile) return <LoadingScreen />;
@@ -1276,11 +1372,15 @@ export default function RealizacjaPage() {
     setContractData(next);
     setAnnexValues(annexValuesFromContract(next));
     setDemoGuideStepIndex(0);
+    setDemoGuideCanContinue(false);
     setDemoGuideExitOpen(false);
+    setShowProcessList(true);
+    setShowContractData(true);
     setDemoGuideOpen(true);
   }
 
   function nextDemoGuideStep() {
+    if (!demoGuideCanContinue) return;
     if (demoGuideStepIndex >= demoGuideSteps.length - 1) {
       finishDemoGuide();
       return;
@@ -1293,6 +1393,7 @@ export default function RealizacjaPage() {
     setDemoGuideOpen(false);
     setDemoGuideExitOpen(false);
     setDemoGuideAutofilling(false);
+    setDemoGuideCanContinue(false);
   }
 
   function addContractFile(event: ChangeEvent<HTMLInputElement>) {
@@ -1315,7 +1416,7 @@ export default function RealizacjaPage() {
     setWorkflowByProcess((current) => {
       const next = {
         ...current,
-        [selectedProcess.id]: toggleWorkflowStatus(workflowForProcess(selectedProcess.id, current), step)
+        [selectedProcess.id]: toggleWorkflowStatus(workflowForProcess(selectedProcess, current), step)
       };
       saveStoredWorkflows(workflowStorageKeyFor(profile), next);
       return next;
@@ -1443,6 +1544,7 @@ export default function RealizacjaPage() {
             stepIndex={demoGuideStepIndex}
             stepCount={demoGuideSteps.length}
             open={demoGuideOpen}
+            canContinue={demoGuideCanContinue}
             autofilling={demoGuideAutofilling}
             contract={contractReady ? contractData : contractDataFromProcess(selectedProcess)}
             onStart={startDemoGuide}
@@ -1452,15 +1554,28 @@ export default function RealizacjaPage() {
         ) : null}
 
         <section className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
-          <div className="app-card">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky/10 text-sky">
-                <FolderKanban className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <div>
-                <h2 className="text-base font-bold text-ink">{copy.processListTitle}</h2>
-                <p className="mt-1 text-sm text-muted">{copy.processListDescription}</p>
+          <div className="app-card" data-guide-target="process-list">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky/10 text-sky">
+                  <FolderKanban className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <h2 className="text-base font-bold text-ink">{copy.processListTitle}</h2>
+                  <p className="mt-1 text-sm text-muted">
+                    {processClients.length} {language === "en" ? "clients in process" : "klientów w procesie"}
+                  </p>
+                </div>
               </div>
+              <button type="button" onClick={() => setShowProcessList((value) => !value)} className="btn-secondary">
+                <ChevronDown
+                  className={`h-4 w-4 transition ${showProcessList ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                />
+                {showProcessList
+                  ? language === "en" ? "Hide list" : "Ukryj listę"
+                  : language === "en" ? "Show list" : "Pokaż listę"}
+              </button>
             </div>
 
             {processLoading ? (
@@ -1475,9 +1590,10 @@ export default function RealizacjaPage() {
               </div>
             ) : null}
 
+            {showProcessList ? (
             <div className="grid gap-3">
               {processClients.map((client) => {
-                const workflow = workflowForProcess(client.id, workflowByProcess);
+                const workflow = workflowForProcess(client, workflowByProcess);
                 const progress = workflowCompletion(workflow);
                 const isSelected = selectedProcess.id === client.id;
 
@@ -1525,10 +1641,11 @@ export default function RealizacjaPage() {
                 />
               ) : null}
             </div>
+            ) : null}
           </div>
 
           {hasProcessClients ? (
-          <div className="app-card">
+          <div className="app-card" data-guide-target="active-process">
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-wide text-muted">
@@ -1584,17 +1701,32 @@ export default function RealizacjaPage() {
         </section>
 
         <section className="grid gap-3 xl:grid-cols-[1.1fr_0.9fr]">
-          <div className="app-card">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky/10 text-sky">
-                <FolderKanban className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <div>
-                <h2 className="text-base font-bold text-ink">{copy.contractDataTitle}</h2>
-                <p className="mt-1 text-sm text-muted">{copy.contractDataDescription}</p>
+          <div className="app-card" data-guide-target="contract-data">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky/10 text-sky">
+                  <FolderKanban className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <h2 className="text-base font-bold text-ink">{copy.contractDataTitle}</h2>
+                  <p className="mt-1 text-sm text-muted">
+                    {contractData.clientName || selectedProcess.fullName || copy.contractDataDescription}
+                  </p>
+                </div>
               </div>
+              <button type="button" onClick={() => setShowContractData((value) => !value)} className="btn-secondary">
+                <ChevronDown
+                  className={`h-4 w-4 transition ${showContractData ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                />
+                {showContractData
+                  ? language === "en" ? "Hide data" : "Ukryj dane"
+                  : language === "en" ? "Show data" : "Pokaż dane"}
+              </button>
             </div>
 
+            {showContractData ? (
+            <>
             <div className="mb-4 flex flex-wrap gap-2">
               <button type="button" onClick={showDemoContract} className="btn-secondary">
                 <Eye className="h-4 w-4" aria-hidden="true" />
@@ -1654,6 +1786,8 @@ export default function RealizacjaPage() {
                 </label>
               ))}
             </div>
+            </>
+            ) : null}
           </div>
 
           <div className="app-card">
@@ -1677,6 +1811,7 @@ export default function RealizacjaPage() {
                 return (
                   <div
                     key={item.key}
+                    data-guide-target={`workflow-${item.key}`}
                     className={`grid gap-3 rounded-lg border px-4 py-3 transition sm:grid-cols-[1fr_auto] sm:items-center ${statusClasses(
                       status
                     )}`}
@@ -1713,7 +1848,7 @@ export default function RealizacjaPage() {
         </section>
 
         <section className="grid gap-3 xl:grid-cols-[1fr_1fr]">
-          <section className="app-card">
+          <section className="app-card" data-guide-target="accounting-panel">
             <div className="mb-4 flex items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-solar/15 text-[#aa6f00]">
                 <ReceiptText className="h-5 w-5" aria-hidden="true" />
@@ -1932,7 +2067,7 @@ export default function RealizacjaPage() {
         </section>
 
         {creditLoaded ? (
-          <section className="app-card">
+          <section className="app-card" data-guide-target="finance-panel">
             <h2 className="mb-4 text-base font-bold text-ink">{copy.financingData}</h2>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {Object.entries(demoCreditData).map(([key, value]) => (
@@ -1979,23 +2114,12 @@ export default function RealizacjaPage() {
         </div>
 
         {demoGuideOpen ? (
-          <>
-            <button
-              type="button"
-              aria-label={copy.demoGuide.clickOutsideTitle}
-              className="fixed inset-0 z-40 cursor-default bg-transparent"
-              onClick={() => setDemoGuideExitOpen(true)}
-            />
-            <div
-              className="demo-guide-cursor z-[60]"
-              style={{
-                left: `${activeDemoGuideStep.cursor.x}%`,
-                top: `${activeDemoGuideStep.cursor.y}%`
-              }}
-            >
-              <MousePointer2 className="h-8 w-8" aria-hidden="true" />
-            </div>
-          </>
+          <button
+            type="button"
+            aria-label={copy.demoGuide.clickOutsideTitle}
+            className="fixed inset-0 z-40 cursor-default bg-transparent"
+            onClick={() => setDemoGuideExitOpen(true)}
+          />
         ) : null}
 
         {demoGuideExitOpen ? (

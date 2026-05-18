@@ -65,6 +65,7 @@ export default function AdminDashboardPage() {
   const [filters, setFilters] = useState<AdminLeadFilters>(initialFilters);
   const [sort, setSort] = useState<SortOption>(sortOptions[0]);
   const [showFilters, setShowFilters] = useState(false);
+  const [showTeamResults, setShowTeamResults] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedSalesperson, setSelectedSalesperson] = useState("");
   const [busy, setBusy] = useState(false);
@@ -383,59 +384,76 @@ export default function AdminDashboardPage() {
             <SectionHeader
               icon={Trophy}
               title="Wyniki zespołu"
-              description="Leady, spotkania, umowy i ryzyka operacyjne."
+              description={`${teamPerformance.length} handlowców w aktualnym widoku. Szczegóły są rozwijane, żeby dashboard nie puchł na start.`}
+              actions={
+                <button
+                  type="button"
+                  onClick={() => setShowTeamResults((value) => !value)}
+                  className="btn-secondary"
+                >
+                  <ChevronDown
+                    className={`h-4 w-4 transition ${showTeamResults ? "rotate-180" : ""}`}
+                    aria-hidden="true"
+                  />
+                  {showTeamResults ? "Ukryj wyniki" : "Pokaż wyniki"}
+                </button>
+              }
             />
-            <div className="hidden overflow-x-auto md:block">
-              <table className="app-table min-w-[720px]">
-                <thead>
-                  <tr>
-                    <th className="px-3 py-3">Handlowiec</th>
-                    <th className="px-3 py-3">Leady</th>
-                    <th className="px-3 py-3">Spotkania</th>
-                    <th className="px-3 py-3">Umowy</th>
-                    <th className="px-3 py-3">Zaległe call-backi</th>
-                    <th className="px-3 py-3">Bez akcji</th>
-                  </tr>
-                </thead>
-                <tbody>
+            {showTeamResults ? (
+              <>
+                <div className="hidden overflow-x-auto md:block">
+                  <table className="app-table min-w-[720px]">
+                    <thead>
+                      <tr>
+                        <th className="px-3 py-3">Handlowiec</th>
+                        <th className="px-3 py-3">Leady</th>
+                        <th className="px-3 py-3">Spotkania</th>
+                        <th className="px-3 py-3">Umowy</th>
+                        <th className="px-3 py-3">Zaległe call-backi</th>
+                        <th className="px-3 py-3">Bez akcji</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {teamPerformance.map((row) => (
+                        <tr key={row.person.id}>
+                          <td className="px-3 py-3 font-semibold text-ink">{row.person.full_name}</td>
+                          <td className="px-3 py-3 text-muted">{row.leads}</td>
+                          <td className="px-3 py-3 text-muted">{row.meetings}</td>
+                          <td className="px-3 py-3 font-semibold text-leaf">{row.contracts}</td>
+                          <td className="px-3 py-3 text-danger">{row.overdueCallbacks}</td>
+                          <td className="px-3 py-3 text-warn">{row.noNextAction}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="grid gap-3 md:hidden">
                   {teamPerformance.map((row) => (
-                    <tr key={row.person.id}>
-                      <td className="px-3 py-3 font-semibold text-ink">{row.person.full_name}</td>
-                      <td className="px-3 py-3 text-muted">{row.leads}</td>
-                      <td className="px-3 py-3 text-muted">{row.meetings}</td>
-                      <td className="px-3 py-3 font-semibold text-leaf">{row.contracts}</td>
-                      <td className="px-3 py-3 text-danger">{row.overdueCallbacks}</td>
-                      <td className="px-3 py-3 text-warn">{row.noNextAction}</td>
-                    </tr>
+                    <article key={row.person.id} className="rounded-lg border border-line bg-[#f8fafc] p-4">
+                      <div className="font-black text-ink">{row.person.full_name}</div>
+                      <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                        <div className="rounded-md bg-white p-3">
+                          <div className="text-xs font-bold text-muted">Leady</div>
+                          <div className="mt-1 font-black text-ink">{row.leads}</div>
+                        </div>
+                        <div className="rounded-md bg-white p-3">
+                          <div className="text-xs font-bold text-muted">Umowy</div>
+                          <div className="mt-1 font-black text-leaf">{row.contracts}</div>
+                        </div>
+                        <div className="rounded-md bg-white p-3">
+                          <div className="text-xs font-bold text-muted">Spotkania</div>
+                          <div className="mt-1 font-black text-ink">{row.meetings}</div>
+                        </div>
+                        <div className="rounded-md bg-white p-3">
+                          <div className="text-xs font-bold text-muted">Bez akcji</div>
+                          <div className="mt-1 font-black text-warn">{row.noNextAction}</div>
+                        </div>
+                      </div>
+                    </article>
                   ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="grid gap-3 md:hidden">
-              {teamPerformance.map((row) => (
-                <article key={row.person.id} className="rounded-lg border border-line bg-[#f8fafc] p-4">
-                  <div className="font-black text-ink">{row.person.full_name}</div>
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                    <div className="rounded-md bg-white p-3">
-                      <div className="text-xs font-bold text-muted">Leady</div>
-                      <div className="mt-1 font-black text-ink">{row.leads}</div>
-                    </div>
-                    <div className="rounded-md bg-white p-3">
-                      <div className="text-xs font-bold text-muted">Umowy</div>
-                      <div className="mt-1 font-black text-leaf">{row.contracts}</div>
-                    </div>
-                    <div className="rounded-md bg-white p-3">
-                      <div className="text-xs font-bold text-muted">Spotkania</div>
-                      <div className="mt-1 font-black text-ink">{row.meetings}</div>
-                    </div>
-                    <div className="rounded-md bg-white p-3">
-                      <div className="text-xs font-bold text-muted">Bez akcji</div>
-                      <div className="mt-1 font-black text-warn">{row.noNextAction}</div>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
+                </div>
+              </>
+            ) : null}
           </section>
         ) : null}
 
