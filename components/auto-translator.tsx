@@ -189,7 +189,15 @@ const dictionary: Record<string, string> = {
   "Otwórz kartę leada": "Open lead card"
 };
 
-const originalText = new WeakMap<Text, string>();
+type TranslationState = {
+  original: string;
+  translated: string;
+};
+
+const translatableAttributes = ["aria-label", "title", "placeholder"] as const;
+
+const originalText = new WeakMap<Text, TranslationState>();
+const originalAttributes = new WeakMap<Element, Partial<Record<(typeof translatableAttributes)[number], TranslationState>>>();
 
 function translateText(value: string, language: AppLanguage) {
   if (language === "pl") return value;
@@ -209,15 +217,70 @@ function translateText(value: string, language: AppLanguage) {
 }
 
 function translateNode(node: Text, language: AppLanguage) {
-  if (!originalText.has(node)) originalText.set(node, node.nodeValue || "");
-  const original = originalText.get(node) || "";
+  const currentValue = node.nodeValue || "";
+  let state = originalText.get(node);
+  if (!state) {
+    state = { original: currentValue, translated: currentValue };
+    originalText.set(node, state);
+  }
+
   if (language === "pl") {
-    if (node.nodeValue !== original) node.nodeValue = original;
+    if (currentValue === state.translated && state.translated !== state.original) {
+      node.nodeValue = state.original;
+    } else if (currentValue !== state.original) {
+      originalText.set(node, { original: currentValue, translated: currentValue });
+    }
     return;
   }
-  const translated = translateText(original, language);
-  if (translated === original) return;
+
+  if (currentValue !== state.original && currentValue !== state.translated) {
+    state = { original: currentValue, translated: currentValue };
+    originalText.set(node, state);
+  }
+
+  const translated = translateText(state.original, language);
+  state.translated = translated;
+  if (translated === state.original) return;
   if (node.nodeValue !== translated) node.nodeValue = translated;
+}
+
+function translateElementAttributes(element: Element, language: AppLanguage) {
+  let elementState = originalAttributes.get(element);
+  if (!elementState) {
+    elementState = {};
+    originalAttributes.set(element, elementState);
+  }
+
+  translatableAttributes.forEach((attribute) => {
+    const currentValue = element.getAttribute(attribute);
+    if (!currentValue) return;
+
+    let state = elementState[attribute];
+    if (!state) {
+      state = { original: currentValue, translated: currentValue };
+      elementState[attribute] = state;
+    }
+
+    if (language === "pl") {
+      if (currentValue === state.translated && state.translated !== state.original) {
+        element.setAttribute(attribute, state.original);
+      } else if (currentValue !== state.original) {
+        elementState[attribute] = { original: currentValue, translated: currentValue };
+      }
+      return;
+    }
+
+    if (currentValue !== state.original && currentValue !== state.translated) {
+      state = { original: currentValue, translated: currentValue };
+      elementState[attribute] = state;
+    }
+
+    const translated = translateText(state.original, language);
+    state.translated = translated;
+    if (translated !== state.original && currentValue !== translated) {
+      element.setAttribute(attribute, translated);
+    }
+  });
 }
 
 function shouldSkip(parent: Node | null) {
@@ -230,6 +293,17 @@ function walk(root: Node, language: AppLanguage) {
     if (!shouldSkip(root.parentNode)) translateNode(root, language);
     return;
   }
+  if (root instanceof Element) {
+    translateElementAttributes(root, language);
+  }
+
+  const elementWalker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+  let elementNode = elementWalker.nextNode();
+  while (elementNode) {
+    translateElementAttributes(elementNode as Element, language);
+    elementNode = elementWalker.nextNode();
+  }
+
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   let node = walker.nextNode();
   while (node) {
@@ -243,12 +317,21 @@ export function AutoTranslator({ language }: { language: AppLanguage }) {
     walk(document.body, language);
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
+        if (mutation.type === "characterData" && language !== "pl") {
+          walk(mutation.target, language);
+        }
+        if (mutation.type === "attributes" && language !== "pl") {
+          walk(mutation.target, language);
+        }
         mutation.addedNodes.forEach((node) => walk(node, language));
       }
     });
 
     observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: [...translatableAttributes],
       childList: true,
+      characterData: true,
       subtree: true
     });
 
