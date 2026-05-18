@@ -12,7 +12,10 @@ import {
   FileSignature,
   FolderKanban,
   Hammer,
+  MousePointer2,
   PackageCheck,
+  PackagePlus,
+  Play,
   ReceiptText,
   Send,
   Sparkles,
@@ -76,6 +79,16 @@ type ProcessClient = {
   ownerName: string | null;
   ownerRole: UserRole | null;
   isDemo?: boolean;
+};
+
+type DemoGuideStep = {
+  key: string;
+  role: UserRole;
+  title: string;
+  problem: string;
+  crmAction: string;
+  effect: string;
+  cursor: { x: number; y: number };
 };
 
 const workflowStorageKeyPrefix = "bcrm-process-workflows";
@@ -318,6 +331,30 @@ const realizationCopy = {
       logistics: "Widzi moc, liczbę paneli, sprzęt, uwagi magazynowe i termin montażu.",
       installer: "Pracuje na gotowym rekordzie z adresem, terminem i specyfikacją instalacji."
     },
+    demoGuide: {
+      eyebrow: "Demo procesu",
+      title: "Samouczek: od PDF umowy do montażu",
+      description:
+        "Krótki, bezpieczny walkthrough pokazuje, jak CRM prowadzi sprawę między sprzedażą, menadżerem, finansami, księgowością, logistyką i montażem.",
+      start: "Uruchom samouczek",
+      next: "Dalej",
+      finish: "Zakończ",
+      step: "Krok",
+      problem: "Problem",
+      crmAction: "Co robi CRM",
+      effect: "Efekt",
+      autofill: "Autouzupełnianie danych z umowy",
+      clickOutsideTitle: "Zakończyć samouczek?",
+      clickOutsideDescription: "Możesz wrócić do niego później. Dane demo pozostaną bezpieczne.",
+      keepGoing: "Kontynuuj",
+      endNow: "Zakończ",
+      logisticsPreview: "Podgląd logistyki",
+      pz: "PZ planowane",
+      wz: "WZ zarezerwowane",
+      finalWz: "WZ finalne w dniu montażu",
+      note:
+        "Komentarz wdrożeniowy: przy podpisie elektronicznym krok zdjęć papierowej umowy można pominąć, ale polityka firmy może nadal wymagać zdjęć dachu lub licznika."
+    },
     hideDemoFinancing: "Ukryj finansowanie demo",
     showDemoFinancing: "Pokaż finansowanie demo",
     previewData: "Dane w podglądzie",
@@ -444,6 +481,30 @@ const realizationCopy = {
       logistics: "Sees system power, panel count, equipment, warehouse notes, and installation date.",
       installer: "Works from the ready record with address, date, and installation specification."
     },
+    demoGuide: {
+      eyebrow: "Process demo",
+      title: "Tutorial: from contract PDF to installation",
+      description:
+        "A short, safe walkthrough shows how CRM moves work across sales, manager review, finance, accounting, logistics, and installation.",
+      start: "Start tutorial",
+      next: "Next",
+      finish: "Finish",
+      step: "Step",
+      problem: "Problem",
+      crmAction: "What CRM does",
+      effect: "Outcome",
+      autofill: "Autofilling data from the contract",
+      clickOutsideTitle: "End tutorial?",
+      clickOutsideDescription: "You can return to it later. Demo data stays safe.",
+      keepGoing: "Continue",
+      endNow: "End",
+      logisticsPreview: "Logistics preview",
+      pz: "Planned goods receipt",
+      wz: "Reserved goods issue",
+      finalWz: "Final goods issue on installation day",
+      note:
+        "Implementation note: with e-signature, the paper-contract photo step can be skipped, but company policy may still require roof or meter photos."
+    },
     hideDemoFinancing: "Hide demo financing",
     showDemoFinancing: "Show demo financing",
     previewData: "Preview data",
@@ -462,6 +523,18 @@ const realizationCopy = {
 } as const;
 
 type RealizationCopy = (typeof realizationCopy)[AppLanguage];
+
+const guideRoleToneClasses: Record<UserRole, string> = {
+  owner: "border-ink/15 bg-ink text-white",
+  admin: "border-sky/20 bg-sky/10 text-sky",
+  menadzer: "border-leaf/20 bg-leaf/10 text-leaf",
+  handlowiec: "border-solar/25 bg-solar/10 text-[#8a5a00]",
+  finance: "border-sky/20 bg-sky/10 text-sky",
+  viewer: "border-line bg-white text-muted",
+  ksiegowosc: "border-leaf/20 bg-leaf/10 text-leaf",
+  logistyk: "border-warn/25 bg-warn/10 text-warn",
+  monter: "border-danger/20 bg-danger/10 text-danger"
+};
 
 function statusClasses(status: WorkflowStatus) {
   if (status === "done") return "border-leaf/25 bg-leaf/10 text-leaf";
@@ -588,6 +661,171 @@ function demoProcessClient(): ProcessClient {
     ownerRole: "handlowiec",
     isDemo: true
   };
+}
+
+function contractDataFromProcess(client: ProcessClient): DemoCustomerRecord {
+  return {
+    ...demoContractData,
+    contractNumber: client.contractNumber || demoContractData.contractNumber,
+    clientName: client.fullName || demoContractData.clientName,
+    phone: client.phone || demoContractData.phone,
+    sellerName: client.ownerName || demoContractData.sellerName
+  };
+}
+
+function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): DemoGuideStep[] {
+  const steps: DemoGuideStep[] = language === "en" ? [
+    {
+      key: "sales-pdf",
+      role: "handlowiec",
+      title: "Sales adds the contract",
+      problem:
+        "Sales should not retype client, equipment, and pricing data from paper into several CRM places.",
+      crmAction:
+        "CRM accepts the contract PDF, shows quick autofill, and fills the operations form.",
+      effect:
+        "Client data, contract number, and installation parameters are ready for the next departments.",
+      cursor: { x: 32, y: 54 }
+    },
+    {
+      key: "manager-check",
+      role: "menadzer",
+      title: "Manager checks completeness",
+      problem:
+        "Without one process, a case can move forward without photos, installation address, or contract number.",
+      crmAction:
+        "The manager sees the process stage, owner, required fields, and can mark the review as complete.",
+      effect:
+        "Accounting and operations receive only cases that are ready to execute.",
+      cursor: { x: 68, y: 43 }
+    },
+    {
+      key: "finance",
+      role: "finance",
+      title: "Finance reviews financing",
+      problem:
+        "Installments, own payment, and bank decisions often live outside CRM and lose client context.",
+      crmAction:
+        "CRM shows financing with client and contract data without typing the same details again.",
+      effect:
+        "Finance gets a fast view of decision, amount, and installment before settlement continues.",
+      cursor: { x: 50, y: 76 }
+    },
+    {
+      key: "accounting",
+      role: "ksiegowosc",
+      title: "Accounting prepares the invoice",
+      problem:
+        "Accounting needs contract data but should not hunt for it in email threads and attachments.",
+      crmAction:
+        "CRM builds the accounting package and shows the KSeF payload in demo mode without production submission.",
+      effect:
+        "Invoice and annex use the same data approved in the process.",
+      cursor: { x: 24, y: 66 }
+    },
+    {
+      key: "logistics",
+      role: "logistyk",
+      title: "Logistics sees contract equipment",
+      problem:
+        "Warehouse needs to know what to order and reserve, but only after accounting approval.",
+      crmAction:
+        "CRM passes system power, panels, inverter, and installation date. PZ is planned and WZ is reserved for installation day.",
+      effect:
+        "After installation, confirming the date is enough for the final WZ to use the correct goods issue day.",
+      cursor: { x: 70, y: 66 }
+    },
+    {
+      key: "installer",
+      role: "monter",
+      title: "Installer closes operations",
+      problem:
+        "The field team needs simple data: address, date, specification, and warehouse notes.",
+      crmAction:
+        "CRM guides the team through the ready record and connects installation with final documents.",
+      effect:
+        "The process ends with the final invoice and WZ dated on the installation day.",
+      cursor: { x: 78, y: 82 }
+    }
+  ] : [
+    {
+      key: "sales-pdf",
+      role: "handlowiec",
+      title: "Handlowiec dodaje umowę",
+      problem:
+        "Handlowiec nie powinien przepisywać klienta, sprzętu i kwot z papieru do kilku miejsc w CRM.",
+      crmAction:
+        "CRM przyjmuje PDF umowy, pokazuje szybkie autouzupełnianie i podstawia dane do formularza realizacji.",
+      effect:
+        "Dane klienta, numer umowy i parametry instalacji są gotowe dla następnych działów.",
+      cursor: { x: 32, y: 54 }
+    },
+    {
+      key: "manager-check",
+      role: "menadzer",
+      title: "Menadżer weryfikuje komplet",
+      problem:
+        "Bez jednego procesu łatwo puścić dalej umowę bez zdjęć, adresu montażu albo numeru umowy.",
+      crmAction:
+        "Menadżer widzi etap procesu, opiekuna, komplet pól i może oznaczyć swoją akceptację.",
+      effect:
+        "Księgowość i operacje dostają tylko sprawy gotowe do realizacji.",
+      cursor: { x: 68, y: 43 }
+    },
+    {
+      key: "finance",
+      role: "finance",
+      title: "Finanse sprawdzają finansowanie",
+      problem:
+        "Raty, wpłata własna i decyzja banku często żyją poza CRM i gubią kontekst klienta.",
+      crmAction:
+        "CRM pokazuje finansowanie z danymi klienta i umowy, bez ponownego wpisywania tych samych informacji.",
+      effect:
+        "Dział finansowy ma szybki obraz decyzji, kwoty i raty przed dalszym rozliczeniem.",
+      cursor: { x: 50, y: 76 }
+    },
+    {
+      key: "accounting",
+      role: "ksiegowosc",
+      title: "Księgowość przygotowuje fakturę",
+      problem:
+        "Księgowość potrzebuje danych z umowy, ale nie powinna szukać ich w mailach i załącznikach.",
+      crmAction:
+        "CRM buduje paczkę księgową i pokazuje payload KSeF w trybie demo bez wysyłania danych na produkcję.",
+      effect:
+        "Faktura i aneks powstają z tych samych danych, które zatwierdził proces.",
+      cursor: { x: 24, y: 66 }
+    },
+    {
+      key: "logistics",
+      role: "logistyk",
+      title: "Logistyka widzi sprzęt z umowy",
+      problem:
+        "Magazyn musi wiedzieć, co zamówić i zarezerwować, ale dopiero po akceptacji księgowości.",
+      crmAction:
+        "CRM przekazuje moc, panele, falownik i termin montażu. PZ jest planowane, a WZ rezerwowane do dnia montażu.",
+      effect:
+        "Po montażu wystarczy potwierdzić datę, a finalne WZ ma właściwy dzień wyjścia towaru.",
+      cursor: { x: 70, y: 66 }
+    },
+    {
+      key: "installer",
+      role: "monter",
+      title: "Monter zamyka realizację",
+      problem:
+        "Ekipa terenowa potrzebuje prostych danych: adres, termin, specyfikacja i uwagi magazynu.",
+      crmAction:
+        "CRM prowadzi ekipę po gotowym rekordzie i spina montaż z dokumentami końcowymi.",
+      effect:
+        "Proces kończy się finalną fakturą i WZ z datą wykonania montażu.",
+      cursor: { x: 78, y: 82 }
+    }
+  ];
+
+  return steps.map((step, index, allSteps) => ({
+    ...step,
+    title: `${copy.demoGuide.step} ${index + 1}/${allSteps.length}: ${step.title}`
+  }));
 }
 
 function formatProcessDate(value: string | null, language: AppLanguage) {
@@ -739,6 +977,126 @@ function PreviewField({ label, value }: { label: string; value: string }) {
   );
 }
 
+function DemoProcessGuidePanel({
+  copy,
+  currentStep,
+  stepIndex,
+  stepCount,
+  open,
+  autofilling,
+  contract,
+  onStart,
+  onNext,
+  onRequestClose
+}: {
+  copy: RealizationCopy;
+  currentStep: DemoGuideStep;
+  stepIndex: number;
+  stepCount: number;
+  open: boolean;
+  autofilling: boolean;
+  contract: DemoCustomerRecord;
+  onStart: () => void;
+  onNext: () => void;
+  onRequestClose: () => void;
+}) {
+  return (
+    <section className={`app-card relative ${open ? "z-50 ring-2 ring-sky/20" : ""}`}>
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+        <div className="min-w-0">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-md border border-leaf/20 bg-leaf/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-leaf">
+            <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+            {copy.demoGuide.eyebrow}
+          </div>
+          <h2 className="text-lg font-black text-ink">{copy.demoGuide.title}</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">{copy.demoGuide.description}</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {!open ? (
+            <button type="button" onClick={onStart} className="btn-primary">
+              <Play className="h-4 w-4" aria-hidden="true" />
+              {copy.demoGuide.start}
+            </button>
+          ) : (
+            <>
+              <button type="button" onClick={onRequestClose} className="btn-secondary">
+                {copy.demoGuide.finish}
+              </button>
+              <button type="button" onClick={onNext} className="btn-primary">
+                {stepIndex >= stepCount - 1 ? copy.demoGuide.finish : copy.demoGuide.next}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {open ? (
+        <div className="mt-5 grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+          <div className="rounded-lg border border-line bg-[#f8fafc] p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <span className={`rounded-md border px-2 py-1 text-xs font-bold ${guideRoleToneClasses[currentStep.role]}`}>
+                {copy.roles[currentStep.role]}
+              </span>
+              <span className="text-xs font-bold text-muted">
+                {stepIndex + 1}/{stepCount}
+              </span>
+            </div>
+            <h3 className="text-base font-black text-ink">{currentStep.title}</h3>
+            <div className="mt-4 grid gap-3">
+              <GuidePoint label={copy.demoGuide.problem} value={currentStep.problem} />
+              <GuidePoint label={copy.demoGuide.crmAction} value={currentStep.crmAction} />
+              <GuidePoint label={copy.demoGuide.effect} value={currentStep.effect} />
+            </div>
+            <div className="mt-4 rounded-lg border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
+              {copy.demoGuide.note}
+            </div>
+          </div>
+
+          <div className="grid gap-3">
+            <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+              <div className="mb-3 flex items-center gap-2 text-sm font-black text-ink">
+                <FileSignature className="h-4 w-4 text-sky" aria-hidden="true" />
+                {contract.contractNumber}
+              </div>
+              {autofilling ? (
+                <div className="mb-3 overflow-hidden rounded-full bg-[#e8edf4]">
+                  <div className="h-2 w-2/3 rounded-full bg-sky demo-guide-loading" />
+                </div>
+              ) : null}
+              <div className="grid gap-2 text-sm">
+                <PreviewField label={copy.buyer} value={contract.clientName} />
+                <PreviewField label={copy.grossAmount} value={contract.grossPrice} />
+                <PreviewField label={copy.financing} value={contract.financing} />
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-line bg-[#f9fbfd] p-4">
+              <div className="mb-3 flex items-center gap-2 text-sm font-black text-ink">
+                <PackagePlus className="h-4 w-4 text-leaf" aria-hidden="true" />
+                {copy.demoGuide.logisticsPreview}
+              </div>
+              <div className="grid gap-2 text-sm">
+                <PreviewField label={copy.demoGuide.pz} value={contract.inverterModel} />
+                <PreviewField label={copy.demoGuide.wz} value={`${contract.panelsCount} ${copy.panelsUnit}`} />
+                <PreviewField label={copy.demoGuide.finalWz} value={contract.montageDate} />
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function GuidePoint({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-line bg-white p-3">
+      <div className="text-xs font-bold uppercase tracking-wide text-muted">{label}</div>
+      <p className="mt-1 text-sm leading-6 text-ink">{value}</p>
+    </div>
+  );
+}
+
 export default function RealizacjaPage() {
   const { language } = useLanguage();
   const copy = realizationCopy[language];
@@ -775,13 +1133,19 @@ export default function RealizacjaPage() {
   const [integrationBusy, setIntegrationBusy] = useState<KsefAction | null>(null);
   const [integrationModal, setIntegrationModal] = useState<KsefModal | null>(null);
   const [documentMessage, setDocumentMessage] = useState("");
+  const [demoGuideOpen, setDemoGuideOpen] = useState(false);
+  const [demoGuideStepIndex, setDemoGuideStepIndex] = useState(0);
+  const [demoGuideAutofilling, setDemoGuideAutofilling] = useState(false);
+  const [demoGuideExitOpen, setDemoGuideExitOpen] = useState(false);
   const contractInputRef = useRef<HTMLInputElement | null>(null);
 
+  const demoGuideSteps = useMemo(() => buildDemoGuideSteps(copy, language), [copy, language]);
+  const activeDemoGuideStep = demoGuideSteps[demoGuideStepIndex] || demoGuideSteps[0];
   const processClients = useMemo<ProcessClient[]>(() => {
     const clients = processLeads.map(leadToProcessClient);
     if (clients.length > 0) return clients;
     return profile && isDemoScope(profile.crm_environment) ? [demoProcessClient()] : [];
-  }, [processLeads, profile?.crm_environment]);
+  }, [processLeads, profile]);
   const selectedProcess = processClients.find((client) => client.id === selectedProcessId) || processClients[0] || demoProcessClient();
   const hasProcessClients = processClients.length > 0;
   const selectedWorkflow = workflowForProcess(selectedProcess.id, workflowByProcess);
@@ -796,6 +1160,36 @@ export default function RealizacjaPage() {
     void loadProcesses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.id, profile?.role, profile?.crm_environment]);
+
+  useEffect(() => {
+    if (!demoGuideOpen || !activeDemoGuideStep) return;
+
+    if (activeDemoGuideStep.key === "sales-pdf") {
+      setDemoGuideAutofilling(true);
+      const timer = window.setTimeout(() => {
+        const next = contractDataFromProcess(selectedProcess);
+        setContractData(next);
+        setAnnexValues(annexValuesFromContract(next));
+        setContractFileName(`${next.contractNumber || demoContractData.contractNumber}.pdf`);
+        setDocumentMessage(copy.demoGuide.autofill);
+        setDemoGuideAutofilling(false);
+      }, 650);
+
+      return () => window.clearTimeout(timer);
+    }
+
+    if (activeDemoGuideStep.key === "finance") {
+      setCreditLoaded(true);
+    }
+
+    if (activeDemoGuideStep.key === "accounting") {
+      setInvoiceReady(true);
+    }
+
+    if (activeDemoGuideStep.key === "logistics") {
+      setKsefReady(true);
+    }
+  }, [activeDemoGuideStep, copy.demoGuide.autofill, demoGuideOpen, selectedProcess]);
 
   if (loading || !profile) return <LoadingScreen />;
   if (!canUseOperations(profile.role)) return <LoadingScreen />;
@@ -875,6 +1269,30 @@ export default function RealizacjaPage() {
     setContractData(next);
     setAnnexValues(annexValuesFromContract(next));
     setDocumentMessage(copy.selectedClientInserted);
+  }
+
+  function startDemoGuide() {
+    const next = contractDataFromProcess(selectedProcess);
+    setContractData(next);
+    setAnnexValues(annexValuesFromContract(next));
+    setDemoGuideStepIndex(0);
+    setDemoGuideExitOpen(false);
+    setDemoGuideOpen(true);
+  }
+
+  function nextDemoGuideStep() {
+    if (demoGuideStepIndex >= demoGuideSteps.length - 1) {
+      finishDemoGuide();
+      return;
+    }
+
+    setDemoGuideStepIndex((current) => Math.min(current + 1, demoGuideSteps.length - 1));
+  }
+
+  function finishDemoGuide() {
+    setDemoGuideOpen(false);
+    setDemoGuideExitOpen(false);
+    setDemoGuideAutofilling(false);
   }
 
   function addContractFile(event: ChangeEvent<HTMLInputElement>) {
@@ -1017,6 +1435,21 @@ export default function RealizacjaPage() {
             </div>
           </div>
         </section>
+
+        {isDemoScope(profile.crm_environment) ? (
+          <DemoProcessGuidePanel
+            copy={copy}
+            currentStep={activeDemoGuideStep}
+            stepIndex={demoGuideStepIndex}
+            stepCount={demoGuideSteps.length}
+            open={demoGuideOpen}
+            autofilling={demoGuideAutofilling}
+            contract={contractReady ? contractData : contractDataFromProcess(selectedProcess)}
+            onStart={startDemoGuide}
+            onNext={nextDemoGuideStep}
+            onRequestClose={() => setDemoGuideExitOpen(true)}
+          />
+        ) : null}
 
         <section className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
           <div className="app-card">
@@ -1544,6 +1977,48 @@ export default function RealizacjaPage() {
             {creditLoaded ? copy.hideDemoFinancing : copy.showDemoFinancing}
           </button>
         </div>
+
+        {demoGuideOpen ? (
+          <>
+            <button
+              type="button"
+              aria-label={copy.demoGuide.clickOutsideTitle}
+              className="fixed inset-0 z-40 cursor-default bg-transparent"
+              onClick={() => setDemoGuideExitOpen(true)}
+            />
+            <div
+              className="demo-guide-cursor z-[60]"
+              style={{
+                left: `${activeDemoGuideStep.cursor.x}%`,
+                top: `${activeDemoGuideStep.cursor.y}%`
+              }}
+            >
+              <MousePointer2 className="h-8 w-8" aria-hidden="true" />
+            </div>
+          </>
+        ) : null}
+
+        {demoGuideExitOpen ? (
+          <ModalShell
+            open={demoGuideExitOpen}
+            title={copy.demoGuide.clickOutsideTitle}
+            description={copy.demoGuide.clickOutsideDescription}
+            onClose={() => setDemoGuideExitOpen(false)}
+            size="sm"
+            footer={
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <button type="button" onClick={finishDemoGuide} className="btn-secondary">
+                  {copy.demoGuide.endNow}
+                </button>
+                <button type="button" onClick={() => setDemoGuideExitOpen(false)} className="btn-primary">
+                  {copy.demoGuide.keepGoing}
+                </button>
+              </div>
+            }
+          >
+            <p className="text-sm leading-6 text-muted">{copy.demoGuide.note}</p>
+          </ModalShell>
+        ) : null}
 
         {previewRecord ? (
           <ModalShell

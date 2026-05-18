@@ -42,7 +42,20 @@ const DEMO_EMAIL_ROLES: Record<string, UserRole> = {
   "demo-handlowiec@example.com": "handlowiec",
   "demo-ksiegowy@example.com": "ksiegowosc",
   "demo-logistyk@example.com": "logistyk",
-  "demo-monter@example.com": "monter"
+  "demo-monter@example.com": "monter",
+  "demo-owner@example.com": "owner",
+  "demo-dyrektor-sprzedazy@example.com": "menadzer",
+  "demo-regionalny-wschod@example.com": "menadzer",
+  "demo-kierownik-b2b@example.com": "menadzer",
+  "demo-kierownik-b2c@example.com": "menadzer",
+  "demo-handlowiec-b2b@example.com": "handlowiec",
+  "demo-handlowiec-b2c@example.com": "handlowiec",
+  "demo-handlowiec-field@example.com": "handlowiec",
+  "demo-finanse@example.com": "finance",
+  "demo-dyrektor-operacyjny@example.com": "menadzer",
+  "demo-magazyn@example.com": "logistyk",
+  "demo-monter-2@example.com": "monter",
+  "demo-audyt@example.com": "viewer"
 };
 
 export const DEMO_USER_EMAILS = Object.keys(DEMO_EMAIL_ROLES);

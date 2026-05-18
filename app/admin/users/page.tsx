@@ -1,13 +1,17 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useState } from "react";
 import {
+  ChevronDown,
   GitBranch,
   Plus,
   RefreshCw,
   Save,
+  ShieldCheck,
   Trash2,
-  UserRoundPlus
+  UserRoundCog,
+  UserRoundPlus,
+  type LucideIcon
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
@@ -15,6 +19,173 @@ import { Alert, ConfirmDialog, EmptyState, PageHeader, SectionHeader } from "@/c
 import { normalizeRole, ROLE_DESCRIPTIONS, ROLE_LABELS, USER_ROLES } from "@/lib/roles";
 import type { Profile, UserRole } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
+
+type OrgMeta = {
+  title: string;
+  department: string;
+};
+
+type OrgNode = {
+  profile: Profile;
+  meta: OrgMeta;
+  children: OrgNode[];
+};
+
+const roleToneClasses: Record<UserRole, string> = {
+  owner: "border-ink/15 bg-ink text-white",
+  admin: "border-sky/20 bg-sky/10 text-sky",
+  menadzer: "border-leaf/20 bg-leaf/10 text-leaf",
+  handlowiec: "border-solar/25 bg-solar/10 text-[#8a5a00]",
+  finance: "border-sky/20 bg-sky/10 text-sky",
+  viewer: "border-line bg-[#f8fafc] text-muted",
+  ksiegowosc: "border-leaf/20 bg-leaf/10 text-leaf",
+  logistyk: "border-warn/25 bg-warn/10 text-warn",
+  monter: "border-danger/20 bg-danger/10 text-danger"
+};
+
+const demoOrgMetaByEmail: Record<string, OrgMeta> = {
+  "demo@example.com": { title: "Administrator CRM", department: "Zarząd i administracja" },
+  "demo-menadzer@example.com": { title: "Menadżer sprzedaży", department: "Sprzedaż" },
+  "demo-handlowiec@example.com": { title: "Handlowiec B2C", department: "Sprzedaż" },
+  "demo-ksiegowy@example.com": { title: "Specjalista ds. księgowości", department: "Księgowość" },
+  "demo-logistyk@example.com": { title: "Koordynator logistyki", department: "Logistyka" },
+  "demo-monter@example.com": { title: "Monter prowadzący", department: "Montaż" },
+  "demo-owner@example.com": { title: "Właściciel / CEO", department: "Zarząd" },
+  "demo-dyrektor-sprzedazy@example.com": { title: "Dyrektor sprzedaży", department: "Sprzedaż" },
+  "demo-regionalny-wschod@example.com": { title: "Dyrektor regionalny - Wschód", department: "Sprzedaż" },
+  "demo-kierownik-b2b@example.com": { title: "Kierownik B2B", department: "Sprzedaż B2B" },
+  "demo-kierownik-b2c@example.com": { title: "Kierownik B2C", department: "Sprzedaż B2C" },
+  "demo-handlowiec-b2b@example.com": { title: "Handlowiec B2B", department: "Sprzedaż B2B" },
+  "demo-handlowiec-b2c@example.com": { title: "Handlowiec B2C", department: "Sprzedaż B2C" },
+  "demo-handlowiec-field@example.com": { title: "Doradca terenowy", department: "Sprzedaż terenowa" },
+  "demo-finanse@example.com": { title: "Analityk finansowania", department: "Finanse" },
+  "demo-dyrektor-operacyjny@example.com": { title: "Dyrektor operacyjny", department: "Operacje" },
+  "demo-magazyn@example.com": { title: "Specjalista magazynu", department: "Logistyka" },
+  "demo-monter-2@example.com": { title: "Monter", department: "Montaż" },
+  "demo-audyt@example.com": { title: "Podgląd zarządczy", department: "Audyt" }
+};
+
+const fallbackOrgMeta: Record<UserRole, OrgMeta> = {
+  owner: { title: "Właściciel", department: "Zarząd" },
+  admin: { title: "Administrator CRM", department: "Administracja" },
+  menadzer: { title: "Menadżer zespołu", department: "Zarządzanie" },
+  handlowiec: { title: "Handlowiec", department: "Sprzedaż" },
+  finance: { title: "Finanse", department: "Finanse" },
+  viewer: { title: "Dostęp tylko do odczytu", department: "Podgląd" },
+  ksiegowosc: { title: "Księgowość", department: "Księgowość" },
+  logistyk: { title: "Logistyka", department: "Logistyka" },
+  monter: { title: "Montaż", department: "Montaż" }
+};
+
+function orgMetaFor(profile: Profile): OrgMeta {
+  const email = profile.email?.toLowerCase();
+  if (email && demoOrgMetaByEmail[email]) return demoOrgMetaByEmail[email];
+  return fallbackOrgMeta[profile.role];
+}
+
+function buildOrgTree(users: Profile[]): OrgNode[] {
+  const nodes = new Map<string, OrgNode>();
+
+  users.forEach((user) => {
+    nodes.set(user.id, {
+      profile: user,
+      meta: orgMetaFor(user),
+      children: []
+    });
+  });
+
+  const roots: OrgNode[] = [];
+
+  users.forEach((user) => {
+    const node = nodes.get(user.id);
+    if (!node) return;
+
+    if (user.manager_id && nodes.has(user.manager_id)) {
+      nodes.get(user.manager_id)?.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
+
+  const sortNodes = (items: OrgNode[]) => {
+    items.sort((left, right) => {
+      const roleOrder = USER_ROLES.indexOf(left.profile.role) - USER_ROLES.indexOf(right.profile.role);
+      return roleOrder || left.profile.full_name.localeCompare(right.profile.full_name, "pl");
+    });
+    items.forEach((item) => sortNodes(item.children));
+  };
+
+  sortNodes(roots);
+  return roots;
+}
+
+function CollapsibleSection({
+  icon: Icon,
+  title,
+  description,
+  children,
+  defaultOpen = false
+}: {
+  icon: LucideIcon;
+  title: string;
+  description?: string;
+  children: ReactNode;
+  defaultOpen?: boolean;
+}) {
+  return (
+    <details className="group app-card" open={defaultOpen}>
+      <summary className="-m-5 flex cursor-pointer list-none items-center justify-between gap-3 rounded-lg p-5 transition hover:bg-[#f8fafc] [&::-webkit-details-marker]:hidden">
+        <span className="flex min-w-0 items-start gap-3">
+          <span className="app-icon bg-sky/10 text-sky">
+            <Icon className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-base font-black text-ink">{title}</span>
+            {description ? <span className="mt-1 block text-sm leading-6 text-muted">{description}</span> : null}
+          </span>
+        </span>
+        <ChevronDown className="h-5 w-5 flex-none text-muted transition group-open:rotate-180" aria-hidden="true" />
+      </summary>
+      <div className="mt-5 border-t border-line pt-5">{children}</div>
+    </details>
+  );
+}
+
+function OrgTree({ nodes }: { nodes: OrgNode[] }) {
+  return (
+    <div className="grid gap-3">
+      {nodes.map((node) => (
+        <OrgTreeNode key={node.profile.id} node={node} />
+      ))}
+    </div>
+  );
+}
+
+function OrgTreeNode({ node, depth = 0 }: { node: OrgNode; depth?: number }) {
+  return (
+    <div className={depth > 0 ? "border-l border-line pl-4" : ""}>
+      <div className="rounded-lg border border-line bg-[#f9fbfd] p-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <div className="font-black text-ink">{node.profile.full_name}</div>
+            <div className="mt-1 text-sm font-semibold text-muted">{node.meta.title}</div>
+            <div className="mt-1 text-xs text-muted">{node.meta.department}</div>
+          </div>
+          <span className={`w-fit rounded-md border px-2 py-1 text-xs font-bold ${roleToneClasses[node.profile.role]}`}>
+            {ROLE_LABELS[node.profile.role]}
+          </span>
+        </div>
+      </div>
+      {node.children.length > 0 ? (
+        <div className="mt-3 grid gap-3">
+          {node.children.map((child) => (
+            <OrgTreeNode key={child.profile.id} node={child} depth={depth + 1} />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 export default function UsersPage() {
   const { loading, profile, session } = useAuth(["owner", "admin"]);
@@ -161,6 +332,11 @@ export default function UsersPage() {
   const managers = users.filter((user) => user.role === "menadzer");
   const salespeople = users.filter((user) => user.role === "handlowiec");
   const unassignedSalespeople = salespeople.filter((user) => !user.manager_id);
+  const orgTree = buildOrgTree(users);
+  const adminCount = users.filter((user) => user.role === "owner" || user.role === "admin").length;
+  const operationsCount = users.filter((user) =>
+    ["finance", "ksiegowosc", "logistyk", "monter"].includes(user.role)
+  ).length;
 
   return (
     <AppShell profile={profile}>
@@ -177,25 +353,87 @@ export default function UsersPage() {
         />
 
 
-        <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {USER_ROLES.map((role) => (
-            <div key={role} className="app-card">
-              <div className="text-sm font-black text-ink">{ROLE_LABELS[role]}</div>
-              <p className="mt-2 text-sm leading-6 text-muted">{ROLE_DESCRIPTIONS[role]}</p>
-            </div>
-          ))}
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          <div className="app-muted-panel">
+            <div className="text-xs font-bold uppercase tracking-wide text-muted">Wszyscy</div>
+            <div className="mt-2 text-3xl font-black text-ink">{users.length}</div>
+          </div>
+          <div className="app-muted-panel">
+            <div className="text-xs font-bold uppercase tracking-wide text-muted">Admin</div>
+            <div className="mt-2 text-3xl font-black text-ink">{adminCount}</div>
+          </div>
+          <div className="app-muted-panel">
+            <div className="text-xs font-bold uppercase tracking-wide text-muted">Menadżerowie</div>
+            <div className="mt-2 text-3xl font-black text-ink">{managers.length}</div>
+          </div>
+          <div className="app-muted-panel">
+            <div className="text-xs font-bold uppercase tracking-wide text-muted">Handlowcy</div>
+            <div className="mt-2 text-3xl font-black text-ink">{salespeople.length}</div>
+          </div>
+          <div className="app-muted-panel">
+            <div className="text-xs font-bold uppercase tracking-wide text-muted">Operacje</div>
+            <div className="mt-2 text-3xl font-black text-ink">{operationsCount}</div>
+          </div>
         </section>
 
         <section className="app-card">
-          <SectionHeader icon={UserRoundPlus} title="Nowy użytkownik" tone="leaf" />
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h2 className="text-base font-black text-ink">Lista użytkowników</h2>
+              <p className="mt-1 text-sm text-muted">Najważniejszy widok do codziennego zarządzania dostępami.</p>
+            </div>
+            <label className="block w-full max-w-xs">
+              <span className="label">Filtr roli</span>
+              <select
+                className="field"
+                value={roleFilter}
+                onChange={(event) => setRoleFilter(event.target.value as UserRole | "")}
+              >
+                <option value="">Wszystkie role</option>
+                {USER_ROLES.map((role) => (
+                  <option key={role} value={role}>
+                    {ROLE_LABELS[role]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </section>
 
-          {error ? (
-            <Alert tone="danger" className="mb-4">{error}</Alert>
-          ) : null}
+        {error ? (
+          <Alert tone="danger">{error}</Alert>
+        ) : null}
 
-          {success ? (
-            <Alert tone="success" className="mb-4">{success}</Alert>
-          ) : null}
+        {success ? (
+          <Alert tone="success">{success}</Alert>
+        ) : null}
+
+        <CollapsibleSection
+          icon={ShieldCheck}
+          title="Role i uprawnienia"
+          description="Szczegółowy opis ról jest schowany, bo nie jest potrzebny w codziennej pracy."
+        >
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {USER_ROLES.map((role) => (
+              <div key={role} className="rounded-lg border border-line bg-[#f9fbfd] p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-sm font-black text-ink">{ROLE_LABELS[role]}</div>
+                  <span className={`rounded-md border px-2 py-1 text-xs font-bold ${roleToneClasses[role]}`}>
+                    {users.filter((user) => user.role === role).length}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-muted">{ROLE_DESCRIPTIONS[role]}</p>
+              </div>
+            ))}
+          </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          icon={UserRoundPlus}
+          title="Nowy użytkownik"
+          description="Dodawanie kont jest dostępne pod ręką, ale nie zajmuje miejsca na stałe."
+        >
+          <SectionHeader icon={UserRoundCog} title="Dane konta" tone="leaf" />
 
           <form onSubmit={createUser} className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr_180px_220px_auto]">
             <label>
@@ -269,71 +507,26 @@ export default function UsersPage() {
               </button>
             </div>
           </form>
-        </section>
+        </CollapsibleSection>
 
-        <section className="app-card">
-          <label className="block max-w-xs">
-            <span className="label">Filtr roli</span>
-            <select
-              className="field"
-              value={roleFilter}
-              onChange={(event) => setRoleFilter(event.target.value as UserRole | "")}
-            >
-              <option value="">Wszystkie role</option>
-              {USER_ROLES.map((role) => (
-                <option key={role} value={role}>
-                  {ROLE_LABELS[role]}
-                </option>
-              ))}
-            </select>
-          </label>
-        </section>
+        <CollapsibleSection
+          icon={GitBranch}
+          title="Struktura zespołu"
+          description="Drzewko organizacyjne pokazuje przełożonych, działy i role bez zajmowania głównego HUD-u."
+        >
+          {orgTree.length > 0 ? (
+            <OrgTree nodes={orgTree} />
+          ) : (
+            <EmptyState title="Brak struktury" description="Dodaj użytkowników albo odśwież listę." />
+          )}
+          {unassignedSalespeople.length > 0 ? (
+            <Alert tone="warning" className="mt-4">
+              {unassignedSalespeople.length} handlowców nie ma przypisanego menadżera.
+            </Alert>
+          ) : null}
+        </CollapsibleSection>
 
-        <section className="app-card">
-          <SectionHeader
-            icon={GitBranch}
-            title="Struktura zespołu"
-            description="Przypisanie handlowców do menadżerów."
-          />
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {managers.map((manager) => {
-              const team = salespeople.filter((person) => person.manager_id === manager.id);
-
-              return (
-                <div key={manager.id} className="rounded-md border border-line bg-[#f9fbfd] p-4">
-                  <div className="font-bold text-ink">{manager.full_name}</div>
-                  <div className="mt-1 text-xs text-muted">{manager.email}</div>
-                  <div className="mt-3 grid gap-2">
-                    {team.map((person) => (
-                      <div key={person.id} className="rounded-md border border-line bg-white px-3 py-2 text-sm">
-                        {person.full_name}
-                      </div>
-                    ))}
-                    {team.length === 0 ? (
-                      <div className="rounded-md border border-line bg-white px-3 py-2 text-sm text-muted">
-                        Brak przypisanych handlowców.
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-              );
-            })}
-            {unassignedSalespeople.length > 0 ? (
-              <div className="rounded-md border border-line bg-[#f9fbfd] p-4">
-                <div className="font-bold text-ink">Bez menadżera</div>
-                <div className="mt-3 grid gap-2">
-                  {unassignedSalespeople.map((person) => (
-                    <div key={person.id} className="rounded-md border border-line bg-white px-3 py-2 text-sm">
-                      {person.full_name}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </div>
-        </section>
-
-        <section className="overflow-hidden rounded-lg border border-line bg-white shadow-sm">
+        <section className="overflow-hidden rounded-lg border border-line bg-white shadow-sm md:max-h-[58vh] md:overflow-y-auto">
           <div className="hidden overflow-x-auto md:block">
           <table className="app-table min-w-[760px]">
             <thead>

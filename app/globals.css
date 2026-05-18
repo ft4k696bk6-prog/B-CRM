@@ -209,6 +209,46 @@ textarea:focus-visible {
   }
 }
 
+.demo-guide-cursor {
+  position: fixed;
+  pointer-events: none;
+  display: grid;
+  height: 3.75rem;
+  width: 3.75rem;
+  place-items: center;
+  border: 1px solid rgb(var(--line));
+  border-radius: 999px;
+  background: rgb(var(--panel));
+  color: rgb(var(--sky));
+  box-shadow: 0 22px 44px rgb(15 23 42 / 0.18);
+  transform: translate(-30%, -30%);
+  transition: left 680ms ease, top 680ms ease, transform 220ms ease;
+  animation: demo-cursor-pulse 1.8s ease-in-out infinite;
+}
+
+.demo-guide-loading {
+  animation: demo-guide-loading 820ms ease-in-out infinite;
+}
+
+@keyframes demo-cursor-pulse {
+  0%,
+  100% {
+    transform: translate(-30%, -30%) scale(1);
+  }
+  50% {
+    transform: translate(-30%, -30%) scale(1.08);
+  }
+}
+
+@keyframes demo-guide-loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(160%);
+  }
+}
+
 @media print {
   @page {
     size: A4;
