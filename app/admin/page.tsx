@@ -315,6 +315,66 @@ export default function AdminDashboardPage() {
 
   if (loading || !profile) return <LoadingScreen />;
 
+  const dashboardCopy = isEnglish
+    ? {
+        managerDescription: "Team leads, lead pool and current statuses.",
+        adminDescription: "All leads, assignments and current statuses.",
+        exportCsv: "Export CSV",
+        refresh: "Refresh",
+        stats: {
+          all: "All",
+          unassigned: "Unassigned",
+          assigned: "Assigned",
+          callbacks: "Call-back",
+          meetings: "Meetings",
+          contracts: "Contracts",
+          resignations: "Resignations",
+          noNextAction: "No action"
+        },
+        operationsTitle: "Post-contract operations",
+        operationsDescription: "Documents, accounting, logistics, installation and annex generation in one place.",
+        openOperations: "Open operations",
+        teamTitle: "Team results",
+        teamDescription: `${teamPerformance.length} salespeople in the current view. Details stay collapsed so the dashboard stays focused.`,
+        showTeam: "Show results",
+        hideTeam: "Hide results",
+        salesperson: "Salesperson",
+        leads: "Leads",
+        meetings: "Meetings",
+        contracts: "Contracts",
+        overdueCallbacks: "Overdue call-backs",
+        noAction: "No action"
+      }
+    : {
+        managerDescription: "Leady zespołu, baza do rozdania i bieżące statusy.",
+        adminDescription: "Wszystkie leady, przypisania i bieżące statusy.",
+        exportCsv: "Eksport CSV",
+        refresh: "Odśwież",
+        stats: {
+          all: "Wszystkie",
+          unassigned: "Nieprzypisane",
+          assigned: "Przypisane",
+          callbacks: "Call-back",
+          meetings: "Spotkania",
+          contracts: "Umowy",
+          resignations: "Rezygnacje",
+          noNextAction: "Bez akcji"
+        },
+        operationsTitle: "Realizacja po umowie",
+        operationsDescription: "Dokumenty, księgowość, logistyka, montaż i generator aneksu w jednym miejscu.",
+        openOperations: "Otwórz realizację",
+        teamTitle: "Wyniki zespołu",
+        teamDescription: `${teamPerformance.length} handlowców w aktualnym widoku. Szczegóły są schowane, żeby dashboard został zwarty.`,
+        showTeam: "Pokaż wyniki",
+        hideTeam: "Ukryj wyniki",
+        salesperson: "Handlowiec",
+        leads: "Leady",
+        meetings: "Spotkania",
+        contracts: "Umowy",
+        overdueCallbacks: "Zaległe call-backi",
+        noAction: "Bez akcji"
+      };
+
   return (
     <AppShell profile={profile}>
       <div className="grid gap-5">
@@ -340,52 +400,64 @@ export default function AdminDashboardPage() {
           }
           description={
             isManager
-              ? "Leady zespołu, baza do rozdania i bieżące statusy."
-              : "Wszystkie leady, przypisania i bieżące statusy."
+              ? dashboardCopy.managerDescription
+              : dashboardCopy.adminDescription
           }
           actions={
             <>
             {canExportCurrentView ? (
               <button type="button" onClick={exportCurrentView} className="btn-secondary">
                 <FileDown className="h-4 w-4" aria-hidden="true" />
-                Eksport CSV
+                {dashboardCopy.exportCsv}
               </button>
             ) : null}
             <button type="button" onClick={loadLeads} className="btn-secondary">
               <RefreshCw className="h-4 w-4" aria-hidden="true" />
-              Odśwież
+              {dashboardCopy.refresh}
             </button>
             </>
           }
         />
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <StatTile label="Wszystkie" value={stats.all} icon={Database} tone="sky" />
-          <StatTile label="Nieprzypisane" value={stats.unassigned} icon={Inbox} tone="solar" />
-          <StatTile label="Przypisane" value={stats.assigned} icon={UserCheck} tone="leaf" />
-          <StatTile label="Call-back" value={stats.callbacks} icon={PhoneCall} tone="warn" />
-          <StatTile label="Spotkania" value={stats.meetings} icon={CalendarDays} tone="leaf" />
-          <StatTile label="Umowy" value={stats.contracts} icon={FileSignature} tone="leaf" />
-          <StatTile label="Rezygnacje" value={stats.resignations} icon={Ban} tone="danger" />
-          <StatTile label="Bez akcji" value={stats.noNextAction} icon={ListChecks} tone="warn" />
+          <StatTile label={dashboardCopy.stats.all} value={stats.all} icon={Database} tone="sky" />
+          <StatTile label={dashboardCopy.stats.unassigned} value={stats.unassigned} icon={Inbox} tone="solar" />
+          <StatTile label={dashboardCopy.stats.assigned} value={stats.assigned} icon={UserCheck} tone="leaf" />
+          <StatTile label={dashboardCopy.stats.callbacks} value={stats.callbacks} icon={PhoneCall} tone="warn" />
+          <StatTile label={dashboardCopy.stats.meetings} value={stats.meetings} icon={CalendarDays} tone="leaf" />
+          <StatTile label={dashboardCopy.stats.contracts} value={stats.contracts} icon={FileSignature} tone="leaf" />
+          <StatTile label={dashboardCopy.stats.resignations} value={stats.resignations} icon={Ban} tone="danger" />
+          <StatTile label={dashboardCopy.stats.noNextAction} value={stats.noNextAction} icon={ListChecks} tone="warn" />
         </section>
 
         <section className="app-card">
           <SectionHeader
             icon={FolderKanban}
-            title="Realizacja po umowie"
-            description="Dokumenty, księgowość, logistyka, montaż i generator aneksu w jednym miejscu."
-            actions={<Link href="/realizacja" className="btn-primary">Otwórz realizację</Link>}
+            title={dashboardCopy.operationsTitle}
+            description={dashboardCopy.operationsDescription}
+            actions={<Link href="/realizacja" className="btn-primary">{dashboardCopy.openOperations}</Link>}
           />
         </section>
 
         {teamPerformance.length > 0 ? (
-          <section className="app-card">
-            <SectionHeader
-              icon={Trophy}
-              title="Wyniki zespołu"
-              description={`${teamPerformance.length} handlowców w aktualnym widoku. Szczegóły są rozwijane, żeby dashboard nie puchł na start.`}
-              actions={
+          <section className={showTeamResults ? "app-card" : "rounded-lg border border-line bg-white px-4 py-3 shadow-sm"}>
+            <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${showTeamResults ? "mb-4" : ""}`}>
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="app-icon bg-sky/10 text-sky">
+                  <Trophy className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <h2 className="text-base font-black text-ink">{dashboardCopy.teamTitle}</h2>
+                  {showTeamResults ? (
+                    <p className="mt-1 text-sm leading-6 text-muted">{dashboardCopy.teamDescription}</p>
+                  ) : (
+                    <p className="mt-1 text-sm text-muted">
+                      {teamPerformance.length} {isEnglish ? "people" : "osób"}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 sm:justify-end">
                 <button
                   type="button"
                   onClick={() => setShowTeamResults((value) => !value)}
@@ -395,22 +467,22 @@ export default function AdminDashboardPage() {
                     className={`h-4 w-4 transition ${showTeamResults ? "rotate-180" : ""}`}
                     aria-hidden="true"
                   />
-                  {showTeamResults ? "Ukryj wyniki" : "Pokaż wyniki"}
+                  {showTeamResults ? dashboardCopy.hideTeam : dashboardCopy.showTeam}
                 </button>
-              }
-            />
+              </div>
+            </div>
             {showTeamResults ? (
               <>
                 <div className="hidden overflow-x-auto md:block">
                   <table className="app-table min-w-[720px]">
                     <thead>
                       <tr>
-                        <th className="px-3 py-3">Handlowiec</th>
-                        <th className="px-3 py-3">Leady</th>
-                        <th className="px-3 py-3">Spotkania</th>
-                        <th className="px-3 py-3">Umowy</th>
-                        <th className="px-3 py-3">Zaległe call-backi</th>
-                        <th className="px-3 py-3">Bez akcji</th>
+                        <th className="px-3 py-3">{dashboardCopy.salesperson}</th>
+                        <th className="px-3 py-3">{dashboardCopy.leads}</th>
+                        <th className="px-3 py-3">{dashboardCopy.meetings}</th>
+                        <th className="px-3 py-3">{dashboardCopy.contracts}</th>
+                        <th className="px-3 py-3">{dashboardCopy.overdueCallbacks}</th>
+                        <th className="px-3 py-3">{dashboardCopy.noAction}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -433,19 +505,19 @@ export default function AdminDashboardPage() {
                       <div className="font-black text-ink">{row.person.full_name}</div>
                       <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
                         <div className="rounded-md bg-white p-3">
-                          <div className="text-xs font-bold text-muted">Leady</div>
+                          <div className="text-xs font-bold text-muted">{dashboardCopy.leads}</div>
                           <div className="mt-1 font-black text-ink">{row.leads}</div>
                         </div>
                         <div className="rounded-md bg-white p-3">
-                          <div className="text-xs font-bold text-muted">Umowy</div>
+                          <div className="text-xs font-bold text-muted">{dashboardCopy.contracts}</div>
                           <div className="mt-1 font-black text-leaf">{row.contracts}</div>
                         </div>
                         <div className="rounded-md bg-white p-3">
-                          <div className="text-xs font-bold text-muted">Spotkania</div>
+                          <div className="text-xs font-bold text-muted">{dashboardCopy.meetings}</div>
                           <div className="mt-1 font-black text-ink">{row.meetings}</div>
                         </div>
                         <div className="rounded-md bg-white p-3">
-                          <div className="text-xs font-bold text-muted">Bez akcji</div>
+                          <div className="text-xs font-bold text-muted">{dashboardCopy.noAction}</div>
                           <div className="mt-1 font-black text-warn">{row.noNextAction}</div>
                         </div>
                       </div>

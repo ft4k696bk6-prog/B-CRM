@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
+  ArrowDownUp,
   BadgeCheck,
   Calculator,
   ChevronDown,
@@ -15,7 +16,6 @@ import {
   Hammer,
   MousePointer2,
   PackageCheck,
-  PackagePlus,
   Play,
   ReceiptText,
   Send,
@@ -353,6 +353,8 @@ const realizationCopy = {
       pz: "PZ planowane",
       wz: "WZ zarezerwowane",
       finalWz: "WZ finalne w dniu montażu",
+      scrollReady: "Przewiń stronę w dół, żeby przejść dalej.",
+      scrollWaiting: "CRM pokazuje ten etap. Za moment przewinięcie poprowadzi dalej.",
       note:
         "Komentarz wdrożeniowy: przy podpisie elektronicznym krok zdjęć papierowej umowy można pominąć, ale polityka firmy może nadal wymagać zdjęć dachu lub licznika."
     },
@@ -503,6 +505,8 @@ const realizationCopy = {
       pz: "Planned goods receipt",
       wz: "Reserved goods issue",
       finalWz: "Final goods issue on installation day",
+      scrollReady: "Scroll down to continue.",
+      scrollWaiting: "CRM is showing this stage. Scrolling will continue in a moment.",
       note:
         "Implementation note: with e-signature, the paper-contract photo step can be skipped, but company policy may still require roof or meter photos."
     },
@@ -1000,9 +1004,7 @@ function DemoProcessGuidePanel({
   canContinue,
   autofilling,
   contract,
-  onStart,
-  onNext,
-  onRequestClose
+  onStart
 }: {
   copy: RealizationCopy;
   currentStep: DemoGuideStep;
@@ -1013,8 +1015,6 @@ function DemoProcessGuidePanel({
   autofilling: boolean;
   contract: DemoCustomerRecord;
   onStart: () => void;
-  onNext: () => void;
-  onRequestClose: () => void;
 }) {
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
 
@@ -1066,29 +1066,12 @@ function DemoProcessGuidePanel({
               <Play className="h-4 w-4" aria-hidden="true" />
               {copy.demoGuide.start}
             </button>
-          ) : (
-            <>
-              <button type="button" onClick={onRequestClose} className="btn-secondary">
-                {copy.demoGuide.finish}
-              </button>
-              <button
-                type="button"
-                onClick={onNext}
-                disabled={!canContinue}
-                className={`btn-primary transition ${
-                  canContinue ? "opacity-100" : "pointer-events-none opacity-0"
-                }`}
-              >
-                {stepIndex >= stepCount - 1 ? copy.demoGuide.finish : copy.demoGuide.next}
-              </button>
-            </>
-          )}
+          ) : null}
         </div>
       </div>
 
       {open ? (
         <div className="fixed inset-0 z-50 pointer-events-none">
-          <div className="absolute inset-0 bg-[#0f172a]/15 backdrop-blur-[1px]" />
           {targetRect ? (
             <div
               className="demo-guide-spotlight"
@@ -1103,73 +1086,47 @@ function DemoProcessGuidePanel({
           <div className="demo-guide-cursor z-[60]" style={cursorStyle}>
             <MousePointer2 className="h-8 w-8" aria-hidden="true" />
           </div>
-          <div className="absolute inset-x-3 bottom-3 z-[61] mx-auto max-w-6xl pointer-events-auto sm:inset-x-6 sm:bottom-6">
-            <div className="grid gap-4 rounded-lg border border-line bg-white/95 p-4 shadow-soft backdrop-blur md:grid-cols-[1.2fr_0.8fr]">
-              <div>
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <span className={`rounded-md border px-2 py-1 text-xs font-bold ${guideRoleToneClasses[currentStep.role]}`}>
-                    {copy.roles[currentStep.role]}
-                  </span>
-                  <span className="text-xs font-bold text-muted">
-                    {stepIndex + 1}/{stepCount}
-                  </span>
-                </div>
-                <h3 className="text-base font-black text-ink">{currentStep.title}</h3>
-                <div className="mt-4 grid gap-3 md:grid-cols-3">
-                  <GuidePoint label={copy.demoGuide.problem} value={currentStep.problem} />
-                  <GuidePoint label={copy.demoGuide.crmAction} value={currentStep.crmAction} />
-                  <GuidePoint label={copy.demoGuide.effect} value={currentStep.effect} />
-                </div>
-                <div className="mt-3 rounded-lg border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
-                  {copy.demoGuide.note}
-                </div>
+          <aside className="absolute inset-x-3 bottom-4 z-[61] sm:inset-x-auto sm:right-6 sm:top-1/2 sm:bottom-auto sm:w-[390px] sm:-translate-y-1/2">
+            <div className="rounded-lg border border-white/70 bg-white/75 p-4 shadow-soft backdrop-blur-md">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <span className={`rounded-md border px-2 py-1 text-xs font-bold ${guideRoleToneClasses[currentStep.role]}`}>
+                  {copy.roles[currentStep.role]}
+                </span>
+                <span className="text-xs font-bold text-muted">
+                  {stepIndex + 1}/{stepCount}
+                </span>
               </div>
-              <div className="grid gap-3">
-                <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
-                  <div className="mb-3 flex items-center gap-2 text-sm font-black text-ink">
-                    <FileSignature className="h-4 w-4 text-sky" aria-hidden="true" />
+              <h3 className="text-base font-black text-ink">{currentStep.title}</h3>
+              {autofilling ? (
+                <div className="mt-3 rounded-lg border border-sky/20 bg-sky/10 p-3">
+                  <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-sky">
+                    <FileSignature className="h-3.5 w-3.5" aria-hidden="true" />
                     {contract.contractNumber}
                   </div>
-                  {autofilling ? (
-                    <div className="mb-3 overflow-hidden rounded-full bg-[#e8edf4]">
-                      <div className="h-2 w-2/3 rounded-full bg-sky demo-guide-loading" />
-                    </div>
-                  ) : null}
-                  <div className="grid gap-2 text-sm">
-                    <PreviewField label={copy.buyer} value={contract.clientName} />
-                    <PreviewField label={copy.grossAmount} value={contract.grossPrice} />
-                    <PreviewField label={copy.financing} value={contract.financing} />
+                  <div className="overflow-hidden rounded-full bg-white/70">
+                    <div className="h-2 w-2/3 rounded-full bg-sky demo-guide-loading" />
                   </div>
                 </div>
-                <div className="rounded-lg border border-line bg-[#f9fbfd] p-4">
-                  <div className="mb-3 flex items-center gap-2 text-sm font-black text-ink">
-                    <PackagePlus className="h-4 w-4 text-leaf" aria-hidden="true" />
-                    {copy.demoGuide.logisticsPreview}
+              ) : null}
+              <div className="mt-4 grid gap-3">
+                <GuidePoint label={copy.demoGuide.problem} value={currentStep.problem} />
+                <GuidePoint label={copy.demoGuide.crmAction} value={currentStep.crmAction} />
+                <GuidePoint label={copy.demoGuide.effect} value={currentStep.effect} />
+              </div>
+              <div className="mt-3 rounded-lg border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
+                {copy.demoGuide.note}
+              </div>
+              <div className="mt-3 flex items-center gap-3 rounded-lg border border-ink/10 bg-white/55 p-3 text-sm font-bold text-ink">
+                <ArrowDownUp className="h-5 w-5 flex-none text-sky demo-guide-scroll-cue" aria-hidden="true" />
+                <div>
+                  <div>{canContinue ? copy.demoGuide.scrollReady : copy.demoGuide.scrollWaiting}</div>
+                  <div className="mt-1 text-xs font-semibold text-muted">
+                    {stepIndex >= stepCount - 1 ? copy.demoGuide.finish : `${stepIndex + 1}/${stepCount}`}
                   </div>
-                  <div className="grid gap-2 text-sm">
-                    <PreviewField label={copy.demoGuide.pz} value={contract.inverterModel} />
-                    <PreviewField label={copy.demoGuide.wz} value={`${contract.panelsCount} ${copy.panelsUnit}`} />
-                    <PreviewField label={copy.demoGuide.finalWz} value={contract.montageDate} />
-                  </div>
-                </div>
-                <div className="flex justify-end gap-2">
-                  <button type="button" onClick={onRequestClose} className="btn-secondary">
-                    {copy.demoGuide.finish}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={onNext}
-                    disabled={!canContinue}
-                    className={`btn-primary transition duration-500 ${
-                      canContinue ? "opacity-100" : "pointer-events-none translate-y-1 opacity-0"
-                    }`}
-                  >
-                    {stepIndex >= stepCount - 1 ? copy.demoGuide.finish : copy.demoGuide.next}
-                  </button>
                 </div>
               </div>
             </div>
-          </div>
+          </aside>
         </div>
       ) : null}
     </section>
@@ -1178,7 +1135,7 @@ function DemoProcessGuidePanel({
 
 function GuidePoint({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-line bg-white p-3">
+    <div className="rounded-lg border border-white/70 bg-white/55 p-3 backdrop-blur">
       <div className="text-xs font-bold uppercase tracking-wide text-muted">{label}</div>
       <p className="mt-1 text-sm leading-6 text-ink">{value}</p>
     </div>
@@ -1225,10 +1182,10 @@ export default function RealizacjaPage() {
   const [demoGuideStepIndex, setDemoGuideStepIndex] = useState(0);
   const [demoGuideCanContinue, setDemoGuideCanContinue] = useState(false);
   const [demoGuideAutofilling, setDemoGuideAutofilling] = useState(false);
-  const [demoGuideExitOpen, setDemoGuideExitOpen] = useState(false);
   const [showProcessList, setShowProcessList] = useState(false);
   const [showContractData, setShowContractData] = useState(false);
   const contractInputRef = useRef<HTMLInputElement | null>(null);
+  const demoGuideScrollLockRef = useRef(false);
 
   const demoGuideSteps = useMemo(() => buildDemoGuideSteps(copy, language), [copy, language]);
   const activeDemoGuideStep = demoGuideSteps[demoGuideStepIndex] || demoGuideSteps[0];
@@ -1286,6 +1243,53 @@ export default function RealizacjaPage() {
     const timer = window.setTimeout(() => setDemoGuideCanContinue(true), 1800);
     return () => window.clearTimeout(timer);
   }, [activeDemoGuideStep, copy.demoGuide.autofill, demoGuideOpen, selectedProcess]);
+
+  useEffect(() => {
+    if (!demoGuideOpen || !demoGuideCanContinue) return;
+
+    let touchStartY = 0;
+
+    const advanceFromScroll = () => {
+      if (demoGuideScrollLockRef.current) return;
+      demoGuideScrollLockRef.current = true;
+
+      if (demoGuideStepIndex >= demoGuideSteps.length - 1) {
+        finishDemoGuide();
+      } else {
+        setDemoGuideStepIndex((current) => Math.min(current + 1, demoGuideSteps.length - 1));
+      }
+
+      window.setTimeout(() => {
+        demoGuideScrollLockRef.current = false;
+      }, 900);
+    };
+
+    const handleWheel = (event: WheelEvent) => {
+      if (event.deltaY < 48) return;
+      advanceFromScroll();
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      touchStartY = event.touches[0]?.clientY || 0;
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      const currentY = event.touches[0]?.clientY || touchStartY;
+      if (touchStartY - currentY < 64) return;
+      advanceFromScroll();
+      touchStartY = currentY;
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, [demoGuideCanContinue, demoGuideOpen, demoGuideStepIndex, demoGuideSteps.length]);
 
   if (loading || !profile) return <LoadingScreen />;
   if (!canUseOperations(profile.role)) return <LoadingScreen />;
@@ -1373,25 +1377,13 @@ export default function RealizacjaPage() {
     setAnnexValues(annexValuesFromContract(next));
     setDemoGuideStepIndex(0);
     setDemoGuideCanContinue(false);
-    setDemoGuideExitOpen(false);
     setShowProcessList(true);
     setShowContractData(true);
     setDemoGuideOpen(true);
   }
 
-  function nextDemoGuideStep() {
-    if (!demoGuideCanContinue) return;
-    if (demoGuideStepIndex >= demoGuideSteps.length - 1) {
-      finishDemoGuide();
-      return;
-    }
-
-    setDemoGuideStepIndex((current) => Math.min(current + 1, demoGuideSteps.length - 1));
-  }
-
   function finishDemoGuide() {
     setDemoGuideOpen(false);
-    setDemoGuideExitOpen(false);
     setDemoGuideAutofilling(false);
     setDemoGuideCanContinue(false);
   }
@@ -1548,14 +1540,15 @@ export default function RealizacjaPage() {
             autofilling={demoGuideAutofilling}
             contract={contractReady ? contractData : contractDataFromProcess(selectedProcess)}
             onStart={startDemoGuide}
-            onNext={nextDemoGuideStep}
-            onRequestClose={() => setDemoGuideExitOpen(true)}
           />
         ) : null}
 
         <section className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
-          <div className="app-card" data-guide-target="process-list">
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div
+            className={showProcessList ? "app-card" : "rounded-lg border border-line bg-white px-4 py-3 shadow-sm"}
+            data-guide-target="process-list"
+          >
+            <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${showProcessList ? "mb-4" : ""}`}>
               <div className="flex items-center gap-3">
                 <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky/10 text-sky">
                   <FolderKanban className="h-5 w-5" aria-hidden="true" />
@@ -1578,13 +1571,13 @@ export default function RealizacjaPage() {
               </button>
             </div>
 
-            {processLoading ? (
+            {showProcessList && processLoading ? (
               <div className="mb-3 rounded-md border border-line bg-[#f8fafc] p-3 text-sm font-semibold text-muted">
                 {copy.processLoading}
               </div>
             ) : null}
 
-            {processError ? (
+            {showProcessList && processError ? (
               <div className="mb-3 rounded-md border border-solar/30 bg-solar/10 p-3 text-sm font-semibold text-[#8a5a00]">
                 {copy.processError}
               </div>
@@ -1701,8 +1694,11 @@ export default function RealizacjaPage() {
         </section>
 
         <section className="grid gap-3 xl:grid-cols-[1.1fr_0.9fr]">
-          <div className="app-card" data-guide-target="contract-data">
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div
+            className={showContractData ? "app-card" : "rounded-lg border border-line bg-white px-4 py-3 shadow-sm"}
+            data-guide-target="contract-data"
+          >
+            <div className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${showContractData ? "mb-4" : ""}`}>
               <div className="flex items-center gap-3">
                 <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky/10 text-sky">
                   <FolderKanban className="h-5 w-5" aria-hidden="true" />
@@ -2112,37 +2108,6 @@ export default function RealizacjaPage() {
             {creditLoaded ? copy.hideDemoFinancing : copy.showDemoFinancing}
           </button>
         </div>
-
-        {demoGuideOpen ? (
-          <button
-            type="button"
-            aria-label={copy.demoGuide.clickOutsideTitle}
-            className="fixed inset-0 z-40 cursor-default bg-transparent"
-            onClick={() => setDemoGuideExitOpen(true)}
-          />
-        ) : null}
-
-        {demoGuideExitOpen ? (
-          <ModalShell
-            open={demoGuideExitOpen}
-            title={copy.demoGuide.clickOutsideTitle}
-            description={copy.demoGuide.clickOutsideDescription}
-            onClose={() => setDemoGuideExitOpen(false)}
-            size="sm"
-            footer={
-              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                <button type="button" onClick={finishDemoGuide} className="btn-secondary">
-                  {copy.demoGuide.endNow}
-                </button>
-                <button type="button" onClick={() => setDemoGuideExitOpen(false)} className="btn-primary">
-                  {copy.demoGuide.keepGoing}
-                </button>
-              </div>
-            }
-          >
-            <p className="text-sm leading-6 text-muted">{copy.demoGuide.note}</p>
-          </ModalShell>
-        ) : null}
 
         {previewRecord ? (
           <ModalShell

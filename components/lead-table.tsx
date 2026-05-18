@@ -6,6 +6,7 @@ import { formatDateTime } from "@/lib/date";
 import type { Lead } from "@/lib/types";
 import { StatusBadge } from "@/components/status-badge";
 import { EmptyState } from "@/components/ui";
+import { useLanguage } from "@/components/language-provider";
 
 type LeadTableProps = {
   leads: Lead[];
@@ -30,6 +31,20 @@ function phoneHref(phone: string) {
   return normalized.startsWith("+") ? normalized : `+${normalized}`;
 }
 
+function formatSource(source: string | null, language: "pl" | "en") {
+  if (!source) return language === "en" ? "No source" : "Bez źródła";
+
+  const normalized = source.toLowerCase();
+  if (normalized === "własne" || normalized === "wlasne") {
+    return language === "en" ? "Own" : "własne";
+  }
+  if (normalized === "polecenie") {
+    return language === "en" ? "Referral" : "polecenie";
+  }
+
+  return source;
+}
+
 export function LeadTable({
   leads,
   selectable = false,
@@ -38,7 +53,45 @@ export function LeadTable({
   onToggleAll,
   showAssignee = false
 }: LeadTableProps) {
+  const { language } = useLanguage();
   const allSelected = leads.length > 0 && leads.every((lead) => selectedIds.includes(lead.id));
+  const labels = language === "en"
+    ? {
+        selectAll: "Select all",
+        selectAllLeads: "Select all leads",
+        selectLead: "Select",
+        lead: "Lead",
+        phone: "Phone",
+        region: "Region",
+        status: "Status",
+        salesperson: "Salesperson",
+        dates: "Dates",
+        created: "Created",
+        noCode: "no code",
+        unassigned: "Unassigned",
+        openLeadCard: "Open lead card",
+        openCard: "Open card",
+        noLeads: "No leads",
+        noLeadsDescription: "No records for the selected filters."
+      }
+    : {
+        selectAll: "Zaznacz wszystkie",
+        selectAllLeads: "Zaznacz wszystkie leady",
+        selectLead: "Zaznacz",
+        lead: "Lead",
+        phone: "Telefon",
+        region: "Region",
+        status: "Status",
+        salesperson: "Handlowiec",
+        dates: "Terminy",
+        created: "Dodany",
+        noCode: "brak kodu",
+        unassigned: "Nieprzypisany",
+        openLeadCard: "Otwórz kartę leada",
+        openCard: "Otwórz kartę",
+        noLeads: "Brak leadów",
+        noLeadsDescription: "Ten widok nie ma jeszcze rekordów dla wybranych filtrów."
+      };
 
   return (
     <div className="overflow-hidden rounded-lg border border-line bg-white shadow-sm">
@@ -51,7 +104,7 @@ export function LeadTable({
               onChange={onToggleAll}
               className="h-4 w-4 rounded border-line text-ink focus:ring-ink"
             />
-            Zaznacz wszystkie
+            {labels.selectAll}
           </label>
           <span className="text-xs font-bold text-muted">{selectedIds.length}/{leads.length}</span>
         </div>
@@ -68,17 +121,17 @@ export function LeadTable({
                     checked={allSelected}
                     onChange={onToggleAll}
                     className="h-4 w-4 rounded border-line text-ink focus:ring-ink"
-                    aria-label="Zaznacz wszystkie leady"
+                    aria-label={labels.selectAllLeads}
                   />
                 </th>
               ) : null}
-              <th className="px-4 py-3">Lead</th>
-              <th className="px-4 py-3">Telefon</th>
-              <th className="px-4 py-3">Region</th>
-              <th className="px-4 py-3">Status</th>
-              {showAssignee ? <th className="px-4 py-3">Handlowiec</th> : null}
-              <th className="px-4 py-3">Terminy</th>
-              <th className="px-4 py-3">Dodany</th>
+              <th className="px-4 py-3">{labels.lead}</th>
+              <th className="px-4 py-3">{labels.phone}</th>
+              <th className="px-4 py-3">{labels.region}</th>
+              <th className="px-4 py-3">{labels.status}</th>
+              {showAssignee ? <th className="px-4 py-3">{labels.salesperson}</th> : null}
+              <th className="px-4 py-3">{labels.dates}</th>
+              <th className="px-4 py-3">{labels.created}</th>
               <th className="w-12 px-4 py-3" />
             </tr>
           </thead>
@@ -92,7 +145,7 @@ export function LeadTable({
                       checked={selectedIds.includes(lead.id)}
                       onChange={() => onToggle?.(lead.id)}
                       className="h-4 w-4 rounded border-line text-ink focus:ring-ink"
-                      aria-label={`Zaznacz ${lead.full_name}`}
+                      aria-label={`${labels.selectLead} ${lead.full_name}`}
                     />
                   </td>
                 ) : null}
@@ -104,7 +157,7 @@ export function LeadTable({
                     {lead.full_name}
                   </Link>
                   <div className="mt-1 text-xs text-muted">
-                    {lead.source || "Bez źródła"} · {lead.postal_code || "brak kodu"}
+                    {formatSource(lead.source, language)} · {lead.postal_code || labels.noCode}
                   </div>
                 </td>
                 <td className="px-4 py-3 align-top">
@@ -125,7 +178,7 @@ export function LeadTable({
                 </td>
                 {showAssignee ? (
                   <td className="px-4 py-3 align-top text-muted">
-                    {lead.assigned_profile?.full_name || "Nieprzypisany"}
+                    {lead.assigned_profile?.full_name || labels.unassigned}
                   </td>
                 ) : null}
                 <td className="px-4 py-3 align-top text-muted">
@@ -145,7 +198,7 @@ export function LeadTable({
                   <Link
                     href={`/leads/${lead.id}`}
                     className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-line text-muted transition hover:border-ink hover:text-ink"
-                    title="Otwórz kartę leada"
+                    title={labels.openLeadCard}
                   >
                     <ExternalLink className="h-4 w-4" aria-hidden="true" />
                   </Link>
@@ -165,7 +218,7 @@ export function LeadTable({
                   {lead.full_name}
                 </Link>
                 <div className="mt-1 text-xs font-semibold text-muted">
-                  {lead.source || "Bez źródła"} · {lead.postal_code || "brak kodu"}
+                  {formatSource(lead.source, language)} · {lead.postal_code || labels.noCode}
                 </div>
               </div>
               {selectable ? (
@@ -174,7 +227,7 @@ export function LeadTable({
                   checked={selectedIds.includes(lead.id)}
                   onChange={() => onToggle?.(lead.id)}
                   className="mt-1 h-5 w-5 flex-none rounded border-line text-ink focus:ring-ink"
-                  aria-label={`Zaznacz ${lead.full_name}`}
+                  aria-label={`${labels.selectLead} ${lead.full_name}`}
                 />
               ) : null}
             </div>
@@ -183,7 +236,7 @@ export function LeadTable({
               <StatusBadge status={lead.status} />
               {showAssignee ? (
                 <span className="rounded-md border border-line bg-[#f8fafc] px-2 py-1 text-xs font-bold text-muted">
-                  {lead.assigned_profile?.full_name || "Nieprzypisany"}
+                  {lead.assigned_profile?.full_name || labels.unassigned}
                 </span>
               ) : null}
             </div>
@@ -197,22 +250,22 @@ export function LeadTable({
                 {formatPhone(lead.phone)}
               </a>
               <div className="grid gap-1 rounded-lg border border-line bg-[#f8fafc] p-3 text-xs font-semibold text-muted">
-                <div>Region: {lead.voivodeship || "—"} / {lead.county || "—"}</div>
-                <div>Terminy: {lead.callback_at || lead.meeting_at ? [lead.callback_at, lead.meeting_at].filter(Boolean).map(formatDateTime).join(" · ") : "—"}</div>
-                <div>Dodany: {formatDateTime(lead.created_at)}</div>
+                <div>{labels.region}: {lead.voivodeship || "—"} / {lead.county || "—"}</div>
+                <div>{labels.dates}: {lead.callback_at || lead.meeting_at ? [lead.callback_at, lead.meeting_at].filter(Boolean).map(formatDateTime).join(" · ") : "—"}</div>
+                <div>{labels.created}: {formatDateTime(lead.created_at)}</div>
               </div>
             </div>
 
             <Link href={`/leads/${lead.id}`} className="btn-secondary mt-4 w-full">
               <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              Otwórz kartę
+              {labels.openCard}
             </Link>
           </article>
         ))}
       </div>
 
       {leads.length === 0 ? (
-        <EmptyState title="Brak leadów" description="Ten widok nie ma jeszcze rekordów dla wybranych filtrów." className="m-3" />
+        <EmptyState title={labels.noLeads} description={labels.noLeadsDescription} className="m-3" />
       ) : null}
     </div>
   );

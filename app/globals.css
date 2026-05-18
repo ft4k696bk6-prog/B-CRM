@@ -241,8 +241,12 @@ textarea:focus-visible {
   border: 2px solid rgb(var(--sky) / 0.7);
   border-radius: 0.75rem;
   background: rgb(var(--sky) / 0.05);
-  box-shadow: 0 0 0 9999px rgb(15 23 42 / 0.1), 0 22px 48px rgb(15 23 42 / 0.18);
+  box-shadow: 0 0 0 9999px rgb(15 23 42 / 0.055), 0 22px 48px rgb(15 23 42 / 0.16);
   transition: left 560ms ease, top 560ms ease, width 560ms ease, height 560ms ease;
+}
+
+.demo-guide-scroll-cue {
+  animation: demo-scroll-cue 1.35s ease-in-out infinite;
 }
 
 .demo-guide-loading {
@@ -279,6 +283,16 @@ textarea:focus-visible {
   }
   100% {
     transform: translateX(160%);
+  }
+}
+
+@keyframes demo-scroll-cue {
+  0%,
+  100% {
+    transform: translateY(-2px);
+  }
+  50% {
+    transform: translateY(3px);
   }
 }
 
