@@ -1,0 +1,19 @@
+import type { Lead } from "@/lib/types";
+
+export function startOfDay(value: string) {
+  return `${value}T00:00:00.000Z`;
+}
+
+export function endOfDay(value: string) {
+  return `${value}T23:59:59.999Z`;
+}
+
+export function needsNextAction(lead: Pick<Lead, "status" | "callback_at" | "meeting_at">) {
+  if (["Umowa", "Rezygnacja", "Zwrot"].includes(lead.status)) return false;
+  return !lead.callback_at && !lead.meeting_at;
+}
+
+export function escapeCsv(value: string | number | null | undefined) {
+  const text = value == null ? "" : String(value);
+  return `"${text.replaceAll('"', '""')}"`;
+}
