@@ -76,7 +76,7 @@ export default function ImportPage() {
   }
 
   async function importRows() {
-    if (rows.length === 0) return;
+    if (rows.length === 0 || !profile) return;
 
     setBusy(true);
     setError("");
@@ -91,7 +91,8 @@ export default function ImportPage() {
       voivodeship: row.voivodeship || null,
       county: row.county || null,
       status: "Nowy",
-      assigned_to: null
+      assigned_to: null,
+      crm_environment: profile.crm_environment
     }));
 
     const { error: importError } = await supabase.from("leads").insert(payload);

@@ -6,6 +6,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import type { Profile, UserRole } from "@/lib/types";
 import { homePathForRole, normalizeRole } from "@/lib/roles";
+import { normalizeCrmScope } from "@/lib/scope";
 
 type AuthState = {
   loading: boolean;
@@ -52,7 +53,8 @@ export function useAuth(requiredRole?: UserRole | UserRole[]) {
           profile.role,
           profile.email,
           typeof session.user.app_metadata?.role === "string" ? session.user.app_metadata.role : null
-        )
+        ),
+        crm_environment: normalizeCrmScope(profile.crm_environment, profile.email)
       };
 
       const allowedRoles = requiredRoleKey ? (requiredRoleKey.split("|") as UserRole[]) : [];

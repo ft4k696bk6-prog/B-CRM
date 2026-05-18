@@ -23,7 +23,7 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { useLanguage } from "@/components/language-provider";
 import { LoadingScreen } from "@/components/loading-screen";
-import { Alert, ModalShell } from "@/components/ui";
+import { Alert, EmptyState, ModalShell } from "@/components/ui";
 import {
   annexChangeOptions,
   contractFieldLabels,
@@ -36,8 +36,9 @@ import {
 import type { AppLanguage } from "@/lib/i18n";
 import { downloadAnnexPdf, downloadInvoicePdf, type AnnexValues } from "@/lib/pdf-documents";
 import { canUseOperations, normalizeRole } from "@/lib/roles";
+import { isDemoScope } from "@/lib/scope";
 import { supabase } from "@/lib/supabase";
-import type { Lead, UserRole } from "@/lib/types";
+import type { Lead, Profile, UserRole } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
 
 type WorkflowStatus = "pending" | "active" | "done";
@@ -77,7 +78,7 @@ type ProcessClient = {
   isDemo?: boolean;
 };
 
-const workflowStorageKey = "bcrm-process-workflows";
+const workflowStorageKeyPrefix = "bcrm-process-workflows";
 
 const initialWorkflow: WorkflowMap = {
   sales: "done",
@@ -499,11 +500,15 @@ function normalizeWorkflowState(workflow: Partial<Record<WorkflowKey, WorkflowSt
   return next;
 }
 
-function readStoredWorkflows(): Record<string, WorkflowMap> {
+function workflowStorageKeyFor(profile: Pick<Profile, "id" | "crm_environment">) {
+  return `${workflowStorageKeyPrefix}:${profile.crm_environment}:${profile.id}`;
+}
+
+function readStoredWorkflows(storageKey: string): Record<string, WorkflowMap> {
   if (typeof window === "undefined") return {};
 
   try {
-    const raw = window.localStorage.getItem(workflowStorageKey);
+    const raw = window.localStorage.getItem(storageKey);
     if (!raw) return {};
     const parsed = JSON.parse(raw) as Record<string, Partial<Record<WorkflowKey, WorkflowStatus>>>;
 
@@ -518,9 +523,9 @@ function readStoredWorkflows(): Record<string, WorkflowMap> {
   }
 }
 
-function saveStoredWorkflows(workflows: Record<string, WorkflowMap>) {
+function saveStoredWorkflows(storageKey: string, workflows: Record<string, WorkflowMap>) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(workflowStorageKey, JSON.stringify(workflows));
+  window.localStorage.setItem(storageKey, JSON.stringify(workflows));
 }
 
 function toggleWorkflowStatus(current: WorkflowMap, step: WorkflowKey): WorkflowMap {
@@ -757,7 +762,7 @@ export default function RealizacjaPage() {
   const [processLoading, setProcessLoading] = useState(false);
   const [processError, setProcessError] = useState("");
   const [selectedProcessId, setSelectedProcessId] = useState(demoProcessClient().id);
-  const [workflowByProcess, setWorkflowByProcess] = useState<Record<string, WorkflowMap>>(readStoredWorkflows);
+  const [workflowByProcess, setWorkflowByProcess] = useState<Record<string, WorkflowMap>>({});
   const [ksefReady, setKsefReady] = useState(false);
   const [invoiceReady, setInvoiceReady] = useState(false);
   const [annexMode, setAnnexMode] = useState<"manual" | "automatic">("automatic");
@@ -774,20 +779,23 @@ export default function RealizacjaPage() {
 
   const processClients = useMemo<ProcessClient[]>(() => {
     const clients = processLeads.map(leadToProcessClient);
-    return clients.length > 0 ? clients : [demoProcessClient()];
-  }, [processLeads]);
-  const selectedProcess = processClients.find((client) => client.id === selectedProcessId) || processClients[0];
+    if (clients.length > 0) return clients;
+    return profile && isDemoScope(profile.crm_environment) ? [demoProcessClient()] : [];
+  }, [processLeads, profile?.crm_environment]);
+  const selectedProcess = processClients.find((client) => client.id === selectedProcessId) || processClients[0] || demoProcessClient();
+  const hasProcessClients = processClients.length > 0;
   const selectedWorkflow = workflowForProcess(selectedProcess.id, workflowByProcess);
-  const completion = workflowCompletion(selectedWorkflow);
+  const completion = hasProcessClients ? workflowCompletion(selectedWorkflow) : 0;
   const currentRoleLabel = profile ? copy.roles[profile.role] : "";
   const accountingToolsAllowed = profile ? canUseAccountingTools(profile.role) : false;
   const contractReady = isContractReady(contractData);
 
   useEffect(() => {
     if (!profile) return;
+    setWorkflowByProcess(readStoredWorkflows(workflowStorageKeyFor(profile)));
     void loadProcesses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile?.id, profile?.role]);
+  }, [profile?.id, profile?.role, profile?.crm_environment]);
 
   if (loading || !profile) return <LoadingScreen />;
   if (!canUseOperations(profile.role)) return <LoadingScreen />;
@@ -800,7 +808,8 @@ export default function RealizacjaPage() {
 
     let query = supabase
       .from("leads")
-      .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role)")
+      .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)")
+      .eq("crm_environment", profile.crm_environment)
       .or("status.eq.Umowa,contract_number.not.is.null")
       .order("updated_at", { ascending: false })
       .limit(50);
@@ -883,12 +892,14 @@ export default function RealizacjaPage() {
   }
 
   function moveWorkflow(step: WorkflowKey) {
+    if (!profile || !hasProcessClients) return;
+
     setWorkflowByProcess((current) => {
       const next = {
         ...current,
         [selectedProcess.id]: toggleWorkflowStatus(workflowForProcess(selectedProcess.id, current), step)
       };
-      saveStoredWorkflows(next);
+      saveStoredWorkflows(workflowStorageKeyFor(profile), next);
       return next;
     });
   }
@@ -1070,9 +1081,20 @@ export default function RealizacjaPage() {
                   </button>
                 );
               })}
+              {!processLoading && processClients.length === 0 ? (
+                <EmptyState
+                  title={language === "en" ? "No clients in process" : "Brak klientów w procesie"}
+                  description={
+                    language === "en"
+                      ? "Production data stays empty until a contracted client appears in this environment."
+                      : "Dane produkcyjne pozostają puste, dopóki w tym środowisku nie pojawi się klient z umową."
+                  }
+                />
+              ) : null}
             </div>
           </div>
 
+          {hasProcessClients ? (
           <div className="app-card">
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
@@ -1114,6 +1136,18 @@ export default function RealizacjaPage() {
               {copy.useSelectedClient}
             </button>
           </div>
+          ) : (
+            <div className="app-card">
+              <EmptyState
+                title={language === "en" ? "No active process" : "Brak aktywnego procesu"}
+                description={
+                  language === "en"
+                    ? "Select a contracted client when one appears in this CRM environment."
+                    : "Wybierz klienta z umową, gdy pojawi się w tym środowisku CRM."
+                }
+              />
+            </div>
+          )}
         </section>
 
         <section className="grid gap-3 xl:grid-cols-[1.1fr_0.9fr]">

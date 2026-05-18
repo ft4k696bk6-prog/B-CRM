@@ -18,6 +18,8 @@ export type LegacyUserRole =
   | "logistyka"
   | "installer";
 
+export type CrmDataScope = "production" | "demo";
+
 export type LeadStatus =
   | "Nowy"
   | "Przypisany"
@@ -37,8 +39,9 @@ export type Profile = {
   full_name: string;
   role: UserRole;
   manager_id: string | null;
+  crm_environment: CrmDataScope;
   created_at: string;
-  manager_profile?: Pick<Profile, "id" | "email" | "full_name" | "role"> | null;
+  manager_profile?: Pick<Profile, "id" | "email" | "full_name" | "role" | "crm_environment"> | null;
 };
 
 export type Lead = {
@@ -61,7 +64,8 @@ export type Lead = {
   meeting_address: string | null;
   meeting_note: string | null;
   contract_number: string | null;
-  assigned_profile?: Pick<Profile, "id" | "email" | "full_name" | "role"> | null;
+  crm_environment: CrmDataScope;
+  assigned_profile?: Pick<Profile, "id" | "email" | "full_name" | "role" | "crm_environment"> | null;
 };
 
 export type LeadHistory = {
@@ -169,5 +173,6 @@ export type DailyReport = {
   contracts_signed: number;
   resignations_recorded: number;
   summary: string | null;
+  crm_environment: CrmDataScope;
   created_at: string;
 };

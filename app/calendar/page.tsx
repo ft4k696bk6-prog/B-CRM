@@ -52,7 +52,7 @@ type CalendarDbEvent = {
   starts_at: string;
   owner_id: string | null;
   owner_role: UserRole;
-  owner_profile?: Pick<Profile, "id" | "email" | "full_name" | "role"> | null;
+  owner_profile?: Pick<Profile, "id" | "email" | "full_name" | "role" | "crm_environment"> | null;
 };
 
 const calendarKinds: Array<{
@@ -259,22 +259,28 @@ export default function CalendarPage() {
   }, [selectedUserId, visibleUsers]);
 
   async function loadUsers() {
+    if (!profile) return;
+
     const { data } = await supabase
       .from("profiles")
       .select("*")
       .in("role", ["owner", "admin", "menadzer", "handlowiec", "ksiegowosc", "logistyk", "monter", "sales", "manager"])
+      .eq("crm_environment", profile.crm_environment)
       .order("full_name", { ascending: true });
 
     setUsers(((data || []) as Profile[]).map((user) => ({ ...user, role: normalizeRole(user.role, user.email) })));
   }
 
   async function loadInternalEvents(owners: Profile[]) {
+    if (!profile) return [];
+
     const ownerIds = owners.map((owner) => owner.id);
     if (ownerIds.length === 0) return [];
 
     const { data, error: dbError } = await supabase
       .from("calendar_events")
-      .select("*, owner_profile:profiles!calendar_events_owner_id_fkey(id,email,full_name,role)")
+      .select("*, owner_profile:profiles!calendar_events_owner_id_fkey(id,email,full_name,role,crm_environment)")
+      .eq("crm_environment", profile.crm_environment)
       .gte("starts_at", startOfMonthIso(month))
       .lt("starts_at", startOfNextMonthIso(month))
       .in("owner_id", ownerIds)
@@ -308,13 +314,16 @@ export default function CalendarPage() {
   }
 
   async function loadSalesLeadEvents(owners: Profile[]) {
+    if (!profile) return [];
+
     const ownerIds = owners.map((owner) => owner.id);
     if (ownerIds.length === 0) return [];
 
-    const select = "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role)";
+    const select = "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)";
     const meetingsQuery = supabase
       .from("leads")
       .select(select)
+      .eq("crm_environment", profile.crm_environment)
       .not("meeting_at", "is", null)
       .gte("meeting_at", startOfMonthIso(month))
       .lt("meeting_at", startOfNextMonthIso(month))
@@ -324,6 +333,7 @@ export default function CalendarPage() {
     const callbacksQuery = supabase
       .from("leads")
       .select(select)
+      .eq("crm_environment", profile.crm_environment)
       .not("callback_at", "is", null)
       .gte("callback_at", startOfMonthIso(month))
       .lt("callback_at", startOfNextMonthIso(month))
@@ -391,7 +401,7 @@ export default function CalendarPage() {
     if (!profile) return;
     setCalendarKind(defaultKindForRole(profile.role));
     loadUsers();
-  }, [profile?.id]);
+  }, [profile?.id, profile?.crm_environment]);
 
   useEffect(() => {
     setSelectedUserId("");
@@ -400,7 +410,7 @@ export default function CalendarPage() {
   useEffect(() => {
     if (!profile) return;
     loadCalendar();
-  }, [profile?.id, month, calendarKind, selectedUserId, visibleUsers.length]);
+  }, [profile?.id, profile?.crm_environment, month, calendarKind, selectedUserId, visibleUsers.length]);
 
   const days = useMemo(() => buildCalendarDays(month), [month]);
   const todayKey = dateKey(new Date());

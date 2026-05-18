@@ -21,7 +21,7 @@ export default function HomePage() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("role,email")
+        .select("role,email,crm_environment")
         .eq("id", session.user.id)
         .single();
 

@@ -26,6 +26,7 @@ import { Alert, ConfirmDialog } from "@/components/ui";
 import { hasAnyPermission } from "@/lib/permissions";
 import type { Permission } from "@/lib/permissions";
 import { homePathForRole, isSalesRole, ROLE_LABELS } from "@/lib/roles";
+import { isDemoScope } from "@/lib/scope";
 import { supabase } from "@/lib/supabase";
 import type { Profile } from "@/lib/types";
 
@@ -130,6 +131,7 @@ export function AppShell({ profile, children }: AppShellProps) {
       .from("leads")
       .update({ status: "Zwrot", assigned_to: null })
       .eq("assigned_to", profile.id)
+      .eq("crm_environment", profile.crm_environment)
       .in("status", bulkReturnStatuses)
       .select("id");
 
@@ -193,7 +195,14 @@ export function AppShell({ profile, children }: AppShellProps) {
             <Link href={homeHref} className="flex min-w-0 items-center gap-3">
               <BrandMark size="sm" />
               <span>
-                <span className="block text-sm font-bold leading-4">B-CRM</span>
+                <span className="flex items-center gap-2 text-sm font-bold leading-4">
+                  B-CRM
+                  {isDemoScope(profile.crm_environment) ? (
+                    <span className="rounded-md border border-sky/20 bg-sky/10 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide text-sky">
+                      Demo
+                    </span>
+                  ) : null}
+                </span>
                 <span className="block truncate text-xs text-muted">
                   {t("panelPrefix")}: {roleLabel}
                 </span>
@@ -246,7 +255,14 @@ export function AppShell({ profile, children }: AppShellProps) {
               <div className="flex items-center gap-3">
                 <BrandMark size="sm" />
                 <div>
-                  <div className="text-sm font-black text-ink">B-CRM</div>
+                  <div className="flex items-center gap-2 text-sm font-black text-ink">
+                    B-CRM
+                    {isDemoScope(profile.crm_environment) ? (
+                      <span className="rounded-md border border-sky/20 bg-sky/10 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide text-sky">
+                        Demo
+                      </span>
+                    ) : null}
+                  </div>
                   <div className="text-xs text-muted">{roleLabel}</div>
                 </div>
               </div>

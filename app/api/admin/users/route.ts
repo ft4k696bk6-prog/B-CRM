@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { isDemoUserEmail, isSystemAdminRole, normalizeRole, USER_ROLES } from "@/lib/roles";
-import type { UserRole } from "@/lib/types";
+import { normalizeCrmScope } from "@/lib/scope";
+import type { CrmDataScope, UserRole } from "@/lib/types";
 
 type CreateUserBody = {
   email?: string;
@@ -27,12 +28,14 @@ type ProfileRow = {
   full_name: string;
   role: string;
   manager_id: string | null;
+  crm_environment: CrmDataScope;
   created_at: string;
 };
 
 type AdminProfile = {
   role: string | null;
   email: string | null;
+  crm_environment: string | null;
 };
 
 function dbCompatibleRole(role: UserRole) {
@@ -61,6 +64,16 @@ function normalizedManagerId(value: string | null | undefined, role: UserRole) {
   return trimmed || null;
 }
 
+function profileRowWithoutManager(row: Omit<ProfileRow, "created_at">) {
+  return {
+    id: row.id,
+    email: row.email,
+    full_name: row.full_name,
+    role: row.role,
+    crm_environment: row.crm_environment
+  };
+}
+
 async function upsertProfileWithRoleFallback(
   supabaseAdmin: ReturnType<typeof getAdminClient>,
   row: Omit<ProfileRow, "created_at">
@@ -68,8 +81,7 @@ async function upsertProfileWithRoleFallback(
   const { error } = await supabaseAdmin.from("profiles").upsert(row);
 
   if (isManagerColumnError(error)) {
-    const { manager_id: _managerId, ...rowWithoutManager } = row;
-    const fallback = await supabaseAdmin.from("profiles").upsert(rowWithoutManager);
+    const fallback = await supabaseAdmin.from("profiles").upsert(profileRowWithoutManager(row));
     return { error: fallback.error, storedRole: row.role };
   }
 
@@ -82,9 +94,8 @@ async function upsertProfileWithRoleFallback(
   });
 
   if (isManagerColumnError(fallback.error)) {
-    const { manager_id: _managerId, ...rowWithoutManager } = row;
     const noManagerFallback = await supabaseAdmin.from("profiles").upsert({
-      ...rowWithoutManager,
+      ...profileRowWithoutManager(row),
       role: fallbackRole
     });
     return { error: noManagerFallback.error, storedRole: fallbackRole };
@@ -168,7 +179,7 @@ async function requireAdmin(request: Request) {
 
     const { data: profile } = await supabaseAdmin
       .from("profiles")
-      .select("role,email")
+      .select("role,email,crm_environment")
       .eq("id", user.id)
       .single<AdminProfile>();
 
@@ -182,11 +193,14 @@ async function requireAdmin(request: Request) {
       return { error: NextResponse.json({ error: "Brak uprawnień administratora." }, { status: 403 }) };
     }
 
+    const requesterEmail = profile?.email || user.email || null;
+
     return {
       supabaseAdmin,
       user,
-      requesterEmail: profile?.email || user.email || null,
-      requesterIsDemo: isDemoUserEmail(profile?.email || user.email)
+      requesterEmail,
+      requesterIsDemo: isDemoUserEmail(requesterEmail),
+      requesterScope: normalizeCrmScope(profile?.crm_environment, requesterEmail)
     };
   } catch (error) {
     return {
@@ -205,12 +219,14 @@ export async function GET(request: Request) {
   let { data, error } = await auth.supabaseAdmin
     .from("profiles")
     .select("*")
+    .eq("crm_environment", auth.requesterScope)
     .order("created_at", { ascending: false });
 
   if (isManagerColumnError(error)) {
     const fallback = await auth.supabaseAdmin
       .from("profiles")
       .select("*")
+      .eq("crm_environment", auth.requesterScope)
       .order("created_at", { ascending: false });
 
     data = fallback.data;
@@ -229,12 +245,11 @@ export async function GET(request: Request) {
     (authUsersData?.users || []).map((user) => [user.id, trustedAuthRole(user.app_metadata?.role)])
   );
 
-  const users = ((data || []) as ProfileRow[])
-    .filter((user) => (auth.requesterIsDemo ? isDemoUserEmail(user.email) : !isDemoUserEmail(user.email)))
-    .map((user) => ({
-      ...user,
-      role: normalizeRole(user.role, user.email, roleByUserId.get(user.id))
-    }));
+  const users = ((data || []) as ProfileRow[]).map((user) => ({
+    ...user,
+    crm_environment: normalizeCrmScope(user.crm_environment, user.email),
+    role: normalizeRole(user.role, user.email, roleByUserId.get(user.id))
+  }));
 
   return NextResponse.json({ users });
 }
@@ -262,16 +277,37 @@ export async function POST(request: Request) {
       );
     }
 
+    if (role === "handlowiec" && managerId) {
+      const { data: manager } = await auth.supabaseAdmin
+        .from("profiles")
+        .select("role,email,crm_environment")
+        .eq("id", managerId)
+        .single<AdminProfile>();
+
+      if (normalizeRole(manager?.role, manager?.email) !== "menadzer") {
+        return NextResponse.json({ error: "Wybrany opiekun nie jest menadżerem." }, { status: 400 });
+      }
+
+      if (normalizeCrmScope(manager?.crm_environment, manager?.email) !== auth.requesterScope) {
+        return NextResponse.json(
+          { error: "Wybrany menadżer jest z innego środowiska CRM." },
+          { status: 403 }
+        );
+      }
+    }
+
     const { data, error } = await auth.supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
       user_metadata: {
         full_name: fullName,
-        role
+        role,
+        crm_environment: auth.requesterScope
       },
       app_metadata: {
-        role
+        role,
+        crm_environment: auth.requesterScope
       }
     });
 
@@ -287,7 +323,8 @@ export async function POST(request: Request) {
       email,
       full_name: fullName,
       role,
-      manager_id: managerId
+      manager_id: managerId,
+      crm_environment: auth.requesterScope
     });
 
     if (profileResult.error) {
@@ -299,10 +336,11 @@ export async function POST(request: Request) {
       event_type: "user.created",
       entity_type: "profile",
       entity_id: data.user.id,
-      metadata: { email, fullName, role }
+      metadata: { email, fullName, role },
+      crm_environment: auth.requesterScope
     });
 
-    return NextResponse.json({ id: data.user.id, email, fullName, role });
+    return NextResponse.json({ id: data.user.id, email, fullName, role, crm_environment: auth.requesterScope });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Nieznany błąd." },
@@ -327,19 +365,20 @@ export async function PATCH(request: Request) {
 
     const { data: target } = await auth.supabaseAdmin
       .from("profiles")
-      .select("role,email")
+      .select("role,email,crm_environment")
       .eq("id", id)
-      .single();
+      .single<AdminProfile>();
     const { data: targetAuth } = await auth.supabaseAdmin.auth.admin.getUserById(id);
     const targetRole = normalizeRole(
       target?.role,
       target?.email,
       trustedAuthRole(targetAuth.user?.app_metadata?.role)
     );
+    const targetScope = normalizeCrmScope(target?.crm_environment, target?.email || targetAuth.user?.email);
 
-    if (auth.requesterIsDemo && !isDemoUserEmail(target?.email || targetAuth.user?.email)) {
+    if (targetScope !== auth.requesterScope) {
       return NextResponse.json(
-        { error: "Konto demo może zmieniać wyłącznie konta demo." },
+        { error: "Możesz zmieniać wyłącznie użytkowników z tego samego środowiska CRM." },
         { status: 403 }
       );
     }
@@ -354,17 +393,17 @@ export async function PATCH(request: Request) {
     if (role === "handlowiec" && managerId) {
       const { data: manager } = await auth.supabaseAdmin
         .from("profiles")
-        .select("role,email")
+        .select("role,email,crm_environment")
         .eq("id", managerId)
-        .single();
+        .single<AdminProfile>();
 
       if (normalizeRole(manager?.role, manager?.email) !== "menadzer") {
         return NextResponse.json({ error: "Wybrany opiekun nie jest menadżerem." }, { status: 400 });
       }
 
-      if (auth.requesterIsDemo && !isDemoUserEmail(manager?.email)) {
+      if (normalizeCrmScope(manager?.crm_environment, manager?.email) !== auth.requesterScope) {
         return NextResponse.json(
-          { error: "Konto demo może przypisywać tylko demo menadżerów." },
+          { error: "Wybrany menadżer jest z innego środowiska CRM." },
           { status: 403 }
         );
       }
@@ -382,8 +421,8 @@ export async function PATCH(request: Request) {
     }
 
     await auth.supabaseAdmin.auth.admin.updateUserById(id, {
-      app_metadata: { ...(targetAuth.user?.app_metadata || {}), role },
-      user_metadata: { ...(targetAuth.user?.user_metadata || {}), role: storedRole }
+      app_metadata: { ...(targetAuth.user?.app_metadata || {}), role, crm_environment: targetScope },
+      user_metadata: { ...(targetAuth.user?.user_metadata || {}), role: storedRole, crm_environment: targetScope }
     });
 
     await auth.supabaseAdmin.from("audit_events").insert({
@@ -391,10 +430,11 @@ export async function PATCH(request: Request) {
       event_type: "user.role_updated",
       entity_type: "profile",
       entity_id: id,
-      metadata: { role, managerId }
+      metadata: { role, managerId },
+      crm_environment: auth.requesterScope
     });
 
-    return NextResponse.json({ id, role });
+    return NextResponse.json({ id, role, crm_environment: targetScope });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Nieznany błąd." },
@@ -421,12 +461,19 @@ export async function DELETE(request: Request) {
 
     const { data: target } = await auth.supabaseAdmin
       .from("profiles")
-      .select("email,role")
+      .select("email,role,crm_environment")
       .eq("id", id)
-      .single();
+      .single<AdminProfile>();
 
     if (!target) {
       return NextResponse.json({ error: "Nie znaleziono użytkownika." }, { status: 404 });
+    }
+
+    if (normalizeCrmScope(target.crm_environment, target.email) !== auth.requesterScope) {
+      return NextResponse.json(
+        { error: "Możesz usuwać wyłącznie użytkowników z tego samego środowiska CRM." },
+        { status: 403 }
+      );
     }
 
     if (isDemoUserEmail(target.email)) {

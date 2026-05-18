@@ -9,8 +9,11 @@ create table if not exists public.calendar_events (
   visibility text not null default 'private' check (visibility in ('private', 'department', 'internal')),
   participant_ids uuid[] not null default '{}',
   created_by uuid references public.profiles(id) on delete set null,
+  crm_environment text not null default 'production' check (crm_environment in ('production', 'demo')),
   created_at timestamptz not null default now()
 );
+
+create index if not exists calendar_events_crm_environment_idx on public.calendar_events(crm_environment, starts_at);
 
 alter table public.calendar_events enable row level security;
 

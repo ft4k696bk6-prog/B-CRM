@@ -86,10 +86,13 @@ export default function AdminDashboardPage() {
   const isEnglish = language === "en";
 
   async function loadSalespeople() {
+    if (!profile) return;
+
     let query = supabase
       .from("profiles")
       .select("*")
       .in("role", ["handlowiec", "sales"])
+      .eq("crm_environment", profile.crm_environment)
       .order("full_name", { ascending: true });
 
     if (isManager && profile) query = query.eq("manager_id", profile.id);
@@ -112,9 +115,12 @@ export default function AdminDashboardPage() {
   }
 
   async function loadStats() {
+    if (!profile) return;
+
     let query = supabase
       .from("leads")
-      .select("id,status,assigned_to,meeting_at,callback_at");
+      .select("id,status,assigned_to,meeting_at,callback_at")
+      .eq("crm_environment", profile.crm_environment);
 
     query = applyManagerScope(query);
 
@@ -134,14 +140,17 @@ export default function AdminDashboardPage() {
   }
 
   async function loadLeads() {
+    if (!profile) return;
+
     setBusy(true);
     setError("");
 
     let query = supabase
       .from("leads")
       .select(
-        "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role)"
+        "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)"
       )
+      .eq("crm_environment", profile.crm_environment)
       .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false })
       .limit(1000);
 
@@ -184,12 +193,13 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     if (!profile) return;
     loadSalespeople();
-  }, [profile?.id]);
+  }, [profile?.id, profile?.crm_environment]);
 
   useEffect(() => {
+    if (!profile) return;
     loadStats();
     loadLeads();
-  }, [filters, sort, salespeople]);
+  }, [filters, profile?.id, profile?.crm_environment, sort, salespeople]);
 
   const selectedCount = selectedIds.length;
 
@@ -277,7 +287,7 @@ export default function AdminDashboardPage() {
   }
 
   async function assignSelected() {
-    if (!selectedSalesperson || selectedIds.length === 0) return;
+    if (!profile || !selectedSalesperson || selectedIds.length === 0) return;
 
     setBusy(true);
     setError("");
@@ -288,6 +298,7 @@ export default function AdminDashboardPage() {
         assigned_to: selectedSalesperson,
         status: "Przypisany"
       })
+      .eq("crm_environment", profile.crm_environment)
       .in("id", selectedIds);
 
     if (assignError) {
@@ -347,7 +358,7 @@ export default function AdminDashboardPage() {
           }
         />
 
-        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-8">
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <StatTile label="Wszystkie" value={stats.all} icon={Database} tone="sky" />
           <StatTile label="Nieprzypisane" value={stats.unassigned} icon={Inbox} tone="solar" />
           <StatTile label="Przypisane" value={stats.assigned} icon={UserCheck} tone="leaf" />

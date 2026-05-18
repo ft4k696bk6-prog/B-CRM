@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { normalizeRole } from "@/lib/roles";
+import { isDemoScope, normalizeCrmScope } from "@/lib/scope";
 
 type KsefAction = "prepare_accounting_package" | "send_ksef_invoice";
 
@@ -64,7 +65,7 @@ export async function POST(request: Request) {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("id,email,role")
+      .select("id,email,role,crm_environment")
       .eq("id", user.id)
       .single();
 
@@ -74,10 +75,11 @@ export async function POST(request: Request) {
 
     const body = (await request.json()) as KsefBody;
     const payload = buildKsefPayload(body, user.id);
+    const crmEnvironment = normalizeCrmScope(profile?.crm_environment, profile?.email || user.email);
     const endpoint = process.env.KSEF_API_URL;
     const tokenValue = process.env.KSEF_API_TOKEN;
 
-    if (!endpoint || !tokenValue) {
+    if (isDemoScope(crmEnvironment) || !endpoint || !tokenValue) {
       return NextResponse.json({
         mode: "demo",
         sent: false,

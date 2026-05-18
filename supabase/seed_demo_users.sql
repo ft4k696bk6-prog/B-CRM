@@ -41,8 +41,8 @@ select
   email,
   crypt(password, gen_salt('bf')),
   now(),
-  jsonb_build_object('provider', 'email', 'providers', jsonb_build_array('email'), 'role', role),
-  jsonb_build_object('full_name', full_name, 'role', role),
+  jsonb_build_object('provider', 'email', 'providers', jsonb_build_array('email'), 'role', role, 'crm_environment', 'demo'),
+  jsonb_build_object('full_name', full_name, 'role', role, 'crm_environment', 'demo'),
   now(),
   now()
 from demo_users
@@ -101,11 +101,97 @@ with demo_users(id, email, full_name, role, manager_id) as (
     ('00000000-0000-0000-0000-00000000a005'::uuid, 'demo-logistyk@example.com', 'Demo Logistyk', 'logistyk', null::uuid),
     ('00000000-0000-0000-0000-00000000a006'::uuid, 'demo-monter@example.com', 'Demo Monter', 'monter', null::uuid)
 )
-insert into public.profiles (id, email, full_name, role, manager_id)
-select id, email, full_name, role, manager_id
+insert into public.profiles (id, email, full_name, role, manager_id, crm_environment)
+select id, email, full_name, role, manager_id, 'demo'
 from demo_users
 on conflict (id) do update
   set email = excluded.email,
       full_name = excluded.full_name,
       role = excluded.role,
-      manager_id = excluded.manager_id;
+      manager_id = excluded.manager_id,
+      crm_environment = excluded.crm_environment;
+
+insert into public.leads (
+  id,
+  full_name,
+  phone,
+  postal_code,
+  address,
+  voivodeship,
+  county,
+  status,
+  assigned_to,
+  source,
+  callback_at,
+  meeting_at,
+  meeting_address,
+  contract_number,
+  crm_environment
+)
+values
+  (
+    '00000000-0000-0000-0000-00000000b001'::uuid,
+    'Demo Klient - umowa',
+    '+48 500 100 100',
+    '20-001',
+    'Lublin, ul. Energetyczna 12',
+    'lubelskie',
+    'lubelski',
+    'Umowa',
+    '00000000-0000-0000-0000-00000000a002'::uuid,
+    'B2C',
+    null,
+    date_trunc('day', now()) + interval '11 hours',
+    'Lublin, ul. Energetyczna 12',
+    'DEMO/2026/001',
+    'demo'
+  ),
+  (
+    '00000000-0000-0000-0000-00000000b002'::uuid,
+    'Demo Klient - call-back',
+    '+48 500 200 200',
+    '21-500',
+    null,
+    'lubelskie',
+    'bialski',
+    'Call back',
+    '00000000-0000-0000-0000-00000000a002'::uuid,
+    'B2B',
+    now() + interval '2 hours',
+    null,
+    null,
+    null,
+    'demo'
+  ),
+  (
+    '00000000-0000-0000-0000-00000000b003'::uuid,
+    'Demo Klient - spotkanie',
+    '+48 500 300 300',
+    '22-400',
+    'Zamość, ul. Testowa 4',
+    'lubelskie',
+    'zamojski',
+    'Spotkanie',
+    '00000000-0000-0000-0000-00000000a002'::uuid,
+    'polecenie',
+    null,
+    date_trunc('day', now()) + interval '15 hours',
+    'Zamość, ul. Testowa 4',
+    null,
+    'demo'
+  )
+on conflict (id) do update
+  set full_name = excluded.full_name,
+      phone = excluded.phone,
+      postal_code = excluded.postal_code,
+      address = excluded.address,
+      voivodeship = excluded.voivodeship,
+      county = excluded.county,
+      status = excluded.status,
+      assigned_to = excluded.assigned_to,
+      source = excluded.source,
+      callback_at = excluded.callback_at,
+      meeting_at = excluded.meeting_at,
+      meeting_address = excluded.meeting_address,
+      contract_number = excluded.contract_number,
+      crm_environment = excluded.crm_environment;

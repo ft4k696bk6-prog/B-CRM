@@ -124,7 +124,7 @@ export default function LoginPage() {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("role,email")
+      .select("role,email,crm_environment")
       .eq("id", data.user.id)
       .single();
 
@@ -154,94 +154,76 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen px-4 py-6 sm:py-10">
-      <section className="mx-auto grid min-h-[calc(100vh-5rem)] w-full max-w-5xl items-center gap-5 lg:grid-cols-[0.9fr_1fr]">
-        <div className="hidden rounded-lg border border-line bg-[#111722] p-7 text-white shadow-soft lg:block">
-          <BrandMark />
-          <h2 className="mt-8 text-3xl font-black tracking-tight">B-CRM</h2>
-          <p className="mt-3 max-w-sm text-sm leading-6 text-white/70">
-            Profesjonalny panel CRM do obsługi leadów, procesów po umowie i pracy zespołów operacyjnych.
-          </p>
-          <div className="mt-8 grid gap-3 text-sm">
-            <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-              <div className="font-black">Leady i statusy</div>
-              <div className="mt-1 text-white/65">Czytelny pipeline od kontaktu do umowy.</div>
-            </div>
-            <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-              <div className="font-black">Role i odpowiedzialność</div>
-              <div className="mt-1 text-white/65">Widoki dopasowane do zespołów i uprawnień.</div>
-            </div>
-          </div>
-        </div>
-
+      <section className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-xl items-center justify-center">
         <div className="w-full rounded-lg border border-line bg-white p-5 shadow-soft sm:p-6">
-        <div className="mb-8 flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <BrandMark />
-            <div>
-              <h1 className="text-xl font-bold text-ink">B-CRM</h1>
-              <p className="text-sm text-muted">{t("loginSubtitle")}</p>
+          <div className="mb-8 flex items-start justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <BrandMark />
+              <div>
+                <h1 className="text-xl font-bold text-ink">B-CRM</h1>
+                <p className="text-sm text-muted">{t("loginSubtitle")}</p>
+              </div>
             </div>
+            <LanguageSwitcher />
           </div>
-          <LanguageSwitcher />
-        </div>
 
-        {!isSupabaseConfigured ? (
-          <Alert tone="warning" className="mb-4">{t("supabaseMissing")}</Alert>
-        ) : null}
+          {!isSupabaseConfigured ? (
+            <Alert tone="warning" className="mb-4">{t("supabaseMissing")}</Alert>
+          ) : null}
 
-        {demoModeEnabled ? (
-          <Alert tone="info" className="mb-4">{t("demoIntro")}</Alert>
-        ) : null}
+          {demoModeEnabled ? (
+            <Alert tone="info" className="mb-4">{t("demoIntro")}</Alert>
+          ) : null}
 
-        {error ? (
-          <Alert tone="danger" className="mb-4">{error}</Alert>
-        ) : null}
+          {error ? (
+            <Alert tone="danger" className="mb-4">{error}</Alert>
+          ) : null}
 
-        <form onSubmit={onSubmit} className="grid gap-4">
-          <label>
-            <span className="label">{t("email")}</span>
-            <input
-              className="field"
-              type="text"
-              autoComplete="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-            />
-          </label>
+          <form onSubmit={onSubmit} className="grid gap-4">
+            <label>
+              <span className="label">{t("email")}</span>
+              <input
+                className="field"
+                type="text"
+                autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+              />
+            </label>
 
-          <label>
-            <span className="label">{t("password")}</span>
-            <input
-              className="field"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-            />
-          </label>
+            <label>
+              <span className="label">{t("password")}</span>
+              <input
+                className="field"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+            </label>
 
-          <button
-            type="submit"
-            disabled={loading || !isSupabaseConfigured}
-            className="btn-primary"
-          >
-            <LogIn className="h-4 w-4" aria-hidden="true" />
-            {loading ? t("signingIn") : t("signIn")}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading || !isSupabaseConfigured}
+              className="btn-primary"
+            >
+              <LogIn className="h-4 w-4" aria-hidden="true" />
+              {loading ? t("signingIn") : t("signIn")}
+            </button>
+          </form>
 
-        <div className="mt-5 border-t border-line pt-5">
-          <button
-            type="button"
-            onClick={() => setShowDemoMenu((value) => !value)}
-            disabled={loading || !isSupabaseConfigured}
-            className="btn-secondary w-full"
-          >
-            <Sparkles className="h-4 w-4" aria-hidden="true" />
-            {showDemoMenu ? t("hideDemo") : t("showDemo")}
-          </button>
+          <div className="mt-5 border-t border-line pt-5">
+            <button
+              type="button"
+              onClick={() => setShowDemoMenu((value) => !value)}
+              disabled={loading || !isSupabaseConfigured}
+              className="btn-secondary w-full"
+            >
+              <Sparkles className="h-4 w-4" aria-hidden="true" />
+              {showDemoMenu ? t("hideDemo") : t("showDemo")}
+            </button>
 
           {showDemoMenu ? (
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -270,7 +252,7 @@ export default function LoginPage() {
               })}
             </div>
           ) : null}
-        </div>
+          </div>
         </div>
       </section>
     </main>

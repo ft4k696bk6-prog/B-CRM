@@ -5,6 +5,7 @@ begin
   select id into seller
   from public.profiles
   where role = 'handlowiec'
+    and crm_environment = 'production'
   order by created_at asc
   limit 1;
 
@@ -21,7 +22,8 @@ begin
     callback_at,
     meeting_at,
     meeting_address,
-    resignation_reason
+    resignation_reason,
+    crm_environment
   )
   values
     (
@@ -37,7 +39,8 @@ begin
       null,
       null,
       null,
-      null
+      null,
+      'production'
     ),
     (
       'Piotr Zieliński',
@@ -52,7 +55,8 @@ begin
       null,
       null,
       null,
-      null
+      null,
+      'production'
     ),
     (
       'Maria Nowak',
@@ -67,7 +71,8 @@ begin
       now() - interval '2 hours',
       null,
       null,
-      null
+      null,
+      'production'
     ),
     (
       'Tomasz Wójcik',
@@ -82,7 +87,8 @@ begin
       null,
       date_trunc('day', now()) + interval '14 hours',
       'Poznań, ul. Słoneczna 12',
-      null
+      null,
+      'production'
     ),
     (
       'Karolina Wiśniewska',
@@ -97,6 +103,7 @@ begin
       null,
       null,
       null,
-      'Klient ma już podpisaną umowę z inną firmą.'
+      'Klient ma już podpisaną umowę z inną firmą.',
+      'production'
     );
 end $$;

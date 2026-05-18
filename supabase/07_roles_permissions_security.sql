@@ -28,12 +28,14 @@ create table if not exists public.audit_events (
   entity_type text not null,
   entity_id uuid,
   metadata jsonb,
+  crm_environment text not null default 'production',
   created_at timestamptz not null default now()
 );
 
 create index if not exists audit_events_actor_id_idx on public.audit_events(actor_id, created_at desc);
 create index if not exists audit_events_entity_idx on public.audit_events(entity_type, entity_id, created_at desc);
 create index if not exists audit_events_type_idx on public.audit_events(event_type, created_at desc);
+create index if not exists audit_events_crm_environment_idx on public.audit_events(crm_environment, created_at desc);
 
 alter table public.audit_events enable row level security;
 

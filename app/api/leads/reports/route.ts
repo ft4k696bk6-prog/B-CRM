@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { optionalString, requiredString } from "@/lib/api-validation";
+import { normalizeCrmScope } from "@/lib/scope";
 
 function getSupabaseClient(token: string) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -42,12 +43,25 @@ export async function GET(request: Request) {
     }
 
     const supabase = getSupabaseClient(token);
+    const { data: user } = await supabase.auth.getUser();
+
+    if (!user.user) {
+      return NextResponse.json({ error: "Sesja wygasła" }, { status: 401 });
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("email,crm_environment")
+      .eq("id", user.user.id)
+      .single();
+    const crmEnvironment = normalizeCrmScope(profile?.crm_environment, profile?.email || user.user.email);
 
     const { data: report, error } = await supabase
       .from("daily_reports")
       .select("*")
       .eq("user_id", userId)
       .eq("report_date", reportDate)
+      .eq("crm_environment", crmEnvironment)
       .single();
 
     if (error && error.code !== "PGRST116") {
@@ -82,6 +96,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Sesja wygasła" }, { status: 401 });
     }
 
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("email,crm_environment")
+      .eq("id", user.user.id)
+      .single();
+    const crmEnvironment = normalizeCrmScope(profile?.crm_environment, profile?.email || user.user.email);
+
     const body = await request.json();
     const reportDate = requiredString(body.report_date, "report_date", 20);
     const summary = optionalString(body.summary, "summary", 4000);
@@ -106,7 +127,8 @@ export async function POST(request: Request) {
           meetings_scheduled: safeNumber(body.meetings_scheduled),
           contracts_signed: safeNumber(body.contracts_signed),
           resignations_recorded: safeNumber(body.resignations_recorded),
-          summary: summary.data!
+          summary: summary.data!,
+          crm_environment: crmEnvironment
         },
         {
           onConflict: "user_id,report_date"

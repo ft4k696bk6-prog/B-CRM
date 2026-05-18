@@ -95,7 +95,9 @@ create table if not exists public.daily_reports (
   contracts_signed integer default 0,
   resignations_recorded integer default 0,
   summary text,
+  crm_environment text not null default 'production',
   created_at timestamptz not null default now(),
+  constraint daily_reports_crm_environment_check check (crm_environment in ('production', 'demo')),
   constraint daily_reports_user_id_fkey
     foreign key (user_id)
     references public.profiles(id)
@@ -119,6 +121,7 @@ create index if not exists lead_reminders_lead_id_idx on public.lead_reminders(l
 create index if not exists lead_reminders_reminder_at_idx on public.lead_reminders(reminder_at);
 create index if not exists lead_reminders_is_completed_idx on public.lead_reminders(is_completed);
 create index if not exists daily_reports_user_date_idx on public.daily_reports(user_id, report_date desc);
+create index if not exists daily_reports_crm_environment_idx on public.daily_reports(crm_environment, report_date desc);
 
 -- Function to log activity automatically
 create or replace function public.log_lead_activity(

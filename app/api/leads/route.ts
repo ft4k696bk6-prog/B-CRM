@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { LEAD_SOURCES } from "@/lib/lead-sources";
 import { canCreateManualLead, canManageLeads, normalizeRole } from "@/lib/roles";
+import { normalizeCrmScope } from "@/lib/scope";
 
 type CreateLeadBody = {
   full_name?: string;
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
 
     const { data: profile } = await supabaseAdmin
       .from("profiles")
-      .select("id,email,role")
+      .select("id,email,role,crm_environment")
       .eq("id", user.id)
       .single();
 
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
       profile?.email || user.email,
       typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null
     );
+    const crmEnvironment = normalizeCrmScope(profile?.crm_environment, profile?.email || user.email);
 
     if (!canCreateManualLead(role)) {
       return NextResponse.json({ error: "Twoja rola nie może tworzyć leadów." }, { status: 403 });
@@ -87,7 +89,8 @@ export async function POST(request: Request) {
       county: text(body.county, 120) || null,
       source,
       status: canManageLeads(role) ? "Nowy" : "Przypisany",
-      assigned_to: canManageLeads(role) ? null : user.id
+      assigned_to: canManageLeads(role) ? null : user.id,
+      crm_environment: crmEnvironment
     };
 
     const { data, error } = await supabaseAdmin.from("leads").insert(payload).select("id").single();

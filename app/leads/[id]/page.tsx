@@ -93,15 +93,16 @@ export default function LeadDetailsPage() {
   const backHref = homePathForRole(profile?.role);
 
   async function loadLead() {
-    if (!params.id) return;
+    if (!params.id || !profile) return;
 
     setBusy(true);
     setError("");
 
     const { data, error: leadError } = await supabase
       .from("leads")
-      .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role)")
+      .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)")
       .eq("id", params.id)
+      .eq("crm_environment", profile.crm_environment)
       .single();
 
     if (leadError || !data) {
@@ -128,7 +129,8 @@ export default function LeadDetailsPage() {
     await supabase
       .from("leads")
       .update({ last_opened_at: new Date().toISOString() })
-      .eq("id", params.id);
+      .eq("id", params.id)
+      .eq("crm_environment", profile.crm_environment);
 
     setBusy(false);
   }
@@ -147,10 +149,13 @@ export default function LeadDetailsPage() {
   }
 
   async function loadSalespeople() {
+    if (!profile) return;
+
     let query = supabase
       .from("profiles")
       .select("*")
       .in("role", ["handlowiec", "sales"])
+      .eq("crm_environment", profile.crm_environment)
       .order("full_name", { ascending: true });
 
     if (isManager && profile) query = query.eq("manager_id", profile.id);
@@ -173,7 +178,7 @@ export default function LeadDetailsPage() {
 
   async function saveStatus(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!lead) return;
+    if (!lead || !profile) return;
 
     setBusy(true);
     setError("");
@@ -250,7 +255,11 @@ export default function LeadDetailsPage() {
       patch.assigned_to = null;
     }
 
-    const { error: updateError } = await supabase.from("leads").update(patch).eq("id", lead.id);
+    const { error: updateError } = await supabase
+      .from("leads")
+      .update(patch)
+      .eq("id", lead.id)
+      .eq("crm_environment", profile.crm_environment);
 
     if (updateError) {
       setError(updateError.message);
@@ -293,7 +302,7 @@ export default function LeadDetailsPage() {
 
   async function saveLeadData(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!lead) return;
+    if (!lead || !profile) return;
 
     setBusy(true);
     setError("");
@@ -306,7 +315,8 @@ export default function LeadDetailsPage() {
         voivodeship: voivodeship || null,
         county: county || null
       })
-      .eq("id", lead.id);
+      .eq("id", lead.id)
+      .eq("crm_environment", profile.crm_environment);
 
     if (updateError) {
       setError(updateError.message);
@@ -318,7 +328,7 @@ export default function LeadDetailsPage() {
   }
 
   async function returnLead() {
-    if (!lead) return;
+    if (!lead || !profile) return;
 
     setBusy(true);
     setError("");
@@ -329,7 +339,8 @@ export default function LeadDetailsPage() {
         status: "Zwrot",
         assigned_to: null
       })
-      .eq("id", lead.id);
+      .eq("id", lead.id)
+      .eq("crm_environment", profile.crm_environment);
 
     if (returnError) {
       setError(returnError.message);
@@ -347,7 +358,7 @@ export default function LeadDetailsPage() {
 
   async function assignLead(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!lead || !canManage) return;
+    if (!lead || !profile || !canManage) return;
 
     setBusy(true);
     setError("");
@@ -358,7 +369,8 @@ export default function LeadDetailsPage() {
         assigned_to: selectedAssignee || null,
         status: selectedAssignee ? "Przypisany" : "Nowy"
       })
-      .eq("id", lead.id);
+      .eq("id", lead.id)
+      .eq("crm_environment", profile.crm_environment);
 
     if (assignError) {
       setError(assignError.message);

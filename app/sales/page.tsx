@@ -35,12 +35,16 @@ export default function SalesDashboardPage() {
   const [error, setError] = useState("");
 
   async function loadLeads() {
+    if (!profile) return;
+
     setBusy(true);
     setError("");
 
     let query = supabase
       .from("leads")
-      .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role)")
+      .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)")
+      .eq("crm_environment", profile.crm_environment)
+      .eq("assigned_to", profile.id)
       .order("updated_at", { ascending: false })
       .limit(1000);
 
@@ -58,8 +62,9 @@ export default function SalesDashboardPage() {
   }
 
   useEffect(() => {
+    if (!profile) return;
     loadLeads();
-  }, [statusFilter]);
+  }, [profile?.id, profile?.crm_environment, statusFilter]);
 
   useEffect(() => {
     function refreshLeads() {
@@ -68,7 +73,7 @@ export default function SalesDashboardPage() {
 
     window.addEventListener("leads:changed", refreshLeads);
     return () => window.removeEventListener("leads:changed", refreshLeads);
-  }, [statusFilter]);
+  }, [profile?.id, profile?.crm_environment, statusFilter]);
 
   const overdueCallbacks = useMemo(
     () =>
