@@ -1,10 +1,11 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { CheckCircle2, Paintbrush2, Save, Settings } from "lucide-react";
+import { Paintbrush2, Save, Settings } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { useTheme } from "@/components/theme-provider";
+import { Alert, PageHeader, SectionHeader } from "@/components/ui";
 import { usePricingSettings } from "@/lib/pricing-settings";
 import { themePacks } from "@/lib/theme";
 import { useAuth } from "@/lib/use-auth";
@@ -37,23 +38,19 @@ export default function SettingsPage() {
   return (
     <AppShell profile={profile}>
       <div className="grid gap-5">
-        <div>
-          <h1 className="section-title">Ustawienia</h1>
-          <p className="mt-1 text-sm text-muted">Wygląd interfejsu i preferencje używane przy ofertach.</p>
-        </div>
+        <PageHeader
+          title="Ustawienia"
+          description="Wygląd interfejsu i preferencje używane przy ofertach."
+        />
 
-        <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
-              <Paintbrush2 className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <div>
-              <h2 className="text-base font-bold text-ink">Wygląd CRM</h2>
-              <p className="mt-1 text-sm text-muted">
-                Gotowe pakiety kolorystyczne, żeby każdy mógł dopasować interfejs pod siebie.
-              </p>
-            </div>
-          </div>
+        <section className="app-card">
+          <SectionHeader
+            icon={Paintbrush2}
+            title="Wygląd CRM"
+            description="Gotowe pakiety kolorystyczne dla interfejsu."
+            tone="sky"
+            className="mb-4"
+          />
 
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {themePacks.map((pack) => (
@@ -61,10 +58,10 @@ export default function SettingsPage() {
                 key={pack.id}
                 type="button"
                 onClick={() => setTheme(pack.id)}
-                className={`rounded-2xl border p-4 text-left transition ${
+                className={`rounded-lg border p-4 text-left transition hover:-translate-y-px ${
                   theme === pack.id
                     ? "border-ink bg-ink text-white"
-                    : "border-line bg-[#f9fbfd] text-ink hover:border-ink"
+                    : "border-line bg-[#f9fbfd] text-ink hover:border-ink hover:bg-white hover:shadow-soft"
                 }`}
               >
                 <div className="mb-4 flex gap-2">
@@ -81,18 +78,14 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <form onSubmit={save} className="max-w-2xl rounded-lg border border-line bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-ink text-white">
-              <Settings className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <div>
-              <h2 className="text-base font-bold text-ink">Ustawienia oferty</h2>
-              <p className="mt-1 text-sm text-muted">
-                Te wartości nie są pokazywane w widoku oferty dla klienta.
-              </p>
-            </div>
-          </div>
+        <form onSubmit={save} className="app-card max-w-2xl">
+          <SectionHeader
+            icon={Settings}
+            title="Ustawienia oferty"
+            description="Wartości techniczne nie są widoczne w ofercie dla klienta."
+            tone="ink"
+            className="mb-4"
+          />
 
           <div className="grid gap-3 sm:grid-cols-2">
             {profile.role === "owner" || profile.role === "admin" ? (
@@ -121,10 +114,9 @@ export default function SettingsPage() {
           </div>
 
           {saved ? (
-            <div className="mt-4 flex items-center gap-2 rounded-md border border-leaf/20 bg-leaf/10 p-3 text-sm font-semibold text-leaf">
-              <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+            <Alert tone="success" className="mt-4">
               Zapisano ustawienia.
-            </div>
+            </Alert>
           ) : null}
 
           <button type="submit" className="btn-primary mt-4">

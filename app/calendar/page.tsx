@@ -22,6 +22,7 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { useLanguage } from "@/components/language-provider";
+import { Alert, EmptyState, PageHeader, SectionHeader } from "@/components/ui";
 import { formatDate, formatDateTime } from "@/lib/date";
 import { normalizeRole, ROLE_LABELS } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
@@ -455,15 +456,14 @@ export default function CalendarPage() {
   return (
     <AppShell profile={profile}>
       <div className="grid gap-5">
-        <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
-          <div>
-            <h1 className="section-title">{language === "en" ? "Calendar" : "Kalendarz"}</h1>
-            <p className="mt-1 text-sm text-muted">
-              {language === "en"
-                ? "Department calendars, user calendars and internal meetings with role-based visibility."
-                : "Kalendarze działów, kalendarze użytkowników i spotkania wewnętrzne z widocznością według hierarchii."}
-            </p>
-          </div>
+        <PageHeader
+          title={language === "en" ? "Calendar" : "Kalendarz"}
+          description={
+            language === "en"
+              ? "Department calendars, user calendars and internal meetings with role-based visibility."
+              : "Kalendarze działów, kalendarze użytkowników i spotkania wewnętrzne z widocznością według hierarchii."
+          }
+          actions={
           <div className="flex flex-wrap gap-2">
             <select
               className="field w-full sm:w-72"
@@ -483,7 +483,8 @@ export default function CalendarPage() {
               {language === "en" ? "Refresh" : "Odśwież"}
             </button>
           </div>
-        </div>
+          }
+        />
 
         <section className="grid gap-2 md:grid-cols-5">
           {kindOptions.map((kind) => {
@@ -506,26 +507,26 @@ export default function CalendarPage() {
         </section>
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="app-card">
             <div className="label">{language === "en" ? "Selected day" : "Wybrany dzień"}</div>
             <div className="text-2xl font-black text-ink">{selectedDayEvents.length}</div>
             <div className="mt-1 text-sm text-muted">{formatDate(selectedDate.toISOString())}</div>
           </div>
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="app-card">
             <div className="label">{language === "en" ? "This week" : "Ten tydzień"}</div>
             <div className="text-2xl font-black text-ink">{weekMeetings}</div>
             <div className="mt-1 text-sm text-muted">
               {weekCallbacks} {language === "en" ? "call-backs" : "call-backów"}
             </div>
           </div>
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="app-card">
             <div className="label">{language === "en" ? "This month" : "Ten miesiąc"}</div>
             <div className="text-2xl font-black text-ink">{meetings.length}</div>
             <div className="mt-1 text-sm text-muted">
               {callbacks.length} {language === "en" ? "call-backs" : "call-backów"}
             </div>
           </div>
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="app-card">
             <div className="label">{language === "en" ? "Planned" : "Zaplanowane"}</div>
             <div className="flex items-center gap-2 text-2xl font-black text-ink">
               <Clock3 className="h-5 w-5 text-sky" aria-hidden="true" />
@@ -533,7 +534,7 @@ export default function CalendarPage() {
             </div>
             <div className="mt-1 text-sm text-muted">{language === "en" ? "meetings and internal" : "spotkania i wewnętrzne"}</div>
           </div>
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="app-card">
             <div className="label">{language === "en" ? "Held" : "Odbyte"}</div>
             <div className="flex items-center gap-2 text-2xl font-black text-ink">
               <CheckCircle2 className="h-5 w-5 text-leaf" aria-hidden="true" />
@@ -543,20 +544,17 @@ export default function CalendarPage() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
-          <div className="mb-4 flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
-              <GitBranch className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <div>
-              <h2 className="text-base font-bold text-ink">{language === "en" ? "Role Hierarchy" : "Mapa hierarchii"}</h2>
-              <p className="mt-1 text-sm text-muted">
-                {language === "en"
-                  ? "Visible users are calculated from role permissions and reporting lines."
-                  : "Widoczni użytkownicy wynikają z uprawnień roli i przypisania przełożonych."}
-              </p>
-            </div>
-          </div>
+        <section className="app-card">
+          <SectionHeader
+            icon={GitBranch}
+            title={language === "en" ? "Role hierarchy" : "Mapa hierarchii"}
+            description={
+              language === "en"
+                ? "Visible users are calculated from role permissions and reporting lines."
+                : "Widoczni użytkownicy wynikają z uprawnień roli i przypisania przełożonych."
+            }
+            tone="sky"
+          />
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             {visibleByRole.map((group) => (
               <div key={group.role} className="rounded-lg border border-line bg-[#f9fbfd] p-3">
@@ -574,7 +572,7 @@ export default function CalendarPage() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
+        <section className="app-card">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-leaf/10 text-leaf">
@@ -602,17 +600,17 @@ export default function CalendarPage() {
           </div>
 
           {usesDemoEvents ? (
-            <div className="mb-4 rounded-md border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
+            <Alert tone="info" className="mb-4">
               {language === "en"
                 ? "Demo internal calendar entries are shown until the calendar_events table is enabled."
                 : "Pokazuję wpisy demo dla kalendarzy wewnętrznych do czasu włączenia tabeli calendar_events."}
-            </div>
+            </Alert>
           ) : null}
 
           {error ? (
-            <div className="mb-4 rounded-md border border-danger/20 bg-danger/10 p-3 text-sm font-semibold text-danger">
+            <Alert tone="danger" className="mb-4">
               {error}
-            </div>
+            </Alert>
           ) : null}
 
           <div className="grid grid-cols-7 border-l border-t border-line text-xs font-bold uppercase tracking-wide text-muted">
@@ -670,7 +668,7 @@ export default function CalendarPage() {
         </section>
 
         <section className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="app-card">
             <h2 className="text-base font-bold text-ink">{language === "en" ? "Selected day" : "Wybrany dzień"}</h2>
             <div className="mt-1 text-sm text-muted">{formatDate(selectedDate.toISOString())}</div>
             <div className="mt-3 grid gap-2">
@@ -678,23 +676,25 @@ export default function CalendarPage() {
                 <EventRow key={event.id} event={event} />
               ))}
               {!busy && selectedDayEvents.length === 0 ? (
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-6 text-center text-sm font-semibold text-muted">
-                  {language === "en" ? "No events for this day." : "Brak spotkań, call-backów i wpisów wewnętrznych."}
-                </div>
+                <EmptyState
+                  title={language === "en" ? "No events" : "Brak wydarzeń"}
+                  description={language === "en" ? "No meetings, call-backs or internal entries for this day." : "Brak spotkań, call-backów i wpisów wewnętrznych w tym dniu."}
+                />
               ) : null}
             </div>
           </div>
 
-          <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+          <div className="app-card">
             <h2 className="text-base font-bold text-ink">{language === "en" ? "Upcoming this month" : "Najbliższe w miesiącu"}</h2>
             <div className="mt-3 grid gap-2">
               {events.slice(0, 12).map((event) => (
                 <EventRow key={event.id} event={event} />
               ))}
               {!busy && events.length === 0 ? (
-                <div className="rounded-md border border-line bg-[#f9fbfd] p-6 text-center text-sm font-semibold text-muted">
-                  {language === "en" ? "No scheduled events this month." : "Brak zaplanowanych działań w tym miesiącu."}
-                </div>
+                <EmptyState
+                  title={language === "en" ? "No scheduled events" : "Brak zaplanowanych działań"}
+                  description={language === "en" ? "This month has no visible calendar entries." : "Ten miesiąc nie ma widocznych wpisów kalendarza."}
+                />
               ) : null}
             </div>
           </div>

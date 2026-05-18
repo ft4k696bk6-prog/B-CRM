@@ -5,6 +5,7 @@ import { CalendarClock, ExternalLink, Phone } from "lucide-react";
 import { formatDateTime } from "@/lib/date";
 import type { Lead } from "@/lib/types";
 import { StatusBadge } from "@/components/status-badge";
+import { EmptyState } from "@/components/ui";
 
 type LeadTableProps = {
   leads: Lead[];
@@ -27,9 +28,24 @@ export function LeadTable({
 
   return (
     <div className="overflow-hidden rounded-lg border border-line bg-white shadow-sm">
-      <div className="overflow-x-auto">
-        <table className="min-w-[960px] w-full text-left text-sm">
-          <thead className="border-b border-line bg-[#f9fbfd] text-xs uppercase tracking-wide text-muted">
+      {selectable && leads.length > 0 ? (
+        <div className="flex items-center justify-between gap-3 border-b border-line bg-[#f8fafc] px-4 py-3 md:hidden">
+          <label className="flex min-h-11 items-center gap-3 text-sm font-bold text-ink">
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={onToggleAll}
+              className="h-4 w-4 rounded border-line text-ink focus:ring-ink"
+            />
+            Zaznacz wszystkie
+          </label>
+          <span className="text-xs font-bold text-muted">{selectedIds.length}/{leads.length}</span>
+        </div>
+      ) : null}
+
+      <div className="hidden overflow-x-auto md:block">
+        <table className="app-table min-w-[960px]">
+          <thead>
             <tr>
               {selectable ? (
                 <th className="w-10 px-3 py-3">
@@ -52,9 +68,9 @@ export function LeadTable({
               <th className="w-12 px-4 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-line">
+          <tbody>
             {leads.map((lead) => (
-              <tr key={lead.id} className="transition hover:bg-[#fbfcfe]">
+              <tr key={lead.id}>
                 {selectable ? (
                   <td className="px-3 py-3 align-top">
                     <input
@@ -125,10 +141,61 @@ export function LeadTable({
           </tbody>
         </table>
       </div>
+
+      <div className="grid gap-3 p-3 md:hidden">
+        {leads.map((lead) => (
+          <article key={lead.id} className="rounded-lg border border-line bg-white p-4 shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <Link href={`/leads/${lead.id}`} className="text-base font-black text-ink hover:text-sky">
+                  {lead.full_name}
+                </Link>
+                <div className="mt-1 text-xs font-semibold text-muted">
+                  {lead.source || "Bez źródła"} · {lead.postal_code || "brak kodu"}
+                </div>
+              </div>
+              {selectable ? (
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(lead.id)}
+                  onChange={() => onToggle?.(lead.id)}
+                  className="mt-1 h-5 w-5 flex-none rounded border-line text-ink focus:ring-ink"
+                  aria-label={`Zaznacz ${lead.full_name}`}
+                />
+              ) : null}
+            </div>
+
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <StatusBadge status={lead.status} />
+              {showAssignee ? (
+                <span className="rounded-md border border-line bg-[#f8fafc] px-2 py-1 text-xs font-bold text-muted">
+                  {lead.assigned_profile?.full_name || "Nieprzypisany"}
+                </span>
+              ) : null}
+            </div>
+
+            <div className="mt-4 grid gap-3 text-sm">
+              <a href={`tel:${lead.phone}`} className="inline-flex min-h-11 items-center gap-2 font-bold text-ink">
+                <Phone className="h-4 w-4 text-muted" aria-hidden="true" />
+                {lead.phone}
+              </a>
+              <div className="grid gap-1 rounded-lg border border-line bg-[#f8fafc] p-3 text-xs font-semibold text-muted">
+                <div>Region: {lead.voivodeship || "—"} / {lead.county || "—"}</div>
+                <div>Terminy: {lead.callback_at || lead.meeting_at ? [lead.callback_at, lead.meeting_at].filter(Boolean).map(formatDateTime).join(" · ") : "—"}</div>
+                <div>Dodany: {formatDateTime(lead.created_at)}</div>
+              </div>
+            </div>
+
+            <Link href={`/leads/${lead.id}`} className="btn-secondary mt-4 w-full">
+              <ExternalLink className="h-4 w-4" aria-hidden="true" />
+              Otwórz kartę
+            </Link>
+          </article>
+        ))}
+      </div>
+
       {leads.length === 0 ? (
-        <div className="px-4 py-10 text-center text-sm font-semibold text-muted">
-          Brak leadów w tym widoku.
-        </div>
+        <EmptyState title="Brak leadów" description="Ten widok nie ma jeszcze rekordów dla wybranych filtrów." className="m-3" />
       ) : null}
     </div>
   );

@@ -3,7 +3,6 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  AlertCircle,
   BriefcaseBusiness,
   Calculator,
   Hammer,
@@ -16,6 +15,7 @@ import {
 import { BrandMark } from "@/components/brand-mark";
 import { useLanguage } from "@/components/language-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Alert } from "@/components/ui";
 import { homePathForRole, normalizeRole } from "@/lib/roles";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
@@ -153,8 +153,27 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-screen place-items-center bg-[#f6f8fb] px-4 py-8">
-      <section className="w-full max-w-md rounded-lg border border-line bg-white p-6 shadow-soft">
+    <main className="min-h-screen px-4 py-6 sm:py-10">
+      <section className="mx-auto grid min-h-[calc(100vh-5rem)] w-full max-w-5xl items-center gap-5 lg:grid-cols-[0.9fr_1fr]">
+        <div className="hidden rounded-lg border border-line bg-[#111722] p-7 text-white shadow-soft lg:block">
+          <BrandMark />
+          <h2 className="mt-8 text-3xl font-black tracking-tight">B-CRM</h2>
+          <p className="mt-3 max-w-sm text-sm leading-6 text-white/70">
+            Profesjonalny panel CRM do obsługi leadów, procesów po umowie i pracy zespołów operacyjnych.
+          </p>
+          <div className="mt-8 grid gap-3 text-sm">
+            <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+              <div className="font-black">Leady i statusy</div>
+              <div className="mt-1 text-white/65">Czytelny pipeline od kontaktu do umowy.</div>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+              <div className="font-black">Role i odpowiedzialność</div>
+              <div className="mt-1 text-white/65">Widoki dopasowane do zespołów i uprawnień.</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="w-full rounded-lg border border-line bg-white p-5 shadow-soft sm:p-6">
         <div className="mb-8 flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             <BrandMark />
@@ -167,23 +186,15 @@ export default function LoginPage() {
         </div>
 
         {!isSupabaseConfigured ? (
-          <div className="mb-4 flex gap-3 rounded-md border border-warn/30 bg-warn/10 p-3 text-sm text-[#8a4300]">
-            <AlertCircle className="mt-0.5 h-4 w-4 flex-none" aria-hidden="true" />
-            <span>{t("supabaseMissing")}</span>
-          </div>
+          <Alert tone="warning" className="mb-4">{t("supabaseMissing")}</Alert>
         ) : null}
 
         {demoModeEnabled ? (
-          <div className="mb-4 rounded-md border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
-            {t("demoIntro")}
-          </div>
+          <Alert tone="info" className="mb-4">{t("demoIntro")}</Alert>
         ) : null}
 
         {error ? (
-          <div className="mb-4 flex gap-3 rounded-md border border-danger/20 bg-danger/10 p-3 text-sm text-danger">
-            <AlertCircle className="mt-0.5 h-4 w-4 flex-none" aria-hidden="true" />
-            <span>{error}</span>
-          </div>
+          <Alert tone="danger" className="mb-4">{error}</Alert>
         ) : null}
 
         <form onSubmit={onSubmit} className="grid gap-4">
@@ -233,7 +244,7 @@ export default function LoginPage() {
           </button>
 
           {showDemoMenu ? (
-            <div className="mt-3 grid gap-2">
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
               {demoOptions.map((option) => {
                 const Icon = option.icon;
 
@@ -243,7 +254,7 @@ export default function LoginPage() {
                     type="button"
                     disabled={loading || !isSupabaseConfigured}
                     onClick={() => onDemoLogin(option.key)}
-                    className="flex items-center gap-3 rounded-md border border-line bg-[#f9fbfd] px-3 py-3 text-left transition hover:border-ink hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flex min-h-[74px] items-center gap-3 rounded-md border border-line bg-[#f9fbfd] px-3 py-3 text-left transition hover:-translate-y-px hover:border-ink hover:bg-white hover:shadow-sm disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <span className="flex h-9 w-9 flex-none items-center justify-center rounded-md bg-white text-ink shadow-sm">
                       <Icon className="h-4 w-4" aria-hidden="true" />
@@ -259,6 +270,7 @@ export default function LoginPage() {
               })}
             </div>
           ) : null}
+        </div>
         </div>
       </section>
     </main>

@@ -21,6 +21,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { ActivityLog } from "@/components/activity-log";
 import { FileList } from "@/components/file-list";
 import { ReminderList } from "@/components/reminder-list";
+import { Alert, EmptyState, SectionHeader } from "@/components/ui";
 import { ACTION_LABELS, LEAD_STATUSES, STATUS_LABELS, STATUS_TILE_TONES } from "@/lib/constants";
 import { hasAnyPermission } from "@/lib/permissions";
 import { formatDateTime, toDatetimeLocalValue } from "@/lib/date";
@@ -383,16 +384,16 @@ export default function LeadDetailsPage() {
         </div>
 
         {error ? (
-          <div className="rounded-md border border-danger/20 bg-danger/10 p-3 text-sm font-semibold text-danger">
+          <Alert tone="danger">
             {error}
-          </div>
+          </Alert>
         ) : null}
 
         {!lead ? (
           <LoadingScreen label={busy ? "Ładowanie leada" : "Brak danych"} />
         ) : (
           <>
-            <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+            <section className="app-card">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                   <h1 className="text-2xl font-bold text-ink">{lead.full_name}</h1>
@@ -476,13 +477,8 @@ export default function LeadDetailsPage() {
             </section>
 
             <section className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
-              <form onSubmit={saveStatus} className="rounded-lg border border-line bg-white p-5 shadow-sm">
-                <div className="mb-4 flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
-                    <CalendarClock className="h-5 w-5" aria-hidden="true" />
-                  </span>
-                  <h2 className="text-base font-bold text-ink">Status i terminy</h2>
-                </div>
+              <form onSubmit={saveStatus} className="app-card">
+                <SectionHeader icon={CalendarClock} title="Status i terminy" tone="sky" className="mb-4" />
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="sm:col-span-2">
@@ -614,13 +610,8 @@ export default function LeadDetailsPage() {
               </form>
 
               <div className="grid gap-5">
-                <form onSubmit={saveLeadData} className="rounded-lg border border-line bg-white p-5 shadow-sm">
-                  <div className="mb-4 flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
-                      <MapPin className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                    <h2 className="text-base font-bold text-ink">Dane adresowe</h2>
-                  </div>
+                <form onSubmit={saveLeadData} className="app-card">
+                  <SectionHeader icon={MapPin} title="Dane adresowe" tone="sky" className="mb-4" />
                   <div className="grid gap-3">
                     <label>
                       <span className="label">Kod pocztowy</span>
@@ -654,13 +645,8 @@ export default function LeadDetailsPage() {
                 </form>
 
                 {canManage ? (
-                  <form onSubmit={assignLead} className="rounded-lg border border-line bg-white p-5 shadow-sm">
-                    <div className="mb-4 flex items-center gap-3">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-leaf/10 text-leaf">
-                        <UserCheck className="h-5 w-5" aria-hidden="true" />
-                      </span>
-                      <h2 className="text-base font-bold text-ink">Przypisanie</h2>
-                    </div>
+                  <form onSubmit={assignLead} className="app-card">
+                    <SectionHeader icon={UserCheck} title="Przypisanie" tone="leaf" className="mb-4" />
                     <label>
                       <span className="label">Handlowiec</span>
                       <select
@@ -684,13 +670,8 @@ export default function LeadDetailsPage() {
                 ) : null}
 
                 {canEditLead ? (
-                <form onSubmit={addComment} className="rounded-lg border border-line bg-white p-5 shadow-sm">
-                  <div className="mb-4 flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-solar/20 text-[#8a5a00]">
-                      <MessageSquarePlus className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                    <h2 className="text-base font-bold text-ink">Komentarz</h2>
-                  </div>
+                <form onSubmit={addComment} className="app-card">
+                  <SectionHeader icon={MessageSquarePlus} title="Komentarz" tone="solar" className="mb-4" />
                   <textarea
                     className="field min-h-28"
                     value={comment}
@@ -701,12 +682,12 @@ export default function LeadDetailsPage() {
                   </button>
                 </form>
                 ) : (
-                  <div className="rounded-lg border border-line bg-white p-5 text-sm font-semibold text-muted shadow-sm">Tryb tylko do odczytu: komentarze i edycja są zablokowane dla tej roli.</div>
+                  <Alert tone="info">Tryb tylko do odczytu: komentarze i edycja są zablokowane dla tej roli.</Alert>
                 )}
               </div>
             </section>
 
-            <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+            <section className="app-card">
               <h2 className="text-base font-bold text-ink">Aktywności</h2>
               <div className="mt-4">
                 {session?.access_token && (
@@ -718,7 +699,7 @@ export default function LeadDetailsPage() {
               </div>
             </section>
 
-            <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+            <section className="app-card">
               <h2 className="text-base font-bold text-ink">Pliki</h2>
               <div className="mt-4">
                 {session?.access_token && (
@@ -730,7 +711,7 @@ export default function LeadDetailsPage() {
               </div>
             </section>
 
-            <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+            <section className="app-card">
               <h2 className="text-base font-bold text-ink">Przypomnienia</h2>
               <div className="mt-4">
                 {session?.access_token && (
@@ -742,7 +723,7 @@ export default function LeadDetailsPage() {
               </div>
             </section>
 
-            <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+            <section className="app-card">
               <h2 className="text-base font-bold text-ink">Historia leada</h2>
               <div className="mt-4 grid gap-3">
                 {history.map((item) => (
@@ -760,9 +741,7 @@ export default function LeadDetailsPage() {
                   </div>
                 ))}
                 {history.length === 0 ? (
-                  <div className="rounded-md border border-line bg-[#f9fbfd] p-6 text-center text-sm font-semibold text-muted">
-                    Brak historii.
-                  </div>
+                  <EmptyState title="Brak historii" description="Aktywności pojawią się po pierwszej zmianie lub komentarzu." />
                 ) : null}
               </div>
             </section>

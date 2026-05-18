@@ -15,6 +15,7 @@ import { AppShell } from "@/components/app-shell";
 import { LeadTable } from "@/components/lead-table";
 import { LoadingScreen } from "@/components/loading-screen";
 import { StatTile } from "@/components/stat-tile";
+import { Alert, EmptyState, PageHeader, SectionHeader } from "@/components/ui";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { formatDateTime, isPast, isToday } from "@/lib/date";
 import { supabase } from "@/lib/supabase";
@@ -109,16 +110,16 @@ export default function SalesDashboardPage() {
   return (
     <AppShell profile={profile}>
       <div className="grid gap-5">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="section-title">Panel handlowca</h1>
-            <p className="mt-1 text-sm text-muted">Leady, call-backi i spotkania.</p>
-          </div>
-          <button type="button" onClick={loadLeads} className="btn-secondary">
-            <RefreshCw className="h-4 w-4" aria-hidden="true" />
-            Odśwież
-          </button>
-        </div>
+        <PageHeader
+          title="Panel handlowca"
+          description="Leady, call-backi i spotkania."
+          actions={
+            <button type="button" onClick={loadLeads} className="btn-secondary">
+              <RefreshCw className="h-4 w-4" aria-hidden="true" />
+              Odśwież
+            </button>
+          }
+        />
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <StatTile label="Moje leady" value={leads.length} icon={ClipboardList} tone="sky" />
@@ -148,38 +149,39 @@ export default function SalesDashboardPage() {
           />
         </section>
 
-        <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
-          <div className="mb-3 flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
-              <Target className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <div>
-              <h2 className="text-base font-bold text-ink">Co zrobić teraz</h2>
-              <p className="mt-1 text-sm text-muted">Najpilniejsze leady do obsłużenia.</p>
-            </div>
-          </div>
+        <section className="app-card">
+          <SectionHeader
+            icon={Target}
+            title="Co zrobić teraz"
+            description="Najpilniejsze leady do obsłużenia."
+            tone="sky"
+            className="mb-3"
+          />
           <div className="grid gap-2">
             {workQueue.map(({ lead, reason }) => (
               <Link
                 key={`${reason}-${lead.id}`}
                 href={`/leads/${lead.id}`}
-                className="flex flex-col gap-1 rounded-md border border-line bg-[#f9fbfd] px-3 py-2 text-sm transition hover:border-ink sm:flex-row sm:items-center sm:justify-between"
+                className="flex min-h-11 flex-col gap-1 rounded-md border border-line bg-[#f9fbfd] px-3 py-2 text-sm transition hover:border-ink hover:bg-white sm:flex-row sm:items-center sm:justify-between"
               >
                 <span className="font-semibold text-ink">{lead.full_name}</span>
                 <span className="text-muted">{reason}</span>
               </Link>
             ))}
             {workQueue.length === 0 ? (
-              <div className="rounded-md border border-line bg-[#f9fbfd] px-3 py-4 text-center text-sm font-semibold text-muted">
-                Brak pilnych zadań.
-              </div>
+              <EmptyState title="Brak pilnych zadań" description="Lista jest czysta dla aktualnych filtrów." />
             ) : null}
           </div>
         </section>
 
         {overdueCallbacks.length > 0 ? (
           <section className="rounded-lg border border-danger/20 bg-danger/10 p-4">
-            <h2 className="text-base font-bold text-danger">Zaległe call-backi</h2>
+            <SectionHeader
+              icon={AlertTriangle}
+              title="Zaległe call-backi"
+              tone="danger"
+              className="text-danger"
+            />
             <div className="mt-3 grid gap-2">
               {overdueCallbacks.slice(0, 5).map((lead) => (
                 <Link
@@ -197,7 +199,7 @@ export default function SalesDashboardPage() {
 
         {todayMeetings.length > 0 ? (
           <section className="rounded-lg border border-leaf/20 bg-leaf/10 p-4">
-            <h2 className="text-base font-bold text-leaf">Dzisiejsze spotkania</h2>
+            <SectionHeader icon={CalendarDays} title="Dzisiejsze spotkania" tone="leaf" />
             <div className="mt-3 grid gap-2">
               {todayMeetings.map((lead) => (
                 <Link
@@ -215,7 +217,7 @@ export default function SalesDashboardPage() {
           </section>
         ) : null}
 
-        <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
+        <section className="app-card">
           <div className="max-w-xs">
             <label>
               <span className="label">Szybki filtr statusu</span>
@@ -236,9 +238,9 @@ export default function SalesDashboardPage() {
         </section>
 
         {error ? (
-          <div className="rounded-md border border-danger/20 bg-danger/10 p-3 text-sm font-semibold text-danger">
+          <Alert tone="danger">
             {error}
-          </div>
+          </Alert>
         ) : null}
 
         <section className="grid gap-3">

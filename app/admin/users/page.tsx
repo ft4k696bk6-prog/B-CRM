@@ -2,8 +2,6 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import {
-  AlertCircle,
-  CheckCircle2,
   GitBranch,
   Plus,
   RefreshCw,
@@ -13,6 +11,7 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
+import { Alert, ConfirmDialog, EmptyState, PageHeader, SectionHeader } from "@/components/ui";
 import { normalizeRole, ROLE_DESCRIPTIONS, ROLE_LABELS, USER_ROLES } from "@/lib/roles";
 import type { Profile, UserRole } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
@@ -29,6 +28,7 @@ export default function UsersPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
 
   async function loadUsers() {
     if (!session) return;
@@ -126,10 +126,9 @@ export default function UsersPage() {
     setBusy(false);
   }
 
-  async function deleteUser(userId: string, fullNameValue: string) {
+  async function deleteUser() {
     if (!session || busy) return;
-    const confirmed = window.confirm(`Usunąć konto użytkownika: ${fullNameValue}?`);
-    if (!confirmed) return;
+    if (!deleteTarget) return;
 
     setBusy(true);
     setError("");
@@ -141,7 +140,7 @@ export default function UsersPage() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.access_token}`
       },
-      body: JSON.stringify({ id: userId })
+      body: JSON.stringify({ id: deleteTarget.id })
     });
     const body = await response.json();
 
@@ -149,6 +148,7 @@ export default function UsersPage() {
       setError(body.error || "Nie udało się usunąć użytkownika.");
     } else {
       setSuccess("Usunięto konto użytkownika.");
+      setDeleteTarget(null);
       await loadUsers();
     }
 
@@ -165,50 +165,39 @@ export default function UsersPage() {
   return (
     <AppShell profile={profile}>
       <div className="grid gap-5">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="section-title">Użytkownicy</h1>
-            <p className="mt-1 text-sm text-muted">Konta, role i przypisania w CRM.</p>
-          </div>
-          <button type="button" onClick={loadUsers} className="btn-secondary">
-            <RefreshCw className="h-4 w-4" aria-hidden="true" />
-            Odśwież
-          </button>
-        </div>
+        <PageHeader
+          title="Użytkownicy"
+          description="Konta, role i przypisania w CRM."
+          actions={
+            <button type="button" onClick={loadUsers} className="btn-secondary">
+              <RefreshCw className="h-4 w-4" aria-hidden="true" />
+              Odśwież
+            </button>
+          }
+        />
 
 
         <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {USER_ROLES.map((role) => (
-            <div key={role} className="rounded-lg border border-line bg-white p-4 shadow-sm">
+            <div key={role} className="app-card">
               <div className="text-sm font-black text-ink">{ROLE_LABELS[role]}</div>
               <p className="mt-2 text-sm leading-6 text-muted">{ROLE_DESCRIPTIONS[role]}</p>
             </div>
           ))}
         </section>
 
-        <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-leaf/10 text-leaf">
-              <UserRoundPlus className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <h2 className="text-base font-bold text-ink">Nowy użytkownik</h2>
-          </div>
+        <section className="app-card">
+          <SectionHeader icon={UserRoundPlus} title="Nowy użytkownik" tone="leaf" />
 
           {error ? (
-            <div className="mb-4 flex gap-3 rounded-md border border-danger/20 bg-danger/10 p-3 text-sm text-danger">
-              <AlertCircle className="mt-0.5 h-4 w-4 flex-none" aria-hidden="true" />
-              <span>{error}</span>
-            </div>
+            <Alert tone="danger" className="mb-4">{error}</Alert>
           ) : null}
 
           {success ? (
-            <div className="mb-4 flex gap-3 rounded-md border border-leaf/20 bg-leaf/10 p-3 text-sm text-leaf">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 flex-none" aria-hidden="true" />
-              <span>{success}</span>
-            </div>
+            <Alert tone="success" className="mb-4">{success}</Alert>
           ) : null}
 
-          <form onSubmit={createUser} className="grid gap-3 md:grid-cols-[1fr_1fr_1fr_180px_220px_auto]">
+          <form onSubmit={createUser} className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr_180px_220px_auto]">
             <label>
               <span className="label">Imię i nazwisko</span>
               <input
@@ -282,7 +271,7 @@ export default function UsersPage() {
           </form>
         </section>
 
-        <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
+        <section className="app-card">
           <label className="block max-w-xs">
             <span className="label">Filtr roli</span>
             <select
@@ -300,16 +289,12 @@ export default function UsersPage() {
           </label>
         </section>
 
-        <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
-              <GitBranch className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <div>
-              <h2 className="text-base font-bold text-ink">Struktura zespołu</h2>
-              <p className="mt-1 text-sm text-muted">Przypisanie handlowców do menadżerów.</p>
-            </div>
-          </div>
+        <section className="app-card">
+          <SectionHeader
+            icon={GitBranch}
+            title="Struktura zespołu"
+            description="Przypisanie handlowców do menadżerów."
+          />
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {managers.map((manager) => {
               const team = salespeople.filter((person) => person.manager_id === manager.id);
@@ -349,8 +334,9 @@ export default function UsersPage() {
         </section>
 
         <section className="overflow-hidden rounded-lg border border-line bg-white shadow-sm">
-          <table className="w-full min-w-[760px] text-left text-sm">
-            <thead className="border-b border-line bg-[#f9fbfd] text-xs uppercase tracking-wide text-muted">
+          <div className="hidden overflow-x-auto md:block">
+          <table className="app-table min-w-[760px]">
+            <thead>
               <tr>
                 <th className="px-4 py-3">Imię i nazwisko</th>
                 <th className="px-4 py-3">E-mail</th>
@@ -410,7 +396,7 @@ export default function UsersPage() {
                       </span>
                       <button
                         type="button"
-                        onClick={() => deleteUser(person.id, person.full_name)}
+                        onClick={() => setDeleteTarget(person)}
                         disabled={busy}
                         className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-danger/20 bg-danger/5 px-3 text-xs font-semibold text-danger transition hover:border-danger/40 hover:bg-danger/10 disabled:cursor-not-allowed disabled:opacity-55"
                       >
@@ -423,12 +409,85 @@ export default function UsersPage() {
               ))}
             </tbody>
           </table>
+          </div>
+          <div className="grid gap-3 p-3 md:hidden">
+            {visibleUsers.map((person) => (
+              <article key={person.id} className="rounded-lg border border-line bg-white p-4 shadow-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="font-black text-ink">{person.full_name}</div>
+                    <div className="mt-1 truncate text-xs font-semibold text-muted">{person.email}</div>
+                  </div>
+                  <span className="rounded-md border border-line bg-[#f8fafc] px-2 py-1 text-xs font-bold text-muted">
+                    {ROLE_LABELS[person.role]}
+                  </span>
+                </div>
+                <div className="mt-4 grid gap-3">
+                  <label>
+                    <span className="label">Rola</span>
+                    <select
+                      className="field"
+                      value={person.role}
+                      onChange={(event) => updateUser(person.id, event.target.value as UserRole, person.manager_id)}
+                      disabled={busy}
+                    >
+                      {USER_ROLES.map((role) => (
+                        <option key={role} value={role}>
+                          {ROLE_LABELS[role]}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    <span className="label">Menadżer</span>
+                    <select
+                      className="field"
+                      value={person.manager_id || ""}
+                      onChange={(event) => updateUser(person.id, person.role, event.target.value || null)}
+                      disabled={busy || person.role !== "handlowiec"}
+                    >
+                      <option value="">Bez menadżera</option>
+                      {managers.map((manager) => (
+                        <option key={manager.id} value={manager.id}>
+                          {manager.full_name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <span className="inline-flex items-center gap-2 text-xs font-bold text-leaf">
+                    <Save className="h-3.5 w-3.5" aria-hidden="true" />
+                    Autozapis
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setDeleteTarget(person)}
+                    disabled={busy}
+                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-danger/20 bg-danger/5 px-3 text-xs font-bold text-danger transition hover:border-danger/40 hover:bg-danger/10 disabled:cursor-not-allowed disabled:opacity-55"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                    Usuń
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
           {visibleUsers.length === 0 ? (
-            <div className="px-4 py-10 text-center text-sm font-semibold text-muted">
-              Brak użytkowników dla wybranego filtra.
-            </div>
+            <EmptyState title="Brak użytkowników" description="Zmień filtr roli albo odśwież listę." className="m-3" />
           ) : null}
         </section>
+
+        <ConfirmDialog
+          open={Boolean(deleteTarget)}
+          title="Usunąć użytkownika?"
+          description={`Konto ${deleteTarget?.full_name || ""} zostanie usunięte. Tej akcji nie można cofnąć.`}
+          confirmLabel="Usuń"
+          tone="danger"
+          busy={busy}
+          onConfirm={deleteUser}
+          onClose={() => setDeleteTarget(null)}
+        />
       </div>
     </AppShell>
   );

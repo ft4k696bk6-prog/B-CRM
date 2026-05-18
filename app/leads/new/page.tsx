@@ -7,6 +7,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
+import { Alert, PageHeader, SectionHeader } from "@/components/ui";
 import { LEAD_SOURCES, type LeadSource } from "@/lib/lead-sources";
 import { canCreateManualLead, canManageLeads, homePathForRole } from "@/lib/roles";
 import { useAuth } from "@/lib/use-auth";
@@ -77,7 +78,7 @@ export default function NewLeadPage() {
   if (!canCreate) {
     return (
       <AppShell profile={profile}>
-        <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
+        <div className="app-card">
           <h1 className="section-title">Brak dostępu</h1>
           <p className="mt-2 text-sm text-muted">Twoja rola nie pozwala tworzyć leadów. Poproś administratora o zmianę uprawnień, jeśli to błąd.</p>
         </div>
@@ -88,37 +89,27 @@ export default function NewLeadPage() {
   return (
     <AppShell profile={profile}>
       <div className="grid gap-5">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="section-title">Nowy lead</h1>
-            <p className="mt-1 text-sm text-muted">
-              Ręczne dodanie kontaktu z własnego źródła, polecenia, B2B albo B2C.
-            </p>
-          </div>
-          <Link href={backHref} className="btn-secondary w-fit">
-            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-            Wróć
-          </Link>
-        </div>
+        <PageHeader
+          title="Nowy lead"
+          description="Dodaj kontakt z własnego źródła, polecenia, B2B albo B2C."
+          actions={
+            <Link href={backHref} className="btn-secondary w-fit">
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              Wróć
+            </Link>
+          }
+        />
 
         {error ? (
-          <div className="rounded-md border border-danger/20 bg-danger/10 p-3 text-sm font-semibold text-danger">
-            {error}
-          </div>
+          <Alert tone="danger">{error}</Alert>
         ) : null}
 
-        <form onSubmit={createLead} className="rounded-lg border border-line bg-white p-5 shadow-sm">
-          <div className="mb-5 flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
-              <UserPlus className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <div>
-              <h2 className="text-base font-bold text-ink">Dane kontaktowe</h2>
-              <p className="text-sm text-muted">
-                Źródło można wybrać jako własne, polecenie, B2B albo B2C.
-              </p>
-            </div>
-          </div>
+        <form onSubmit={createLead} className="app-card">
+          <SectionHeader
+            icon={UserPlus}
+            title="Dane kontaktowe"
+            description="Wybierz źródło i uzupełnij podstawowe dane klienta."
+          />
 
           <div className="grid gap-3 md:grid-cols-2">
             <label>

@@ -18,12 +18,12 @@ import {
   Sparkles,
   Truck,
   Upload,
-  X,
   UsersRound
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { useLanguage } from "@/components/language-provider";
 import { LoadingScreen } from "@/components/loading-screen";
+import { Alert, ModalShell } from "@/components/ui";
 import {
   annexChangeOptions,
   contractFieldLabels,
@@ -221,6 +221,10 @@ const realizationCopy = {
     invoiceError: "Nie udało się wygenerować faktury PDF.",
     ksefError: "Nie udało się obsłużyć integracji KSeF.",
     unknownKsefError: "Nieznany błąd integracji.",
+    ksefDemoPackageTitle: "Demo KSeF: paczka księgowa gotowa",
+    ksefDemoSendTitle: "Demo KSeF: wysyłka zatrzymana",
+    ksefDemoMessage:
+      "To konto demo pokazuje gotowy payload i bezpiecznie nie wysyła danych klienta do systemów produkcyjnych.",
     headerEyebrow: "Realizacja po umowie",
     pageTitle: "Umowy i procesy",
     pageDescription:
@@ -343,6 +347,10 @@ const realizationCopy = {
     invoiceError: "Could not generate the invoice PDF.",
     ksefError: "Could not complete the KSeF integration.",
     unknownKsefError: "Unknown integration error.",
+    ksefDemoPackageTitle: "Demo KSeF: accounting package ready",
+    ksefDemoSendTitle: "Demo KSeF: submission stopped",
+    ksefDemoMessage:
+      "This demo account shows the prepared payload and safely avoids sending client data to production systems.",
     headerEyebrow: "Post-contract operations",
     pageTitle: "Contracts and processes",
     pageDescription:
@@ -611,6 +619,44 @@ function isContractReady(record: DemoCustomerRecord) {
   return Boolean(record.contractNumber && record.clientName && record.address && record.grossPrice);
 }
 
+function isDemoAccount(email?: string | null) {
+  return Boolean(email?.toLowerCase().startsWith("demo") && email.toLowerCase().endsWith("@example.com"));
+}
+
+function buildKsefPayload(action: KsefAction, contract: DemoCustomerRecord, requestedBy: string) {
+  return {
+    action,
+    source: "B-CRM",
+    generatedAt: new Date().toISOString(),
+    requestedBy,
+    invoice: {
+      contractNumber: contract.contractNumber || "",
+      sellerName: contract.companyName || "",
+      sellerNip: contract.companyNip || "",
+      buyerName: contract.clientName || "",
+      buyerAddress: [contract.address, contract.postalCode, contract.city].filter(Boolean).join(", "),
+      netAmount: contract.netPrice || "",
+      grossAmount: contract.grossPrice || "",
+      service: "Instalacja OZE wraz z montażem"
+    }
+  };
+}
+
+function buildDemoKsefModal(
+  action: KsefAction,
+  contract: DemoCustomerRecord,
+  requestedBy: string,
+  copy: RealizationCopy
+): KsefModal {
+  return {
+    mode: "demo",
+    sent: false,
+    title: action === "send_ksef_invoice" ? copy.ksefDemoSendTitle : copy.ksefDemoPackageTitle,
+    message: copy.ksefDemoMessage,
+    payload: buildKsefPayload(action, contract, requestedBy)
+  };
+}
+
 function ContractPreview({
   record,
   title,
@@ -623,7 +669,7 @@ function ContractPreview({
   fieldLabels: Record<keyof DemoCustomerRecord, string>;
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-[#eef3f8] p-4">
+    <div className="rounded-lg border border-line bg-[#eef3f8] p-4">
       <div className="mx-auto aspect-[1/1.414] max-h-[720px] w-full max-w-[510px] overflow-hidden rounded-lg border border-line bg-white p-6 shadow-sm">
         <div className="border-b border-line pb-4">
           <div className="h-1.5 w-20 rounded-full bg-solar" />
@@ -879,26 +925,41 @@ export default function RealizacjaPage() {
   }
 
   async function runKsefAction(action: KsefAction) {
-    if (!accountingToolsAllowed || integrationBusy || !session) return;
+    if (!accountingToolsAllowed || integrationBusy) return;
 
     setIntegrationBusy(action);
     setDocumentMessage("");
+    const contract = contractReady ? contractData : demoContractData;
+
+    if (!session && isDemoAccount(profile?.email)) {
+      if (action === "prepare_accounting_package") setInvoiceReady(true);
+      if (action === "send_ksef_invoice") setKsefReady(true);
+      setIntegrationModal(buildDemoKsefModal(action, contract, profile?.id || "demo-session", copy));
+      setIntegrationBusy(null);
+      return;
+    }
 
     try {
       const response = await fetch("/api/integrations/ksef", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`
+          Authorization: `Bearer ${session?.access_token || ""}`
         },
         body: JSON.stringify({
           action,
-          contract: contractReady ? contractData : demoContractData
+          contract
         })
       });
       const body = await response.json();
 
       if (!response.ok) {
+        if (response.status === 401 && isDemoAccount(profile?.email)) {
+          if (action === "prepare_accounting_package") setInvoiceReady(true);
+          if (action === "send_ksef_invoice") setKsefReady(true);
+          setIntegrationModal(buildDemoKsefModal(action, contract, profile?.id || "demo-session", copy));
+          return;
+        }
         throw new Error(body.error || body.message || copy.ksefError);
       }
 
@@ -921,7 +982,7 @@ export default function RealizacjaPage() {
   return (
     <AppShell profile={profile}>
       <div className="grid gap-5">
-        <section className="rounded-lg border border-line bg-white p-6 shadow-sm">
+        <section className="app-card">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <div className="mb-3 inline-flex items-center gap-2 rounded-md border border-sky/15 bg-sky/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-sky">
@@ -947,7 +1008,7 @@ export default function RealizacjaPage() {
         </section>
 
         <section className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <div className="app-card">
             <div className="mb-4 flex items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky/10 text-sky">
                 <FolderKanban className="h-5 w-5" aria-hidden="true" />
@@ -1012,7 +1073,7 @@ export default function RealizacjaPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <div className="app-card">
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-wide text-muted">
@@ -1056,7 +1117,7 @@ export default function RealizacjaPage() {
         </section>
 
         <section className="grid gap-3 xl:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <div className="app-card">
             <div className="mb-4 flex items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky/10 text-sky">
                 <FolderKanban className="h-5 w-5" aria-hidden="true" />
@@ -1109,9 +1170,9 @@ export default function RealizacjaPage() {
             ) : null}
 
             {documentMessage ? (
-              <div className="mb-4 rounded-md border border-leaf/20 bg-leaf/10 p-3 text-sm font-semibold text-leaf">
+              <Alert tone="success" className="mb-4">
                 {documentMessage}
-              </div>
+              </Alert>
             ) : null}
 
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -1128,7 +1189,7 @@ export default function RealizacjaPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <div className="app-card">
             <div className="mb-4 flex items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-leaf/10 text-leaf">
                 <ClipboardCheck className="h-5 w-5" aria-hidden="true" />
@@ -1185,7 +1246,7 @@ export default function RealizacjaPage() {
         </section>
 
         <section className="grid gap-3 xl:grid-cols-[1fr_1fr]">
-          <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <section className="app-card">
             <div className="mb-4 flex items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-solar/15 text-[#aa6f00]">
                 <ReceiptText className="h-5 w-5" aria-hidden="true" />
@@ -1233,7 +1294,7 @@ export default function RealizacjaPage() {
             </div>
           </section>
 
-          <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <section className="app-card">
             <div className="mb-4 flex items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky/10 text-sky">
                 <FileDigit className="h-5 w-5" aria-hidden="true" />
@@ -1266,7 +1327,7 @@ export default function RealizacjaPage() {
           </section>
         </section>
 
-        <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+        <section className="app-card">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-leaf/10 text-leaf">
@@ -1404,7 +1465,7 @@ export default function RealizacjaPage() {
         </section>
 
         {creditLoaded ? (
-          <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <section className="app-card">
             <h2 className="mb-4 text-base font-bold text-ink">{copy.financingData}</h2>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {Object.entries(demoCreditData).map(([key, value]) => (
@@ -1420,21 +1481,21 @@ export default function RealizacjaPage() {
         ) : null}
 
         <section className="grid gap-3 md:grid-cols-3">
-          <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <div className="app-card">
             <div className="mb-2 flex items-center gap-2 text-base font-bold text-ink">
               <UsersRound className="h-4 w-4 text-sky" aria-hidden="true" />
               {copy.roles.menadzer}
             </div>
             <p className="text-sm text-muted">{copy.roleCards.manager}</p>
           </div>
-          <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <div className="app-card">
             <div className="mb-2 flex items-center gap-2 text-base font-bold text-ink">
               <PackageCheck className="h-4 w-4 text-solar" aria-hidden="true" />
               {copy.roles.logistyk}
             </div>
             <p className="text-sm text-muted">{copy.roleCards.logistics}</p>
           </div>
-          <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
+          <div className="app-card">
             <div className="mb-2 flex items-center gap-2 text-base font-bold text-ink">
               <Hammer className="h-4 w-4 text-leaf" aria-hidden="true" />
               {copy.roles.monter}
@@ -1451,52 +1512,40 @@ export default function RealizacjaPage() {
         </div>
 
         {previewRecord ? (
-          <div className="fixed inset-0 z-50 grid place-items-center bg-[#0f1724]/70 px-4 py-6">
-            <section className="max-h-[92vh] w-full max-w-6xl overflow-y-auto rounded-lg border border-line bg-white p-4 shadow-soft">
-              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h2 className="text-lg font-black text-ink">{previewTitle}</h2>
-                  <p className="text-sm text-muted">{copy.formPreviewDescription}</p>
-                </div>
-                <button type="button" onClick={() => setPreviewRecord(null)} className="btn-secondary w-fit">
-                  <X className="h-4 w-4" aria-hidden="true" />
-                  {copy.close}
-                </button>
-              </div>
-
-              <div className="grid gap-4 xl:grid-cols-[0.82fr_1.18fr]">
-                <ContractPreview record={previewRecord} title={previewTitle} copy={copy} fieldLabels={fieldLabels} />
-                <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
-                  <h3 className="mb-4 text-base font-bold text-ink">{copy.previewData}</h3>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {contractFields.map((field) => (
-                      <div key={field} className="rounded-lg border border-line bg-[#f9fbfd] p-3">
-                        <div className="text-xs font-semibold uppercase tracking-wide text-muted">
-                          {fieldLabels[field]}
-                        </div>
-                        <div className="mt-1 text-sm font-semibold text-ink">{previewRecord[field] || copy.blank}</div>
+          <ModalShell
+            open={Boolean(previewRecord)}
+            title={previewTitle}
+            description={copy.formPreviewDescription}
+            onClose={() => setPreviewRecord(null)}
+            size="xl"
+          >
+            <div className="grid gap-4 xl:grid-cols-[0.82fr_1.18fr]">
+              <ContractPreview record={previewRecord} title={previewTitle} copy={copy} fieldLabels={fieldLabels} />
+              <div className="rounded-lg border border-line bg-white p-4 shadow-sm">
+                <h3 className="mb-4 text-base font-bold text-ink">{copy.previewData}</h3>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {contractFields.map((field) => (
+                    <div key={field} className="rounded-lg border border-line bg-[#f9fbfd] p-3">
+                      <div className="text-xs font-semibold uppercase tracking-wide text-muted">
+                        {fieldLabels[field]}
                       </div>
-                    ))}
-                  </div>
+                      <div className="mt-1 text-sm font-semibold text-ink">{previewRecord[field] || copy.blank}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </section>
-          </div>
+            </div>
+          </ModalShell>
         ) : null}
 
         {integrationModal ? (
-          <div className="fixed inset-0 z-50 grid place-items-center bg-[#0f1724]/70 px-4 py-6">
-            <section className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg border border-line bg-white p-5 shadow-soft">
-              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <h2 className="text-lg font-black text-ink">{integrationModal.title}</h2>
-                  <p className="mt-1 text-sm text-muted">{integrationModal.message}</p>
-                </div>
-                <button type="button" onClick={() => setIntegrationModal(null)} className="btn-secondary w-fit">
-                  <X className="h-4 w-4" aria-hidden="true" />
-                  {copy.close}
-                </button>
-              </div>
+          <ModalShell
+            open={Boolean(integrationModal)}
+            title={integrationModal.title}
+            description={integrationModal.message}
+            onClose={() => setIntegrationModal(null)}
+            size="lg"
+          >
               <div className="grid gap-3 sm:grid-cols-3">
                 <PreviewField
                   label={copy.integrationMode}
@@ -1525,8 +1574,7 @@ export default function RealizacjaPage() {
                   </pre>
                 </div>
               ) : null}
-            </section>
-          </div>
+          </ModalShell>
         ) : null}
       </div>
     </AppShell>

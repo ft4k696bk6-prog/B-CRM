@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Banknote, BatteryCharging, Calculator, Minus, Percent, Plus, Printer, Zap } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
+import { PageHeader } from "@/components/ui";
 import {
   EXTRA_NET_PRICES,
   INCLUDED_TOTAL_MARGIN_NET,
@@ -230,11 +231,11 @@ export default function CalculatorsPage() {
   return (
     <AppShell profile={profile}>
       <div className="grid gap-5">
-        <div className="no-print flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
-          <div>
-            <h1 className="section-title">Kalkulatory</h1>
-            <p className="mt-1 text-sm text-muted">Przygotuj konfigurację, sprawdź ratę i zapisz ofertę dla klienta.</p>
-          </div>
+        <PageHeader
+          title="Kalkulatory"
+          description="Przygotuj konfigurację, sprawdź ratę i zapisz ofertę dla klienta."
+          className="no-print"
+          actions={
           <div className="inline-flex rounded-lg border border-line bg-white p-1 shadow-sm">
             <button type="button" onClick={() => setTab("offer")} className={`rounded-md px-4 py-2 text-sm font-bold transition ${tab === "offer" ? "bg-ink text-white" : "text-muted hover:bg-[#eef3f8]"}`}>
               Oferta
@@ -243,12 +244,13 @@ export default function CalculatorsPage() {
               Opłacalność
             </button>
           </div>
-        </div>
+          }
+        />
 
         {tab === "offer" ? (
           <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(560px,0.9fr)]">
             <div className="no-print grid gap-5">
-              <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+              <section className="app-card">
                 <div className="mb-4 flex items-center gap-3">
                   <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
                     <Calculator className="h-5 w-5" aria-hidden="true" />
@@ -334,7 +336,7 @@ export default function CalculatorsPage() {
                 </div>
               </section>
 
-              <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+              <section className="app-card">
                 <h2 className="mb-4 text-base font-bold text-ink">Dodatki</h2>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {offerMode !== "storage" ? (
@@ -374,7 +376,7 @@ export default function CalculatorsPage() {
                 </div>
               </section>
 
-              <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+              <section className="app-card">
                 <h2 className="mb-4 text-base font-bold text-ink">Finansowanie</h2>
                 <div className="grid gap-3 sm:grid-cols-3">
                   <NumberField label="Dotacja / wpłata" value={subsidy} min={0} onChange={setSubsidy} />
@@ -410,7 +412,7 @@ Drukuj / zapisz PDF
           </section>
         ) : (
           <section className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
-            <div className="rounded-lg border border-line bg-white p-5 shadow-sm">
+            <div className="app-card">
               <h2 className="mb-4 text-base font-bold text-ink">Dane klienta</h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 <NumberField label="Rachunek miesięczny" value={bill} min={0} onChange={setBill} />
@@ -429,7 +431,7 @@ Drukuj / zapisz PDF
               <ResultTile icon={BatteryCharging} label="Autokonsumpcja" value={`${formatNumber.format(profitability.effectiveSelfConsumption)}%`} tone="leaf" />
               <ResultTile icon={Banknote} label="Oszczędność roczna" value={formatMoney.format(profitability.annualSavings)} tone="sky" />
               <ResultTile icon={Percent} label="Pokrycie rachunków" value={`${formatNumber.format(profitability.billCoverage)}%`} tone="leaf" />
-              <div className="sm:col-span-2 rounded-lg border border-line bg-white p-5 shadow-sm">
+              <div className="app-card sm:col-span-2">
                 <div className="text-sm font-semibold text-muted">Prognozowany koszt prądu przez 10 lat</div>
                 <div className="mt-2 text-3xl font-black text-ink">{formatMoney.format(profitability.cumulativeEnergySpend)}</div>
               </div>

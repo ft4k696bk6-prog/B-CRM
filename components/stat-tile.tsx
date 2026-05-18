@@ -17,14 +17,14 @@ const toneClasses = {
 
 export function StatTile({ label, value, icon: Icon, tone = "sky" }: StatTileProps) {
   return (
-    <div className="min-h-[128px] rounded-lg border border-line bg-white p-5 shadow-sm">
-      <div className="grid h-full grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+    <div className="min-h-[122px] rounded-lg border border-line bg-white p-4 shadow-sm transition hover:-translate-y-px hover:border-[#c7d1df] hover:shadow-soft sm:p-5">
+      <div className="grid h-full grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
         <div className="min-w-0">
-          <div className="text-sm font-semibold leading-5 text-muted">{label}</div>
-          <div className="mt-5 text-3xl font-black leading-none text-ink">{value}</div>
+          <div className="text-sm font-bold leading-5 text-muted">{label}</div>
+          <div className="mt-5 text-3xl font-black leading-none tracking-tight text-ink">{value}</div>
         </div>
         <div
-          className={`flex h-12 w-12 flex-none items-center justify-center rounded-lg border border-line bg-[#f9fbfd] ${toneClasses[tone]}`}
+          className={`flex h-11 w-11 flex-none items-center justify-center rounded-lg border border-line bg-[#f8fafc] ${toneClasses[tone]}`}
         >
           <Icon className="h-5 w-5" aria-hidden="true" />
         </div>

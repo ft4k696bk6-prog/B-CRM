@@ -2,9 +2,10 @@
 
 import { ChangeEvent, useState } from "react";
 import Papa from "papaparse";
-import { AlertCircle, CheckCircle2, FileUp, UploadCloud } from "lucide-react";
+import { FileUp, UploadCloud } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
+import { Alert, PageHeader } from "@/components/ui";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/use-auth";
 
@@ -111,12 +112,12 @@ export default function ImportPage() {
   return (
     <AppShell profile={profile}>
       <div className="grid gap-5">
-        <div>
-          <h1 className="section-title">Import CSV</h1>
-          <p className="mt-1 text-sm text-muted">Kolumny: full_name, phone, postal_code, source.</p>
-        </div>
+        <PageHeader
+          title="Import CSV"
+          description="Wymagane kolumny: full_name, phone, postal_code, source."
+        />
 
-        <section className="rounded-lg border border-line bg-white p-5 shadow-sm">
+        <section className="app-card">
           <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-line bg-[#f9fbfd] px-4 py-10 text-center transition hover:border-sky hover:bg-sky/5">
             <UploadCloud className="h-9 w-9 text-sky" aria-hidden="true" />
             <span className="mt-3 text-sm font-semibold text-ink">
@@ -126,17 +127,15 @@ export default function ImportPage() {
           </label>
 
           {error ? (
-            <div className="mt-4 flex gap-3 rounded-md border border-danger/20 bg-danger/10 p-3 text-sm text-danger">
-              <AlertCircle className="mt-0.5 h-4 w-4 flex-none" aria-hidden="true" />
-              <span>{error}</span>
-            </div>
+            <Alert tone="danger" className="mt-4">
+              {error}
+            </Alert>
           ) : null}
 
           {success ? (
-            <div className="mt-4 flex gap-3 rounded-md border border-leaf/20 bg-leaf/10 p-3 text-sm text-leaf">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 flex-none" aria-hidden="true" />
-              <span>{success}</span>
-            </div>
+            <Alert tone="success" className="mt-4">
+              {success}
+            </Alert>
           ) : null}
 
           {rows.length > 0 ? (
@@ -148,29 +147,51 @@ export default function ImportPage() {
                   Importuj
                 </button>
               </div>
-              <div className="overflow-hidden rounded-lg border border-line">
+              <div className="hidden overflow-hidden rounded-lg border border-line md:block">
                 <div className="max-h-80 overflow-auto">
-                  <table className="w-full min-w-[760px] text-left text-sm">
-                    <thead className="border-b border-line bg-[#f9fbfd] text-xs uppercase tracking-wide text-muted">
+                  <table className="app-table min-w-[760px]">
+                    <thead>
                       <tr>
-                        <th className="px-4 py-3">Imię i nazwisko</th>
-                        <th className="px-4 py-3">Telefon</th>
-                        <th className="px-4 py-3">Kod</th>
-                        <th className="px-4 py-3">Źródło</th>
+                        <th>Imię i nazwisko</th>
+                        <th>Telefon</th>
+                        <th>Kod</th>
+                        <th>Źródło</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-line">
+                    <tbody>
                       {rows.slice(0, 20).map((row, index) => (
                         <tr key={`${row.phone}-${index}`}>
-                          <td className="px-4 py-3 font-semibold">{row.full_name}</td>
-                          <td className="px-4 py-3">{row.phone}</td>
-                          <td className="px-4 py-3">{row.postal_code}</td>
-                          <td className="px-4 py-3">{row.source}</td>
+                          <td className="font-semibold">{row.full_name}</td>
+                          <td>{row.phone}</td>
+                          <td>{row.postal_code}</td>
+                          <td>{row.source}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
+              </div>
+
+              <div className="grid gap-3 md:hidden">
+                {rows.slice(0, 20).map((row, index) => (
+                  <article key={`${row.phone}-${index}`} className="rounded-lg border border-line bg-white p-4 shadow-sm">
+                    <div className="font-bold text-ink">{row.full_name}</div>
+                    <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <span className="text-xs font-bold uppercase tracking-wide text-muted">Telefon</span>
+                        <p className="mt-1 font-semibold text-ink">{row.phone}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold uppercase tracking-wide text-muted">Kod</span>
+                        <p className="mt-1 font-semibold text-ink">{row.postal_code}</p>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="text-xs font-bold uppercase tracking-wide text-muted">Źródło</span>
+                        <p className="mt-1 font-semibold text-ink">{row.source}</p>
+                      </div>
+                    </div>
+                  </article>
+                ))}
               </div>
             </div>
           ) : null}

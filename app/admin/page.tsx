@@ -23,6 +23,7 @@ import { LeadTable } from "@/components/lead-table";
 import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
 import { StatTile } from "@/components/stat-tile";
+import { Alert, PageHeader, SectionHeader } from "@/components/ui";
 import { useLanguage } from "@/components/language-provider";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { hasPermission } from "@/lib/permissions";
@@ -322,34 +323,33 @@ export default function AdminDashboardPage() {
   return (
     <AppShell profile={profile}>
       <div className="grid gap-5">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="section-title">
-              {isEnglish
-                ? profile.role === "menadzer"
-                  ? "Manager dashboard"
-                  : profile.role === "finance"
-                    ? "Finance dashboard"
-                    : profile.role === "viewer"
-                      ? "Viewer dashboard"
-                      : "Admin dashboard"
-                : `Panel ${
-                    profile.role === "menadzer"
-                      ? "menadżera"
-                      : profile.role === "finance"
-                        ? "finansowy"
-                        : profile.role === "viewer"
-                          ? "podglądu"
-                          : "admina"
-                  }`}
-            </h1>
-            <p className="mt-1 text-sm text-muted">
-              {isManager
-                ? "Leady zespołu, baza do rozdania i bieżące statusy."
-                : "Wszystkie leady, przypisania i bieżące statusy."}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
+        <PageHeader
+          title={
+            isEnglish
+              ? profile.role === "menadzer"
+                ? "Manager dashboard"
+                : profile.role === "finance"
+                  ? "Finance dashboard"
+                  : profile.role === "viewer"
+                    ? "Viewer dashboard"
+                    : "Admin dashboard"
+              : `Panel ${
+                  profile.role === "menadzer"
+                    ? "menadżera"
+                    : profile.role === "finance"
+                      ? "finansowy"
+                      : profile.role === "viewer"
+                        ? "podglądu"
+                        : "admina"
+                }`
+          }
+          description={
+            isManager
+              ? "Leady zespołu, baza do rozdania i bieżące statusy."
+              : "Wszystkie leady, przypisania i bieżące statusy."
+          }
+          actions={
+            <>
             {canExportCurrentView ? (
               <button type="button" onClick={exportCurrentView} className="btn-secondary">
                 <FileDown className="h-4 w-4" aria-hidden="true" />
@@ -360,8 +360,9 @@ export default function AdminDashboardPage() {
               <RefreshCw className="h-4 w-4" aria-hidden="true" />
               Odśwież
             </button>
-          </div>
-        </div>
+            </>
+          }
+        />
 
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-8">
           <StatTile label="Wszystkie" value={stats.all} icon={Database} tone="sky" />
@@ -374,39 +375,25 @@ export default function AdminDashboardPage() {
           <StatTile label="Bez akcji" value={stats.noNextAction} icon={ListChecks} tone="warn" />
         </section>
 
-        <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
-                <FolderKanban className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <div>
-                <h2 className="text-base font-bold text-ink">Realizacja po umowie</h2>
-                <p className="mt-1 text-sm text-muted">
-                  Dokumenty, księgowość, logistyka, montaż i generator aneksu w jednym miejscu.
-                </p>
-              </div>
-            </div>
-            <Link href="/realizacja" className="btn-primary">
-              Otwórz realizację
-            </Link>
-          </div>
+        <section className="app-card">
+          <SectionHeader
+            icon={FolderKanban}
+            title="Realizacja po umowie"
+            description="Dokumenty, księgowość, logistyka, montaż i generator aneksu w jednym miejscu."
+            actions={<Link href="/realizacja" className="btn-primary">Otwórz realizację</Link>}
+          />
         </section>
 
         {teamPerformance.length > 0 ? (
-          <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
-                <Trophy className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <div>
-                <h2 className="text-base font-bold text-ink">Wyniki zespołu</h2>
-                <p className="mt-1 text-sm text-muted">Leady, spotkania, umowy i ryzyka operacyjne.</p>
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px] text-left text-sm">
-                <thead className="border-b border-line bg-[#f9fbfd] text-xs uppercase tracking-wide text-muted">
+          <section className="app-card">
+            <SectionHeader
+              icon={Trophy}
+              title="Wyniki zespołu"
+              description="Leady, spotkania, umowy i ryzyka operacyjne."
+            />
+            <div className="hidden overflow-x-auto md:block">
+              <table className="app-table min-w-[720px]">
+                <thead>
                   <tr>
                     <th className="px-3 py-3">Handlowiec</th>
                     <th className="px-3 py-3">Leady</th>
@@ -416,7 +403,7 @@ export default function AdminDashboardPage() {
                     <th className="px-3 py-3">Bez akcji</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-line">
+                <tbody>
                   {teamPerformance.map((row) => (
                     <tr key={row.person.id}>
                       <td className="px-3 py-3 font-semibold text-ink">{row.person.full_name}</td>
@@ -430,10 +417,35 @@ export default function AdminDashboardPage() {
                 </tbody>
               </table>
             </div>
+            <div className="grid gap-3 md:hidden">
+              {teamPerformance.map((row) => (
+                <article key={row.person.id} className="rounded-lg border border-line bg-[#f8fafc] p-4">
+                  <div className="font-black text-ink">{row.person.full_name}</div>
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                    <div className="rounded-md bg-white p-3">
+                      <div className="text-xs font-bold text-muted">Leady</div>
+                      <div className="mt-1 font-black text-ink">{row.leads}</div>
+                    </div>
+                    <div className="rounded-md bg-white p-3">
+                      <div className="text-xs font-bold text-muted">Umowy</div>
+                      <div className="mt-1 font-black text-leaf">{row.contracts}</div>
+                    </div>
+                    <div className="rounded-md bg-white p-3">
+                      <div className="text-xs font-bold text-muted">Spotkania</div>
+                      <div className="mt-1 font-black text-ink">{row.meetings}</div>
+                    </div>
+                    <div className="rounded-md bg-white p-3">
+                      <div className="text-xs font-bold text-muted">Bez akcji</div>
+                      <div className="mt-1 font-black text-warn">{row.noNextAction}</div>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
           </section>
         ) : null}
 
-        <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
+        <section className="app-card">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-bold text-ink">Filtry i sortowanie</h2>
@@ -606,7 +618,7 @@ export default function AdminDashboardPage() {
         </section>
 
         {canAssignLeads ? (
-        <section className="rounded-lg border border-line bg-white p-4 shadow-sm">
+        <section className="app-card">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <h2 className="text-base font-bold text-ink">Masowe przypisanie</h2>
@@ -642,9 +654,7 @@ export default function AdminDashboardPage() {
         ) : null}
 
         {error ? (
-          <div className="rounded-md border border-danger/20 bg-danger/10 p-3 text-sm font-semibold text-danger">
-            {error}
-          </div>
+          <Alert tone="danger">{error}</Alert>
         ) : null}
 
         <section className="grid gap-3">
