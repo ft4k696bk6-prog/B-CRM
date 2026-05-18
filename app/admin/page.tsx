@@ -24,6 +24,7 @@ import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
 import { StatTile } from "@/components/stat-tile";
 import { useLanguage } from "@/components/language-provider";
+import { endOfDay, escapeCsv, needsNextAction, startOfDay } from "@/lib/admin-leads";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { hasPermission } from "@/lib/permissions";
 import { canManageLeads, isManagerRole } from "@/lib/roles";
@@ -54,24 +55,6 @@ const sortOptions: Array<SortOption & { label: string }> = [
   { label: "Kod pocztowy", column: "postal_code", direction: "asc" },
   { label: "Status", column: "status", direction: "asc" }
 ];
-
-function startOfDay(value: string) {
-  return `${value}T00:00:00.000Z`;
-}
-
-function endOfDay(value: string) {
-  return `${value}T23:59:59.999Z`;
-}
-
-function needsNextAction(lead: Pick<Lead, "status" | "callback_at" | "meeting_at">) {
-  if (["Umowa", "Rezygnacja", "Zwrot"].includes(lead.status)) return false;
-  return !lead.callback_at && !lead.meeting_at;
-}
-
-function escapeCsv(value: string | number | null | undefined) {
-  const text = value == null ? "" : String(value);
-  return `"${text.replaceAll('"', '""')}"`;
-}
 
 export default function AdminDashboardPage() {
   const { loading, profile } = useAuth(["owner", "admin", "menadzer", "finance", "viewer"]);
