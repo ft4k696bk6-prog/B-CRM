@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDownUp,
   BadgeCheck,
@@ -353,8 +353,8 @@ const realizationCopy = {
       pz: "PZ planowane",
       wz: "WZ zarezerwowane",
       finalWz: "WZ finalne w dniu montażu",
-      scrollReady: "Przewiń stronę w dół, żeby przejść dalej.",
-      scrollWaiting: "CRM pokazuje ten etap. Za moment przewinięcie poprowadzi dalej.",
+      scrollReady: "Przesuń w dół, żeby przejść dalej. CRM sam ustawi ekran.",
+      scrollWaiting: "CRM ustawia ten etap. Za moment gest w dół przeprowadzi dalej.",
       note:
         "Komentarz wdrożeniowy: przy podpisie elektronicznym krok zdjęć papierowej umowy można pominąć, ale polityka firmy może nadal wymagać zdjęć dachu lub licznika."
     },
@@ -505,8 +505,8 @@ const realizationCopy = {
       pz: "Planned goods receipt",
       wz: "Reserved goods issue",
       finalWz: "Final goods issue on installation day",
-      scrollReady: "Scroll down to continue.",
-      scrollWaiting: "CRM is showing this stage. Scrolling will continue in a moment.",
+      scrollReady: "Scroll down to continue. CRM will position the screen.",
+      scrollWaiting: "CRM is positioning this stage. The next downward gesture will continue in a moment.",
       note:
         "Implementation note: with e-signature, the paper-contract photo step can be skipped, but company policy may still require roof or meter photos."
     },
@@ -1163,6 +1163,11 @@ export default function RealizacjaPage() {
   const [showContractData, setShowContractData] = useState(false);
   const contractInputRef = useRef<HTMLInputElement | null>(null);
   const demoGuideScrollLockRef = useRef(false);
+  const demoGuideWheelDeltaRef = useRef(0);
+  const demoGuideTouchStartYRef = useRef<number | null>(null);
+  const demoGuideOpenRef = useRef(false);
+  const demoGuideCanContinueRef = useRef(false);
+  const demoGuideStepIndexRef = useRef(0);
 
   const demoGuideSteps = useMemo(() => buildDemoGuideSteps(copy, language), [copy, language]);
   const activeDemoGuideStep = demoGuideSteps[demoGuideStepIndex] || demoGuideSteps[0];
@@ -1178,6 +1183,40 @@ export default function RealizacjaPage() {
   const currentRoleLabel = profile ? copy.roles[profile.role] : "";
   const accountingToolsAllowed = profile ? canUseAccountingTools(profile.role) : false;
   const contractReady = isContractReady(contractData);
+
+  demoGuideOpenRef.current = demoGuideOpen;
+  demoGuideCanContinueRef.current = demoGuideCanContinue;
+  demoGuideStepIndexRef.current = demoGuideStepIndex;
+
+  const finishDemoGuide = useCallback(() => {
+    setDemoGuideOpen(false);
+    setDemoGuideAutofilling(false);
+    setDemoGuideCanContinue(false);
+    demoGuideScrollLockRef.current = false;
+    demoGuideWheelDeltaRef.current = 0;
+    demoGuideTouchStartYRef.current = null;
+  }, []);
+
+  const advanceDemoGuideFromGesture = useCallback(() => {
+    if (!demoGuideOpenRef.current || demoGuideScrollLockRef.current) return;
+
+    demoGuideWheelDeltaRef.current = 0;
+    demoGuideTouchStartYRef.current = null;
+
+    if (!demoGuideCanContinueRef.current) return;
+
+    demoGuideScrollLockRef.current = true;
+
+    if (demoGuideStepIndexRef.current >= demoGuideSteps.length - 1) {
+      finishDemoGuide();
+    } else {
+      setDemoGuideStepIndex((current) => Math.min(current + 1, demoGuideSteps.length - 1));
+    }
+
+    window.setTimeout(() => {
+      demoGuideScrollLockRef.current = false;
+    }, 700);
+  }, [demoGuideSteps.length, finishDemoGuide]);
 
   useEffect(() => {
     if (!profile) return;
@@ -1222,51 +1261,49 @@ export default function RealizacjaPage() {
   }, [activeDemoGuideStep, copy.demoGuide.autofill, demoGuideOpen, selectedProcess]);
 
   useEffect(() => {
-    if (!demoGuideOpen || !demoGuideCanContinue) return;
-
-    let touchStartY = 0;
-
-    const advanceFromScroll = () => {
-      if (demoGuideScrollLockRef.current) return;
-      demoGuideScrollLockRef.current = true;
-
-      if (demoGuideStepIndex >= demoGuideSteps.length - 1) {
-        finishDemoGuide();
-      } else {
-        setDemoGuideStepIndex((current) => Math.min(current + 1, demoGuideSteps.length - 1));
-      }
-
-      window.setTimeout(() => {
-        demoGuideScrollLockRef.current = false;
-      }, 900);
-    };
+    if (!demoGuideOpen) return;
 
     const handleWheel = (event: WheelEvent) => {
-      if (event.deltaY < 48) return;
-      advanceFromScroll();
+      if (event.cancelable) event.preventDefault();
+
+      if (event.deltaY <= 0) {
+        demoGuideWheelDeltaRef.current = 0;
+        return;
+      }
+
+      demoGuideWheelDeltaRef.current += event.deltaY;
+      if (demoGuideWheelDeltaRef.current < 80) return;
+      advanceDemoGuideFromGesture();
     };
 
     const handleTouchStart = (event: TouchEvent) => {
-      touchStartY = event.touches[0]?.clientY || 0;
+      demoGuideTouchStartYRef.current = event.touches[0]?.clientY ?? null;
     };
 
     const handleTouchMove = (event: TouchEvent) => {
-      const currentY = event.touches[0]?.clientY || touchStartY;
-      if (touchStartY - currentY < 64) return;
-      advanceFromScroll();
-      touchStartY = currentY;
+      if (event.cancelable) event.preventDefault();
+
+      const touchStartY = demoGuideTouchStartYRef.current;
+      const currentY = event.touches[0]?.clientY ?? touchStartY;
+      if (touchStartY === null || currentY === null) return;
+
+      const deltaY = touchStartY - currentY;
+      if (deltaY <= 0) return;
+      if (deltaY < 64) return;
+
+      advanceDemoGuideFromGesture();
     };
 
-    window.addEventListener("wheel", handleWheel, { passive: true });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("wheel", handleWheel, { passive: false, capture: true });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true, capture: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false, capture: true });
 
     return () => {
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("wheel", handleWheel, { capture: true });
+      window.removeEventListener("touchstart", handleTouchStart, { capture: true });
+      window.removeEventListener("touchmove", handleTouchMove, { capture: true });
     };
-  }, [demoGuideCanContinue, demoGuideOpen, demoGuideStepIndex, demoGuideSteps.length]);
+  }, [advanceDemoGuideFromGesture, demoGuideOpen]);
 
   if (loading || !profile) return <LoadingScreen />;
   if (!canUseOperations(profile.role)) return <LoadingScreen />;
@@ -1354,15 +1391,12 @@ export default function RealizacjaPage() {
     setAnnexValues(annexValuesFromContract(next));
     setDemoGuideStepIndex(0);
     setDemoGuideCanContinue(false);
+    demoGuideScrollLockRef.current = false;
+    demoGuideWheelDeltaRef.current = 0;
+    demoGuideTouchStartYRef.current = null;
     setShowProcessList(true);
     setShowContractData(true);
     setDemoGuideOpen(true);
-  }
-
-  function finishDemoGuide() {
-    setDemoGuideOpen(false);
-    setDemoGuideAutofilling(false);
-    setDemoGuideCanContinue(false);
   }
 
   function addContractFile(event: ChangeEvent<HTMLInputElement>) {
