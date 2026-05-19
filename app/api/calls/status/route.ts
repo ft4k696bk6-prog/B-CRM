@@ -133,6 +133,12 @@ export async function POST(request: Request) {
       })
       .eq("id", call.id);
 
+    if (event === "dial") {
+      return new NextResponse('<?xml version="1.0" encoding="UTF-8"?><Response></Response>', {
+        headers: { "Content-Type": "text/xml; charset=utf-8" }
+      });
+    }
+
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json(
