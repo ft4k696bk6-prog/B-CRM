@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { normalizePhoneForDial } from "@/lib/phone";
 import { isDemoUserEmail, isSystemAdminRole, normalizeRole, USER_ROLES } from "@/lib/roles";
 import { normalizeCrmScope } from "@/lib/scope";
 import type { CrmDataScope, UserRole } from "@/lib/types";
@@ -10,12 +11,14 @@ type CreateUserBody = {
   fullName?: string;
   role?: UserRole;
   managerId?: string | null;
+  businessPhone?: string | null;
 };
 
 type UpdateUserBody = {
   id?: string;
   role?: UserRole;
   managerId?: string | null;
+  businessPhone?: string | null;
 };
 
 type DeleteUserBody = {
@@ -28,6 +31,7 @@ type ProfileRow = {
   full_name: string;
   role: string;
   manager_id: string | null;
+  business_phone: string | null;
   crm_environment: CrmDataScope;
   created_at: string;
 };
@@ -70,6 +74,7 @@ function profileRowWithoutManager(row: Omit<ProfileRow, "created_at">) {
     email: row.email,
     full_name: row.full_name,
     role: row.role,
+    business_phone: row.business_phone,
     crm_environment: row.crm_environment
   };
 }
@@ -265,9 +270,14 @@ export async function POST(request: Request) {
     const fullName = body.fullName?.trim();
     const role = USER_ROLES.includes(body.role as UserRole) ? (body.role as UserRole) : "handlowiec";
     const managerId = normalizedManagerId(body.managerId, role);
+    const businessPhone = body.businessPhone ? normalizePhoneForDial(body.businessPhone) : null;
 
     if (!email || !password || !fullName) {
       return NextResponse.json({ error: "Uzupełnij wszystkie pola." }, { status: 400 });
+    }
+
+    if (body.businessPhone && !businessPhone) {
+      return NextResponse.json({ error: "Numer służbowy ma niepoprawny format." }, { status: 400 });
     }
 
     if (auth.requesterIsDemo) {
@@ -324,6 +334,7 @@ export async function POST(request: Request) {
       full_name: fullName,
       role,
       manager_id: managerId,
+      business_phone: businessPhone,
       crm_environment: auth.requesterScope
     });
 
@@ -358,9 +369,18 @@ export async function PATCH(request: Request) {
     const id = body.id?.trim();
     const role = USER_ROLES.includes(body.role as UserRole) ? (body.role as UserRole) : null;
     const managerId = normalizedManagerId(body.managerId, role || "handlowiec");
+    const businessPhoneProvided = Object.prototype.hasOwnProperty.call(body, "businessPhone");
+    const businessPhone =
+      !businessPhoneProvided || body.businessPhone === null || body.businessPhone === ""
+        ? null
+        : normalizePhoneForDial(body.businessPhone);
 
     if (!id || !role) {
       return NextResponse.json({ error: "Brak użytkownika lub roli." }, { status: 400 });
+    }
+
+    if (body.businessPhone && !businessPhone) {
+      return NextResponse.json({ error: "Numer służbowy ma niepoprawny format." }, { status: 400 });
     }
 
     const { data: target } = await auth.supabaseAdmin
@@ -420,6 +440,14 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
+    if (businessPhoneProvided) {
+      await auth.supabaseAdmin
+        .from("profiles")
+        .update({ business_phone: businessPhone })
+        .eq("id", id)
+        .eq("crm_environment", targetScope);
+    }
+
     await auth.supabaseAdmin.auth.admin.updateUserById(id, {
       app_metadata: { ...(targetAuth.user?.app_metadata || {}), role, crm_environment: targetScope },
       user_metadata: { ...(targetAuth.user?.user_metadata || {}), role: storedRole, crm_environment: targetScope }
@@ -430,11 +458,16 @@ export async function PATCH(request: Request) {
       event_type: "user.role_updated",
       entity_type: "profile",
       entity_id: id,
-      metadata: { role, managerId },
+      metadata: { role, managerId, ...(businessPhoneProvided ? { businessPhone } : {}) },
       crm_environment: auth.requesterScope
     });
 
-    return NextResponse.json({ id, role, crm_environment: targetScope });
+    return NextResponse.json({
+      id,
+      role,
+      ...(businessPhoneProvided ? { business_phone: businessPhone } : {}),
+      crm_environment: targetScope
+    });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Nieznany błąd." },

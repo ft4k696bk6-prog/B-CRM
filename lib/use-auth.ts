@@ -49,6 +49,7 @@ export function useAuth(requiredRole?: UserRole | UserRole[]) {
 
       const normalizedProfile = {
         ...profile,
+        business_phone: profile.business_phone || null,
         role: normalizeRole(
           profile.role,
           profile.email,

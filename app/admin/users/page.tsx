@@ -193,9 +193,11 @@ export default function UsersPage() {
   const [roleFilter, setRoleFilter] = useState<UserRole | "">("");
   const [newRole, setNewRole] = useState<UserRole>("handlowiec");
   const [newManagerId, setNewManagerId] = useState("");
+  const [newBusinessPhone, setNewBusinessPhone] = useState("");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneDrafts, setPhoneDrafts] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -214,11 +216,15 @@ export default function UsersPage() {
       return;
     }
 
-    setUsers(
-      ((body.users || []) as Profile[]).map((user) => ({
-        ...user,
-        role: normalizeRole(user.role, user.email)
-      }))
+    const nextUsers = ((body.users || []) as Profile[]).map((user) => ({
+      ...user,
+      business_phone: user.business_phone || null,
+      role: normalizeRole(user.role, user.email)
+    }));
+
+    setUsers(nextUsers);
+    setPhoneDrafts(
+      Object.fromEntries(nextUsers.map((user) => [user.id, user.business_phone || ""]))
     );
   }
 
@@ -245,7 +251,8 @@ export default function UsersPage() {
         email,
         password,
         role: newRole,
-        managerId: newRole === "handlowiec" ? newManagerId || null : null
+        managerId: newRole === "handlowiec" ? newManagerId || null : null,
+        businessPhone: newBusinessPhone || null
       })
     });
 
@@ -258,6 +265,7 @@ export default function UsersPage() {
       setFullName("");
       setEmail("");
       setPassword("");
+      setNewBusinessPhone("");
       setNewRole("handlowiec");
       setNewManagerId("");
       await loadUsers();
@@ -266,7 +274,7 @@ export default function UsersPage() {
     setBusy(false);
   }
 
-  async function updateUser(userId: string, role: UserRole, managerId?: string | null) {
+  async function updateUser(userId: string, role: UserRole, managerId?: string | null, businessPhone?: string) {
     if (!session) return;
 
     setBusy(true);
@@ -282,7 +290,8 @@ export default function UsersPage() {
       body: JSON.stringify({
         id: userId,
         role,
-        managerId: role === "handlowiec" ? managerId || null : null
+        managerId: role === "handlowiec" ? managerId || null : null,
+        ...(businessPhone !== undefined ? { businessPhone } : {})
       })
     });
     const body = await response.json();
@@ -435,7 +444,7 @@ export default function UsersPage() {
         >
           <SectionHeader icon={UserRoundCog} title="Dane konta" tone="leaf" />
 
-          <form onSubmit={createUser} className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr_180px_220px_auto]">
+          <form onSubmit={createUser} className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr_180px_180px_220px_auto]">
             <label>
               <span className="label">Imię i nazwisko</span>
               <input
@@ -464,6 +473,15 @@ export default function UsersPage() {
                 onChange={(event) => setPassword(event.target.value)}
                 minLength={8}
                 required
+              />
+            </label>
+            <label>
+              <span className="label">Telefon CRM</span>
+              <input
+                className="field"
+                value={newBusinessPhone}
+                onChange={(event) => setNewBusinessPhone(event.target.value)}
+                placeholder="+48 600 000 000"
               />
             </label>
             <label>
@@ -528,11 +546,12 @@ export default function UsersPage() {
 
         <section className="overflow-hidden rounded-lg border border-line bg-white shadow-sm md:max-h-[58vh] md:overflow-y-auto">
           <div className="hidden overflow-x-auto md:block">
-          <table className="app-table min-w-[760px]">
+          <table className="app-table min-w-[920px]">
             <thead>
               <tr>
                 <th className="px-4 py-3">Imię i nazwisko</th>
                 <th className="px-4 py-3">E-mail</th>
+                <th className="px-4 py-3">Telefon CRM</th>
                 <th className="px-4 py-3">Rola</th>
                 <th className="px-4 py-3">Menadżer</th>
                 <th className="px-4 py-3">Utworzony</th>
@@ -544,6 +563,18 @@ export default function UsersPage() {
                 <tr key={person.id}>
                   <td className="px-4 py-3 font-semibold">{person.full_name}</td>
                   <td className="px-4 py-3 text-muted">{person.email}</td>
+                  <td className="px-4 py-3 text-muted">
+                    <input
+                      className="field min-w-44"
+                      value={phoneDrafts[person.id] ?? person.business_phone ?? ""}
+                      onChange={(event) =>
+                        setPhoneDrafts((current) => ({ ...current, [person.id]: event.target.value }))
+                      }
+                      onBlur={(event) => updateUser(person.id, person.role, person.manager_id, event.target.value)}
+                      placeholder="+48 600 000 000"
+                      disabled={busy}
+                    />
+                  </td>
                   <td className="px-4 py-3 text-muted">
                     <select
                       className="field min-w-40"
@@ -616,6 +647,19 @@ export default function UsersPage() {
                   </span>
                 </div>
                 <div className="mt-4 grid gap-3">
+                  <label>
+                    <span className="label">Telefon CRM</span>
+                    <input
+                      className="field"
+                      value={phoneDrafts[person.id] ?? person.business_phone ?? ""}
+                      onChange={(event) =>
+                        setPhoneDrafts((current) => ({ ...current, [person.id]: event.target.value }))
+                      }
+                      onBlur={(event) => updateUser(person.id, person.role, person.manager_id, event.target.value)}
+                      placeholder="+48 600 000 000"
+                      disabled={busy}
+                    />
+                  </label>
                   <label>
                     <span className="label">Rola</span>
                     <select

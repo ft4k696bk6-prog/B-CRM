@@ -78,9 +78,19 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 NEXT_PUBLIC_DEMO_MODE=false
+NEXT_PUBLIC_APP_URL=
+
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+TWILIO_CALLER_ID=
+
+OPENAI_API_KEY=
+OPENAI_TRANSCRIPTION_MODEL=gpt-4o-mini-transcribe
+OPENAI_SUMMARY_MODEL=gpt-4.1-mini
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` must stay server-side only. If a real service role key is ever committed, rotate it in Supabase immediately.
+Twilio variables enable real click-to-call. Without them, demo accounts use a safe simulated call flow. `OPENAI_API_KEY` enables transcription and AI summaries for recorded calls.
 
 ## Database
 

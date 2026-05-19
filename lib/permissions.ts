@@ -17,6 +17,7 @@ export type Permission =
   | "leads:delete"
   | "activities:create"
   | "activities:view"
+  | "calls:manage"
   | "reminders:manage"
   | "files:manage"
   | "calendar:view"
@@ -53,6 +54,7 @@ export const PERMISSIONS: PermissionMatrix = {
     "leads:delete",
     "activities:create",
     "activities:view",
+    "calls:manage",
     "reminders:manage",
     "files:manage",
     "calendar:view",
@@ -86,6 +88,7 @@ export const PERMISSIONS: PermissionMatrix = {
     "leads:delete",
     "activities:create",
     "activities:view",
+    "calls:manage",
     "reminders:manage",
     "files:manage",
     "calendar:view",
@@ -113,6 +116,7 @@ export const PERMISSIONS: PermissionMatrix = {
     "leads:assign",
     "activities:create",
     "activities:view",
+    "calls:manage",
     "reminders:manage",
     "files:manage",
     "calendar:view",
@@ -131,6 +135,7 @@ export const PERMISSIONS: PermissionMatrix = {
     "leads:edit:own",
     "activities:create",
     "activities:view",
+    "calls:manage",
     "reminders:manage",
     "files:manage",
     "calendar:view",

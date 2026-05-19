@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { formatDateTime } from "@/lib/date";
 import type { LeadActivity } from "@/lib/types";
 import { ACTION_LABELS } from "@/lib/constants";
-import { MessageSquarePlus, FileText, Calendar, Loader2 } from "lucide-react";
+import { MessageSquarePlus, FileText, Calendar, Loader2, PhoneCall, BrainCircuit } from "lucide-react";
 
 type ActivityLogProps = {
   leadId: string;
@@ -59,6 +59,11 @@ export function ActivityLog({ leadId, token }: ActivityLogProps) {
       case "callback_scheduled":
       case "meeting_scheduled":
         return <Calendar className="h-4 w-4" />;
+      case "call_logged":
+        return <PhoneCall className="h-4 w-4" />;
+      case "call_transcript":
+      case "ai_call_summary":
+        return <BrainCircuit className="h-4 w-4" />;
       default:
         return <MessageSquarePlus className="h-4 w-4" />;
     }
@@ -78,6 +83,11 @@ export function ActivityLog({ leadId, token }: ActivityLogProps) {
         return "bg-[#e8f7f0] text-[#1d7556]";
       case "meeting_scheduled":
         return "bg-[#eef8e8] text-[#31701f]";
+      case "call_logged":
+        return "bg-sky/10 text-sky";
+      case "call_transcript":
+      case "ai_call_summary":
+        return "bg-ink text-white";
       default:
         return "bg-muted/10 text-muted";
     }

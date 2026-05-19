@@ -16,7 +16,10 @@ type CreateActivityBody = {
     | "file_deleted"
     | "assigned"
     | "unassigned"
-    | "lead_created";
+    | "lead_created"
+    | "call_logged"
+    | "call_transcript"
+    | "ai_call_summary";
   title: string;
   description?: string;
   old_value?: Record<string, unknown>;
@@ -106,7 +109,7 @@ export async function POST(request: Request) {
 
     const body = (await request.json()) as CreateActivityBody;
     const leadId = uuidString(body.lead_id, "lead_id");
-    const type = enumValue(body.activity_type, "activity_type", ["comment", "status_change", "callback_scheduled", "meeting_scheduled", "meeting_address_changed", "contract_number_set", "resignation_recorded", "file_uploaded", "file_deleted", "assigned", "unassigned", "lead_created"] as const);
+    const type = enumValue(body.activity_type, "activity_type", ["comment", "status_change", "callback_scheduled", "meeting_scheduled", "meeting_address_changed", "contract_number_set", "resignation_recorded", "file_uploaded", "file_deleted", "assigned", "unassigned", "lead_created", "call_logged", "call_transcript", "ai_call_summary"] as const);
     const title = requiredString(body.title, "title", 160);
     const description = optionalString(body.description, "description", 4000);
     const oldValue = optionalRecord(body.old_value, "old_value");
