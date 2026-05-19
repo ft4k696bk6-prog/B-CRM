@@ -392,12 +392,6 @@ export function AppShell({ profile, children }: AppShellProps) {
             <div className="mb-3 md:hidden">
               <LanguageSwitcher />
             </div>
-            {canRunDemoTour ? (
-              <button type="button" onClick={startDemoTour} className="btn-primary mb-3 w-full">
-                <MousePointerClick className="h-4 w-4" aria-hidden="true" />
-                {language === "en" ? "Start guided demo" : "Uruchom samouczek"}
-              </button>
-            ) : null}
             <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-muted">
               <PanelLeft className="h-4 w-4" aria-hidden="true" />
               {t("menu")}
@@ -413,12 +407,6 @@ export function AppShell({ profile, children }: AppShellProps) {
             <PanelLeft className="h-4 w-4" aria-hidden="true" />
             {t("menu")}
           </div>
-          {canRunDemoTour ? (
-            <button type="button" onClick={startDemoTour} className="btn-primary mb-3 w-full">
-              <MousePointerClick className="h-4 w-4" aria-hidden="true" />
-              {language === "en" ? "Demo tour" : "Samouczek"}
-            </button>
-          ) : null}
           {renderNavigation()}
         </aside>
 
