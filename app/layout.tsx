@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/next";
 import { LanguageProvider } from "@/components/language-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <LanguageProvider>
           <ThemeProvider>{children}</ThemeProvider>
         </LanguageProvider>
+        <Analytics />
       </body>
     </html>
   );
