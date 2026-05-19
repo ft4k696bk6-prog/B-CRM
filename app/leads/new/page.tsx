@@ -8,13 +8,79 @@ import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
 import { Alert, PageHeader, SectionHeader } from "@/components/ui";
+import { useLanguage } from "@/components/language-provider";
 import { LEAD_SOURCES, type LeadSource } from "@/lib/lead-sources";
 import { canCreateManualLead, canManageLeads, homePathForRole } from "@/lib/roles";
+import { isDemoScope } from "@/lib/scope";
 import { useAuth } from "@/lib/use-auth";
+
+const newLeadCopy = {
+  pl: {
+    title: "Nowy lead",
+    description: "Dodaj kontakt z własnego źródła, polecenia, B2B albo B2C.",
+    back: "Wróć",
+    noAccessTitle: "Brak dostępu",
+    noAccessDescription: "Twoja rola nie pozwala tworzyć leadów. Poproś administratora o zmianę uprawnień, jeśli to błąd.",
+    errorRequired: "Wpisz imię i nazwisko oraz numer telefonu.",
+    errorCreate: "Nie udało się dodać leada.",
+    contactTitle: "Dane kontaktowe",
+    contactDescription: "Wybierz źródło i uzupełnij podstawowe dane klienta.",
+    fullName: "Imię i nazwisko",
+    fullNamePlaceholder: "np. Jan Kowalski",
+    phone: "Telefon",
+    phonePlaceholder: "np. 500 600 700",
+    source: "Źródło",
+    postalCode: "Kod pocztowy",
+    postalCodePlaceholder: "np. 30-001",
+    address: "Adres",
+    addressPlaceholder: "Ulica, numer, miejscowość",
+    addLead: "Dodaj leada",
+    fillDemo: "Użyj danych demo"
+  },
+  en: {
+    title: "New lead",
+    description: "Add a contact from own source, referral, B2B or B2C.",
+    back: "Back",
+    noAccessTitle: "No access",
+    noAccessDescription: "Your role cannot create leads. Ask an administrator to adjust permissions if this is unexpected.",
+    errorRequired: "Enter full name and phone number.",
+    errorCreate: "Could not create the lead.",
+    contactTitle: "Contact details",
+    contactDescription: "Choose the source and enter the client basics.",
+    fullName: "Full name",
+    fullNamePlaceholder: "e.g. John Smith",
+    phone: "Phone",
+    phonePlaceholder: "e.g. 500 600 700",
+    source: "Source",
+    postalCode: "Postal code",
+    postalCodePlaceholder: "e.g. 30-001",
+    address: "Address",
+    addressPlaceholder: "Street, number, city",
+    addLead: "Add lead",
+    fillDemo: "Use demo data"
+  }
+} as const;
+
+const leadSourceLabels = {
+  pl: {
+    własne: "własne",
+    polecenie: "polecenie",
+    B2B: "B2B",
+    B2C: "B2C"
+  },
+  en: {
+    własne: "Own",
+    polecenie: "Referral",
+    B2B: "B2B",
+    B2C: "B2C"
+  }
+} satisfies Record<"pl" | "en", Record<LeadSource, string>>;
 
 export default function NewLeadPage() {
   const router = useRouter();
   const { loading, profile, session } = useAuth();
+  const { language } = useLanguage();
+  const copy = newLeadCopy[language];
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [postalCode, setPostalCode] = useState("");
@@ -28,6 +94,7 @@ export default function NewLeadPage() {
   const canManage = canManageLeads(profile?.role);
   const canCreate = canCreateManualLead(profile?.role);
   const backHref = homePathForRole(profile?.role);
+  const isDemo = profile ? isDemoScope(profile.crm_environment) : false;
 
   async function createLead(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -36,7 +103,7 @@ export default function NewLeadPage() {
     setError("");
 
     if (!fullName.trim() || !phone.trim()) {
-      setError("Wpisz imię i nazwisko oraz numer telefonu.");
+      setError(copy.errorRequired);
       return;
     }
 
@@ -65,12 +132,23 @@ export default function NewLeadPage() {
     const data = await response.json();
 
     if (!response.ok || !data?.id) {
-      setError(data.error || "Nie udało się dodać leada.");
+      setError(data.error || copy.errorCreate);
       setBusy(false);
       return;
     }
 
     router.replace(`/leads/${data.id}`);
+  }
+
+  function fillDemoLead() {
+    setFullName("Mariusz Wenta");
+    setPhone("+48 601 076 741");
+    setPostalCode("23-400");
+    setAddress("ul. Energetyczna 18, Biłgoraj");
+    setVoivodeship("lubelskie");
+    setCounty("biłgorajski");
+    setSource("B2B");
+    setError("");
   }
 
   if (loading || !profile) return <LoadingScreen />;
@@ -79,8 +157,8 @@ export default function NewLeadPage() {
     return (
       <AppShell profile={profile}>
         <div className="app-card">
-          <h1 className="section-title">Brak dostępu</h1>
-          <p className="mt-2 text-sm text-muted">Twoja rola nie pozwala tworzyć leadów. Poproś administratora o zmianę uprawnień, jeśli to błąd.</p>
+          <h1 className="section-title">{copy.noAccessTitle}</h1>
+          <p className="mt-2 text-sm text-muted">{copy.noAccessDescription}</p>
         </div>
       </AppShell>
     );
@@ -90,12 +168,12 @@ export default function NewLeadPage() {
     <AppShell profile={profile}>
       <div className="grid gap-5">
         <PageHeader
-          title="Nowy lead"
-          description="Dodaj kontakt z własnego źródła, polecenia, B2B albo B2C."
+          title={copy.title}
+          description={copy.description}
           actions={
             <Link href={backHref} className="btn-secondary w-fit">
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-              Wróć
+              {copy.back}
             </Link>
           }
         />
@@ -104,34 +182,41 @@ export default function NewLeadPage() {
           <Alert tone="danger">{error}</Alert>
         ) : null}
 
-        <form onSubmit={createLead} className="app-card">
+        <form onSubmit={createLead} className="app-card" data-tour-id="tour-new-lead">
           <SectionHeader
             icon={UserPlus}
-            title="Dane kontaktowe"
-            description="Wybierz źródło i uzupełnij podstawowe dane klienta."
+            title={copy.contactTitle}
+            description={copy.contactDescription}
+            actions={
+              isDemo ? (
+                <button type="button" onClick={fillDemoLead} className="btn-secondary">
+                  {copy.fillDemo}
+                </button>
+              ) : null
+            }
           />
 
           <div className="grid gap-3 md:grid-cols-2">
             <label>
-              <span className="label">Imię i nazwisko</span>
+              <span className="label">{copy.fullName}</span>
               <input
                 className="field"
                 value={fullName}
                 onChange={(event) => setFullName(event.target.value)}
-                placeholder="np. Jan Kowalski"
+                placeholder={copy.fullNamePlaceholder}
               />
             </label>
             <label>
-              <span className="label">Telefon</span>
+              <span className="label">{copy.phone}</span>
               <input
                 className="field"
                 value={phone}
                 onChange={(event) => setPhone(event.target.value)}
-                placeholder="np. 500 600 700"
+                placeholder={copy.phonePlaceholder}
               />
             </label>
             <label>
-              <span className="label">Źródło</span>
+              <span className="label">{copy.source}</span>
               <select
                 className="field"
                 value={source}
@@ -139,27 +224,27 @@ export default function NewLeadPage() {
               >
                 {LEAD_SOURCES.map((item) => (
                   <option key={item} value={item}>
-                    {item}
+                    {leadSourceLabels[language][item]}
                   </option>
                 ))}
               </select>
             </label>
             <label>
-              <span className="label">Kod pocztowy</span>
+              <span className="label">{copy.postalCode}</span>
               <input
                 className="field"
                 value={postalCode}
                 onChange={(event) => setPostalCode(event.target.value)}
-                placeholder="np. 30-001"
+                placeholder={copy.postalCodePlaceholder}
               />
             </label>
             <label className="md:col-span-2">
-              <span className="label">Adres</span>
+              <span className="label">{copy.address}</span>
               <input
                 className="field"
                 value={address}
                 onChange={(event) => setAddress(event.target.value)}
-                placeholder="Ulica, numer, miejscowość"
+                placeholder={copy.addressPlaceholder}
               />
             </label>
             <RegionFields
@@ -173,7 +258,7 @@ export default function NewLeadPage() {
 
           <button type="submit" disabled={busy} className="btn-primary mt-5">
             <Save className="h-4 w-4" aria-hidden="true" />
-            Dodaj leada
+            {copy.addLead}
           </button>
         </form>
       </div>

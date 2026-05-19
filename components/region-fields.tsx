@@ -1,4 +1,7 @@
+"use client";
+
 import { POLISH_REGIONS, VOIVODESHIPS } from "@/lib/poland-regions";
+import { useLanguage } from "@/components/language-provider";
 
 type RegionFieldsProps = {
   voivodeship: string;
@@ -24,13 +27,30 @@ export function RegionFields({
   className = "",
   allowEmpty = true
 }: RegionFieldsProps) {
+  const { language } = useLanguage();
   const counties = voivodeship ? POLISH_REGIONS[voivodeship] || [] : [];
   const countyOptions = county && !counties.includes(county) ? [county, ...counties] : counties;
+  const labels =
+    language === "en"
+      ? {
+          voivodeship: "Voivodeship",
+          county: "County",
+          chooseVoivodeship: "Choose voivodeship",
+          chooseCounty: "Choose county",
+          chooseVoivodeshipFirst: "Choose voivodeship first"
+        }
+      : {
+          voivodeship: "Województwo",
+          county: "Powiat",
+          chooseVoivodeship: "Wybierz województwo",
+          chooseCounty: "Wybierz powiat",
+          chooseVoivodeshipFirst: "Najpierw województwo"
+        };
 
   return (
     <div className={`grid gap-3 sm:grid-cols-2 ${className}`}>
       <label>
-        <span className="label">Województwo</span>
+        <span className="label">{labels.voivodeship}</span>
         <select
           className="field"
           value={voivodeship}
@@ -39,7 +59,7 @@ export function RegionFields({
             onCountyChange("");
           }}
         >
-          {allowEmpty ? <option value="">Wybierz województwo</option> : null}
+          {allowEmpty ? <option value="">{labels.chooseVoivodeship}</option> : null}
           {VOIVODESHIPS.map((item) => (
             <option key={item} value={item}>
               {labelRegion(item)}
@@ -49,14 +69,14 @@ export function RegionFields({
       </label>
 
       <label>
-        <span className="label">Powiat</span>
+        <span className="label">{labels.county}</span>
         <select
           className="field"
           value={county}
           onChange={(event) => onCountyChange(event.target.value)}
           disabled={!voivodeship}
         >
-          <option value="">{voivodeship ? "Wybierz powiat" : "Najpierw województwo"}</option>
+          <option value="">{voivodeship ? labels.chooseCounty : labels.chooseVoivodeshipFirst}</option>
           {countyOptions.map((item) => (
             <option key={item} value={item}>
               {item}
@@ -67,4 +87,3 @@ export function RegionFields({
     </div>
   );
 }
-

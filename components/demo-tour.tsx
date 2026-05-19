@@ -24,6 +24,7 @@ type DemoTourTarget = {
   top: number;
   left: number;
   side: "left" | "right";
+  variant: "focus" | "next";
 };
 
 const demoTourSteps: DemoTourStep[] = [
@@ -41,6 +42,32 @@ const demoTourSteps: DemoTourStep[] = [
     effectEn: "The first screen gives context, then the next tabs walk through departments."
   },
   {
+    path: "/leads/new",
+    navTourId: "tour-nav-new-lead",
+    pageTourId: "tour-new-lead",
+    labelPl: "Dodanie leada",
+    labelEn: "New lead",
+    problemPl: "Handlowiec nie powinien przepisywać tych samych danych kilka razy.",
+    problemEn: "Sales should not retype the same client data several times.",
+    actionPl: "CRM zbiera źródło, telefon, adres i region w jednym prostym formularzu.",
+    actionEn: "CRM captures source, phone, address and region in one simple form.",
+    effectPl: "Lead może od razu wejść do dalszej pracy, przypisania i procesu umowy.",
+    effectEn: "The lead can immediately move into assignment, follow-up and contract flow."
+  },
+  {
+    path: "/calculators",
+    navTourId: "tour-nav-calculators",
+    pageTourId: "tour-calculators",
+    labelPl: "Kalkulatory",
+    labelEn: "Calculators",
+    problemPl: "Oferta, opłacalność i rata często są liczone poza CRM.",
+    problemEn: "Offers, profitability and installments are often calculated outside CRM.",
+    actionPl: "Kalkulatory korzystają z danych klienta i pozwalają szybko przygotować ofertę.",
+    actionEn: "Calculators use client data and help prepare an offer quickly.",
+    effectPl: "Sprzedaż ma jedną ścieżkę od leadu do umowy i finansowania.",
+    effectEn: "Sales has one path from lead to contract and financing."
+  },
+  {
     path: "/realizacja",
     navTourId: "tour-nav-process",
     pageTourId: "tour-process",
@@ -56,7 +83,7 @@ const demoTourSteps: DemoTourStep[] = [
   {
     path: "/finance",
     navTourId: "tour-nav-finance",
-    pageTourId: "tour-finance",
+    pageTourId: "tour-finance-calculator",
     labelPl: "Finanse",
     labelEn: "Finance",
     problemPl: "Finansowanie często żyje obok CRM i traci kontekst klienta.",
@@ -69,7 +96,7 @@ const demoTourSteps: DemoTourStep[] = [
   {
     path: "/accounting",
     navTourId: "tour-nav-accounting",
-    pageTourId: "tour-accounting",
+    pageTourId: "tour-accounting-actions",
     labelPl: "Księgowość",
     labelEn: "Accounting",
     problemPl: "Księgowość nie powinna szukać numerów umów, kwot i danych nabywcy w mailach.",
@@ -82,7 +109,7 @@ const demoTourSteps: DemoTourStep[] = [
   {
     path: "/equipment",
     navTourId: "tour-nav-equipment",
-    pageTourId: "tour-equipment",
+    pageTourId: "tour-equipment-documents",
     labelPl: "Sprzęt i magazyn",
     labelEn: "Equipment and warehouse",
     problemPl: "Magazyn musi wiedzieć, co zamówić i zarezerwować, dopiero po akceptacji procesu.",
@@ -95,7 +122,7 @@ const demoTourSteps: DemoTourStep[] = [
   {
     path: "/logistics",
     navTourId: "tour-nav-logistics",
-    pageTourId: "tour-logistics",
+    pageTourId: "tour-logistics-plan",
     labelPl: "Logistyka",
     labelEn: "Logistics",
     problemPl: "Terminy, dostawa i przekazanie do ekip muszą być zsynchronizowane.",
@@ -108,7 +135,7 @@ const demoTourSteps: DemoTourStep[] = [
   {
     path: "/installation",
     navTourId: "tour-nav-installation",
-    pageTourId: "tour-installation",
+    pageTourId: "tour-installation-closeout",
     labelPl: "Montaż",
     labelEn: "Installation",
     problemPl: "Ekipa terenowa potrzebuje prostych, kompletnych danych, bez CRM-owego hałasu.",
@@ -125,7 +152,8 @@ export function DemoTour({ profile }: { profile: Profile }) {
   const { language } = useLanguage();
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [target, setTarget] = useState<DemoTourTarget | null>(null);
+  const [focusTarget, setFocusTarget] = useState<DemoTourTarget | null>(null);
+  const [nextTarget, setNextTarget] = useState<DemoTourTarget | null>(null);
   const storageKey = useMemo(() => `bcrm-demo-tour-seen:${profile.id}`, [profile.id]);
 
   useEffect(() => {
@@ -137,6 +165,17 @@ export function DemoTour({ profile }: { profile: Profile }) {
   }, [pathname, storageKey]);
 
   useEffect(() => {
+    function startTour() {
+      if (typeof window !== "undefined") window.sessionStorage.removeItem(storageKey);
+      setActiveIndex(0);
+      setOpen(true);
+    }
+
+    window.addEventListener("bcrm:demo-tour-start", startTour);
+    return () => window.removeEventListener("bcrm:demo-tour-start", startTour);
+  }, [storageKey]);
+
+  useEffect(() => {
     if (!open) return;
     const currentPathIndex = demoTourSteps.findIndex((step) => step.path === pathname);
     if (currentPathIndex >= 0) setActiveIndex(currentPathIndex);
@@ -145,39 +184,44 @@ export function DemoTour({ profile }: { profile: Profile }) {
   const activeStep = demoTourSteps[activeIndex] || demoTourSteps[0];
   const nextStep = demoTourSteps[activeIndex + 1] || null;
   const isOnStepPage = pathname === activeStep.path;
-  const targetTourId = isOnStepPage && nextStep ? nextStep.navTourId : activeStep.navTourId;
+  const focusTourId = isOnStepPage ? activeStep.pageTourId : activeStep.navTourId;
+  const nextTourId = isOnStepPage && nextStep ? nextStep.navTourId : null;
 
   useEffect(() => {
     if (!open) {
-      setTarget(null);
+      setFocusTarget(null);
+      setNextTarget(null);
       return;
     }
 
-    function updateTarget() {
-      const element = document.querySelector(`[data-tour-id="${targetTourId}"]`);
-      if (!element) {
-        setTarget(null);
-        return;
-      }
+    function targetFromElement(tourId: string, variant: DemoTourTarget["variant"]) {
+      const element = document.querySelector(`[data-tour-id="${tourId}"]`);
+      if (!element) return null;
 
       const rect = element.getBoundingClientRect();
       const side = rect.left > 90 ? "left" : "right";
-      setTarget({
+      return {
         top: rect.top + rect.height / 2,
         left: side === "left" ? Math.max(12, rect.left - 46) : Math.min(window.innerWidth - 52, rect.right + 10),
-        side
-      });
+        side,
+        variant
+      } satisfies DemoTourTarget;
     }
 
-    updateTarget();
-    window.addEventListener("resize", updateTarget);
-    window.addEventListener("scroll", updateTarget, true);
+    function updateTargets() {
+      setFocusTarget(targetFromElement(focusTourId, "focus"));
+      setNextTarget(nextTourId ? targetFromElement(nextTourId, "next") : null);
+    }
+
+    updateTargets();
+    window.addEventListener("resize", updateTargets);
+    window.addEventListener("scroll", updateTargets, true);
 
     return () => {
-      window.removeEventListener("resize", updateTarget);
-      window.removeEventListener("scroll", updateTarget, true);
+      window.removeEventListener("resize", updateTargets);
+      window.removeEventListener("scroll", updateTargets, true);
     };
-  }, [open, targetTourId]);
+  }, [focusTourId, nextTourId, open]);
 
   function closeTour() {
     window.sessionStorage.setItem(storageKey, "1");
@@ -194,14 +238,8 @@ export function DemoTour({ profile }: { profile: Profile }) {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[70]">
-      {target ? (
-        <div
-          className="demo-tour-arrow pointer-events-none fixed z-[72] flex h-9 w-9 items-center justify-center rounded-full bg-danger text-white shadow-soft"
-          style={{ top: target.top - 18, left: target.left }}
-        >
-          <ArrowRight className={`h-5 w-5 ${target.side === "right" ? "rotate-180" : ""}`} aria-hidden="true" />
-        </div>
-      ) : null}
+      <TourArrow target={focusTarget} />
+      <TourArrow target={nextTarget} />
 
       <aside className="pointer-events-auto absolute inset-x-3 bottom-4 z-[73] sm:inset-x-auto sm:right-5 sm:top-24 sm:bottom-auto sm:w-[390px]">
         <div className="rounded-lg border border-danger/20 bg-white/90 p-4 shadow-soft backdrop-blur-md">
@@ -235,14 +273,14 @@ export function DemoTour({ profile }: { profile: Profile }) {
           <div className="mt-3 rounded-lg border border-danger/20 bg-danger/10 p-3 text-sm font-bold text-danger">
             {nextStep
               ? language === "en"
-                ? `Click the red arrow target: ${nextLabel}. The tour shows where to go and what each department sees.`
-                : `Kliknij miejsce wskazane czerwoną strzałką: ${nextLabel}. Samouczek pokazuje, gdzie klikać i co widzi dany dział.`
+                ? `First check the highlighted area, then click the next red arrow: ${nextLabel}. The tour shows where to go and what each department sees.`
+                : `Najpierw zobacz podświetlony element, potem kliknij kolejną czerwoną strzałkę: ${nextLabel}. Samouczek pokazuje, gdzie klikać i co widzi dany dział.`
               : language === "en"
                 ? "This is the last department. Close the tour when you are done."
                 : "To ostatni dział. Zamknij samouczek, kiedy skończysz."}
           </div>
 
-          {!target ? (
+          {!focusTarget && !nextTarget ? (
             <div className="mt-3 rounded-lg border border-line bg-[#f8fafc] p-3 text-xs font-semibold text-muted">
               {language === "en"
                 ? "If you do not see the arrow, open the menu and choose the indicated tab."
@@ -255,6 +293,21 @@ export function DemoTour({ profile }: { profile: Profile }) {
   );
 }
 
+function TourArrow({ target }: { target: DemoTourTarget | null }) {
+  if (!target) return null;
+
+  return (
+    <div
+      className={`demo-tour-arrow pointer-events-none fixed z-[72] flex h-9 w-9 items-center justify-center rounded-full bg-danger text-white shadow-soft ${
+        target.variant === "next" ? "ring-4 ring-danger/15" : ""
+      }`}
+      style={{ top: target.top - 18, left: target.left }}
+    >
+      <ArrowRight className={`h-5 w-5 ${target.side === "right" ? "rotate-180" : ""}`} aria-hidden="true" />
+    </div>
+  );
+}
+
 function GuidePoint({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-line bg-white/70 p-3">
@@ -263,4 +316,3 @@ function GuidePoint({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-

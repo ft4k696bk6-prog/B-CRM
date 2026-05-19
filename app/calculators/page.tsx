@@ -3,8 +3,10 @@
 import { useMemo, useState } from "react";
 import { Banknote, BatteryCharging, Calculator, Minus, Percent, Plus, Printer, Zap } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { useLanguage } from "@/components/language-provider";
 import { LoadingScreen } from "@/components/loading-screen";
 import { PageHeader } from "@/components/ui";
+import { demoContractData } from "@/lib/demo-documents";
 import {
   EXTRA_NET_PRICES,
   INCLUDED_TOTAL_MARGIN_NET,
@@ -21,6 +23,7 @@ import {
   recommendedInverter
 } from "@/lib/pricing";
 import { usePricingSettings } from "@/lib/pricing-settings";
+import { isDemoScope } from "@/lib/scope";
 import { useAuth } from "@/lib/use-auth";
 
 type VatRate = 8 | 23;
@@ -40,6 +43,119 @@ const formatMoney = new Intl.NumberFormat("pl-PL", {
 const formatNumber = new Intl.NumberFormat("pl-PL", {
   maximumFractionDigits: 1
 });
+
+const calculatorCopy = {
+  pl: {
+    title: "Kalkulatory",
+    description: "Przygotuj konfigurację, sprawdź ratę i zapisz ofertę dla klienta.",
+    offerTab: "Oferta",
+    profitabilityTab: "Opłacalność",
+    useClient: "Użyj danych klienta",
+    configuration: "Konfiguracja",
+    customer: "Klient / adresat oferty",
+    customerPlaceholder: "np. Jan Kowalski",
+    phone: "Telefon klienta",
+    phonePlaceholder: "np. 500 600 700",
+    offerMode: "Wariant oferty",
+    vatRate: "Stawka VAT",
+    pvOnly: "Samo PV",
+    pvOnlySub: "Instalacja fotowoltaiczna",
+    pvStorage: "PV + magazyn",
+    pvStorageSub: "Instalacja z magazynem",
+    storageOnly: "Sam magazyn",
+    storageOnlySub: "Magazyn + falownik",
+    panels: "Liczba modułów JA Solar 500 W",
+    panelsHint: (count: number, kwp: string) => `${count} modułów daje ${kwp} kWp.`,
+    storagePower: "Moc magazynu",
+    storageBrand: "Marka magazynu",
+    storageProduct: "Magazyn energii",
+    inverterPower: "Moc falownika",
+    extras: "Dodatki",
+    groundMount: "Montaż gruntowy",
+    triangles: "Ekierki",
+    boiler: "Bojler",
+    boilerNone: "Bez bojlera",
+    boilerLayout: "Układ bojlera",
+    vertical: "Pionowy",
+    horizontal: "Poziomy",
+    rainwater: "System magazynowania deszczówki",
+    rainwaterNone: "Bez systemu",
+    cable: "Kabel powyżej 8 m",
+    adjustment: "Korekta ręczna",
+    financing: "Finansowanie",
+    subsidy: "Dotacja / wpłata",
+    months: "Liczba miesięcy",
+    annualRate: "Oprocentowanie roczne %",
+    print: "Drukuj / zapisz PDF",
+    clientData: "Dane klienta",
+    monthlyBill: "Rachunek miesięczny",
+    annualConsumption: "Zużycie roczne kWh",
+    energyPrice: "Cena zakupu 1 kWh",
+    production: "Produkcja z 1 kWp",
+    annualGrowth: "Roczny wzrost ceny %",
+    selfConsumption: (value: number) => `Autokonsumpcja przyjęta do symulacji: ${value}%.`,
+    annualProduction: "Produkcja roczna",
+    selfConsumptionShort: "Autokonsumpcja",
+    annualSavings: "Oszczędność roczna",
+    billCoverage: "Pokrycie rachunków",
+    projectedCost: "Prognozowany koszt prądu przez 10 lat"
+  },
+  en: {
+    title: "Calculators",
+    description: "Prepare a configuration, check the installment and save an offer for the client.",
+    offerTab: "Offer",
+    profitabilityTab: "Profitability",
+    useClient: "Use client data",
+    configuration: "Configuration",
+    customer: "Client / offer recipient",
+    customerPlaceholder: "e.g. John Smith",
+    phone: "Client phone",
+    phonePlaceholder: "e.g. 500 600 700",
+    offerMode: "Offer variant",
+    vatRate: "VAT rate",
+    pvOnly: "PV only",
+    pvOnlySub: "Photovoltaic installation",
+    pvStorage: "PV + storage",
+    pvStorageSub: "Installation with storage",
+    storageOnly: "Storage only",
+    storageOnlySub: "Storage + inverter",
+    panels: "JA Solar 500 W module count",
+    panelsHint: (count: number, kwp: string) => `${count} modules produce ${kwp} kWp.`,
+    storagePower: "Storage capacity",
+    storageBrand: "Storage brand",
+    storageProduct: "Energy storage",
+    inverterPower: "Inverter power",
+    extras: "Add-ons",
+    groundMount: "Ground mount",
+    triangles: "Roof triangles",
+    boiler: "Boiler",
+    boilerNone: "No boiler",
+    boilerLayout: "Boiler layout",
+    vertical: "Vertical",
+    horizontal: "Horizontal",
+    rainwater: "Rainwater storage system",
+    rainwaterNone: "No system",
+    cable: "Cable above 8 m",
+    adjustment: "Manual adjustment",
+    financing: "Financing",
+    subsidy: "Subsidy / own payment",
+    months: "Months",
+    annualRate: "Annual interest %",
+    print: "Print / save PDF",
+    clientData: "Client data",
+    monthlyBill: "Monthly bill",
+    annualConsumption: "Annual consumption kWh",
+    energyPrice: "Purchase price per 1 kWh",
+    production: "Production per 1 kWp",
+    annualGrowth: "Annual price growth %",
+    selfConsumption: (value: number) => `Self-consumption used in simulation: ${value}%.`,
+    annualProduction: "Annual production",
+    selfConsumptionShort: "Self-consumption",
+    annualSavings: "Annual savings",
+    billCoverage: "Bill coverage",
+    projectedCost: "Projected energy cost over 10 years"
+  }
+} as const;
 
 function gross(value: number, vatRate: VatRate) {
   return value * (1 + vatRate / 100);
@@ -68,6 +184,7 @@ function boilerImageFor(layout: BoilerLayout) {
 
 export default function CalculatorsPage() {
   const { loading, profile } = useAuth(["owner", "admin", "menadzer", "handlowiec", "finance"]);
+  const { language } = useLanguage();
   const { settings } = usePricingSettings(profile?.role);
   const [tab, setTab] = useState<CalculatorTab>("offer");
   const [vatRate, setVatRate] = useState<VatRate>(8);
@@ -193,6 +310,9 @@ export default function CalculatorsPage() {
 
   if (loading || !profile) return <LoadingScreen />;
 
+  const copy = calculatorCopy[language];
+  const isDemo = isDemoScope(profile.crm_environment);
+
   const offerTitle =
     offerMode === "pv"
       ? "Instalacja fotowoltaiczna"
@@ -228,60 +348,83 @@ export default function CalculatorsPage() {
     }, 500);
   }
 
+  function useDemoClientData() {
+    setCustomerName(demoContractData.clientName);
+    setCustomerPhone(demoContractData.phone);
+    setSubsidy(5000);
+    setLoanMonths(120);
+    setLoanRate(6.5);
+  }
+
   return (
     <AppShell profile={profile}>
-      <div className="grid gap-5">
+      <div className="grid gap-5" data-tour-id="tour-calculators">
         <PageHeader
-          title="Kalkulatory"
-          description="Przygotuj konfigurację, sprawdź ratę i zapisz ofertę dla klienta."
+          title={copy.title}
+          description={copy.description}
           className="no-print"
           actions={
-          <div className="inline-flex rounded-lg border border-line bg-white p-1 shadow-sm">
-            <button type="button" onClick={() => setTab("offer")} className={`rounded-md px-4 py-2 text-sm font-bold transition ${tab === "offer" ? "bg-ink text-white" : "text-muted hover:bg-[#eef3f8]"}`}>
-              Oferta
-            </button>
-            <button type="button" onClick={() => setTab("profitability")} className={`rounded-md px-4 py-2 text-sm font-bold transition ${tab === "profitability" ? "bg-ink text-white" : "text-muted hover:bg-[#eef3f8]"}`}>
-              Opłacalność
-            </button>
-          </div>
+          <>
+            {isDemo ? (
+              <button type="button" onClick={useDemoClientData} className="btn-secondary">
+                {copy.useClient}
+              </button>
+            ) : null}
+            <div className="inline-flex rounded-lg border border-line bg-white p-1 shadow-sm">
+              <button type="button" onClick={() => setTab("offer")} className={`rounded-md px-4 py-2 text-sm font-bold transition ${tab === "offer" ? "bg-ink text-white" : "text-muted hover:bg-[#eef3f8]"}`}>
+                {copy.offerTab}
+              </button>
+              <button type="button" onClick={() => setTab("profitability")} className={`rounded-md px-4 py-2 text-sm font-bold transition ${tab === "profitability" ? "bg-ink text-white" : "text-muted hover:bg-[#eef3f8]"}`}>
+                {copy.profitabilityTab}
+              </button>
+            </div>
+          </>
           }
         />
 
         {tab === "offer" ? (
           <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(560px,0.9fr)]">
             <div className="no-print grid gap-5">
-              <section className="app-card">
+              <section className="app-card" data-tour-id="tour-calculators-offer">
                 <div className="mb-4 flex items-center gap-3">
                   <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky/10 text-sky">
                     <Calculator className="h-5 w-5" aria-hidden="true" />
                   </span>
-                  <h2 className="text-base font-bold text-ink">Konfiguracja</h2>
+                  <h2 className="text-base font-bold text-ink">{copy.configuration}</h2>
                 </div>
 
                 <div className="grid gap-4">
                   <div className="grid gap-3 sm:grid-cols-2">
                     <label>
-                      <span className="label">Klient / adresat oferty</span>
-                      <input className="field" value={customerName} onChange={(event) => setCustomerName(event.target.value)} placeholder="np. Jan Kowalski" />
+                      <span className="label">{copy.customer}</span>
+                      <input className="field" value={customerName} onChange={(event) => setCustomerName(event.target.value)} placeholder={copy.customerPlaceholder} />
                     </label>
                     <label>
-                      <span className="label">Telefon klienta</span>
-                      <input className="field" value={customerPhone} onChange={(event) => setCustomerPhone(event.target.value)} placeholder="np. 500 600 700" />
+                      <span className="label">{copy.phone}</span>
+                      <input className="field" value={customerPhone} onChange={(event) => setCustomerPhone(event.target.value)} placeholder={copy.phonePlaceholder} />
                     </label>
                   </div>
 
                   <div>
-                    <span className="label">Wariant oferty</span>
+                    <span className="label">{copy.offerMode}</span>
                     <div className="grid gap-2 sm:grid-cols-3">
-                      <OfferModeButton active={offerMode === "pv"} title="Samo PV" subtitle="Instalacja fotowoltaiczna" onClick={() => setOfferMode("pv")} />
-                      <OfferModeButton active={offerMode === "pv-storage"} title="PV + magazyn" subtitle="Instalacja z magazynem" onClick={() => setOfferMode("pv-storage")} />
-                      <OfferModeButton active={offerMode === "storage"} title="Sam magazyn" subtitle="Magazyn + falownik" onClick={() => setOfferMode("storage")} />
+                      <OfferModeButton active={offerMode === "pv"} title={copy.pvOnly} subtitle={copy.pvOnlySub} onClick={() => setOfferMode("pv")} />
+                      <OfferModeButton active={offerMode === "pv-storage"} title={copy.pvStorage} subtitle={copy.pvStorageSub} onClick={() => setOfferMode("pv-storage")} />
+                      <OfferModeButton active={offerMode === "storage"} title={copy.storageOnly} subtitle={copy.storageOnlySub} onClick={() => setOfferMode("storage")} />
                     </div>
                   </div>
 
+                  <label>
+                    <span className="label">{copy.vatRate}</span>
+                    <select className="field" value={vatRate} onChange={(event) => setVatRate(Number(event.target.value) as VatRate)}>
+                      <option value={8}>8%</option>
+                      <option value={23}>23%</option>
+                    </select>
+                  </label>
+
                   {offerMode !== "storage" ? (
                     <div>
-                      <span className="label">Liczba modułów JA Solar 500 W</span>
+                      <span className="label">{copy.panels}</span>
                       <div className="grid gap-2 sm:grid-cols-[auto_1fr_auto] sm:items-center">
                         <button type="button" className="btn-secondary h-11" onClick={() => setPanelCount((value) => clampPanelCount(value - 1))}>
                           <Minus className="h-4 w-4" aria-hidden="true" />
@@ -291,14 +434,14 @@ export default function CalculatorsPage() {
                           <Plus className="h-4 w-4" aria-hidden="true" />
                         </button>
                       </div>
-                      <p className="mt-2 text-sm font-semibold text-muted">{row.panelCount} modułów daje {formatNumber.format(row.kwp)} kWp.</p>
+                      <p className="mt-2 text-sm font-semibold text-muted">{copy.panelsHint(row.panelCount, formatNumber.format(row.kwp))}</p>
                     </div>
                   ) : null}
 
                   {offerMode === "pv-storage" ? (
                     <>
                       <div>
-                        <span className="label">Moc magazynu</span>
+                        <span className="label">{copy.storagePower}</span>
                         <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                           {packageChoices.map((item) => (
                             <button key={item.id} type="button" onClick={() => { setSelectedPackage(item.id); setStorageBrand(item.brands[0]); }} className={`min-h-20 rounded-lg border p-3 text-left transition ${selectedPackage === item.id ? "border-ink bg-ink text-white" : "border-line bg-[#f9fbfd] text-ink hover:border-ink"}`}>
@@ -309,7 +452,7 @@ export default function CalculatorsPage() {
                         </div>
                       </div>
                       <label>
-                        <span className="label">Marka magazynu</span>
+                        <span className="label">{copy.storageBrand}</span>
                         <select className="field" value={storageBrand} onChange={(event) => setStorageBrand(event.target.value)}>
                           {selectedPackageInfo.brands.map((brand) => <option key={brand} value={brand}>{brand}</option>)}
                         </select>
@@ -320,13 +463,13 @@ export default function CalculatorsPage() {
                   {offerMode === "storage" ? (
                     <div className="grid gap-3 sm:grid-cols-2">
                       <label>
-                        <span className="label">Magazyn energii</span>
+                        <span className="label">{copy.storageProduct}</span>
                         <select className="field" value={storageProductId} onChange={(event) => setStorageProductId(event.target.value)}>
                           {STORAGE_NET_PRICES.map((storage) => <option key={storage.id} value={storage.id}>{storage.label}</option>)}
                         </select>
                       </label>
                       <label>
-                        <span className="label">Moc falownika</span>
+                        <span className="label">{copy.inverterPower}</span>
                         <select className="field" value={inverterKw} onChange={(event) => setInverterKw(Number(event.target.value))}>
                           {INVERTER_NET_PRICES.map((item) => <option key={item.kw} value={item.kw}>{item.kw} kW</option>)}
                         </select>
@@ -337,55 +480,55 @@ export default function CalculatorsPage() {
               </section>
 
               <section className="app-card">
-                <h2 className="mb-4 text-base font-bold text-ink">Dodatki</h2>
+                <h2 className="mb-4 text-base font-bold text-ink">{copy.extras}</h2>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {offerMode !== "storage" ? (
                     <>
-                      <Toggle label="Montaż gruntowy" checked={groundMount} onChange={setGroundMount} />
-                      <Toggle label="Ekierki" checked={triangles} onChange={setTriangles} />
+                      <Toggle label={copy.groundMount} checked={groundMount} onChange={setGroundMount} />
+                      <Toggle label={copy.triangles} checked={triangles} onChange={setTriangles} />
                     </>
                   ) : null}
                   <label>
-                    <span className="label">Bojler</span>
+                    <span className="label">{copy.boiler}</span>
                     <select className="field" value={boiler} onChange={(event) => setBoiler(event.target.value as BoilerCapacity)}>
-                      <option value="none">Bez bojlera</option>
+                      <option value="none">{copy.boilerNone}</option>
                       <option value="80">Bojler 80L</option>
                       <option value="150">Bojler 150L</option>
                     </select>
                   </label>
                   {boiler !== "none" ? (
                     <label>
-                      <span className="label">Układ bojlera</span>
+                      <span className="label">{copy.boilerLayout}</span>
                       <select className="field" value={boilerLayout} onChange={(event) => setBoilerLayout(event.target.value as BoilerLayout)}>
-                        <option value="vertical">Pionowy</option>
-                        <option value="horizontal">Poziomy</option>
+                        <option value="vertical">{copy.vertical}</option>
+                        <option value="horizontal">{copy.horizontal}</option>
                       </select>
                     </label>
                   ) : null}
                   <label>
-                    <span className="label">System magazynowania deszczówki</span>
+                    <span className="label">{copy.rainwater}</span>
                     <select className="field" value={rainwater} onChange={(event) => setRainwater(event.target.value as RainwaterSystem)}>
-                      <option value="none">Bez systemu</option>
+                      <option value="none">{copy.rainwaterNone}</option>
                       <option value="above-2000">Naziemny 2000L</option>
                       <option value="underground-2000">Podziemny betonowy 2000L</option>
                     </select>
                   </label>
                   <Toggle label="Backup" checked={backup} onChange={setBackup} />
-                  <NumberField label="Kabel powyżej 8 m" value={extraCableMeters} min={0} onChange={setExtraCableMeters} />
-                  <NumberField label="Korekta ręczna" value={manualAdjustment} onChange={setManualAdjustment} />
+                  <NumberField label={copy.cable} value={extraCableMeters} min={0} onChange={setExtraCableMeters} />
+                  <NumberField label={copy.adjustment} value={manualAdjustment} onChange={setManualAdjustment} />
                 </div>
               </section>
 
               <section className="app-card">
-                <h2 className="mb-4 text-base font-bold text-ink">Finansowanie</h2>
+                <h2 className="mb-4 text-base font-bold text-ink">{copy.financing}</h2>
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <NumberField label="Dotacja / wpłata" value={subsidy} min={0} onChange={setSubsidy} />
-                  <NumberField label="Liczba miesięcy" value={loanMonths} min={1} onChange={setLoanMonths} />
-                  <NumberField label="Oprocentowanie roczne %" value={loanRate} step="0.1" min={0} onChange={setLoanRate} />
+                  <NumberField label={copy.subsidy} value={subsidy} min={0} onChange={setSubsidy} />
+                  <NumberField label={copy.months} value={loanMonths} min={1} onChange={setLoanMonths} />
+                  <NumberField label={copy.annualRate} value={loanRate} step="0.1" min={0} onChange={setLoanRate} />
                 </div>
                 <button type="button" onClick={printOffer} className="btn-primary mt-4">
                   <Printer className="h-4 w-4" aria-hidden="true" />
-Drukuj / zapisz PDF
+                  {copy.print}
                 </button>
               </section>
             </div>
@@ -413,26 +556,26 @@ Drukuj / zapisz PDF
         ) : (
           <section className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
             <div className="app-card">
-              <h2 className="mb-4 text-base font-bold text-ink">Dane klienta</h2>
+              <h2 className="mb-4 text-base font-bold text-ink">{copy.clientData}</h2>
               <div className="grid gap-3 sm:grid-cols-2">
-                <NumberField label="Rachunek miesięczny" value={bill} min={0} onChange={setBill} />
-                <NumberField label="Zużycie roczne kWh" value={annualConsumption} min={0} onChange={setAnnualConsumption} />
-                <NumberField label="Cena zakupu 1 kWh" value={energyPrice} step="0.01" min={0} onChange={setEnergyPrice} />
-                <NumberField label="Produkcja z 1 kWp" value={productionPerKw} min={0} onChange={setProductionPerKw} />
-                <NumberField label="Roczny wzrost ceny %" value={annualGrowth} min={0} onChange={setAnnualGrowth} />
+                <NumberField label={copy.monthlyBill} value={bill} min={0} onChange={setBill} />
+                <NumberField label={copy.annualConsumption} value={annualConsumption} min={0} onChange={setAnnualConsumption} />
+                <NumberField label={copy.energyPrice} value={energyPrice} step="0.01" min={0} onChange={setEnergyPrice} />
+                <NumberField label={copy.production} value={productionPerKw} min={0} onChange={setProductionPerKw} />
+                <NumberField label={copy.annualGrowth} value={annualGrowth} min={0} onChange={setAnnualGrowth} />
               </div>
               <p className="mt-4 rounded-md border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
-                Autokonsumpcja przyjęta do symulacji: {profitability.effectiveSelfConsumption}%.
+                {copy.selfConsumption(profitability.effectiveSelfConsumption)}
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <ResultTile icon={Zap} label="Produkcja roczna" value={`${formatNumber.format(profitability.annualProduction)} kWh`} tone="solar" />
-              <ResultTile icon={BatteryCharging} label="Autokonsumpcja" value={`${formatNumber.format(profitability.effectiveSelfConsumption)}%`} tone="leaf" />
-              <ResultTile icon={Banknote} label="Oszczędność roczna" value={formatMoney.format(profitability.annualSavings)} tone="sky" />
-              <ResultTile icon={Percent} label="Pokrycie rachunków" value={`${formatNumber.format(profitability.billCoverage)}%`} tone="leaf" />
+              <ResultTile icon={Zap} label={copy.annualProduction} value={`${formatNumber.format(profitability.annualProduction)} kWh`} tone="solar" />
+              <ResultTile icon={BatteryCharging} label={copy.selfConsumptionShort} value={`${formatNumber.format(profitability.effectiveSelfConsumption)}%`} tone="leaf" />
+              <ResultTile icon={Banknote} label={copy.annualSavings} value={formatMoney.format(profitability.annualSavings)} tone="sky" />
+              <ResultTile icon={Percent} label={copy.billCoverage} value={`${formatNumber.format(profitability.billCoverage)}%`} tone="leaf" />
               <div className="app-card sm:col-span-2">
-                <div className="text-sm font-semibold text-muted">Prognozowany koszt prądu przez 10 lat</div>
+                <div className="text-sm font-semibold text-muted">{copy.projectedCost}</div>
                 <div className="mt-2 text-3xl font-black text-ink">{formatMoney.format(profitability.cumulativeEnergySpend)}</div>
               </div>
             </div>

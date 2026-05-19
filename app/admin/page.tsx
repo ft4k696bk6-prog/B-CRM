@@ -12,6 +12,7 @@ import {
   FolderKanban,
   Inbox,
   ListChecks,
+  MousePointerClick,
   PhoneCall,
   RefreshCw,
   Search,
@@ -28,7 +29,8 @@ import { useLanguage } from "@/components/language-provider";
 import { endOfDay, escapeCsv, needsNextAction, startOfDay } from "@/lib/admin-leads";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { hasPermission } from "@/lib/permissions";
-import { canManageLeads, isManagerRole } from "@/lib/roles";
+import { canManageLeads, isManagerRole, isSystemAdminRole } from "@/lib/roles";
+import { isDemoScope } from "@/lib/scope";
 import { supabase } from "@/lib/supabase";
 import type { AdminLeadFilters, Lead, LeadStatus, Profile, SortOption } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
@@ -85,6 +87,7 @@ export default function AdminDashboardPage() {
   const canAssignLeads = canManageLeads(profile?.role);
   const canExportCurrentView = hasPermission(profile?.role, "data:export");
   const isEnglish = language === "en";
+  const canRunDemoTour = profile ? isDemoScope(profile.crm_environment) && isSystemAdminRole(profile.role) : false;
 
   async function loadSalespeople() {
     if (!profile) return;
@@ -313,6 +316,10 @@ export default function AdminDashboardPage() {
     setBusy(false);
   }
 
+  function startDemoTour() {
+    window.dispatchEvent(new Event("bcrm:demo-tour-start"));
+  }
+
   if (loading || !profile) return <LoadingScreen />;
 
   const dashboardCopy = isEnglish
@@ -406,6 +413,12 @@ export default function AdminDashboardPage() {
             }
             actions={
               <>
+              {canRunDemoTour ? (
+                <button type="button" onClick={startDemoTour} className="btn-primary">
+                  <MousePointerClick className="h-4 w-4" aria-hidden="true" />
+                  {isEnglish ? "Start demo" : "Uruchom demo"}
+                </button>
+              ) : null}
               {canExportCurrentView ? (
                 <button type="button" onClick={exportCurrentView} className="btn-secondary">
                   <FileDown className="h-4 w-4" aria-hidden="true" />

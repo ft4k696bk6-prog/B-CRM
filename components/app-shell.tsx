@@ -14,6 +14,7 @@ import {
   Landmark,
   LogOut,
   Menu,
+  MousePointerClick,
   PanelLeft,
   ReceiptText,
   RotateCcw,
@@ -109,7 +110,8 @@ const navigationLinks: NavigationLink[] = [
     labelKey: "navNewLead",
     groupKey: "sales",
     icon: UserPlus,
-    permissions: ["leads:create:own", "leads:create:pool"]
+    permissions: ["leads:create:own", "leads:create:pool"],
+    tourId: "tour-nav-new-lead"
   },
   {
     href: "/realizacja",
@@ -160,7 +162,7 @@ const navigationLinks: NavigationLink[] = [
     tourId: "tour-nav-installation"
   },
   { href: "/calendar", labelKey: "navCalendar", groupKey: "company", icon: CalendarDays, permissions: ["calendar:view"] },
-  { href: "/calculators", labelKey: "navCalculators", groupKey: "company", icon: Calculator, permissions: ["offers:calculate"] },
+  { href: "/calculators", labelKey: "navCalculators", groupKey: "company", icon: Calculator, permissions: ["offers:calculate"], tourId: "tour-nav-calculators" },
   { href: "/settings", labelKey: "navSettings", groupKey: "company", icon: Settings, permissions: ["settings:view"] },
   { href: "/admin/import", labelKey: "navImport", groupKey: "company", icon: FileUp, permissions: ["data:import"] },
   { href: "/admin/users", labelKey: "navUsers", groupKey: "company", icon: Landmark, permissions: ["users:manage"] }
@@ -195,6 +197,7 @@ export function AppShell({ profile, children }: AppShellProps) {
   const [shellNotice, setShellNotice] = useState<{ tone: "success" | "danger"; message: string } | null>(null);
   const homeHref = homePathForRole(profile.role);
   const roleLabel = language === "en" ? roleLabelsEn[profile.role] : ROLE_LABELS[profile.role];
+  const canRunDemoTour = isDemoScope(profile.crm_environment) && isSystemAdminRole(profile.role);
   const links = navigationLinks.filter((link) => {
     if (link.salesOnly && !isSalesRole(profile.role)) return false;
     if (link.hideWhenAnyPermission && hasAnyPermission(profile.role, link.hideWhenAnyPermission)) return false;
@@ -206,6 +209,11 @@ export function AppShell({ profile, children }: AppShellProps) {
   async function signOut() {
     await supabase.auth.signOut();
     router.replace("/login");
+  }
+
+  function startDemoTour() {
+    window.dispatchEvent(new Event("bcrm:demo-tour-start"));
+    setMobileOpen(false);
   }
 
   async function confirmReturnOpenLeads() {
@@ -327,6 +335,17 @@ export function AppShell({ profile, children }: AppShellProps) {
                 <span className="hidden sm:inline">{t("returnLeads")}</span>
               </button>
             ) : null}
+            {canRunDemoTour ? (
+              <button
+                type="button"
+                onClick={startDemoTour}
+                className="btn-secondary h-11 w-11 px-0 sm:w-auto sm:px-3"
+                title={language === "en" ? "Start guided demo" : "Uruchom samouczek"}
+              >
+                <MousePointerClick className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden sm:inline">{language === "en" ? "Demo tour" : "Samouczek"}</span>
+              </button>
+            ) : null}
             <div className="hidden md:block">
               <LanguageSwitcher />
             </div>
@@ -373,6 +392,12 @@ export function AppShell({ profile, children }: AppShellProps) {
             <div className="mb-3 md:hidden">
               <LanguageSwitcher />
             </div>
+            {canRunDemoTour ? (
+              <button type="button" onClick={startDemoTour} className="btn-primary mb-3 w-full">
+                <MousePointerClick className="h-4 w-4" aria-hidden="true" />
+                {language === "en" ? "Start guided demo" : "Uruchom samouczek"}
+              </button>
+            ) : null}
             <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-muted">
               <PanelLeft className="h-4 w-4" aria-hidden="true" />
               {t("menu")}
@@ -388,6 +413,12 @@ export function AppShell({ profile, children }: AppShellProps) {
             <PanelLeft className="h-4 w-4" aria-hidden="true" />
             {t("menu")}
           </div>
+          {canRunDemoTour ? (
+            <button type="button" onClick={startDemoTour} className="btn-primary mb-3 w-full">
+              <MousePointerClick className="h-4 w-4" aria-hidden="true" />
+              {language === "en" ? "Demo tour" : "Samouczek"}
+            </button>
+          ) : null}
           {renderNavigation()}
         </aside>
 
@@ -411,7 +442,7 @@ export function AppShell({ profile, children }: AppShellProps) {
         onConfirm={confirmReturnOpenLeads}
         onClose={() => setReturnConfirmOpen(false)}
       />
-      {isDemoScope(profile.crm_environment) && isSystemAdminRole(profile.role) ? (
+      {canRunDemoTour ? (
         <DemoTour profile={profile} />
       ) : null}
     </div>
