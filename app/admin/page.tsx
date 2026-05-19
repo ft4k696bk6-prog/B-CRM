@@ -378,46 +378,48 @@ export default function AdminDashboardPage() {
   return (
     <AppShell profile={profile}>
       <div className="grid gap-5">
-        <PageHeader
-          title={
-            isEnglish
-              ? profile.role === "menadzer"
-                ? "Manager dashboard"
-                : profile.role === "finance"
-                  ? "Finance dashboard"
-                  : profile.role === "viewer"
-                    ? "Viewer dashboard"
-                    : "Admin dashboard"
-              : `Panel ${
-                  profile.role === "menadzer"
-                    ? "menadżera"
-                    : profile.role === "finance"
-                      ? "finansowy"
-                      : profile.role === "viewer"
-                        ? "podglądu"
-                        : "admina"
-                }`
-          }
-          description={
-            isManager
-              ? dashboardCopy.managerDescription
-              : dashboardCopy.adminDescription
-          }
-          actions={
-            <>
-            {canExportCurrentView ? (
-              <button type="button" onClick={exportCurrentView} className="btn-secondary">
-                <FileDown className="h-4 w-4" aria-hidden="true" />
-                {dashboardCopy.exportCsv}
+        <div data-tour-id="tour-dashboard">
+          <PageHeader
+            title={
+              isEnglish
+                ? profile.role === "menadzer"
+                  ? "Manager dashboard"
+                  : profile.role === "finance"
+                    ? "Finance dashboard"
+                    : profile.role === "viewer"
+                      ? "Viewer dashboard"
+                      : "Admin dashboard"
+                : `Panel ${
+                    profile.role === "menadzer"
+                      ? "menadżera"
+                      : profile.role === "finance"
+                        ? "finansowy"
+                        : profile.role === "viewer"
+                          ? "podglądu"
+                          : "admina"
+                  }`
+            }
+            description={
+              isManager
+                ? dashboardCopy.managerDescription
+                : dashboardCopy.adminDescription
+            }
+            actions={
+              <>
+              {canExportCurrentView ? (
+                <button type="button" onClick={exportCurrentView} className="btn-secondary">
+                  <FileDown className="h-4 w-4" aria-hidden="true" />
+                  {dashboardCopy.exportCsv}
+                </button>
+              ) : null}
+              <button type="button" onClick={loadLeads} className="btn-secondary">
+                <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                {dashboardCopy.refresh}
               </button>
-            ) : null}
-            <button type="button" onClick={loadLeads} className="btn-secondary">
-              <RefreshCw className="h-4 w-4" aria-hidden="true" />
-              {dashboardCopy.refresh}
-            </button>
-            </>
-          }
-        />
+              </>
+            }
+          />
+        </div>
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <StatTile label={dashboardCopy.stats.all} value={stats.all} icon={Database} tone="sky" />

@@ -217,6 +217,10 @@ textarea:focus-visible {
   animation: demo-guide-loading 820ms ease-in-out infinite;
 }
 
+.demo-tour-arrow {
+  animation: demo-tour-arrow 1.1s ease-in-out infinite;
+}
+
 @keyframes demo-guide-loading {
   0% {
     transform: translateX(-100%);
@@ -233,6 +237,16 @@ textarea:focus-visible {
   }
   50% {
     transform: translateY(3px);
+  }
+}
+
+@keyframes demo-tour-arrow {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(5px);
   }
 }
 

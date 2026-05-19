@@ -5,30 +5,36 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import {
   BarChart3,
+  Banknote,
   Calculator,
   CalendarDays,
   FileUp,
   FolderKanban,
+  Hammer,
+  Landmark,
   LogOut,
   Menu,
   PanelLeft,
+  ReceiptText,
   RotateCcw,
   Settings,
+  Truck,
   UserPlus,
-  UsersRound,
+  Warehouse,
   X,
   type LucideIcon
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
+import { DemoTour } from "@/components/demo-tour";
 import { useLanguage } from "@/components/language-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Alert, ConfirmDialog } from "@/components/ui";
 import { hasAnyPermission } from "@/lib/permissions";
 import type { Permission } from "@/lib/permissions";
-import { homePathForRole, isSalesRole, ROLE_LABELS } from "@/lib/roles";
+import { homePathForRole, isSalesRole, isSystemAdminRole, ROLE_LABELS } from "@/lib/roles";
 import { isDemoScope } from "@/lib/scope";
 import { supabase } from "@/lib/supabase";
-import type { Profile } from "@/lib/types";
+import type { Profile, UserRole } from "@/lib/types";
 
 type AppShellProps = {
   profile: Profile;
@@ -42,16 +48,25 @@ type NavigationLink = {
     | "navTeamDashboard"
     | "navMyLeads"
     | "navOperations"
+    | "navSales"
+    | "navFinance"
+    | "navAccounting"
+    | "navEquipment"
+    | "navLogistics"
+    | "navInstallation"
     | "navNewLead"
     | "navCalendar"
     | "navCalculators"
     | "navSettings"
     | "navImport"
     | "navUsers";
+  groupKey: "main" | "sales" | "operations" | "company";
   icon: LucideIcon;
-  permissions: Permission[];
+  permissions?: Permission[];
+  allowedRoles?: UserRole[];
   hideWhenAnyPermission?: Permission[];
   salesOnly?: boolean;
+  tourId?: string;
 };
 
 const bulkReturnStatuses = [
@@ -64,28 +79,98 @@ const bulkReturnStatuses = [
 ];
 
 const navigationLinks: NavigationLink[] = [
-  { href: "/admin", labelKey: "navDashboard", icon: BarChart3, permissions: ["dashboard:view:all"] },
+  {
+    href: "/admin",
+    labelKey: "navDashboard",
+    groupKey: "main",
+    icon: BarChart3,
+    permissions: ["dashboard:view:all"],
+    tourId: "tour-nav-dashboard"
+  },
   {
     href: "/admin",
     labelKey: "navTeamDashboard",
+    groupKey: "main",
     icon: BarChart3,
     permissions: ["dashboard:view:team"],
-    hideWhenAnyPermission: ["dashboard:view:all"]
+    hideWhenAnyPermission: ["dashboard:view:all"],
+    tourId: "tour-nav-dashboard"
   },
   {
     href: "/sales",
     labelKey: "navMyLeads",
+    groupKey: "sales",
     icon: BarChart3,
     permissions: ["dashboard:view:own"],
     salesOnly: true
   },
-  { href: "/realizacja", labelKey: "navOperations", icon: FolderKanban, permissions: ["operations:view"] },
-  { href: "/leads/new", labelKey: "navNewLead", icon: UserPlus, permissions: ["leads:create:own", "leads:create:pool"] },
-  { href: "/calendar", labelKey: "navCalendar", icon: CalendarDays, permissions: ["calendar:view"] },
-  { href: "/calculators", labelKey: "navCalculators", icon: Calculator, permissions: ["offers:calculate"] },
-  { href: "/settings", labelKey: "navSettings", icon: Settings, permissions: ["settings:view"] },
-  { href: "/admin/import", labelKey: "navImport", icon: FileUp, permissions: ["data:import"] },
-  { href: "/admin/users", labelKey: "navUsers", icon: UsersRound, permissions: ["users:manage"] }
+  {
+    href: "/leads/new",
+    labelKey: "navNewLead",
+    groupKey: "sales",
+    icon: UserPlus,
+    permissions: ["leads:create:own", "leads:create:pool"]
+  },
+  {
+    href: "/realizacja",
+    labelKey: "navOperations",
+    groupKey: "operations",
+    icon: FolderKanban,
+    permissions: ["operations:view"],
+    tourId: "tour-nav-process"
+  },
+  {
+    href: "/finance",
+    labelKey: "navFinance",
+    groupKey: "operations",
+    icon: Banknote,
+    allowedRoles: ["owner", "admin", "finance"],
+    tourId: "tour-nav-finance"
+  },
+  {
+    href: "/accounting",
+    labelKey: "navAccounting",
+    groupKey: "operations",
+    icon: ReceiptText,
+    allowedRoles: ["owner", "admin", "ksiegowosc"],
+    tourId: "tour-nav-accounting"
+  },
+  {
+    href: "/equipment",
+    labelKey: "navEquipment",
+    groupKey: "operations",
+    icon: Warehouse,
+    allowedRoles: ["owner", "admin", "logistyk"],
+    tourId: "tour-nav-equipment"
+  },
+  {
+    href: "/logistics",
+    labelKey: "navLogistics",
+    groupKey: "operations",
+    icon: Truck,
+    allowedRoles: ["owner", "admin", "logistyk"],
+    tourId: "tour-nav-logistics"
+  },
+  {
+    href: "/installation",
+    labelKey: "navInstallation",
+    groupKey: "operations",
+    icon: Hammer,
+    allowedRoles: ["owner", "admin", "monter"],
+    tourId: "tour-nav-installation"
+  },
+  { href: "/calendar", labelKey: "navCalendar", groupKey: "company", icon: CalendarDays, permissions: ["calendar:view"] },
+  { href: "/calculators", labelKey: "navCalculators", groupKey: "company", icon: Calculator, permissions: ["offers:calculate"] },
+  { href: "/settings", labelKey: "navSettings", groupKey: "company", icon: Settings, permissions: ["settings:view"] },
+  { href: "/admin/import", labelKey: "navImport", groupKey: "company", icon: FileUp, permissions: ["data:import"] },
+  { href: "/admin/users", labelKey: "navUsers", groupKey: "company", icon: Landmark, permissions: ["users:manage"] }
+];
+
+const navigationGroups: Array<{ key: NavigationLink["groupKey"]; labelKey: "navGroupMain" | "navGroupSales" | "navGroupOperations" | "navGroupCompany" }> = [
+  { key: "main", labelKey: "navGroupMain" },
+  { key: "sales", labelKey: "navGroupSales" },
+  { key: "operations", labelKey: "navGroupOperations" },
+  { key: "company", labelKey: "navGroupCompany" }
 ];
 
 const roleLabelsEn: Record<Profile["role"], string> = {
@@ -113,7 +198,9 @@ export function AppShell({ profile, children }: AppShellProps) {
   const links = navigationLinks.filter((link) => {
     if (link.salesOnly && !isSalesRole(profile.role)) return false;
     if (link.hideWhenAnyPermission && hasAnyPermission(profile.role, link.hideWhenAnyPermission)) return false;
-    return hasAnyPermission(profile.role, link.permissions);
+    if (link.allowedRoles && !link.allowedRoles.includes(profile.role) && !isSystemAdminRole(profile.role)) return false;
+    if (link.permissions) return hasAnyPermission(profile.role, link.permissions);
+    return true;
   });
 
   async function signOut() {
@@ -154,25 +241,38 @@ export function AppShell({ profile, children }: AppShellProps) {
 
   function renderNavigation(closeOnClick = false) {
     return (
-      <nav className="grid gap-1">
-        {links.map((link) => {
-          const Icon = link.icon;
-          const active = pathname === link.href;
+      <nav className="grid gap-4">
+        {navigationGroups.map((group) => {
+          const groupLinks = links.filter((link) => link.groupKey === group.key);
+          if (groupLinks.length === 0) return null;
 
           return (
-            <Link
-              key={`${link.href}-${link.labelKey}`}
-              href={link.href}
-              onClick={() => closeOnClick && setMobileOpen(false)}
-              className={`flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-bold transition ${
-                active
-                  ? "bg-ink text-white shadow-sm"
-                  : "text-muted hover:bg-[#eef3f8] hover:text-ink"
-              }`}
-            >
-              <Icon className="h-4 w-4" aria-hidden="true" />
-              {t(link.labelKey)}
-            </Link>
+            <div key={group.key} className="grid gap-1">
+              <div className="px-2 text-[11px] font-black uppercase tracking-wide text-muted">
+                {t(group.labelKey)}
+              </div>
+              {groupLinks.map((link) => {
+                const Icon = link.icon;
+                const active = pathname === link.href;
+
+                return (
+                  <Link
+                    key={`${link.href}-${link.labelKey}`}
+                    href={link.href}
+                    data-tour-id={link.tourId}
+                    onClick={() => closeOnClick && setMobileOpen(false)}
+                    className={`flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-bold transition ${
+                      active
+                        ? "bg-ink text-white shadow-sm"
+                        : "text-muted hover:bg-[#eef3f8] hover:text-ink"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" aria-hidden="true" />
+                    {t(link.labelKey)}
+                  </Link>
+                );
+              })}
+            </div>
           );
         })}
       </nav>
@@ -311,6 +411,9 @@ export function AppShell({ profile, children }: AppShellProps) {
         onConfirm={confirmReturnOpenLeads}
         onClose={() => setReturnConfirmOpen(false)}
       />
+      {isDemoScope(profile.crm_environment) && isSystemAdminRole(profile.role) ? (
+        <DemoTour profile={profile} />
+      ) : null}
     </div>
   );
 }

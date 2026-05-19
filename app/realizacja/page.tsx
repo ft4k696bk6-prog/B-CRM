@@ -1,61 +1,43 @@
 "use client";
 
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
-  ArrowDownUp,
   BadgeCheck,
   Calculator,
   ChevronDown,
-  CheckCircle2,
   ClipboardCheck,
-  Download,
   Eye,
-  FileDigit,
   FileSignature,
   FolderKanban,
   Hammer,
-  PackageCheck,
-  Play,
-  ReceiptText,
-  Send,
   Sparkles,
   Truck,
   Upload,
-  UsersRound,
-  X
+  UsersRound
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { useLanguage } from "@/components/language-provider";
 import { LoadingScreen } from "@/components/loading-screen";
 import { Alert, EmptyState, ModalShell } from "@/components/ui";
 import {
-  annexChangeOptions,
   contractFieldLabels,
-  creditFieldLabels,
   demoContractData,
-  demoCreditData,
   ksefDisclaimer,
   type DemoCustomerRecord
 } from "@/lib/demo-documents";
 import type { AppLanguage } from "@/lib/i18n";
-import { downloadAnnexPdf, downloadInvoicePdf, type AnnexValues } from "@/lib/pdf-documents";
 import { canUseOperations, normalizeRole } from "@/lib/roles";
+import {
+  readSelectedProcessId,
+  saveSelectedProcessId,
+  selectedProcessStorageKeyFor
+} from "@/lib/process-workspace";
 import { isDemoScope } from "@/lib/scope";
 import { supabase } from "@/lib/supabase";
 import type { Lead, Profile, UserRole } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
 
 type WorkflowStatus = "pending" | "active" | "done";
-type KsefAction = "prepare_accounting_package" | "send_ksef_invoice";
-type KsefModal = {
-  mode: "demo" | "live" | "error";
-  sent: boolean;
-  title: string;
-  message: string;
-  status?: number;
-  payload: unknown;
-  response?: string;
-};
 
 const workflowSteps = [
   { key: "sales", ownerRole: "handlowiec", icon: FileSignature },
@@ -80,16 +62,6 @@ type ProcessClient = {
   ownerName: string | null;
   ownerRole: UserRole | null;
   isDemo?: boolean;
-};
-
-type DemoGuideStep = {
-  key: string;
-  role: UserRole;
-  title: string;
-  problem: string;
-  crmAction: string;
-  effect: string;
-  target: string;
 };
 
 const workflowStorageKeyPrefix = "bcrm-process-workflows";
@@ -177,46 +149,6 @@ const contractFieldLabelsByLanguage: Record<AppLanguage, Record<keyof DemoCustom
     creditInstallment: "Credit installment",
     montageDate: "Installation date",
     warehouseNote: "Operations note"
-  }
-};
-
-const creditFieldLabelsByLanguage: Record<AppLanguage, Record<keyof typeof demoCreditData, string>> = {
-  pl: creditFieldLabels,
-  en: {
-    bank: "Bank",
-    loanAmount: "Loan amount",
-    ownPayment: "Own payment",
-    installment: "Installment",
-    period: "Term",
-    decision: "Decision",
-    scoring: "Scoring"
-  }
-};
-
-const annexChangeLabels: Record<string, Record<AppLanguage, string>> = {
-  "Zmiana liczby paneli": {
-    pl: "Zmiana liczby paneli",
-    en: "Panel count change"
-  },
-  "Zmiana mocy instalacji": {
-    pl: "Zmiana mocy instalacji",
-    en: "System power change"
-  },
-  "Zmiana ceny": {
-    pl: "Zmiana ceny",
-    en: "Price change"
-  },
-  "Zmiana falownika": {
-    pl: "Zmiana falownika",
-    en: "Inverter change"
-  },
-  "Zmiana finansowania": {
-    pl: "Zmiana finansowania",
-    en: "Financing change"
-  },
-  "Zmiana terminu montażu": {
-    pl: "Zmiana terminu montażu",
-    en: "Installation date change"
   }
 };
 
@@ -529,18 +461,6 @@ const realizationCopy = {
 
 type RealizationCopy = (typeof realizationCopy)[AppLanguage];
 
-const guideRoleToneClasses: Record<UserRole, string> = {
-  owner: "border-ink/15 bg-ink text-white",
-  admin: "border-sky/20 bg-sky/10 text-sky",
-  menadzer: "border-leaf/20 bg-leaf/10 text-leaf",
-  handlowiec: "border-solar/25 bg-solar/10 text-[#8a5a00]",
-  finance: "border-sky/20 bg-sky/10 text-sky",
-  viewer: "border-line bg-white text-muted",
-  ksiegowosc: "border-leaf/20 bg-leaf/10 text-leaf",
-  logistyk: "border-warn/25 bg-warn/10 text-warn",
-  monter: "border-danger/20 bg-danger/10 text-danger"
-};
-
 function statusClasses(status: WorkflowStatus) {
   if (status === "done") return "border-leaf/25 bg-leaf/10 text-leaf";
   if (status === "active") return "border-sky/25 bg-sky/10 text-sky";
@@ -681,171 +601,6 @@ function demoProcessClient(): ProcessClient {
   };
 }
 
-function contractDataFromProcess(client: ProcessClient): DemoCustomerRecord {
-  return {
-    ...demoContractData,
-    contractNumber: client.contractNumber || demoContractData.contractNumber,
-    clientName: client.fullName || demoContractData.clientName,
-    phone: client.phone || demoContractData.phone,
-    sellerName: client.ownerName || demoContractData.sellerName
-  };
-}
-
-function buildDemoGuideSteps(copy: RealizationCopy, language: AppLanguage): DemoGuideStep[] {
-  const steps: DemoGuideStep[] = language === "en" ? [
-    {
-      key: "sales-pdf",
-      role: "handlowiec",
-      title: "Sales adds the contract",
-      problem:
-        "Sales should not retype client, equipment, and pricing data from paper into several CRM places.",
-      crmAction:
-        "CRM accepts the contract PDF, shows quick autofill, and fills the operations form.",
-      effect:
-        "Client data, contract number, and installation parameters are ready for the next departments.",
-      target: "[data-guide-target=contract-data]"
-    },
-    {
-      key: "manager-check",
-      role: "menadzer",
-      title: "Manager checks completeness",
-      problem:
-        "Without one process, a case can move forward without photos, installation address, or contract number.",
-      crmAction:
-        "The manager sees the process stage, owner, required fields, and can mark the review as complete.",
-      effect:
-        "Accounting and operations receive only cases that are ready to execute.",
-      target: "[data-guide-target=workflow-manager]"
-    },
-    {
-      key: "finance",
-      role: "finance",
-      title: "Finance reviews financing",
-      problem:
-        "Installments, own payment, and bank decisions often live outside CRM and lose client context.",
-      crmAction:
-        "CRM shows financing with client and contract data without typing the same details again.",
-      effect:
-        "Finance gets a fast view of decision, amount, and installment before settlement continues.",
-      target: "[data-guide-target=finance-panel]"
-    },
-    {
-      key: "accounting",
-      role: "ksiegowosc",
-      title: "Accounting prepares the invoice",
-      problem:
-        "Accounting needs contract data but should not hunt for it in email threads and attachments.",
-      crmAction:
-        "CRM builds the accounting package and shows the KSeF payload in demo mode without production submission.",
-      effect:
-        "Invoice and annex use the same data approved in the process.",
-      target: "[data-guide-target=accounting-panel]"
-    },
-    {
-      key: "logistics",
-      role: "logistyk",
-      title: "Logistics sees contract equipment",
-      problem:
-        "Warehouse needs to know what to order and reserve, but only after accounting approval.",
-      crmAction:
-        "CRM passes system power, panels, inverter, and installation date. PZ is planned and WZ is reserved for installation day.",
-      effect:
-        "After installation, confirming the date is enough for the final WZ to use the correct goods issue day.",
-      target: "[data-guide-target=workflow-logistics]"
-    },
-    {
-      key: "installer",
-      role: "monter",
-      title: "Installer closes operations",
-      problem:
-        "The field team needs simple data: address, date, specification, and warehouse notes.",
-      crmAction:
-        "CRM guides the team through the ready record and connects installation with final documents.",
-      effect:
-        "The process ends with the final invoice and WZ dated on the installation day.",
-      target: "[data-guide-target=workflow-installer]"
-    }
-  ] : [
-    {
-      key: "sales-pdf",
-      role: "handlowiec",
-      title: "Handlowiec dodaje umowę",
-      problem:
-        "Handlowiec nie powinien przepisywać klienta, sprzętu i kwot z papieru do kilku miejsc w CRM.",
-      crmAction:
-        "CRM przyjmuje PDF umowy, pokazuje szybkie autouzupełnianie i podstawia dane do formularza realizacji.",
-      effect:
-        "Dane klienta, numer umowy i parametry instalacji są gotowe dla następnych działów.",
-      target: "[data-guide-target=contract-data]"
-    },
-    {
-      key: "manager-check",
-      role: "menadzer",
-      title: "Menadżer weryfikuje komplet",
-      problem:
-        "Bez jednego procesu łatwo puścić dalej umowę bez zdjęć, adresu montażu albo numeru umowy.",
-      crmAction:
-        "Menadżer widzi etap procesu, opiekuna, komplet pól i może oznaczyć swoją akceptację.",
-      effect:
-        "Księgowość i operacje dostają tylko sprawy gotowe do realizacji.",
-      target: "[data-guide-target=workflow-manager]"
-    },
-    {
-      key: "finance",
-      role: "finance",
-      title: "Finanse sprawdzają finansowanie",
-      problem:
-        "Raty, wpłata własna i decyzja banku często żyją poza CRM i gubią kontekst klienta.",
-      crmAction:
-        "CRM pokazuje finansowanie z danymi klienta i umowy, bez ponownego wpisywania tych samych informacji.",
-      effect:
-        "Dział finansowy ma szybki obraz decyzji, kwoty i raty przed dalszym rozliczeniem.",
-      target: "[data-guide-target=finance-panel]"
-    },
-    {
-      key: "accounting",
-      role: "ksiegowosc",
-      title: "Księgowość przygotowuje fakturę",
-      problem:
-        "Księgowość potrzebuje danych z umowy, ale nie powinna szukać ich w mailach i załącznikach.",
-      crmAction:
-        "CRM buduje paczkę księgową i pokazuje payload KSeF w trybie demo bez wysyłania danych na produkcję.",
-      effect:
-        "Faktura i aneks powstają z tych samych danych, które zatwierdził proces.",
-      target: "[data-guide-target=accounting-panel]"
-    },
-    {
-      key: "logistics",
-      role: "logistyk",
-      title: "Logistyka widzi sprzęt z umowy",
-      problem:
-        "Magazyn musi wiedzieć, co zamówić i zarezerwować, ale dopiero po akceptacji księgowości.",
-      crmAction:
-        "CRM przekazuje moc, panele, falownik i termin montażu. PZ jest planowane, a WZ rezerwowane do dnia montażu.",
-      effect:
-        "Po montażu wystarczy potwierdzić datę, a finalne WZ ma właściwy dzień wyjścia towaru.",
-      target: "[data-guide-target=workflow-logistics]"
-    },
-    {
-      key: "installer",
-      role: "monter",
-      title: "Monter zamyka realizację",
-      problem:
-        "Ekipa terenowa potrzebuje prostych danych: adres, termin, specyfikacja i uwagi magazynu.",
-      crmAction:
-        "CRM prowadzi ekipę po gotowym rekordzie i spina montaż z dokumentami końcowymi.",
-      effect:
-        "Proces kończy się finalną fakturą i WZ z datą wykonania montażu.",
-      target: "[data-guide-target=workflow-installer]"
-    }
-  ];
-
-  return steps.map((step, index, allSteps) => ({
-    ...step,
-    title: `${copy.demoGuide.step} ${index + 1}/${allSteps.length}: ${step.title}`
-  }));
-}
-
 function formatProcessDate(value: string | null, language: AppLanguage) {
   if (!value) return "—";
 
@@ -855,67 +610,12 @@ function formatProcessDate(value: string | null, language: AppLanguage) {
   }).format(new Date(value));
 }
 
-function annexChangeLabel(option: string, language: AppLanguage) {
-  return annexChangeLabels[option]?.[language] || option;
-}
-
 function canControlStep(role: UserRole, ownerRole: UserRole) {
   return role === "owner" || role === "admin" || role === ownerRole;
 }
 
-function canUseAccountingTools(role: UserRole) {
-  return role === "owner" || role === "admin" || role === "ksiegowosc";
-}
-
-function annexValuesFromContract(record: DemoCustomerRecord): AnnexValues {
-  return {
-    panelsCount: record.panelsCount,
-    installationPowerKw: record.installationPowerKw,
-    grossPrice: record.grossPrice,
-    financing: record.financing
-  };
-}
-
 function isContractReady(record: DemoCustomerRecord) {
   return Boolean(record.contractNumber && record.clientName && record.address && record.grossPrice);
-}
-
-function isDemoAccount(email?: string | null) {
-  return Boolean(email?.toLowerCase().startsWith("demo") && email.toLowerCase().endsWith("@example.com"));
-}
-
-function buildKsefPayload(action: KsefAction, contract: DemoCustomerRecord, requestedBy: string) {
-  return {
-    action,
-    source: "B-CRM",
-    generatedAt: new Date().toISOString(),
-    requestedBy,
-    invoice: {
-      contractNumber: contract.contractNumber || "",
-      sellerName: contract.companyName || "",
-      sellerNip: contract.companyNip || "",
-      buyerName: contract.clientName || "",
-      buyerAddress: [contract.address, contract.postalCode, contract.city].filter(Boolean).join(", "),
-      netAmount: contract.netPrice || "",
-      grossAmount: contract.grossPrice || "",
-      service: "Instalacja OZE wraz z montażem"
-    }
-  };
-}
-
-function buildDemoKsefModal(
-  action: KsefAction,
-  contract: DemoCustomerRecord,
-  requestedBy: string,
-  copy: RealizationCopy
-): KsefModal {
-  return {
-    mode: "demo",
-    sent: false,
-    title: action === "send_ksef_invoice" ? copy.ksefDemoSendTitle : copy.ksefDemoPackageTitle,
-    message: copy.ksefDemoMessage,
-    payload: buildKsefPayload(action, contract, requestedBy)
-  };
 }
 
 function ContractPreview({
@@ -995,136 +695,11 @@ function PreviewField({ label, value }: { label: string; value: string }) {
   );
 }
 
-function DemoProcessGuidePanel({
-  copy,
-  currentStep,
-  stepIndex,
-  stepCount,
-  open,
-  canContinue,
-  autofilling,
-  contract,
-  onStart,
-  onFinish
-}: {
-  copy: RealizationCopy;
-  currentStep: DemoGuideStep;
-  stepIndex: number;
-  stepCount: number;
-  open: boolean;
-  canContinue: boolean;
-  autofilling: boolean;
-  contract: DemoCustomerRecord;
-  onStart: () => void;
-  onFinish: () => void;
-}) {
-  useEffect(() => {
-    if (!open) return;
-
-    const timer = window.setTimeout(() => {
-      const element = document.querySelector(currentStep.target);
-      element?.scrollIntoView({ block: "center", behavior: "smooth" });
-    }, 160);
-
-    return () => window.clearTimeout(timer);
-  }, [currentStep.target, open]);
-
-  return (
-    <section className="app-card relative" data-guide-target="tutorial-launcher">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-        <div className="min-w-0">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-md border border-leaf/20 bg-leaf/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-leaf">
-            <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-            {copy.demoGuide.eyebrow}
-          </div>
-          <h2 className="text-lg font-black text-ink">{copy.demoGuide.title}</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">{copy.demoGuide.description}</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {!open ? (
-            <button type="button" onClick={onStart} className="btn-primary">
-              <Play className="h-4 w-4" aria-hidden="true" />
-              {copy.demoGuide.start}
-            </button>
-          ) : null}
-        </div>
-      </div>
-
-      {open ? (
-        <div className="fixed inset-0 z-50 pointer-events-none">
-          <aside className="pointer-events-auto absolute inset-x-3 bottom-4 z-[61] sm:inset-x-auto sm:right-6 sm:top-1/2 sm:bottom-auto sm:w-[390px] sm:-translate-y-1/2">
-            <div className="rounded-lg border border-white/70 bg-white/75 p-4 shadow-soft backdrop-blur-md">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-2">
-                  <span className={`rounded-md border px-2 py-1 text-xs font-bold ${guideRoleToneClasses[currentStep.role]}`}>
-                    {copy.roles[currentStep.role]}
-                  </span>
-                  <span className="text-xs font-bold text-muted">
-                    {stepIndex + 1}/{stepCount}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={onFinish}
-                  className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-md border border-line bg-white/80 text-muted transition hover:border-ink hover:text-ink"
-                  aria-label={copy.demoGuide.finish}
-                  title={copy.demoGuide.finish}
-                >
-                  <X className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </div>
-              <h3 className="text-base font-black text-ink">{currentStep.title}</h3>
-              {autofilling ? (
-                <div className="mt-3 rounded-lg border border-sky/20 bg-sky/10 p-3">
-                  <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-wide text-sky">
-                    <FileSignature className="h-3.5 w-3.5" aria-hidden="true" />
-                    {contract.contractNumber}
-                  </div>
-                  <div className="overflow-hidden rounded-full bg-white/70">
-                    <div className="h-2 w-2/3 rounded-full bg-sky demo-guide-loading" />
-                  </div>
-                </div>
-              ) : null}
-              <div className="mt-4 grid gap-3">
-                <GuidePoint label={copy.demoGuide.problem} value={currentStep.problem} />
-                <GuidePoint label={copy.demoGuide.crmAction} value={currentStep.crmAction} />
-                <GuidePoint label={copy.demoGuide.effect} value={currentStep.effect} />
-              </div>
-              <div className="mt-3 rounded-lg border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
-                {copy.demoGuide.note}
-              </div>
-              <div className="mt-3 flex items-center gap-3 rounded-lg border border-ink/10 bg-white/55 p-3 text-sm font-bold text-ink">
-                <ArrowDownUp className="h-5 w-5 flex-none text-sky demo-guide-scroll-cue" aria-hidden="true" />
-                <div>
-                  <div>{canContinue ? copy.demoGuide.scrollReady : copy.demoGuide.scrollWaiting}</div>
-                  <div className="mt-1 text-xs font-semibold text-muted">
-                    {stepIndex >= stepCount - 1 ? copy.demoGuide.finish : `${stepIndex + 1}/${stepCount}`}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </aside>
-        </div>
-      ) : null}
-    </section>
-  );
-}
-
-function GuidePoint({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border border-white/70 bg-white/55 p-3 backdrop-blur">
-      <div className="text-xs font-bold uppercase tracking-wide text-muted">{label}</div>
-      <p className="mt-1 text-sm leading-6 text-ink">{value}</p>
-    </div>
-  );
-}
-
 export default function RealizacjaPage() {
   const { language } = useLanguage();
   const copy = realizationCopy[language];
   const fieldLabels = contractFieldLabelsByLanguage[language];
-  const creditLabels = creditFieldLabelsByLanguage[language];
-  const { loading, profile, session } = useAuth([
+  const { loading, profile } = useAuth([
     "owner",
     "admin",
     "menadzer",
@@ -1137,40 +712,15 @@ export default function RealizacjaPage() {
   const [previewRecord, setPreviewRecord] = useState<DemoCustomerRecord | null>(null);
   const [previewTitle, setPreviewTitle] = useState<string>(copy.previewTitle);
   const [contractFileName, setContractFileName] = useState("");
-  const [creditLoaded, setCreditLoaded] = useState(false);
   const [processLeads, setProcessLeads] = useState<Lead[]>([]);
   const [processLoading, setProcessLoading] = useState(false);
   const [processError, setProcessError] = useState("");
   const [selectedProcessId, setSelectedProcessId] = useState(demoProcessClient().id);
   const [workflowByProcess, setWorkflowByProcess] = useState<Record<string, WorkflowMap>>({});
-  const [ksefReady, setKsefReady] = useState(false);
-  const [invoiceReady, setInvoiceReady] = useState(false);
-  const [annexMode, setAnnexMode] = useState<"manual" | "automatic">("automatic");
-  const [selectedChanges, setSelectedChanges] = useState<string[]>([
-    "Zmiana liczby paneli",
-    "Zmiana finansowania"
-  ]);
-  const [annexValues, setAnnexValues] = useState<AnnexValues>(annexValuesFromContract(demoContractData));
-  const [documentBusy, setDocumentBusy] = useState<"annex" | "invoice" | null>(null);
-  const [integrationBusy, setIntegrationBusy] = useState<KsefAction | null>(null);
-  const [integrationModal, setIntegrationModal] = useState<KsefModal | null>(null);
   const [documentMessage, setDocumentMessage] = useState("");
-  const [demoGuideOpen, setDemoGuideOpen] = useState(false);
-  const [demoGuideStepIndex, setDemoGuideStepIndex] = useState(0);
-  const [demoGuideCanContinue, setDemoGuideCanContinue] = useState(false);
-  const [demoGuideAutofilling, setDemoGuideAutofilling] = useState(false);
   const [showProcessList, setShowProcessList] = useState(false);
   const [showContractData, setShowContractData] = useState(false);
   const contractInputRef = useRef<HTMLInputElement | null>(null);
-  const demoGuideScrollLockRef = useRef(false);
-  const demoGuideWheelDeltaRef = useRef(0);
-  const demoGuideTouchStartYRef = useRef<number | null>(null);
-  const demoGuideOpenRef = useRef(false);
-  const demoGuideCanContinueRef = useRef(false);
-  const demoGuideStepIndexRef = useRef(0);
-
-  const demoGuideSteps = useMemo(() => buildDemoGuideSteps(copy, language), [copy, language]);
-  const activeDemoGuideStep = demoGuideSteps[demoGuideStepIndex] || demoGuideSteps[0];
   const processClients = useMemo<ProcessClient[]>(() => {
     const clients = processLeads.map(leadToProcessClient);
     if (clients.length > 0) return clients;
@@ -1181,129 +731,16 @@ export default function RealizacjaPage() {
   const selectedWorkflow = workflowForProcess(selectedProcess, workflowByProcess);
   const completion = hasProcessClients ? workflowCompletion(selectedWorkflow) : 0;
   const currentRoleLabel = profile ? copy.roles[profile.role] : "";
-  const accountingToolsAllowed = profile ? canUseAccountingTools(profile.role) : false;
   const contractReady = isContractReady(contractData);
-
-  demoGuideOpenRef.current = demoGuideOpen;
-  demoGuideCanContinueRef.current = demoGuideCanContinue;
-  demoGuideStepIndexRef.current = demoGuideStepIndex;
-
-  const finishDemoGuide = useCallback(() => {
-    setDemoGuideOpen(false);
-    setDemoGuideAutofilling(false);
-    setDemoGuideCanContinue(false);
-    demoGuideScrollLockRef.current = false;
-    demoGuideWheelDeltaRef.current = 0;
-    demoGuideTouchStartYRef.current = null;
-  }, []);
-
-  const advanceDemoGuideFromGesture = useCallback(() => {
-    if (!demoGuideOpenRef.current || demoGuideScrollLockRef.current) return;
-
-    demoGuideWheelDeltaRef.current = 0;
-    demoGuideTouchStartYRef.current = null;
-
-    if (!demoGuideCanContinueRef.current) return;
-
-    demoGuideScrollLockRef.current = true;
-
-    if (demoGuideStepIndexRef.current >= demoGuideSteps.length - 1) {
-      finishDemoGuide();
-    } else {
-      setDemoGuideStepIndex((current) => Math.min(current + 1, demoGuideSteps.length - 1));
-    }
-
-    window.setTimeout(() => {
-      demoGuideScrollLockRef.current = false;
-    }, 700);
-  }, [demoGuideSteps.length, finishDemoGuide]);
 
   useEffect(() => {
     if (!profile) return;
     setWorkflowByProcess(readStoredWorkflows(workflowStorageKeyFor(profile)));
+    const storedProcessId = readSelectedProcessId(selectedProcessStorageKeyFor(profile));
+    if (storedProcessId) setSelectedProcessId(storedProcessId);
     void loadProcesses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.id, profile?.role, profile?.crm_environment]);
-
-  useEffect(() => {
-    if (!demoGuideOpen || !activeDemoGuideStep) return;
-    setDemoGuideCanContinue(false);
-
-    if (activeDemoGuideStep.key === "sales-pdf") {
-      setDemoGuideAutofilling(true);
-      const timer = window.setTimeout(() => {
-        const next = contractDataFromProcess(selectedProcess);
-        setContractData(next);
-        setAnnexValues(annexValuesFromContract(next));
-        setContractFileName(`${next.contractNumber || demoContractData.contractNumber}.pdf`);
-        setDocumentMessage(copy.demoGuide.autofill);
-        setDemoGuideAutofilling(false);
-        window.setTimeout(() => setDemoGuideCanContinue(true), 650);
-      }, 650);
-
-      return () => window.clearTimeout(timer);
-    }
-
-    if (activeDemoGuideStep.key === "finance") {
-      setCreditLoaded(true);
-    }
-
-    if (activeDemoGuideStep.key === "accounting") {
-      setInvoiceReady(true);
-    }
-
-    if (activeDemoGuideStep.key === "logistics") {
-      setKsefReady(true);
-    }
-
-    const timer = window.setTimeout(() => setDemoGuideCanContinue(true), 1800);
-    return () => window.clearTimeout(timer);
-  }, [activeDemoGuideStep, copy.demoGuide.autofill, demoGuideOpen, selectedProcess]);
-
-  useEffect(() => {
-    if (!demoGuideOpen) return;
-
-    const handleWheel = (event: WheelEvent) => {
-      if (event.cancelable) event.preventDefault();
-
-      if (event.deltaY <= 0) {
-        demoGuideWheelDeltaRef.current = 0;
-        return;
-      }
-
-      demoGuideWheelDeltaRef.current += event.deltaY;
-      if (demoGuideWheelDeltaRef.current < 80) return;
-      advanceDemoGuideFromGesture();
-    };
-
-    const handleTouchStart = (event: TouchEvent) => {
-      demoGuideTouchStartYRef.current = event.touches[0]?.clientY ?? null;
-    };
-
-    const handleTouchMove = (event: TouchEvent) => {
-      if (event.cancelable) event.preventDefault();
-
-      const touchStartY = demoGuideTouchStartYRef.current;
-      const currentY = event.touches[0]?.clientY ?? touchStartY;
-      if (touchStartY === null || currentY === null) return;
-
-      const deltaY = touchStartY - currentY;
-      if (deltaY <= 0) return;
-      if (deltaY < 64) return;
-
-      advanceDemoGuideFromGesture();
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: false, capture: true });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true, capture: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: false, capture: true });
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel, { capture: true });
-      window.removeEventListener("touchstart", handleTouchStart, { capture: true });
-      window.removeEventListener("touchmove", handleTouchMove, { capture: true });
-    };
-  }, [advanceDemoGuideFromGesture, demoGuideOpen]);
 
   if (loading || !profile) return <LoadingScreen />;
   if (!canUseOperations(profile.role)) return <LoadingScreen />;
@@ -1335,9 +772,12 @@ export default function RealizacjaPage() {
       const nextLeads = (data || []) as Lead[];
       setProcessLeads(nextLeads);
       if (nextLeads.length > 0) {
-        setSelectedProcessId((current) =>
-          nextLeads.some((lead) => lead.id === current) ? current : nextLeads[0].id
-        );
+        setSelectedProcessId((current) => {
+          if (nextLeads.some((lead) => lead.id === current)) return current;
+          const nextId = nextLeads[0].id;
+          saveSelectedProcessId(selectedProcessStorageKeyFor(profile), nextId);
+          return nextId;
+        });
       }
     }
 
@@ -1347,10 +787,6 @@ export default function RealizacjaPage() {
   function updateContractField(key: keyof DemoCustomerRecord, value: string) {
     const next = { ...contractData, [key]: value };
     setContractData(next);
-
-    if (key === "panelsCount" || key === "installationPowerKw" || key === "grossPrice" || key === "financing") {
-      setAnnexValues(annexValuesFromContract(next));
-    }
   }
 
   function showDemoContract() {
@@ -1361,7 +797,6 @@ export default function RealizacjaPage() {
 
   function fillDemoContract() {
     setContractData(demoContractData);
-    setAnnexValues(annexValuesFromContract(demoContractData));
     setPreviewRecord(demoContractData);
     setPreviewTitle(copy.demoContractTitle);
     setDocumentMessage(copy.demoInserted);
@@ -1381,22 +816,7 @@ export default function RealizacjaPage() {
       sellerName: selectedProcess.ownerName || contractData.sellerName
     };
     setContractData(next);
-    setAnnexValues(annexValuesFromContract(next));
     setDocumentMessage(copy.selectedClientInserted);
-  }
-
-  function startDemoGuide() {
-    const next = contractDataFromProcess(selectedProcess);
-    setContractData(next);
-    setAnnexValues(annexValuesFromContract(next));
-    setDemoGuideStepIndex(0);
-    setDemoGuideCanContinue(false);
-    demoGuideScrollLockRef.current = false;
-    demoGuideWheelDeltaRef.current = 0;
-    demoGuideTouchStartYRef.current = null;
-    setShowProcessList(true);
-    setShowContractData(true);
-    setDemoGuideOpen(true);
   }
 
   function addContractFile(event: ChangeEvent<HTMLInputElement>) {
@@ -1405,12 +825,6 @@ export default function RealizacjaPage() {
     setContractFileName(file.name);
     setDocumentMessage(`${copy.contractAddedPrefix}: ${file.name}. ${copy.contractAddedSuffix}`);
     event.target.value = "";
-  }
-
-  function toggleChange(option: string) {
-    setSelectedChanges((current) =>
-      current.includes(option) ? current.filter((value) => value !== option) : [...current, option]
-    );
   }
 
   function moveWorkflow(step: WorkflowKey) {
@@ -1424,92 +838,6 @@ export default function RealizacjaPage() {
       saveStoredWorkflows(workflowStorageKeyFor(profile), next);
       return next;
     });
-  }
-
-  async function generateAnnex() {
-    if (!accountingToolsAllowed || documentBusy) return;
-    const sourceData = contractReady ? contractData : demoContractData;
-    setDocumentBusy("annex");
-    setDocumentMessage("");
-
-    try {
-      await downloadAnnexPdf(sourceData, annexValues, selectedChanges, annexMode);
-      setDocumentMessage(copy.annexGenerated);
-    } catch (error) {
-      setDocumentMessage(error instanceof Error ? error.message : copy.annexError);
-    } finally {
-      setDocumentBusy(null);
-    }
-  }
-
-  async function generateInvoice() {
-    if (!accountingToolsAllowed || documentBusy) return;
-    setDocumentBusy("invoice");
-    setDocumentMessage("");
-
-    try {
-      await downloadInvoicePdf(contractReady ? contractData : demoContractData);
-      setDocumentMessage(copy.invoiceGenerated);
-    } catch (error) {
-      setDocumentMessage(error instanceof Error ? error.message : copy.invoiceError);
-    } finally {
-      setDocumentBusy(null);
-    }
-  }
-
-  async function runKsefAction(action: KsefAction) {
-    if (!accountingToolsAllowed || integrationBusy) return;
-
-    setIntegrationBusy(action);
-    setDocumentMessage("");
-    const contract = contractReady ? contractData : demoContractData;
-
-    if (!session && isDemoAccount(profile?.email)) {
-      if (action === "prepare_accounting_package") setInvoiceReady(true);
-      if (action === "send_ksef_invoice") setKsefReady(true);
-      setIntegrationModal(buildDemoKsefModal(action, contract, profile?.id || "demo-session", copy));
-      setIntegrationBusy(null);
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/integrations/ksef", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.access_token || ""}`
-        },
-        body: JSON.stringify({
-          action,
-          contract
-        })
-      });
-      const body = await response.json();
-
-      if (!response.ok) {
-        if (response.status === 401 && isDemoAccount(profile?.email)) {
-          if (action === "prepare_accounting_package") setInvoiceReady(true);
-          if (action === "send_ksef_invoice") setKsefReady(true);
-          setIntegrationModal(buildDemoKsefModal(action, contract, profile?.id || "demo-session", copy));
-          return;
-        }
-        throw new Error(body.error || body.message || copy.ksefError);
-      }
-
-      if (action === "prepare_accounting_package") setInvoiceReady(true);
-      if (action === "send_ksef_invoice") setKsefReady(true);
-      setIntegrationModal(body as KsefModal);
-    } catch (error) {
-      setIntegrationModal({
-        mode: "error",
-        sent: false,
-        title: "KSeF",
-        message: error instanceof Error ? error.message : copy.unknownKsefError,
-        payload: null
-      });
-    } finally {
-      setIntegrationBusy(null);
-    }
   }
 
   return (
@@ -1539,21 +867,6 @@ export default function RealizacjaPage() {
             </div>
           </div>
         </section>
-
-        {isDemoScope(profile.crm_environment) ? (
-          <DemoProcessGuidePanel
-            copy={copy}
-            currentStep={activeDemoGuideStep}
-            stepIndex={demoGuideStepIndex}
-            stepCount={demoGuideSteps.length}
-            open={demoGuideOpen}
-            canContinue={demoGuideCanContinue}
-            autofilling={demoGuideAutofilling}
-            contract={contractReady ? contractData : contractDataFromProcess(selectedProcess)}
-            onStart={startDemoGuide}
-            onFinish={finishDemoGuide}
-          />
-        ) : null}
 
         <section className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
           <div
@@ -1606,7 +919,10 @@ export default function RealizacjaPage() {
                   <button
                     key={client.id}
                     type="button"
-                    onClick={() => setSelectedProcessId(client.id)}
+                    onClick={() => {
+                      setSelectedProcessId(client.id);
+                      saveSelectedProcessId(selectedProcessStorageKeyFor(profile), client.id);
+                    }}
                     className={`grid gap-3 rounded-lg border p-4 text-left transition sm:grid-cols-[1fr_auto] sm:items-center ${
                       isSelected ? "border-ink bg-[#f8fafc]" : "border-line bg-white hover:border-sky/30"
                     }`}
@@ -1650,7 +966,7 @@ export default function RealizacjaPage() {
           </div>
 
           {hasProcessClients ? (
-          <div className="app-card" data-guide-target="active-process">
+          <div className="app-card" data-guide-target="active-process" data-tour-id="tour-process">
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-wide text-muted">
@@ -1855,272 +1171,6 @@ export default function RealizacjaPage() {
           </div>
         </section>
 
-        <section className="grid gap-3 xl:grid-cols-[1fr_1fr]">
-          <section className="app-card" data-guide-target="accounting-panel">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-solar/15 text-[#aa6f00]">
-                <ReceiptText className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <div>
-                <h2 className="text-base font-bold text-ink">{copy.accountingPackageTitle}</h2>
-                <p className="mt-1 text-sm text-muted">{copy.accountingPackageDescription}</p>
-              </div>
-            </div>
-
-            <div className="rounded-lg border border-line bg-[#fbfcfe] p-4">
-              <div className="grid gap-3 sm:grid-cols-2">
-                <PreviewField label={copy.buyer} value={contractData.clientName || demoContractData.clientName} />
-                <PreviewField label={copy.grossAmount} value={contractData.grossPrice || demoContractData.grossPrice} />
-                <PreviewField label={copy.netAmount} value={contractData.netPrice || demoContractData.netPrice} />
-                <PreviewField label={copy.contractLabel} value={contractData.contractNumber || demoContractData.contractNumber} />
-              </div>
-
-              <button
-                type="button"
-                onClick={() => runKsefAction("prepare_accounting_package")}
-                disabled={!accountingToolsAllowed}
-                className="btn-primary mt-4"
-              >
-                <ReceiptText className="h-4 w-4" aria-hidden="true" />
-                {integrationBusy === "prepare_accounting_package"
-                  ? copy.preparing
-                  : invoiceReady
-                    ? copy.packageReady
-                    : accountingToolsAllowed
-                      ? copy.prepareAccounting
-                      : copy.accountingOnly}
-              </button>
-              {accountingToolsAllowed ? (
-                <button
-                  type="button"
-                  onClick={generateInvoice}
-                  disabled={Boolean(documentBusy)}
-                  className="btn-secondary mt-3"
-                >
-                  <Download className="h-4 w-4" aria-hidden="true" />
-                  {documentBusy === "invoice" ? copy.generating : copy.invoiceDownload}
-                </button>
-              ) : null}
-            </div>
-          </section>
-
-          <section className="app-card">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky/10 text-sky">
-                <FileDigit className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <div>
-                <h2 className="text-base font-bold text-ink">{copy.ksefTitle}</h2>
-                <p className="mt-1 text-sm text-muted">{copy.ksefDescription}</p>
-              </div>
-            </div>
-
-            <div className="rounded-lg border border-line bg-[#f9fbfd] p-4 text-sm text-muted">
-              {copy.ksefDisclaimer}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => runKsefAction("send_ksef_invoice")}
-              disabled={!accountingToolsAllowed}
-              className="btn-secondary mt-4"
-            >
-              <Send className="h-4 w-4" aria-hidden="true" />
-              {integrationBusy === "send_ksef_invoice"
-                ? copy.connecting
-                : ksefReady
-                  ? copy.ksefChecked
-                  : accountingToolsAllowed
-                    ? copy.sendKsef
-                    : copy.accountingOnly}
-            </button>
-          </section>
-        </section>
-
-        <section className="app-card">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-leaf/10 text-leaf">
-                <FileSignature className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <div>
-                <h2 className="text-base font-bold text-ink">{copy.annexTitle}</h2>
-                <p className="mt-1 text-sm text-muted">{copy.annexDescription}</p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={generateAnnex}
-              disabled={!accountingToolsAllowed || Boolean(documentBusy)}
-              className="btn-primary"
-            >
-              <Download className="h-4 w-4" aria-hidden="true" />
-              {documentBusy === "annex" ? copy.generating : copy.annexDownload}
-            </button>
-          </div>
-
-          <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
-            <div>
-              <div className="grid gap-2 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() => setAnnexMode("automatic")}
-                  disabled={!accountingToolsAllowed}
-                  className={`rounded-lg border px-4 py-3 text-sm font-semibold transition ${
-                    annexMode === "automatic" ? "border-ink bg-ink text-white" : "border-line bg-white text-ink"
-                  }`}
-                >
-                  {copy.automaticMode}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAnnexMode("manual")}
-                  disabled={!accountingToolsAllowed}
-                  className={`rounded-lg border px-4 py-3 text-sm font-semibold transition ${
-                    annexMode === "manual" ? "border-ink bg-ink text-white" : "border-line bg-white text-ink"
-                  }`}
-                >
-                  {copy.manualMode}
-                </button>
-              </div>
-
-              <div className="mt-4 grid gap-2">
-                {annexChangeOptions.map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => toggleChange(option)}
-                    disabled={!accountingToolsAllowed}
-                    className={`flex items-center justify-between rounded-lg border px-4 py-3 text-left text-sm transition ${
-                      selectedChanges.includes(option)
-                        ? "border-leaf/30 bg-leaf/10 text-leaf"
-                        : "border-line bg-white text-ink"
-                    }`}
-                  >
-                    {annexChangeLabel(option, language)}
-                    <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <label>
-                  <span className="label">{copy.panelsCount}</span>
-                  <input
-                    className="field"
-                    value={annexValues.panelsCount}
-                    disabled={!accountingToolsAllowed}
-                    onChange={(event) =>
-                      setAnnexValues((current) => ({ ...current, panelsCount: event.target.value }))
-                    }
-                  />
-                </label>
-                <label>
-                  <span className="label">{copy.installationPower}</span>
-                  <input
-                    className="field"
-                    value={annexValues.installationPowerKw}
-                    disabled={!accountingToolsAllowed}
-                    onChange={(event) =>
-                      setAnnexValues((current) => ({
-                        ...current,
-                        installationPowerKw: event.target.value
-                      }))
-                    }
-                  />
-                </label>
-                <label>
-                  <span className="label">{copy.grossPrice}</span>
-                  <input
-                    className="field"
-                    value={annexValues.grossPrice}
-                    disabled={!accountingToolsAllowed}
-                    onChange={(event) =>
-                      setAnnexValues((current) => ({ ...current, grossPrice: event.target.value }))
-                    }
-                  />
-                </label>
-                <label>
-                  <span className="label">{copy.financing}</span>
-                  <input
-                    className="field"
-                    value={annexValues.financing}
-                    disabled={!accountingToolsAllowed}
-                    onChange={(event) =>
-                      setAnnexValues((current) => ({ ...current, financing: event.target.value }))
-                    }
-                  />
-                </label>
-              </div>
-
-              <div className="mt-4 rounded-lg border border-line bg-[#f9fbfd] p-4 text-sm text-muted">
-                <div className="font-semibold text-ink">
-                  {copy.mode}: {annexMode === "automatic" ? copy.automaticMode : copy.manualMode}
-                </div>
-                <div className="mt-2">
-                  {copy.changes}:{" "}
-                  {selectedChanges.map((option) => annexChangeLabel(option, language)).join(", ") ||
-                    copy.noSelectedChanges}
-                </div>
-                <div className="mt-2">
-                  {copy.newConfiguration}: {annexValues.panelsCount || copy.blank} {copy.panelsUnit},{" "}
-                  {annexValues.installationPowerKw || copy.blank} kW, {annexValues.grossPrice || copy.blank},{" "}
-                  {annexValues.financing || copy.blank}.
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {creditLoaded ? (
-          <section className="app-card" data-guide-target="finance-panel">
-            <h2 className="mb-4 text-base font-bold text-ink">{copy.financingData}</h2>
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {Object.entries(demoCreditData).map(([key, value]) => (
-                <div key={key} className="rounded-lg border border-line bg-[#f9fbfd] p-3">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-muted">
-                    {creditLabels[key as keyof typeof demoCreditData]}
-                  </div>
-                  <div className="mt-1 text-sm font-semibold text-ink">{value}</div>
-                </div>
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        <section className="grid gap-3 md:grid-cols-3">
-          <div className="app-card">
-            <div className="mb-2 flex items-center gap-2 text-base font-bold text-ink">
-              <UsersRound className="h-4 w-4 text-sky" aria-hidden="true" />
-              {copy.roles.menadzer}
-            </div>
-            <p className="text-sm text-muted">{copy.roleCards.manager}</p>
-          </div>
-          <div className="app-card">
-            <div className="mb-2 flex items-center gap-2 text-base font-bold text-ink">
-              <PackageCheck className="h-4 w-4 text-solar" aria-hidden="true" />
-              {copy.roles.logistyk}
-            </div>
-            <p className="text-sm text-muted">{copy.roleCards.logistics}</p>
-          </div>
-          <div className="app-card">
-            <div className="mb-2 flex items-center gap-2 text-base font-bold text-ink">
-              <Hammer className="h-4 w-4 text-leaf" aria-hidden="true" />
-              {copy.roles.monter}
-            </div>
-            <p className="text-sm text-muted">{copy.roleCards.installer}</p>
-          </div>
-        </section>
-
-        <div className="flex justify-end">
-          <button type="button" onClick={() => setCreditLoaded((value) => !value)} className="btn-secondary">
-            <FileDigit className="h-4 w-4" aria-hidden="true" />
-            {creditLoaded ? copy.hideDemoFinancing : copy.showDemoFinancing}
-          </button>
-        </div>
-
         {previewRecord ? (
           <ModalShell
             open={Boolean(previewRecord)}
@@ -2148,44 +1198,6 @@ export default function RealizacjaPage() {
           </ModalShell>
         ) : null}
 
-        {integrationModal ? (
-          <ModalShell
-            open={Boolean(integrationModal)}
-            title={integrationModal.title}
-            description={integrationModal.message}
-            onClose={() => setIntegrationModal(null)}
-            size="lg"
-          >
-              <div className="grid gap-3 sm:grid-cols-3">
-                <PreviewField
-                  label={copy.integrationMode}
-                  value={
-                    integrationModal.mode === "live"
-                      ? copy.production
-                      : integrationModal.mode === "demo"
-                        ? copy.demo
-                        : copy.error
-                  }
-                />
-                <PreviewField label={copy.sent} value={integrationModal.sent ? copy.yes : copy.no} />
-                <PreviewField label={copy.statusLabel} value={integrationModal.status ? String(integrationModal.status) : copy.blank} />
-              </div>
-              <div className="mt-4 rounded-lg border border-line bg-[#f9fbfd] p-4">
-                <div className="text-xs font-semibold uppercase tracking-wide text-muted">{copy.repositoryPayload}</div>
-                <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap text-xs leading-5 text-ink">
-                  {JSON.stringify(integrationModal.payload, null, 2)}
-                </pre>
-              </div>
-              {integrationModal.response ? (
-                <div className="mt-4 rounded-lg border border-line bg-[#f9fbfd] p-4">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-muted">{copy.apiResponse}</div>
-                  <pre className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap text-xs leading-5 text-ink">
-                    {integrationModal.response}
-                  </pre>
-                </div>
-              ) : null}
-          </ModalShell>
-        ) : null}
       </div>
     </AppShell>
   );

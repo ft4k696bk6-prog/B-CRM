@@ -30,7 +30,10 @@ describe("role helpers", () => {
 
   it("routes users to role-specific home screens", () => {
     expect(homePathForRole("handlowiec")).toBe("/sales");
-    expect(homePathForRole("ksiegowosc")).toBe("/realizacja");
+    expect(homePathForRole("finance")).toBe("/finance");
+    expect(homePathForRole("ksiegowosc")).toBe("/accounting");
+    expect(homePathForRole("logistyk")).toBe("/logistics");
+    expect(homePathForRole("monter")).toBe("/installation");
     expect(homePathForRole("admin")).toBe("/admin");
   });
 
