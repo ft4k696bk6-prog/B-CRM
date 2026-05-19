@@ -40,9 +40,9 @@ async function handler(request: Request) {
   const baseUrl = appBaseUrl(request);
   const statusUrl = `${baseUrl}/api/calls/status?token=${encodeURIComponent(token)}&event=dial`;
   const recordingAttrs = call.recording_consent
-      ? ` record="record-from-answer-dual" recordingStatusCallback="${xmlEscape(
+    ? ` record="record-from-answer-dual" recordingStatusCallback="${xmlEscape(
         `${baseUrl}/api/calls/status?token=${encodeURIComponent(token)}&event=recording`
-      )}" recordingStatusCallbackMethod="POST" recordingStatusCallbackEvent="completed absent"`
+      )}" recordingStatusCallbackMethod="POST"`
     : "";
   const callerId = process.env.TWILIO_CALLER_ID || "";
 

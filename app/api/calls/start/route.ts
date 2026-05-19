@@ -146,8 +146,10 @@ export async function POST(request: Request) {
       Url: twimlUrl,
       Method: "POST",
       StatusCallback: statusUrl,
-      StatusCallbackMethod: "POST",
-      StatusCallbackEvent: "initiated ringing answered completed"
+      StatusCallbackMethod: "POST"
+    });
+    ["initiated", "ringing", "answered", "completed"].forEach((eventName) => {
+      params.append("StatusCallbackEvent", eventName);
     });
 
     const twilioResponse = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Calls.json`, {
