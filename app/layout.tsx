@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Suspense } from "react";
 import { Analytics } from "@vercel/analytics/next";
+import { GoogleAnalytics } from "@/components/google-analytics";
 import { LanguageProvider } from "@/components/language-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
@@ -29,6 +31,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <LanguageProvider>
           <ThemeProvider>{children}</ThemeProvider>
         </LanguageProvider>
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
         <Analytics />
       </body>
     </html>
