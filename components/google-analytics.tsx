@@ -13,6 +13,7 @@ declare global {
 
 export function GoogleAnalytics() {
   const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-DHTCYP2K2L";
+  const googleTagId = process.env.NEXT_PUBLIC_GOOGLE_TAG_ID || "GT-WKRWW82W";
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -30,6 +31,7 @@ export function GoogleAnalytics() {
       }
 
       window.gtag("event", "page_view", {
+        send_to: measurementId,
         page_title: document.title,
         page_location: window.location.href,
         page_path: pagePath
@@ -48,7 +50,7 @@ export function GoogleAnalytics() {
   return (
     <>
       <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
+        src={`https://www.googletagmanager.com/gtag/js?id=${googleTagId}`}
         strategy="afterInteractive"
       />
       <Script id="ga4" strategy="afterInteractive">
