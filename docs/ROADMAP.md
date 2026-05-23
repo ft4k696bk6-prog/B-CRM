@@ -1,21 +1,23 @@
-# B-CRM Roadmap
+# B-CRM Energy: roadmap
 
-## Short term
+## Krótki termin
 
-- Add more Vitest coverage for status workflows and helper functions.
-- Add Playwright smoke tests for login and dashboard navigation.
-- Improve loading, empty and error states around Supabase requests.
-- Add real screenshots to `docs/screenshots/`.
+- Sprawdzić prawdziwy formularz Meta Lead Ads na produkcyjnym webhooku.
+- Dodać tokeny Meta dla docelowej strony Re-Energy System.
+- Utrzymać import leadów przez panel admina i raportować duplikaty bez danych wrażliwych.
+- Rozszerzyć smoke testy Playwright o logowanie, telefon, import, ofertę i materiały.
+- Dzielić największe ekrany tylko tam, gdzie zmniejsza to ryzyko utrzymania.
 
-## Medium term
+## Średni termin
 
-- Split the largest route components into smaller feature components.
-- Add a demo data seed script that can reset the portfolio demo safely.
-- Improve mobile table layouts for admin and manager dashboards.
-- Add structured error logging.
+- Podłączyć Autenti albo innego dostawcę podpisu dopiero po akceptacji prawnej i kosztowej.
+- Dodać UI bramek kierownika/admina na bazie `process_cases` i `process_steps`.
+- Rozszerzyć kompatybilność sprzętu o oficjalne PDF producentów.
+- Dodać rezerwacje magazynowe i oś zdjęć przed/po montażu.
+- Dodać lepsze logi operacyjne dla importów, webhooków i wysyłki ofert.
 
-## Optional
+## Research właścicielski
 
-- Add analytics for key demo flows.
-- Add richer audit documentation for RLS policies.
-- Add a technical architecture diagram.
+- Pstryk i gotowość na ceny dynamiczne.
+- EMS/HEMS oraz możliwości sterowania falownikiem i magazynem.
+- Prosument zbiorowy, prosument wirtualny i spółdzielnie energetyczne jako osobny pipeline B2B.

@@ -6,7 +6,6 @@ import { formatDateTime } from "@/lib/date";
 import type { Lead } from "@/lib/types";
 import { StatusBadge } from "@/components/status-badge";
 import { EmptyState } from "@/components/ui";
-import { useLanguage } from "@/components/language-provider";
 
 type LeadTableProps = {
   leads: Lead[];
@@ -28,18 +27,20 @@ function formatPhone(phone: string) {
 
 function phoneHref(phone: string) {
   const normalized = phone.replace(/[^\d+]/g, "");
+  if (/^\d{9}$/.test(normalized)) return `+48${normalized}`;
+  if (/^48\d{9}$/.test(normalized)) return `+${normalized}`;
   return normalized.startsWith("+") ? normalized : `+${normalized}`;
 }
 
-function formatSource(source: string | null, language: "pl" | "en") {
-  if (!source) return language === "en" ? "No source" : "Bez źródła";
+function formatSource(source: string | null) {
+  if (!source) return "Bez źródła";
 
   const normalized = source.toLowerCase();
   if (normalized === "własne" || normalized === "wlasne") {
-    return language === "en" ? "Own" : "własne";
+    return "własne";
   }
   if (normalized === "polecenie") {
-    return language === "en" ? "Referral" : "polecenie";
+    return "polecenie";
   }
 
   return source;
@@ -53,45 +54,25 @@ export function LeadTable({
   onToggleAll,
   showAssignee = false
 }: LeadTableProps) {
-  const { language } = useLanguage();
   const allSelected = leads.length > 0 && leads.every((lead) => selectedIds.includes(lead.id));
-  const labels = language === "en"
-    ? {
-        selectAll: "Select all",
-        selectAllLeads: "Select all leads",
-        selectLead: "Select",
-        lead: "Lead",
-        phone: "Phone",
-        region: "Region",
-        status: "Status",
-        salesperson: "Salesperson",
-        dates: "Dates",
-        created: "Created",
-        noCode: "no code",
-        unassigned: "Unassigned",
-        openLeadCard: "Open lead card",
-        openCard: "Open card",
-        noLeads: "No leads",
-        noLeadsDescription: "No records for the selected filters."
-      }
-    : {
-        selectAll: "Zaznacz wszystkie",
-        selectAllLeads: "Zaznacz wszystkie leady",
-        selectLead: "Zaznacz",
-        lead: "Lead",
-        phone: "Telefon",
-        region: "Region",
-        status: "Status",
-        salesperson: "Handlowiec",
-        dates: "Terminy",
-        created: "Dodany",
-        noCode: "brak kodu",
-        unassigned: "Nieprzypisany",
-        openLeadCard: "Otwórz kartę leada",
-        openCard: "Otwórz kartę",
-        noLeads: "Brak leadów",
-        noLeadsDescription: "Ten widok nie ma jeszcze rekordów dla wybranych filtrów."
-      };
+  const labels = {
+    selectAll: "Zaznacz wszystkie",
+    selectAllLeads: "Zaznacz wszystkie leady",
+    selectLead: "Zaznacz",
+    lead: "Lead",
+    phone: "Telefon",
+    region: "Region",
+    status: "Status",
+    salesperson: "Handlowiec",
+    dates: "Terminy",
+    created: "Dodany",
+    noCode: "brak kodu",
+    unassigned: "Nieprzypisany",
+    openLeadCard: "Otwórz kartę leada",
+    openCard: "Otwórz kartę",
+    noLeads: "Brak leadów",
+    noLeadsDescription: "Ten widok nie ma jeszcze rekordów dla wybranych filtrów."
+  };
 
   return (
     <div className="overflow-hidden rounded-lg border border-line bg-white shadow-sm">
@@ -157,7 +138,7 @@ export function LeadTable({
                     {lead.full_name}
                   </Link>
                   <div className="mt-1 text-xs text-muted">
-                    {formatSource(lead.source, language)} · {lead.postal_code || labels.noCode}
+                    {formatSource(lead.source)} · {lead.postal_code || labels.noCode}
                   </div>
                 </td>
                 <td className="px-4 py-3 align-top">
@@ -218,7 +199,7 @@ export function LeadTable({
                   {lead.full_name}
                 </Link>
                 <div className="mt-1 text-xs font-semibold text-muted">
-                  {formatSource(lead.source, language)} · {lead.postal_code || labels.noCode}
+                  {formatSource(lead.source)} · {lead.postal_code || labels.noCode}
                 </div>
               </div>
               {selectable ? (

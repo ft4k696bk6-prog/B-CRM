@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { normalizePhoneForDial } from "@/lib/phone";
-import { isDemoUserEmail, isSystemAdminRole, normalizeRole, USER_ROLES } from "@/lib/roles";
+import { isSystemAdminRole, normalizeRole, USER_ROLES } from "@/lib/roles";
 import { normalizeCrmScope } from "@/lib/scope";
 import type { CrmDataScope, UserRole } from "@/lib/types";
 
@@ -12,6 +12,7 @@ type CreateUserBody = {
   role?: UserRole;
   managerId?: string | null;
   businessPhone?: string | null;
+  canViewLeadPool?: boolean;
 };
 
 type UpdateUserBody = {
@@ -19,6 +20,7 @@ type UpdateUserBody = {
   role?: UserRole;
   managerId?: string | null;
   businessPhone?: string | null;
+  canViewLeadPool?: boolean;
 };
 
 type DeleteUserBody = {
@@ -32,6 +34,7 @@ type ProfileRow = {
   role: string;
   manager_id: string | null;
   business_phone: string | null;
+  can_view_lead_pool: boolean;
   crm_environment: CrmDataScope;
   created_at: string;
 };
@@ -44,7 +47,7 @@ type AdminProfile = {
 
 function dbCompatibleRole(role: UserRole) {
   if (role === "handlowiec") return "sales";
-  if (role === "menadzer") return "manager";
+  if (role === "kierownik") return "manager";
   if (role === "owner" || role === "finance" || role === "viewer") return "admin";
   if (role === "ksiegowosc" || role === "logistyk" || role === "monter") return "admin";
   return role;
@@ -75,6 +78,7 @@ function profileRowWithoutManager(row: Omit<ProfileRow, "created_at">) {
     full_name: row.full_name,
     role: row.role,
     business_phone: row.business_phone,
+    can_view_lead_pool: row.can_view_lead_pool,
     crm_environment: row.crm_environment
   };
 }
@@ -204,7 +208,6 @@ async function requireAdmin(request: Request) {
       supabaseAdmin,
       user,
       requesterEmail,
-      requesterIsDemo: isDemoUserEmail(requesterEmail),
       requesterScope: normalizeCrmScope(profile?.crm_environment, requesterEmail)
     };
   } catch (error) {
@@ -271,6 +274,7 @@ export async function POST(request: Request) {
     const role = USER_ROLES.includes(body.role as UserRole) ? (body.role as UserRole) : "handlowiec";
     const managerId = normalizedManagerId(body.managerId, role);
     const businessPhone = body.businessPhone ? normalizePhoneForDial(body.businessPhone) : null;
+    const canViewLeadPool = role === "handlowiec" ? Boolean(body.canViewLeadPool) : false;
 
     if (!email || !password || !fullName) {
       return NextResponse.json({ error: "Uzupełnij wszystkie pola." }, { status: 400 });
@@ -280,13 +284,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Numer służbowy ma niepoprawny format." }, { status: 400 });
     }
 
-    if (auth.requesterIsDemo) {
-      return NextResponse.json(
-        { error: "Konto demo nie może tworzyć prawdziwych użytkowników." },
-        { status: 403 }
-      );
-    }
-
     if (role === "handlowiec" && managerId) {
       const { data: manager } = await auth.supabaseAdmin
         .from("profiles")
@@ -294,13 +291,13 @@ export async function POST(request: Request) {
         .eq("id", managerId)
         .single<AdminProfile>();
 
-      if (normalizeRole(manager?.role, manager?.email) !== "menadzer") {
-        return NextResponse.json({ error: "Wybrany opiekun nie jest menadżerem." }, { status: 400 });
+      if (normalizeRole(manager?.role, manager?.email) !== "kierownik") {
+        return NextResponse.json({ error: "Wybrany opiekun nie jest kierownikiem." }, { status: 400 });
       }
 
       if (normalizeCrmScope(manager?.crm_environment, manager?.email) !== auth.requesterScope) {
         return NextResponse.json(
-          { error: "Wybrany menadżer jest z innego środowiska CRM." },
+          { error: "Wybrany kierownik jest z innego środowiska CRM." },
           { status: 403 }
         );
       }
@@ -335,6 +332,7 @@ export async function POST(request: Request) {
       role,
       manager_id: managerId,
       business_phone: businessPhone,
+      can_view_lead_pool: canViewLeadPool,
       crm_environment: auth.requesterScope
     });
 
@@ -351,7 +349,14 @@ export async function POST(request: Request) {
       crm_environment: auth.requesterScope
     });
 
-    return NextResponse.json({ id: data.user.id, email, fullName, role, crm_environment: auth.requesterScope });
+    return NextResponse.json({
+      id: data.user.id,
+      email,
+      fullName,
+      role,
+      can_view_lead_pool: canViewLeadPool,
+      crm_environment: auth.requesterScope
+    });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Nieznany błąd." },
@@ -370,10 +375,13 @@ export async function PATCH(request: Request) {
     const role = USER_ROLES.includes(body.role as UserRole) ? (body.role as UserRole) : null;
     const managerId = normalizedManagerId(body.managerId, role || "handlowiec");
     const businessPhoneProvided = Object.prototype.hasOwnProperty.call(body, "businessPhone");
+    const leadPoolProvided = Object.prototype.hasOwnProperty.call(body, "canViewLeadPool");
     const businessPhone =
       !businessPhoneProvided || body.businessPhone === null || body.businessPhone === ""
         ? null
         : normalizePhoneForDial(body.businessPhone);
+    const shouldWriteLeadPool = leadPoolProvided || role !== "handlowiec";
+    const canViewLeadPool = role === "handlowiec" && leadPoolProvided ? Boolean(body.canViewLeadPool) : false;
 
     if (!id || !role) {
       return NextResponse.json({ error: "Brak użytkownika lub roli." }, { status: 400 });
@@ -417,13 +425,13 @@ export async function PATCH(request: Request) {
         .eq("id", managerId)
         .single<AdminProfile>();
 
-      if (normalizeRole(manager?.role, manager?.email) !== "menadzer") {
-        return NextResponse.json({ error: "Wybrany opiekun nie jest menadżerem." }, { status: 400 });
+      if (normalizeRole(manager?.role, manager?.email) !== "kierownik") {
+        return NextResponse.json({ error: "Wybrany opiekun nie jest kierownikiem." }, { status: 400 });
       }
 
       if (normalizeCrmScope(manager?.crm_environment, manager?.email) !== auth.requesterScope) {
         return NextResponse.json(
-          { error: "Wybrany menadżer jest z innego środowiska CRM." },
+          { error: "Wybrany kierownik jest z innego środowiska CRM." },
           { status: 403 }
         );
       }
@@ -440,10 +448,14 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    if (businessPhoneProvided) {
+    if (businessPhoneProvided || shouldWriteLeadPool) {
+      const patch: Record<string, unknown> = {};
+      if (businessPhoneProvided) patch.business_phone = businessPhone;
+      if (shouldWriteLeadPool) patch.can_view_lead_pool = canViewLeadPool;
+
       await auth.supabaseAdmin
         .from("profiles")
-        .update({ business_phone: businessPhone })
+        .update(patch)
         .eq("id", id)
         .eq("crm_environment", targetScope);
     }
@@ -458,7 +470,12 @@ export async function PATCH(request: Request) {
       event_type: "user.role_updated",
       entity_type: "profile",
       entity_id: id,
-      metadata: { role, managerId, ...(businessPhoneProvided ? { businessPhone } : {}) },
+      metadata: {
+        role,
+        managerId,
+        ...(businessPhoneProvided ? { businessPhone } : {}),
+        ...(shouldWriteLeadPool ? { canViewLeadPool } : {})
+      },
       crm_environment: auth.requesterScope
     });
 
@@ -466,6 +483,7 @@ export async function PATCH(request: Request) {
       id,
       role,
       ...(businessPhoneProvided ? { business_phone: businessPhone } : {}),
+      ...(shouldWriteLeadPool ? { can_view_lead_pool: canViewLeadPool } : {}),
       crm_environment: targetScope
     });
   } catch (error) {
@@ -505,17 +523,6 @@ export async function DELETE(request: Request) {
     if (normalizeCrmScope(target.crm_environment, target.email) !== auth.requesterScope) {
       return NextResponse.json(
         { error: "Możesz usuwać wyłącznie użytkowników z tego samego środowiska CRM." },
-        { status: 403 }
-      );
-    }
-
-    if (isDemoUserEmail(target.email)) {
-      return NextResponse.json({ error: "Konta demo są zarządzane automatycznie." }, { status: 403 });
-    }
-
-    if (auth.requesterIsDemo) {
-      return NextResponse.json(
-        { error: "Konto demo nie może usuwać prawdziwych użytkowników." },
         { status: 403 }
       );
     }

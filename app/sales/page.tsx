@@ -44,9 +44,14 @@ export default function SalesDashboardPage() {
       .from("leads")
       .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)")
       .eq("crm_environment", profile.crm_environment)
-      .eq("assigned_to", profile.id)
       .order("updated_at", { ascending: false })
       .limit(1000);
+
+    if (profile.can_view_lead_pool) {
+      query = query.or(`assigned_to.eq.${profile.id},assigned_to.is.null`);
+    } else {
+      query = query.eq("assigned_to", profile.id);
+    }
 
     if (statusFilter) query = query.eq("status", statusFilter);
 
@@ -127,7 +132,12 @@ export default function SalesDashboardPage() {
         />
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          <StatTile label="Moje leady" value={leads.length} icon={ClipboardList} tone="sky" />
+          <StatTile
+            label={profile.can_view_lead_pool ? "Moje i z puli" : "Moje leady"}
+            value={leads.length}
+            icon={ClipboardList}
+            tone="sky"
+          />
           <StatTile
             label="Call-back"
             value={upcomingCallbacks.length}
@@ -231,7 +241,7 @@ export default function SalesDashboardPage() {
                 value={statusFilter}
                 onChange={(event) => setStatusFilter(event.target.value as LeadStatus | "")}
               >
-                <option value="">Wszystkie moje leady</option>
+                <option value="">{profile.can_view_lead_pool ? "Moje i pula leadów" : "Wszystkie moje leady"}</option>
                 {LEAD_STATUSES.map((status) => (
                   <option key={status} value={status}>
                     {status}
@@ -250,10 +260,10 @@ export default function SalesDashboardPage() {
 
         <section className="grid gap-3">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-base font-bold text-ink">Moje leady</h2>
+            <h2 className="text-base font-bold text-ink">{profile.can_view_lead_pool ? "Moje leady i pula" : "Moje leady"}</h2>
             <div className="text-sm text-muted">{busy ? "Odświeżanie" : `${leads.length} rekordów`}</div>
           </div>
-          <LeadTable leads={leads} />
+          <LeadTable leads={leads} showAssignee={profile.can_view_lead_pool} />
         </section>
       </div>
     </AppShell>

@@ -1,6 +1,6 @@
 "use client";
 
-import type { DemoCustomerRecord } from "@/lib/demo-documents";
+import type { ContractCustomerRecord } from "@/lib/contract-documents";
 
 export type AnnexValues = {
   panelsCount: string;
@@ -135,7 +135,7 @@ function drawHeader(context: CanvasRenderingContext2D, title: string, subtitle: 
   });
 }
 
-function drawContract(context: CanvasRenderingContext2D, data: DemoCustomerRecord) {
+function drawContract(context: CanvasRenderingContext2D, data: ContractCustomerRecord) {
   drawHeader(context, "Umowa kompleksowa OZE", `Numer: ${data.contractNumber}\nData: ${data.contractDate}`);
 
   let y = 302;
@@ -185,7 +185,7 @@ function drawContract(context: CanvasRenderingContext2D, data: DemoCustomerRecor
 
 function drawAnnex(
   context: CanvasRenderingContext2D,
-  data: DemoCustomerRecord,
+  data: ContractCustomerRecord,
   annexValues: AnnexValues,
   selectedChanges: string[],
   annexMode: "manual" | "automatic"
@@ -243,7 +243,7 @@ function drawAnnex(
   drawText(context, "Podpis sprzedawcy", page.width - 390, y + 90, { size: 22, color: "#5f6f82" });
 }
 
-function drawInvoice(context: CanvasRenderingContext2D, data: DemoCustomerRecord) {
+function drawInvoice(context: CanvasRenderingContext2D, data: ContractCustomerRecord) {
   drawHeader(context, "Faktura VAT", `Umowa: ${data.contractNumber}\nData: ${data.contractDate}`);
 
   let y = 302;
@@ -287,13 +287,13 @@ function drawInvoice(context: CanvasRenderingContext2D, data: DemoCustomerRecord
   );
 }
 
-function fileName(type: DocumentType, data: DemoCustomerRecord) {
+function fileName(type: DocumentType, data: ContractCustomerRecord) {
   const safeNumber = data.contractNumber.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "");
   const prefix = type === "contract" ? "umowa" : type === "annex" ? "aneks" : "faktura";
   return `${prefix}-${safeNumber || "b-crm"}.pdf`;
 }
 
-async function downloadPdf(canvas: HTMLCanvasElement, type: DocumentType, data: DemoCustomerRecord) {
+async function downloadPdf(canvas: HTMLCanvasElement, type: DocumentType, data: ContractCustomerRecord) {
   const { jsPDF } = await import("jspdf");
   const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, 297);
@@ -301,7 +301,7 @@ async function downloadPdf(canvas: HTMLCanvasElement, type: DocumentType, data: 
 }
 
 export async function downloadAnnexPdf(
-  data: DemoCustomerRecord,
+  data: ContractCustomerRecord,
   annexValues: AnnexValues,
   selectedChanges: string[],
   annexMode: "manual" | "automatic"
@@ -311,7 +311,7 @@ export async function downloadAnnexPdf(
   await downloadPdf(canvas, "annex", data);
 }
 
-export async function downloadInvoicePdf(data: DemoCustomerRecord) {
+export async function downloadInvoicePdf(data: ContractCustomerRecord) {
   const { canvas, context } = createCanvas();
   drawInvoice(context, data);
   await downloadPdf(canvas, "invoice", data);

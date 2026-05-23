@@ -1,18 +1,19 @@
-# B-CRM Overview
+# B-CRM Energy: opis produktu
 
-B-CRM is a production-like CRM demo for lead management and sales operations.
+B-CRM Energy to operacyjny CRM dla firmy OZE. Ma prowadzić kontakt od formularza i pierwszego telefonu, przez spotkanie, kalkulację, ofertę, umowę, podpis online, magazyn i montaż.
 
-The app is aimed at sales teams that need a shared workflow for imported leads, ownership, status changes, callbacks, meetings, comments, files, reminders and activity history.
+## Najważniejsze Moduły
 
-## Main features
+- Pula leadów dla owner/admin/kierownik oraz handlowców z nadanym dostępem.
+- Import leadów z plików Google Drive po eksporcie do CSV/XLSX.
+- Meta Lead Ads webhook dla nowych formularzy.
+- Karta leada z komentarzami, historią, przypomnieniami, kliknięciem w numer telefonu i procesem spotkania.
+- Kalkulatory: instalacja PV, magazyn energii, opłacalność i koszt dodatkowego kabla powyżej limitu.
+- Materiały handlowca dostępne z PWA offline.
+- Oferta mailowa i strona oferty z trackingiem zdarzeń.
+- Proces po umowie z bramkami akceptacji, magazynem, montażem i zdjęciami.
+- Asystent sprzętowy oparty o bazę kompatybilności.
 
-- Authenticated CRM screens backed by Supabase.
-- Role-aware views for admin, manager, sales and operational roles.
-- Lead lists, filters, statuses, comments and activity logs.
-- Callback and meeting workflows with calendar support.
-- Admin user management and team hierarchy.
-- CSV import/export and PDF-oriented offer flow.
+## Status Wdrożenia
 
-## Status
-
-Production-like CRM demo. The project is suitable as a portfolio proof of business app work, but needs broader automated tests, monitoring and security review before production use.
+Wersja jest przygotowana jako produkt firmowy. Po stronie klienta zostaje konfiguracja konkretnego Supabase, Meta, poczty, podpisu online i ewentualnego klucza AI. Dane prywatne nie są częścią repozytorium.

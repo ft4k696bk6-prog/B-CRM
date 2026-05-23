@@ -6,7 +6,7 @@ import type { CrmDataScope, Profile, UserRole } from "@/lib/types";
 
 export type ApiProfile = Pick<
   Profile,
-  "id" | "email" | "full_name" | "role" | "crm_environment" | "business_phone"
+  "id" | "email" | "full_name" | "role" | "crm_environment" | "business_phone" | "can_view_lead_pool"
 >;
 
 export function getServiceClient() {
@@ -49,7 +49,7 @@ export async function requireApiProfile(request: Request) {
 
   let { data: profile, error: profileError } = await supabaseAdmin
     .from("profiles")
-    .select("id,email,full_name,role,crm_environment,business_phone")
+    .select("id,email,full_name,role,crm_environment,business_phone,can_view_lead_pool")
     .eq("id", user.id)
     .single();
 
@@ -59,7 +59,7 @@ export async function requireApiProfile(request: Request) {
       .select("id,email,full_name,role,crm_environment")
       .eq("id", user.id)
       .single();
-    profile = fallback.data ? { ...fallback.data, business_phone: null } : null;
+    profile = fallback.data ? { ...fallback.data, business_phone: null, can_view_lead_pool: false } : null;
     profileError = fallback.error;
   }
 
@@ -77,7 +77,8 @@ export async function requireApiProfile(request: Request) {
       typeof user.app_metadata?.role === "string" ? user.app_metadata.role : null
     ) as UserRole,
     crm_environment: normalizeCrmScope(profile.crm_environment, profile.email) as CrmDataScope,
-    business_phone: profile.business_phone || null
+    business_phone: profile.business_phone || null,
+    can_view_lead_pool: Boolean(profile.can_view_lead_pool)
   };
 
   return { supabaseAdmin, user, profile: normalizedProfile };
@@ -99,6 +100,6 @@ export function canAccessLead(
   lead: { assigned_to: string | null; crm_environment: CrmDataScope | string }
 ) {
   if (lead.crm_environment !== profile.crm_environment) return false;
-  if (profile.role === "owner" || profile.role === "admin" || profile.role === "menadzer") return true;
+  if (profile.role === "owner" || profile.role === "admin" || profile.role === "kierownik") return true;
   return lead.assigned_to === profile.id;
 }

@@ -14,9 +14,9 @@ describe("permission matrix", () => {
   });
 
   it("allows managers to work with team leads without full admin access", () => {
-    expect(hasPermission("menadzer", "leads:view:team")).toBe(true);
-    expect(hasPermission("menadzer", "leads:edit:team")).toBe(true);
-    expect(hasPermission("menadzer", "users:manage")).toBe(false);
+    expect(hasPermission("kierownik", "leads:view:team")).toBe(true);
+    expect(hasPermission("kierownik", "leads:edit:team")).toBe(true);
+    expect(hasPermission("kierownik", "users:manage")).toBe(false);
   });
 
   it("keeps viewer role read-only", () => {

@@ -6,12 +6,18 @@ export const LEAD_STATUSES: LeadStatus[] = [
   "Call back",
   "Spotkanie",
   "Po spotkaniu",
+  "Oferta wysłana",
+  "Oferta zaakceptowana",
+  "Podpis elektroniczny",
   "Umowa",
+  "W realizacji",
+  "Zrealizowany",
   "Zwrot",
   "Rezygnacja",
   "Nie odebrał",
   "Błędny numer",
-  "Do weryfikacji"
+  "Do weryfikacji",
+  "Zimna baza"
 ];
 
 export const STATUS_TONES: Record<LeadStatus, string> = {
@@ -20,12 +26,18 @@ export const STATUS_TONES: Record<LeadStatus, string> = {
   "Call back": "bg-solar/20 text-[#8a5a00] border-solar/30",
   Spotkanie: "bg-[#e8f7f0] text-[#1d7556] border-[#bfe8d5]",
   "Po spotkaniu": "bg-[#edf7f2] text-[#226b59] border-[#c8e8dc]",
+  "Oferta wysłana": "bg-sky/10 text-sky border-sky/20",
+  "Oferta zaakceptowana": "bg-leaf/10 text-leaf border-leaf/20",
+  "Podpis elektroniczny": "bg-[#eef8e8] text-[#31701f] border-[#cde9c2]",
   Umowa: "bg-[#eef8e8] text-[#31701f] border-[#cde9c2]",
+  "W realizacji": "bg-[#fff6db] text-[#8a5a00] border-[#f2d27b]",
+  Zrealizowany: "bg-[#e8f7f0] text-[#1d7556] border-[#bfe8d5]",
   Zwrot: "bg-[#f2f4f7] text-muted border-line",
   Rezygnacja: "bg-danger/10 text-danger border-danger/20",
   "Nie odebrał": "bg-warn/10 text-warn border-warn/20",
   "Błędny numer": "bg-[#f7e8e8] text-danger border-[#e9c3c3]",
-  "Do weryfikacji": "bg-[#edf0ff] text-[#4254b8] border-[#cfd6ff]"
+  "Do weryfikacji": "bg-[#edf0ff] text-[#4254b8] border-[#cfd6ff]",
+  "Zimna baza": "bg-[#eef1f4] text-[#667085] border-[#d6dde6]"
 };
 
 export const STATUS_LABELS: Record<LeadStatus, string> = {
@@ -34,12 +46,18 @@ export const STATUS_LABELS: Record<LeadStatus, string> = {
   "Call back": "Call-back",
   Spotkanie: "Spotkanie",
   "Po spotkaniu": "Po spotkaniu",
+  "Oferta wysłana": "Oferta wysłana",
+  "Oferta zaakceptowana": "Oferta zaakceptowana",
+  "Podpis elektroniczny": "Podpis elektroniczny",
   Umowa: "Umowa",
+  "W realizacji": "W realizacji",
+  Zrealizowany: "Zrealizowany",
   Zwrot: "Zwrot",
   Rezygnacja: "Rezygnacja",
   "Nie odebrał": "Nie odebrał",
   "Błędny numer": "Błędny numer",
-  "Do weryfikacji": "Do weryfikacji"
+  "Do weryfikacji": "Do weryfikacji",
+  "Zimna baza": "Zimna baza"
 };
 
 export const ACTION_LABELS: Record<string, string> = {
@@ -74,10 +92,16 @@ export const STATUS_TILE_TONES: Record<LeadStatus, string> = {
   "Call back": "border-solar/40 bg-solar/20 text-[#8a5a00] hover:border-solar",
   Spotkanie: "border-[#9dddbf] bg-[#e8f7f0] text-[#1d7556] hover:border-leaf",
   "Po spotkaniu": "border-[#a9ded1] bg-[#edf7f2] text-[#226b59] hover:border-[#4fb391]",
+  "Oferta wysłana": "border-sky/30 bg-sky/10 text-sky hover:border-sky",
+  "Oferta zaakceptowana": "border-leaf/30 bg-leaf/10 text-leaf hover:border-leaf",
+  "Podpis elektroniczny": "border-[#97d49b] bg-[#e9f8eb] text-[#277333] hover:border-[#4cae55]",
   Umowa: "border-[#97d49b] bg-[#e9f8eb] text-[#277333] hover:border-[#4cae55]",
+  "W realizacji": "border-[#f2d27b] bg-[#fff6db] text-[#8a5a00] hover:border-solar",
+  Zrealizowany: "border-[#9dddbf] bg-[#e8f7f0] text-[#1d7556] hover:border-leaf",
   Zwrot: "border-line bg-[#f2f4f7] text-muted hover:border-muted",
   Rezygnacja: "border-danger/30 bg-danger/10 text-danger hover:border-danger",
   "Nie odebrał": "border-warn/30 bg-warn/10 text-warn hover:border-warn",
   "Błędny numer": "border-danger/30 bg-[#f7e8e8] text-danger hover:border-danger",
-  "Do weryfikacji": "border-[#bfc8ff] bg-[#edf0ff] text-[#4254b8] hover:border-[#6c7cf0]"
+  "Do weryfikacji": "border-[#bfc8ff] bg-[#edf0ff] text-[#4254b8] hover:border-[#6c7cf0]",
+  "Zimna baza": "border-[#d6dde6] bg-[#eef1f4] text-[#667085] hover:border-muted"
 };

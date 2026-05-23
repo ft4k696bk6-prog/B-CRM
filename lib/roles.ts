@@ -3,7 +3,7 @@ import type { LegacyUserRole, UserRole } from "@/lib/types";
 export const USER_ROLES = [
   "owner",
   "admin",
-  "menadzer",
+  "kierownik",
   "handlowiec",
   "finance",
   "viewer",
@@ -15,7 +15,7 @@ export const USER_ROLES = [
 export const ROLE_LABELS: Record<UserRole, string> = {
   owner: "Właściciel",
   admin: "Admin",
-  menadzer: "Menadżer",
+  kierownik: "Kierownik",
   handlowiec: "Handlowiec",
   finance: "Finanse",
   viewer: "Podgląd",
@@ -27,7 +27,7 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
   owner: "Pełna kontrola nad CRM, rolami, danymi, ustawieniami i eksportem.",
   admin: "Zarządza operacyjnie CRM, użytkownikami, importem, leadami i ustawieniami.",
-  menadzer: "Prowadzi zespół handlowców, rozdziela leady i kontroluje wyniki zespołu.",
+  kierownik: "Prowadzi zespół handlowców, rozdziela leady i kontroluje wyniki zespołu.",
   handlowiec: "Pracuje na własnych leadach, zadaniach, spotkaniach, ofertach i aktywnościach.",
   finance: "Widok finansowy: umowy, raporty i dane potrzebne do rozliczeń.",
   viewer: "Bezpieczny tryb tylko do odczytu dla audytu, zarządu lub obserwatorów.",
@@ -36,41 +36,13 @@ export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
   monter: "Obsługuje etap montażu i potwierdza wykonanie prac w terenie."
 };
 
-const DEMO_EMAIL_ROLES: Record<string, UserRole> = {
-  "demo@example.com": "admin",
-  "demo-menadzer@example.com": "menadzer",
-  "demo-handlowiec@example.com": "handlowiec",
-  "demo-ksiegowy@example.com": "ksiegowosc",
-  "demo-logistyk@example.com": "logistyk",
-  "demo-monter@example.com": "monter",
-  "demo-owner@example.com": "owner",
-  "demo-dyrektor-sprzedazy@example.com": "menadzer",
-  "demo-regionalny-wschod@example.com": "menadzer",
-  "demo-kierownik-b2b@example.com": "menadzer",
-  "demo-kierownik-b2c@example.com": "menadzer",
-  "demo-handlowiec-b2b@example.com": "handlowiec",
-  "demo-handlowiec-b2c@example.com": "handlowiec",
-  "demo-handlowiec-field@example.com": "handlowiec",
-  "demo-finanse@example.com": "finance",
-  "demo-dyrektor-operacyjny@example.com": "menadzer",
-  "demo-magazyn@example.com": "logistyk",
-  "demo-monter-2@example.com": "monter",
-  "demo-audyt@example.com": "viewer"
-};
-
-export const DEMO_USER_EMAILS = Object.keys(DEMO_EMAIL_ROLES);
-
 type RoleInput = UserRole | LegacyUserRole | string;
-
-export function isDemoUserEmail(email?: string | null) {
-  return Boolean(email && DEMO_USER_EMAILS.includes(email.toLowerCase()));
-}
 
 function mapRole(role?: RoleInput | null): UserRole | null {
   switch (role) {
     case "owner":
     case "admin":
-    case "menadzer":
+    case "kierownik":
     case "handlowiec":
     case "finance":
     case "viewer":
@@ -78,8 +50,9 @@ function mapRole(role?: RoleInput | null): UserRole | null {
     case "logistyk":
     case "monter":
       return role;
+    case "menadzer":
     case "manager":
-      return "menadzer";
+      return "kierownik";
     case "sales":
       return "handlowiec";
     case "accounting":
@@ -100,9 +73,6 @@ export function normalizeRole(
   email?: string | null,
   trustedRole?: RoleInput | null
 ): UserRole {
-  const demoRole = email ? DEMO_EMAIL_ROLES[email.toLowerCase()] : null;
-  if (demoRole) return demoRole;
-
   return mapRole(trustedRole) || mapRole(role) || "handlowiec";
 }
 
@@ -120,7 +90,7 @@ export function isSystemAdminRole(role?: RoleInput | null) {
 }
 
 export function isManagerRole(role?: RoleInput | null) {
-  return normalizeRole(role) === "menadzer";
+  return normalizeRole(role) === "kierownik";
 }
 
 export function isSalesRole(role?: RoleInput | null) {
@@ -149,7 +119,7 @@ export function isInstallerRole(role?: RoleInput | null) {
 
 export function canManageLeads(role?: RoleInput | null) {
   const normalized = normalizeRole(role);
-  return normalized === "owner" || normalized === "admin" || normalized === "menadzer";
+  return normalized === "owner" || normalized === "admin" || normalized === "kierownik";
 }
 
 export function canUseOperations(role?: RoleInput | null) {
@@ -167,7 +137,7 @@ export function canViewManagementDashboard(role?: RoleInput | null) {
   return (
     normalized === "owner" ||
     normalized === "admin" ||
-    normalized === "menadzer" ||
+    normalized === "kierownik" ||
     normalized === "finance" ||
     normalized === "viewer"
   );
@@ -183,12 +153,12 @@ export function canManageSystemSettings(role?: RoleInput | null) {
 
 export function canExportData(role?: RoleInput | null) {
   const normalized = normalizeRole(role);
-  return normalized === "owner" || normalized === "admin" || normalized === "menadzer" || normalized === "finance";
+  return normalized === "owner" || normalized === "admin" || normalized === "kierownik" || normalized === "finance";
 }
 
 export function canCreateManualLead(role?: RoleInput | null) {
   const normalized = normalizeRole(role);
-  return normalized === "owner" || normalized === "admin" || normalized === "menadzer" || normalized === "handlowiec";
+  return normalized === "owner" || normalized === "admin" || normalized === "kierownik" || normalized === "handlowiec";
 }
 
 export function homePathForRole(role?: RoleInput | null) {

@@ -1,4 +1,4 @@
-export type DemoCustomerRecord = {
+export type ContractCustomerRecord = {
   contractNumber: string;
   contractDate: string;
   sellerName: string;
@@ -23,7 +23,7 @@ export type DemoCustomerRecord = {
   warehouseNote: string;
 };
 
-export const demoContractData: DemoCustomerRecord = {
+export const referenceContractData: ContractCustomerRecord = {
   contractNumber: "BCRM/05/2026/017",
   contractDate: "2026-05-17",
   sellerName: "Anna Nowak",
@@ -48,7 +48,7 @@ export const demoContractData: DemoCustomerRecord = {
   warehouseNote: "Konstrukcja na dachówkę, czarne ramy paneli."
 };
 
-export const contractFieldLabels: Record<keyof DemoCustomerRecord, string> = {
+export const contractFieldLabels: Record<keyof ContractCustomerRecord, string> = {
   contractNumber: "Numer umowy",
   contractDate: "Data umowy",
   sellerName: "Opiekun",
@@ -73,7 +73,7 @@ export const contractFieldLabels: Record<keyof DemoCustomerRecord, string> = {
   warehouseNote: "Uwagi magazynowe"
 };
 
-export const demoCreditData = {
+export const referenceCreditData = {
   bank: "Bank Zielonej Energii",
   loanAmount: "39 237 PLN",
   ownPayment: "0 PLN",
@@ -83,7 +83,7 @@ export const demoCreditData = {
   scoring: "Bardzo dobry"
 };
 
-export const creditFieldLabels: Record<keyof typeof demoCreditData, string> = {
+export const creditFieldLabels: Record<keyof typeof referenceCreditData, string> = {
   bank: "Bank",
   loanAmount: "Kwota kredytu",
   ownPayment: "Wpłata własna",

@@ -1,35 +1,38 @@
-# B-CRM Architecture
+# Architektura B-CRM
 
 ## Stack
 
-- Next.js App Router, React and TypeScript.
-- Tailwind CSS for responsive UI.
-- Supabase Auth and PostgreSQL database.
-- Supabase SQL files for schema, RLS, policies, history and seed data.
-- Vercel deployment.
+- Next.js App Router, React i TypeScript.
+- Tailwind CSS do responsywnego UI.
+- Supabase Auth oraz PostgreSQL.
+- Pliki SQL Supabase dla schematu, RLS, polityk, historii i migracji.
+- Vercel jako wdrożenie aplikacji.
 
-## Application structure
+## Struktura aplikacji
 
-- `app/` contains route-level screens and API route handlers.
-- `components/` contains reusable CRM UI.
-- `lib/` contains role helpers, permissions, constants, pricing logic and Supabase setup.
-- `supabase/` contains database schema, functions, policies and demo data.
+- `app/` zawiera ekrany CRM i endpointy API.
+- `components/` zawiera wspólne komponenty UI.
+- `lib/` zawiera role, uprawnienia, stałe, cennik, import, dokumenty i konfigurację Supabase.
+- `supabase/` zawiera schemat bazy, funkcje, polityki i migracje.
+- `public/materials/` zawiera materiały sprzedażowe dostępne także offline.
 
-## Data flow
+## Przepływ danych
 
-The UI reads and writes CRM data through the Supabase client and selected Next.js route handlers. The route handlers are used where server-side validation or admin operations are needed.
+UI czyta i zapisuje dane przez klienta Supabase oraz wybrane endpointy Next.js. Endpointy są używane tam, gdzie potrzebna jest walidacja po stronie serwera, operacje admina albo integracja z zewnętrznym dostawcą.
 
-## Auth and roles
+Webhook Meta Lead Ads zapisuje nowe rekordy jako nieprzypisane leady produkcyjne. To jest wspólna pula leadów: owner, admin i kierownik widzą ją z roli, a handlowiec dopiero po włączeniu dostępu przez admina.
 
-Supabase Auth handles identity. Application roles are normalized in `lib/roles.ts` and permissions are centralized in `lib/permissions.ts`. SQL files in `supabase/` document the database side of security and RLS.
+## Logowanie i role
 
-## Deploy
+Supabase Auth odpowiada za tożsamość. Role aplikacji są normalizowane w `lib/roles.ts`, a uprawnienia w `lib/permissions.ts`. Pliki SQL w `supabase/` opisują bazową warstwę bezpieczeństwa i RLS.
 
-The app is deployed on Vercel. Supabase project URL, anon key and server-only service role key are configured through environment variables.
+## Wdrożenie
 
-## Known risks
+Aplikacja działa na Vercel. URL Supabase, klucz anon i serwerowy service role key są ustawiane przez zmienne środowiskowe. Sekrety nie trafiają do repozytorium.
 
-- Several route components are large and should be split gradually.
-- End-to-end coverage is still missing.
-- Error logging and analytics are basic.
-- Dense CRM tables need additional mobile UX work.
+## Ryzyka
+
+- Część ekranów jest duża i warto je dalej dzielić modułami.
+- Testy end-to-end wymagają rozbudowy.
+- Monitoring błędów i analityka powinny zostać dopięte przed większą skalą.
+- Gęste tabele CRM wymagają dalszej pracy pod telefon.

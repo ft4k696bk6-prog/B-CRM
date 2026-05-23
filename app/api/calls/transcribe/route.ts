@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { enumValue, optionalString, uuidString } from "@/lib/api-validation";
 import { transcriptActivityDescription, transcribeTwilioRecording } from "@/lib/call-transcription";
 import { canAccessLead, requireApiProfile } from "@/lib/server-auth";
-import { isDemoScope } from "@/lib/scope";
 import type { Lead } from "@/lib/types";
 
 type TranscribeBody = {
@@ -46,16 +45,6 @@ function parseSummary(text: string) {
       nextStep: "Ustal kolejny kontakt z klientem."
     };
   }
-}
-
-function demoSummary() {
-  return {
-    transcript:
-      "Klient potwierdził zainteresowanie ofertą. Pytał o płatność online, raty i termin montażu. Poprosił o link do oferty i kontakt następnego dnia.",
-    summary:
-      "Klient jest pozytywnie nastawiony do oferty. Najważniejsze tematy to rata, termin realizacji i możliwość akceptacji online.",
-    nextStep: "Wysłać ofertę z QR/linkiem i ustawić call-back na jutro po 12:00."
-  };
 }
 
 export async function POST(request: Request) {
@@ -133,23 +122,6 @@ export async function POST(request: Request) {
         metadata: { call_id: call.id, transcript }
       });
 
-      return NextResponse.json(updatedCall);
-    }
-
-    if (isDemoScope(auth.profile.crm_environment)) {
-      const fallback = demoSummary();
-      const { data: updatedCall, error } = await auth.supabaseAdmin
-        .from("lead_calls")
-        .update({
-          transcript: call.transcript || fallback.transcript,
-          ai_summary: call.ai_summary || fallback.summary,
-          ai_next_step: call.ai_next_step || fallback.nextStep
-        })
-        .eq("id", call.id)
-        .select("*, user_profile:user_id(id,email,full_name,role)")
-        .single();
-
-      if (error) return NextResponse.json({ error: error.message }, { status: 400 });
       return NextResponse.json(updatedCall);
     }
 

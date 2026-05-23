@@ -25,7 +25,7 @@ const statusLabels: Record<LeadCall["status"], string> = {
   busy: "Zajęte",
   no_answer: "Brak odpowiedzi",
   canceled: "Anulowana",
-  demo_completed: "Demo zakończone"
+  demo_completed: "Zapis rozmowy"
 };
 
 function durationLabel(seconds: number | null) {
@@ -118,11 +118,7 @@ export function LeadCallPanel({
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || "Nie udało się uruchomić połączenia.");
 
-      setNotice(
-        body.mode === "demo"
-          ? "Demo: CRM zasymulował połączenie i przygotował transkrypcję."
-          : "Połączenie uruchomione. Najpierw zadzwoni telefon użytkownika."
-      );
+      setNotice("Połączenie uruchomione. Najpierw zadzwoni telefon użytkownika.");
       setOpen(false);
       if (saveCallerPhone && callerPhone.trim()) onBusinessPhoneSaved?.(callerPhone.trim());
       await loadCalls();

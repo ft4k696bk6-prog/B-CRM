@@ -1,0 +1,6 @@
+app/ferrari
+public/showcase
+.playwright-cli
+test-results
+output
+.env.local

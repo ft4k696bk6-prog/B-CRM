@@ -1,66 +1,66 @@
-# B-CRM
+# B-CRM Energy
 
-B-CRM is a production-like CRM demo for sales teams that need to manage leads, statuses, callbacks, meetings, comments, offers and role-based workflows in one web app.
+B-CRM Energy to firmowy CRM dla sprzedaży i realizacji OZE. Łączy pozyskiwanie leadów, pracę handlowca w terenie, kalkulacje, wysyłkę oferty, bramki umowy, magazyn, montaż i obsługę klienta po podpisaniu dokumentów.
 
-PL: B-CRM to aplikacja CRM do obsługi leadów i procesu sprzedażowego, z rolami użytkowników, dashboardami, historią działań i bazą Supabase/PostgreSQL.
+Produkt jest projektowany pod zespoły podobne do Re-Energy System: szybka obsługa kontaktu, wygodna praca na telefonie, jasna kontrola kierownika i administratora oraz proces klienta spokojniejszy niż w typowym CRM.
 
-## Live demo
+## Zakres Produktu
 
-https://b-crm-berni.vercel.app/login
+- Role: `owner`, `admin`, `kierownik`, `handlowiec` oraz widoki finansów, księgowości, logistyki i montażu.
+- Leady i klienci: statusy, komentarze, pliki, przypomnienia, historia aktywności i pula nieprzypisanych leadów.
+- Import leadów: CSV/XLSX po eksporcie z Google Drive, deduplikacja po telefonie i e-mailu, zachowanie komentarzy w historii.
+- Meta Lead Ads: webhook dla formularzy, nowe leady trafiają do wspólnej puli widocznej dla owner/admin/kierownik.
+- Spotkanie handlowca: karta klienta, checklista, notatki, kalkulator, oferta i dalsze działania.
+- Oferta: wysyłka maila, strona oferty, zdarzenia otwarcia, kliknięcia i pobrania PDF.
+- Proces po umowie: klient, umowa, podpis online, bramki akceptacji, magazyn, montaż, zdjęcia i audyt.
+- PWA: materiały sprzedażowe dostępne offline, dolna nawigacja na telefonie i linki `tel:` do szybkiego dzwonienia.
+- Asystent techniczny: baza kompatybilności sprzętu i odpowiedzi tylko na podstawie dostępnych źródeł.
 
-Demo accounts are available on the login screen.
+## Materiały
 
-## Screenshots
+Materiały dla handlowca są w `public/materials/`:
 
-Screenshots should be added to `docs/screenshots/`. The README does not link placeholder images until real screenshots are committed.
+- `b-crm-energy-prezentacja.pdf`
+- `checklista-spotkania.pdf`
+- `net-billing.pdf`
+- `magazyn-energii.pdf`
+- `brama-umowy.pdf`
 
-## Features
+Prezentacja klienta nie zawiera tematów Pstryk, EMS ani AI. To zostaje po stronie researchu właściciela.
 
-- Supabase Auth login and protected application screens.
-- Roles and permissions for owner, admin, manager, sales, finance, viewer, accounting, logistics and installer workflows.
-- Lead management with ownership, statuses, comments, activity history, files and reminders.
-- Callback, meeting and calendar flows.
-- Admin dashboard, sales dashboard, management metrics and user management.
-- CSV import, filtered export and example lead CSV.
-- Offer/PDF-related calculators and print-ready offer view.
-- Supabase SQL files for tables, RLS, policies, demo users and sample data.
-
-## Tech stack
+## Technologia
 
 - Next.js App Router
 - React
 - TypeScript
-- Supabase Auth
-- PostgreSQL / Supabase Database
+- Supabase Auth i PostgreSQL
 - Tailwind CSS
 - Vercel
 - Vitest
 
-## Project structure
+## Struktura
 
-- `app/` — routes, dashboards, auth screens and API route handlers.
-- `components/` — reusable UI and CRM-specific components.
-- `lib/` — roles, permissions, constants, Supabase client, pricing and helper logic.
-- `supabase/` — schema, RLS, policies, functions and seed/demo SQL files.
-- `examples/` — CSV import example.
-- `docs/` — case study, architecture notes, roadmap, testing and issue backlog.
+- `app/` - ekrany CRM, strona oferty i API.
+- `components/` - shell aplikacji, UI i komponenty procesu.
+- `lib/` - role, uprawnienia, import, cennik, dokumenty, kompatybilność sprzętu i helpery.
+- `public/materials/` - materiały offline dla PWA.
+- `supabase/` - schema, RLS, migracje i SQL operacyjny.
+- `docs/` - architektura, testy, decyzje i research.
 
-## Getting started
+## Uruchomienie
 
 ```bash
-git clone https://github.com/ft4k696bk6-prog/B-CRM.git
-cd B-CRM
 npm install
 npm run dev
 ```
 
-Local URL:
+Adres lokalny:
 
 ```text
 http://localhost:3000
 ```
 
-Quality checks:
+Kontrola jakości:
 
 ```bash
 npm run lint
@@ -69,72 +69,58 @@ npm run test
 npm run build
 ```
 
-## Environment variables
+## Środowisko
 
-Create `.env.local` from `.env.example`.
+Utwórz `.env.local` na podstawie `.env.example`.
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-NEXT_PUBLIC_DEMO_MODE=false
 NEXT_PUBLIC_APP_URL=
 
 TWILIO_ACCOUNT_SID=
 TWILIO_AUTH_TOKEN=
 TWILIO_CALLER_ID=
 
+RESEND_API_KEY=
+OFFER_FROM_EMAIL=
+
+META_LEAD_ADS_VERIFY_TOKEN=
+META_PAGE_ACCESS_TOKEN=
+META_LEAD_ADS_ACCESS_TOKEN=
+META_GRAPH_VERSION=
+META_APP_SECRET=
+
 OPENAI_API_KEY=
-OPENAI_TRANSCRIPTION_MODEL=gpt-4o-mini-transcribe
-OPENAI_SUMMARY_MODEL=gpt-4.1-mini
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` must stay server-side only. If a real service role key is ever committed, rotate it in Supabase immediately.
-Twilio variables enable real click-to-call. Without them, demo accounts use a safe simulated call flow. `OPENAI_API_KEY` enables transcription and AI summaries for recorded calls.
+Klucze serwisowe, tokeny dostawców i dane prywatne zostają wyłącznie po stronie serwera. Dane klientów i leadów nie powinny trafiać do repozytorium.
 
-## Database
+## Baza Danych
 
-SQL files are stored in `supabase/`. Apply them in order when creating a fresh Supabase project. The most important files are:
+SQL z `supabase/` uruchamiaj kolejno na osobnym projekcie Supabase dla tej wersji produktu. Najważniejsze migracje Energy V2:
 
-- `supabase/01_tables.sql` — main tables.
-- `supabase/02*_*.sql` — security, history and RLS policies.
-- `supabase/05_roles_users_demo.sql` — demo roles and users.
-- `supabase/06_manager_hierarchy.sql` — manager/team hierarchy.
-- `supabase/07_roles_permissions_security.sql` — role and permission hardening.
-- `supabase/sample-data.sql` and `supabase/seed_demo_users.sql` — optional demo data.
+- `supabase/11_bcrm_energy_v2.sql` - role, statusy, klienci, umowy, proces, magazyn, kompatybilność sprzętu, importy i powiadomienia.
+- `supabase/12_email_send_guard.sql` - bezpieczna wysyłka ofert, blokada duplikatów i tracking doręczeń.
+- `supabase/13_shared_lead_pool.sql` - wspólna pula nieprzypisanych leadów i kontrola widoczności dla handlowców.
 
-## Documentation
+Cel obciążeniowy to 250 tys. leadów. Widoki listowe pracują z paginacją i indeksami pod status, przypisanie, daty oraz klucze deduplikacji.
 
-- `docs/CASE_STUDY.md`
-- `docs/OVERVIEW.md`
-- `docs/ARCHITECTURE.md`
-- `docs/ROADMAP.md`
-- `docs/TESTING.md`
-- `docs/DECISIONS.md`
-- `docs/CHANGELOG.md`
-- `docs/ISSUES_TO_CREATE.md`
+## Integracje
 
-## What I learned
+- Google Drive: import po eksporcie pliku do CSV/XLSX i wysyłce przez `/api/leads/import`.
+- Meta Lead Ads: `/api/integrations/meta/leads`; leady wpadają do wspólnej puli bez przypisywania do handlowca.
+- Oferty: `/api/offers/email` oraz `/oferty/[token]` do śledzenia otwarcia, kliknięć i pobrania PDF.
+- Podpis online: model danych `signature_requests`; dostawca SMS/Autenti wymaga osobnej decyzji biznesowej i prawnej.
 
-- Designing role-based CRM screens and permission helpers.
-- Working with Supabase Auth, PostgreSQL data and RLS-oriented SQL.
-- Building lead status workflows, callbacks, meetings and activity history.
-- Organizing a larger Next.js application with shared CRM helpers.
-- Preparing production-like documentation, CI and tests for a portfolio project.
+## Testy
 
-## Roadmap
+Aktualne testy obejmują role, uprawnienia, stałe statusów, bezpieczną wysyłkę maili i normalizację importu leadów. Pełny release powinien przejść:
 
-- Expand Vitest coverage around lead workflows and validation.
-- Add Playwright smoke tests for login and dashboard navigation.
-- Split the largest route components into smaller domain modules.
-- Improve Supabase error states and logging.
-- Add analytics for key demo flows.
-- Improve mobile UX for dense CRM tables.
-
-## Status
-
-Production-like CRM demo.
-
-## License
-
-MIT.
+- lint, typecheck, testy jednostkowe i build produkcyjny,
+- smoke test desktop/mobile/PWA,
+- import próbny i import duplikatów,
+- kontrolę dostępu dla ról,
+- tracking oferty,
+- odpowiedź asystenta dla brakujących danych sprzętu bez zgadywania.

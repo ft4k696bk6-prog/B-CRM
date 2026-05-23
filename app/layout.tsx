@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { LanguageProvider } from "@/components/language-provider";
+import { PwaRegister } from "@/components/pwa-register";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "B-CRM",
-  description: "CRM sprzedażowo-operacyjny dla firm OZE",
+  title: "B-CRM Energy",
+  description: "CRM Energy dla sprzedaży, procesu klienta, magazynu i montażu.",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "B-CRM"
+    title: "B-CRM Energy"
   }
 };
 
@@ -26,7 +27,10 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang="pl">
       <body>
         <LanguageProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            <PwaRegister />
+            {children}
+          </ThemeProvider>
         </LanguageProvider>
       </body>
     </html>

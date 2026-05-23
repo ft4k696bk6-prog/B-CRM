@@ -3,10 +3,8 @@
 import { useMemo, useState } from "react";
 import { Banknote, BatteryCharging, Calculator, Minus, Percent, Plus, Printer, Zap } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { useLanguage } from "@/components/language-provider";
 import { LoadingScreen } from "@/components/loading-screen";
 import { PageHeader } from "@/components/ui";
-import { demoContractData } from "@/lib/demo-documents";
 import {
   EXTRA_NET_PRICES,
   INCLUDED_TOTAL_MARGIN_NET,
@@ -23,7 +21,6 @@ import {
   recommendedInverter
 } from "@/lib/pricing";
 import { usePricingSettings } from "@/lib/pricing-settings";
-import { isDemoScope } from "@/lib/scope";
 import { useAuth } from "@/lib/use-auth";
 
 type VatRate = 8 | 23;
@@ -80,7 +77,7 @@ const calculatorCopy = {
     horizontal: "Poziomy",
     rainwater: "System magazynowania deszczówki",
     rainwaterNone: "Bez systemu",
-    cable: "Kabel powyżej 8 m",
+    cable: "Łączna długość kabla",
     adjustment: "Korekta ręczna",
     financing: "Finansowanie",
     subsidy: "Dotacja / wpłata",
@@ -100,61 +97,6 @@ const calculatorCopy = {
     billCoverage: "Pokrycie rachunków",
     projectedCost: "Prognozowany koszt prądu przez 10 lat"
   },
-  en: {
-    title: "Calculators",
-    description: "Prepare a configuration, check the installment and save an offer for the client.",
-    offerTab: "Offer",
-    profitabilityTab: "Profitability",
-    useClient: "Use client data",
-    configuration: "Configuration",
-    customer: "Client / offer recipient",
-    customerPlaceholder: "e.g. John Smith",
-    phone: "Client phone",
-    phonePlaceholder: "e.g. 500 600 700",
-    offerMode: "Offer variant",
-    vatRate: "VAT rate",
-    pvOnly: "PV only",
-    pvOnlySub: "Photovoltaic installation",
-    pvStorage: "PV + storage",
-    pvStorageSub: "Installation with storage",
-    storageOnly: "Storage only",
-    storageOnlySub: "Storage + inverter",
-    panels: "JA Solar 500 W module count",
-    panelsHint: (count: number, kwp: string) => `${count} modules produce ${kwp} kWp.`,
-    storagePower: "Storage capacity",
-    storageBrand: "Storage brand",
-    storageProduct: "Energy storage",
-    inverterPower: "Inverter power",
-    extras: "Add-ons",
-    groundMount: "Ground mount",
-    triangles: "Roof triangles",
-    boiler: "Boiler",
-    boilerNone: "No boiler",
-    boilerLayout: "Boiler layout",
-    vertical: "Vertical",
-    horizontal: "Horizontal",
-    rainwater: "Rainwater storage system",
-    rainwaterNone: "No system",
-    cable: "Cable above 8 m",
-    adjustment: "Manual adjustment",
-    financing: "Financing",
-    subsidy: "Subsidy / own payment",
-    months: "Months",
-    annualRate: "Annual interest %",
-    print: "Print / save PDF",
-    clientData: "Client data",
-    monthlyBill: "Monthly bill",
-    annualConsumption: "Annual consumption kWh",
-    energyPrice: "Purchase price per 1 kWh",
-    production: "Production per 1 kWp",
-    annualGrowth: "Annual price growth %",
-    selfConsumption: (value: number) => `Self-consumption used in simulation: ${value}%.`,
-    annualProduction: "Annual production",
-    selfConsumptionShort: "Self-consumption",
-    annualSavings: "Annual savings",
-    billCoverage: "Bill coverage",
-    projectedCost: "Projected energy cost over 10 years"
-  }
 } as const;
 
 function gross(value: number, vatRate: VatRate) {
@@ -183,8 +125,7 @@ function boilerImageFor(layout: BoilerLayout) {
 }
 
 export default function CalculatorsPage() {
-  const { loading, profile } = useAuth(["owner", "admin", "menadzer", "handlowiec", "finance"]);
-  const { language } = useLanguage();
+  const { loading, profile } = useAuth(["owner", "admin", "kierownik", "handlowiec", "finance"]);
   const { settings } = usePricingSettings(profile?.role);
   const [tab, setTab] = useState<CalculatorTab>("offer");
   const [vatRate, setVatRate] = useState<VatRate>(8);
@@ -211,7 +152,7 @@ export default function CalculatorsPage() {
   const [boilerLayout, setBoilerLayout] = useState<BoilerLayout>("vertical");
   const [rainwater, setRainwater] = useState<RainwaterSystem>("none");
   const [backup, setBackup] = useState(false);
-  const [extraCableMeters, setExtraCableMeters] = useState(0);
+  const [totalCableMeters, setTotalCableMeters] = useState(8);
   const [manualAdjustment, setManualAdjustment] = useState(0);
   const [subsidy, setSubsidy] = useState(0);
   const [loanMonths, setLoanMonths] = useState(120);
@@ -274,7 +215,7 @@ export default function CalculatorsPage() {
       boilerNet +
       rainwaterNet +
       (backup ? EXTRA_NET_PRICES.backup : 0) +
-      extraCableMeters * EXTRA_NET_PRICES.cablePerMeterAbove8m +
+      Math.max(totalCableMeters - 8, 0) * EXTRA_NET_PRICES.cablePerMeterAbove8m +
       manualAdjustment;
     const finalNet = Math.max(baseNet + settings.adminMargin + settings.salesMargin + extrasNet, 0);
     const finalGross = gross(finalNet, vatRate);
@@ -290,7 +231,6 @@ export default function CalculatorsPage() {
   }, [
     backup,
     boiler,
-    extraCableMeters,
     groundMount,
     inverter.net,
     loanMonths,
@@ -304,14 +244,14 @@ export default function CalculatorsPage() {
     settings.salesMargin,
     storageProduct.net,
     subsidy,
+    totalCableMeters,
     triangles,
     vatRate
   ]);
 
   if (loading || !profile) return <LoadingScreen />;
 
-  const copy = calculatorCopy[language];
-  const isDemo = isDemoScope(profile.crm_environment);
+  const copy = calculatorCopy.pl;
 
   const offerTitle =
     offerMode === "pv"
@@ -348,14 +288,6 @@ export default function CalculatorsPage() {
     }, 500);
   }
 
-  function useDemoClientData() {
-    setCustomerName(demoContractData.clientName);
-    setCustomerPhone(demoContractData.phone);
-    setSubsidy(5000);
-    setLoanMonths(120);
-    setLoanRate(6.5);
-  }
-
   return (
     <AppShell profile={profile}>
       <div className="grid gap-5" data-tour-id="tour-calculators">
@@ -365,11 +297,6 @@ export default function CalculatorsPage() {
           className="no-print"
           actions={
           <>
-            {isDemo ? (
-              <button type="button" onClick={useDemoClientData} className="btn-secondary">
-                {copy.useClient}
-              </button>
-            ) : null}
             <div className="inline-flex rounded-lg border border-line bg-white p-1 shadow-sm">
               <button type="button" onClick={() => setTab("offer")} className={`rounded-md px-4 py-2 text-sm font-bold transition ${tab === "offer" ? "bg-ink text-white" : "text-muted hover:bg-[#eef3f8]"}`}>
                 {copy.offerTab}
@@ -514,7 +441,7 @@ export default function CalculatorsPage() {
                     </select>
                   </label>
                   <Toggle label="Backup" checked={backup} onChange={setBackup} />
-                  <NumberField label={copy.cable} value={extraCableMeters} min={0} onChange={setExtraCableMeters} />
+                  <NumberField label={copy.cable} value={totalCableMeters} min={0} onChange={setTotalCableMeters} />
                   <NumberField label={copy.adjustment} value={manualAdjustment} onChange={setManualAdjustment} />
                 </div>
               </section>

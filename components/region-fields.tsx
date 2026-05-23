@@ -1,7 +1,6 @@
 "use client";
 
 import { POLISH_REGIONS, VOIVODESHIPS } from "@/lib/poland-regions";
-import { useLanguage } from "@/components/language-provider";
 
 type RegionFieldsProps = {
   voivodeship: string;
@@ -27,25 +26,15 @@ export function RegionFields({
   className = "",
   allowEmpty = true
 }: RegionFieldsProps) {
-  const { language } = useLanguage();
   const counties = voivodeship ? POLISH_REGIONS[voivodeship] || [] : [];
   const countyOptions = county && !counties.includes(county) ? [county, ...counties] : counties;
-  const labels =
-    language === "en"
-      ? {
-          voivodeship: "Voivodeship",
-          county: "County",
-          chooseVoivodeship: "Choose voivodeship",
-          chooseCounty: "Choose county",
-          chooseVoivodeshipFirst: "Choose voivodeship first"
-        }
-      : {
-          voivodeship: "Województwo",
-          county: "Powiat",
-          chooseVoivodeship: "Wybierz województwo",
-          chooseCounty: "Wybierz powiat",
-          chooseVoivodeshipFirst: "Najpierw województwo"
-        };
+  const labels = {
+    voivodeship: "Województwo",
+    county: "Powiat",
+    chooseVoivodeship: "Wybierz województwo",
+    chooseCounty: "Wybierz powiat",
+    chooseVoivodeshipFirst: "Najpierw województwo"
+  };
 
   return (
     <div className={`grid gap-3 sm:grid-cols-2 ${className}`}>

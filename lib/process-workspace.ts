@@ -1,4 +1,4 @@
-import { demoContractData, type DemoCustomerRecord } from "@/lib/demo-documents";
+import { referenceContractData, type ContractCustomerRecord } from "@/lib/contract-documents";
 import { normalizeRole } from "@/lib/roles";
 import type { Lead, Profile, UserRole } from "@/lib/types";
 
@@ -17,12 +17,11 @@ export type ProcessClient = {
   updatedAt: string | null;
   ownerName: string | null;
   ownerRole: UserRole | null;
-  isDemo?: boolean;
 };
 
 export const workflowSteps: Array<{ key: WorkflowKey; ownerRole: UserRole }> = [
   { key: "sales", ownerRole: "handlowiec" },
-  { key: "manager", ownerRole: "menadzer" },
+  { key: "manager", ownerRole: "kierownik" },
   { key: "accounting", ownerRole: "ksiegowosc" },
   { key: "logistics", ownerRole: "logistyk" },
   { key: "installer", ownerRole: "monter" }
@@ -98,7 +97,7 @@ export function saveSelectedProcessId(storageKey: string, processId: string) {
   window.localStorage.setItem(storageKey, processId);
 }
 
-export function demoWorkflowForProcess(client: ProcessClient): WorkflowMap {
+export function defaultWorkflowForProcess(client: ProcessClient): WorkflowMap {
   const seed = client.id.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
   const variants: WorkflowMap[] = [
     { sales: "done", manager: "active", accounting: "pending", logistics: "pending", installer: "pending" },
@@ -135,7 +134,8 @@ export function toggleWorkflowStatus(current: WorkflowMap, step: WorkflowKey): W
 }
 
 export function workflowForProcess(client: ProcessClient, workflows: Record<string, WorkflowMap>) {
-  return normalizeWorkflowState(workflows[client.id] || demoWorkflowForProcess(client));
+  if (!client.id) return normalizeWorkflowState(initialWorkflow);
+  return normalizeWorkflowState(workflows[client.id] || defaultWorkflowForProcess(client));
 }
 
 export function leadToProcessClient(lead: Lead): ProcessClient {
@@ -157,29 +157,28 @@ export function leadToProcessClient(lead: Lead): ProcessClient {
   };
 }
 
-export function demoProcessClient(): ProcessClient {
+export function emptyProcessClient(): ProcessClient {
   return {
-    id: "demo-process",
-    fullName: demoContractData.clientName,
-    phone: demoContractData.phone,
-    status: "Umowa",
-    contractNumber: demoContractData.contractNumber,
-    source: "Demo",
-    createdAt: demoContractData.contractDate,
-    updatedAt: demoContractData.contractDate,
-    ownerName: demoContractData.sellerName,
-    ownerRole: "handlowiec",
-    isDemo: true
+    id: "",
+    fullName: "",
+    phone: null,
+    status: null,
+    contractNumber: null,
+    source: null,
+    createdAt: null,
+    updatedAt: null,
+    ownerName: null,
+    ownerRole: null
   };
 }
 
-export function contractDataFromProcess(client: ProcessClient): DemoCustomerRecord {
+export function contractDataFromProcess(client: ProcessClient): ContractCustomerRecord {
   return {
-    ...demoContractData,
-    contractNumber: client.contractNumber || demoContractData.contractNumber,
-    clientName: client.fullName || demoContractData.clientName,
-    phone: client.phone || demoContractData.phone,
-    sellerName: client.ownerName || demoContractData.sellerName
+    ...referenceContractData,
+    contractNumber: client.contractNumber || referenceContractData.contractNumber,
+    clientName: client.fullName || referenceContractData.clientName,
+    phone: client.phone || referenceContractData.phone,
+    sellerName: client.ownerName || referenceContractData.sellerName
   };
 }
 
@@ -191,4 +190,3 @@ export function formatProcessDate(value: string | null, locale: string) {
     timeStyle: "short"
   }).format(new Date(value));
 }
-

@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { optionalString, uuidString } from "@/lib/api-validation";
 import { normalizePhoneForDial } from "@/lib/phone";
 import { appBaseUrl, canAccessLead, requireApiProfile } from "@/lib/server-auth";
-import { isDemoScope } from "@/lib/scope";
 import type { Lead } from "@/lib/types";
 
 type StartCallBody = {
@@ -11,9 +10,6 @@ type StartCallBody = {
   recordingConsent?: boolean;
   saveCallerPhone?: boolean;
 };
-
-const demoTranscript =
-  "Klient potwierdził zainteresowanie ofertą PV z magazynem energii. Pytał o ratę, termin montażu i możliwość płatności online po akceptacji oferty.";
 
 function twilioConfigured() {
   return Boolean(
@@ -74,8 +70,6 @@ export async function POST(request: Request) {
     }
 
     const webhookToken = crypto.randomUUID();
-    const isDemo = isDemoScope(auth.profile.crm_environment);
-    const shouldSimulate = isDemo;
     const timestamp = new Date().toISOString();
 
     const { data: call, error: callError } = await auth.supabaseAdmin
@@ -86,18 +80,14 @@ export async function POST(request: Request) {
         crm_environment: auth.profile.crm_environment,
         user_phone: callerPhone,
         customer_phone: customerPhone,
-        status: shouldSimulate ? "demo_completed" : "queued",
+        status: "queued",
         recording_consent: Boolean(body.recordingConsent),
         webhook_token: webhookToken,
-        duration_seconds: shouldSimulate ? 214 : null,
-        transcript: shouldSimulate ? demoTranscript : null,
-        ai_summary: shouldSimulate
-          ? "Klient jest zainteresowany ofertą i chce dostać link z podsumowaniem oraz wariantem ratalnym."
-          : null,
-        ai_next_step: shouldSimulate ? "Wysłać ofertę online i ustawić call-back na jutro po 12:00." : null,
-        metadata: shouldSimulate
-          ? { mode: "demo", simulated_at: timestamp }
-          : { mode: "twilio", started_at: timestamp }
+        duration_seconds: null,
+        transcript: null,
+        ai_summary: null,
+        ai_next_step: null,
+        metadata: { mode: "twilio", started_at: timestamp }
       })
       .select("*, user_profile:user_id(id,email,full_name,role)")
       .single();
@@ -110,19 +100,6 @@ export async function POST(request: Request) {
         );
       }
       return NextResponse.json({ error: callError?.message || "Nie udało się zapisać rozmowy." }, { status: 400 });
-    }
-
-    if (shouldSimulate) {
-      await auth.supabaseAdmin.from("lead_activities").insert({
-        lead_id: lead.id,
-        user_id: auth.profile.id,
-        activity_type: "call_logged",
-        title: "Rozmowa demo zakończona",
-        description: "CRM zasymulował połączenie i przygotował notatkę AI.",
-        metadata: { call_id: call.id }
-      });
-
-      return NextResponse.json({ call, mode: "demo" });
     }
 
     if (!twilioConfigured()) {

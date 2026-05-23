@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { normalizeRole } from "@/lib/roles";
-import { isDemoScope, normalizeCrmScope } from "@/lib/scope";
+import { normalizeCrmScope } from "@/lib/scope";
 
 type KsefAction = "prepare_accounting_package" | "send_ksef_invoice";
 
@@ -79,16 +79,16 @@ export async function POST(request: Request) {
     const endpoint = process.env.KSEF_API_URL;
     const tokenValue = process.env.KSEF_API_TOKEN;
 
-    if (isDemoScope(crmEnvironment) || !endpoint || !tokenValue) {
+    if (crmEnvironment !== "production" || !endpoint || !tokenValue) {
       return NextResponse.json({
-        mode: "demo",
+        mode: "prepared",
         sent: false,
         title:
           body.action === "send_ksef_invoice"
-            ? "Demo KSeF: wysyłka zatrzymana"
-            : "Demo KSeF: paczka księgowa gotowa",
+            ? "KSeF: wysyłka zatrzymana"
+            : "KSeF: paczka księgowa gotowa",
         message:
-          "Środowisko nie ma skonfigurowanych danych produkcyjnych KSeF, więc CRM pokazuje gotowy payload i bezpiecznie nie wysyła danych klienta.",
+          "Integracja KSeF nie jest jeszcze skonfigurowana. CRM przygotował paczkę księgową bez wysyłki danych klienta.",
         payload
       });
     }

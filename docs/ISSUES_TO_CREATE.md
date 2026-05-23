@@ -1,12 +1,12 @@
-# Issues to create
+# Zadania do utworzenia
 
-- Refactor admin dashboard into smaller components.
-- Refactor realization page into domain sections.
-- Add Playwright smoke tests for login and dashboard navigation.
-- Add lead status transition tests.
-- Improve error states for Supabase requests.
-- Add screenshots to README and docs.
-- Improve role-based access documentation.
-- Add demo data seed/reset script.
-- Improve mobile layout for dashboard tables.
-- Add structured error logging for API route handlers.
+- Podzielić panel admina na mniejsze komponenty.
+- Podzielić ekran realizacji na sekcje domenowe.
+- Dodać smoke testy Playwright dla logowania i nawigacji.
+- Dodać testy przejść statusów leadów.
+- Poprawić stany błędów dla zapytań Supabase.
+- Dodać zrzuty ekranów do README i dokumentacji.
+- Rozszerzyć dokumentację dostępu według ról.
+- Dodać bezpieczny skrypt resetu danych testowych.
+- Poprawić mobilny układ gęstych tabel.
+- Dodać strukturalne logowanie błędów w endpointach API.

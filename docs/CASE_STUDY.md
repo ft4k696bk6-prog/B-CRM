@@ -1,65 +1,55 @@
-# B-CRM Case Study
+# B-CRM Energy: opis wdrożenia
 
 ## Problem
 
-Sales teams handling inbound leads need one place to control ownership, statuses, callbacks, meetings, comments, files and the next action on each lead.
+Firmy OZE potrzebują jednego miejsca do kontroli leadów, właściciela kontaktu, statusów, oddzwonień, spotkań, ofert, sprawdzeń technicznych, plików i następnego kroku z klientem.
 
-## Goal
+## Cel
 
-Build a web app that organizes the lead workflow and gives different views to admin, manager and sales users.
+B-CRM Energy porządkuje proces od pozyskania leada do realizacji. Każda rola widzi tylko to, co jest potrzebne do pracy: właściciel i admin kontrolują całość, kierownik pilnuje zespołu, handlowiec prowadzi kontakt, a role operacyjne przejmują temat po umowie.
 
-## Users and roles
+## Role
 
-- Admin: manages users, roles, imports, team structure, settings and global lead visibility.
-- Manager: manages team leads, assignment, team metrics and operational follow-up.
-- Sales representative: works on assigned leads, statuses, comments, callbacks, meetings and offers.
+- Właściciel/admin: użytkownicy, role, importy, struktura zespołu, ustawienia i globalna widoczność leadów.
+- Kierownik: pula leadów, przypisania, wyniki zespołu i bramki umów.
+- Handlowiec: przypisane leady, statusy, komentarze, callbacki, spotkania i oferty.
+- Role operacyjne: finanse, księgowość, logistyka i montaż z węższym dostępem.
 
-The code also includes finance, viewer, accounting, logistics and installer roles for narrower operational access.
+## Funkcje
 
-## Key features
+- Logowanie i ochrona ekranów.
+- Uprawnienia oparte o role.
+- Panel wyników i widoki operacyjne.
+- Zarządzanie leadami, klientami i statusami.
+- Komentarze, oddzwonienia, spotkania i historia aktywności.
+- Import CSV/XLSX przygotowany pod pliki z Google Drive.
+- Wysyłka oferty, tracking i materiały PDF.
+- Materiały sprzedażowe offline w PWA.
+- Asystent kompatybilności sprzętu.
+- Panel admina do użytkowników i dostępu do puli leadów.
 
-- Login and protected screens.
-- Role and permission helpers.
-- Dashboard views.
-- Lead management and lead statuses.
-- Comments, callbacks, meetings and activity history.
-- CSV import/export.
-- Offer/PDF-oriented calculators.
-- Admin user management.
+## Technologia
 
-## Stack
+React, TypeScript, Next.js, Supabase, PostgreSQL, Tailwind CSS i Vercel.
 
-React, TypeScript, Next.js, Supabase, PostgreSQL, Tailwind CSS and Vercel.
+## Decyzje
 
-## Technical decisions
+- Supabase łączy logowanie, PostgreSQL, RLS i szybkie wdrożenie.
+- Logika ról jest w `lib/roles.ts`, a uprawnienia w `lib/permissions.ts`.
+- Dane trzymamy w tabelach PostgreSQL z katalogu `supabase/`.
+- Ekrany są podzielone na admina, sprzedaż, kalendarz, kalkulatory, import, użytkowników i szczegóły leada.
+- Najważniejsze ryzyka produkcyjne to monitoring, dalsze testy end-to-end i przegląd RLS przed większą skalą.
 
-- Supabase is used because it combines auth, PostgreSQL, RLS and fast deployment-friendly setup.
-- Role logic is centralized in `lib/roles.ts`; permissions are centralized in `lib/permissions.ts`.
-- Data is stored in PostgreSQL tables defined in `supabase/`, with policies and helper functions documented as SQL.
-- Views are split by route: admin/manager dashboard, sales dashboard, calendar, calculators, users, import and lead details.
-- Main limitations are large route components, limited e2e testing and the need for stronger production monitoring.
+## Następne kroki
 
-## What I learned
+- Rozbudować testy end-to-end.
+- Dodać monitoring i alerty produkcyjne.
+- Dalej dzielić największe ekrany na moduły domenowe.
+- Rozwinąć mobilne widoki tabel i list.
+- Przejść dodatkowy przegląd bezpieczeństwa RLS.
 
-- Designing role-based application flows.
-- Working with PostgreSQL-backed data and Supabase Auth.
-- Building dashboards around operational metrics.
-- Managing lead statuses and next-action workflow.
-- Organizing a larger Next.js app with shared helpers.
-- Preparing deployment and technical documentation.
+## Linki
 
-## Next improvements
-
-- Add more unit and e2e tests.
-- Add CI checks for every push and pull request.
-- Split large components into domain modules.
-- Improve error logging and analytics.
-- Improve mobile UX for tables.
-- Add stronger security review and technical docs around RLS.
-
-## Links
-
-- Live demo: https://b-crm-berni.vercel.app/login
-- GitHub: https://github.com/ft4k696bk6-prog/B-CRM
-- README: ../README.md
-- Screenshots: `docs/screenshots/`
+- GitHub: `https://github.com/ft4k696bk6-prog/B-CRM`
+- README: `../README.md`
+- Zrzuty ekranów: `docs/screenshots/`

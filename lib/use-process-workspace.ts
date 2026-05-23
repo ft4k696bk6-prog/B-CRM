@@ -1,11 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { isDemoScope } from "@/lib/scope";
 import { supabase } from "@/lib/supabase";
 import type { Lead, Profile } from "@/lib/types";
 import {
-  demoProcessClient,
+  emptyProcessClient,
   leadToProcessClient,
   readSelectedProcessId,
   readStoredWorkflows,
@@ -37,16 +36,14 @@ export function useProcessWorkspace(profile: Profile | null): ProcessWorkspaceSt
   const [processLeads, setProcessLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [selectedProcessId, setSelectedProcessId] = useState(demoProcessClient().id);
+  const [selectedProcessId, setSelectedProcessId] = useState("");
   const [workflowByProcess, setWorkflowByProcess] = useState<Record<string, WorkflowMap>>({});
 
   const processClients = useMemo<ProcessClient[]>(() => {
-    const clients = processLeads.map(leadToProcessClient);
-    if (clients.length > 0) return clients;
-    return profile && isDemoScope(profile.crm_environment) ? [demoProcessClient()] : [];
-  }, [processLeads, profile]);
+    return processLeads.map(leadToProcessClient);
+  }, [processLeads]);
 
-  const selectedProcess = processClients.find((client) => client.id === selectedProcessId) || processClients[0] || demoProcessClient();
+  const selectedProcess = processClients.find((client) => client.id === selectedProcessId) || processClients[0] || emptyProcessClient();
   const selectedWorkflow = workflowForProcess(selectedProcess, workflowByProcess);
   const hasProcessClients = processClients.length > 0;
 
@@ -83,7 +80,7 @@ export function useProcessWorkspace(profile: Profile | null): ProcessWorkspaceSt
   useEffect(() => {
     if (!profile) return;
     setWorkflowByProcess(readStoredWorkflows(workflowStorageKeyFor(profile)));
-    setSelectedProcessId(readSelectedProcessId(selectedProcessStorageKeyFor(profile)) || demoProcessClient().id);
+    setSelectedProcessId(readSelectedProcessId(selectedProcessStorageKeyFor(profile)) || "");
     void loadProcesses();
   }, [loadProcesses, profile]);
 
@@ -130,4 +127,3 @@ export function useProcessWorkspace(profile: Profile | null): ProcessWorkspaceSt
     reload: loadProcesses
   };
 }
-

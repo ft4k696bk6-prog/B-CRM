@@ -10,22 +10,22 @@ import {
 
 describe("role helpers", () => {
   it("maps legacy role names to current role names", () => {
-    expect(normalizeRole("manager")).toBe("menadzer");
+    expect(normalizeRole("manager")).toBe("kierownik");
     expect(normalizeRole("sales")).toBe("handlowiec");
     expect(normalizeRole("accounting")).toBe("ksiegowosc");
     expect(normalizeRole("installer")).toBe("monter");
   });
 
-  it("uses demo account emails as trusted role hints", () => {
-    expect(normalizeRole(undefined, "demo-menadzer@example.com")).toBe("menadzer");
-    expect(normalizeRole(undefined, "demo-handlowiec@example.com")).toBe("handlowiec");
+  it("uses stored and trusted auth roles instead of email aliases", () => {
+    expect(normalizeRole(undefined, "kierownik@example.com", "manager")).toBe("kierownik");
+    expect(normalizeRole(undefined, "handlowiec@example.com", "sales")).toBe("handlowiec");
   });
 
   it("keeps management operations away from sales users", () => {
     expect(canManageLeads("admin")).toBe(true);
-    expect(canManageLeads("menadzer")).toBe(true);
+    expect(canManageLeads("kierownik")).toBe(true);
     expect(canManageLeads("handlowiec")).toBe(false);
-    expect(canManageUsers("menadzer")).toBe(false);
+    expect(canManageUsers("kierownik")).toBe(false);
   });
 
   it("routes users to role-specific home screens", () => {

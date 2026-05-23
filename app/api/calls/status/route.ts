@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { transcriptActivityDescription, transcribeTwilioRecording } from "@/lib/call-transcription";
+import { checkServerRateLimit, rateLimitResponse, verifyTwilioSignature } from "@/lib/request-security";
 import { getServiceClient } from "@/lib/server-auth";
 
 function mapTwilioStatus(status: string | null) {
@@ -35,7 +36,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Brak tokenu webhooka." }, { status: 400 });
     }
 
+    if (!checkServerRateLimit(`twilio-status:${token}`, 120, 10 * 60 * 1000)) {
+      return rateLimitResponse("Za dużo zdarzeń webhooka.");
+    }
+
     const form = await request.formData();
+    const signature = verifyTwilioSignature(request, form);
+    if (!signature.ok) {
+      return NextResponse.json({ error: "Niepoprawny podpis Twilio." }, { status: 403 });
+    }
+
     const get = (key: string) => {
       const value = form.get(key);
       return typeof value === "string" ? value : null;

@@ -9,20 +9,22 @@ import { Alert, PageHeader } from "@/components/ui";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/use-auth";
 
-type CsvLead = {
-  full_name?: string;
-  phone?: string;
-  postal_code?: string;
-  source?: string;
-  address?: string;
-  voivodeship?: string;
-  county?: string;
-};
+type CsvLead = Record<string, string | null | undefined>;
 
-const requiredColumns = ["full_name", "phone", "postal_code", "source"];
+function displayCell(row: CsvLead, keys: string[]) {
+  const entries = Object.entries(row).map(([key, value]) => [key.trim().toLowerCase(), value] as const);
+  const match = entries.find(([key]) => keys.includes(key));
+  return match?.[1]?.trim() || "";
+}
+
+const nameColumns = ["full_name", "name", "klient", "imię i nazwisko", "imie i nazwisko", "imie i naziwsko"];
+const phoneColumns = ["phone", "phone_number", "telefon", "tel", "numer telefonu", "telefon klienta"];
+const postalColumns = ["postal_code", "post_code", "kod", "kod pocztowy"];
+const sourceColumns = ["source", "źródło", "zrodlo", "kampania", "formularz"];
+const importChunkSize = 800;
 
 export default function ImportPage() {
-  const { loading, profile } = useAuth(["owner", "admin", "menadzer"]);
+  const { loading, profile } = useAuth(["owner", "admin", "kierownik"]);
   const [fileName, setFileName] = useState("");
   const [rows, setRows] = useState<CsvLead[]>([]);
   const [error, setError] = useState("");
@@ -44,25 +46,13 @@ export default function ImportPage() {
       skipEmptyLines: true,
       transformHeader: (header) => header.trim().replace(/^\uFEFF/, ""),
       complete: (result) => {
-        const fields = result.meta.fields || [];
-        const missing = requiredColumns.filter((column) => !fields.includes(column));
-
-        if (missing.length > 0) {
-          setError(`Brak wymaganych kolumn: ${missing.join(", ")}`);
-          return;
-        }
-
         const cleaned = result.data
-          .map((row) => ({
-            full_name: row.full_name?.trim(),
-            phone: row.phone?.trim(),
-            postal_code: row.postal_code?.trim(),
-            source: row.source?.trim(),
-            address: row.address?.trim() || null,
-            voivodeship: row.voivodeship?.trim() || null,
-            county: row.county?.trim() || null
-          }))
-          .filter((row) => row.full_name && row.phone && row.postal_code && row.source);
+          .map((row) =>
+            Object.fromEntries(
+              Object.entries(row).map(([key, value]) => [key.trim(), typeof value === "string" ? value.trim() : value])
+            )
+          )
+          .filter((row) => Object.values(row).some((value) => Boolean(value)));
 
         if (cleaned.length === 0) {
           setError("Plik nie zawiera poprawnych leadów.");
@@ -82,25 +72,57 @@ export default function ImportPage() {
     setError("");
     setSuccess("");
 
-    const payload = rows.map((row) => ({
-      full_name: row.full_name,
-      phone: row.phone,
-      postal_code: row.postal_code,
-      source: row.source,
-      address: row.address || null,
-      voivodeship: row.voivodeship || null,
-      county: row.county || null,
-      status: "Nowy",
-      assigned_to: null,
-      crm_environment: profile.crm_environment
-    }));
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
 
-    const { error: importError } = await supabase.from("leads").insert(payload);
+    if (!token) {
+      setError("Sesja wygasła. Zaloguj się ponownie.");
+      setBusy(false);
+      return;
+    }
+
+    let imported = 0;
+    let skippedExisting = 0;
+    let skippedInFile = 0;
+    let failed = 0;
+    let importError = "";
+
+    for (let index = 0; index < rows.length; index += importChunkSize) {
+      const chunk = rows.slice(index, index + importChunkSize);
+      const response = await fetch("/api/leads/import", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          rows: chunk,
+          source: "Import CSV",
+          fileName: rows.length > importChunkSize ? `${fileName} (${index + 1}-${index + chunk.length})` : fileName
+        })
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        importError = result.error || "Nie udało się zaimportować leadów.";
+        break;
+      }
+
+      imported += result.imported || 0;
+      skippedExisting += result.skippedExisting || 0;
+      skippedInFile += result.skippedInFile || 0;
+      failed += result.failed || 0;
+      setSuccess(`Import trwa. Przetworzono ${Math.min(index + chunk.length, rows.length)} z ${rows.length} wierszy.`);
+    }
 
     if (importError) {
-      setError(importError.message);
+      setError(importError);
     } else {
-      setSuccess(`Zaimportowano leady: ${rows.length}`);
+      setSuccess(
+        `Import zakończony. Dodano: ${imported}, pominięto duplikaty: ${
+          skippedExisting + skippedInFile
+        }, błędne wiersze: ${failed}.`
+      );
       setRows([]);
       setFileName("");
     }
@@ -114,8 +136,8 @@ export default function ImportPage() {
     <AppShell profile={profile}>
       <div className="grid gap-5">
         <PageHeader
-          title="Import CSV"
-          description="Wymagane kolumny: full_name, phone, postal_code, source."
+          title="Import leadów"
+          description="CSV z Dysku Google albo lokalny plik. CRM rozpoznaje kolumny typu telefon, e-mail, komentarz, data zgłoszenia, status i odkłada starsze rekordy do Zimnej bazy."
         />
 
         <section className="app-card">
@@ -162,10 +184,10 @@ export default function ImportPage() {
                     <tbody>
                       {rows.slice(0, 20).map((row, index) => (
                         <tr key={`${row.phone}-${index}`}>
-                          <td className="font-semibold">{row.full_name}</td>
-                          <td>{row.phone}</td>
-                          <td>{row.postal_code}</td>
-                          <td>{row.source}</td>
+                          <td className="font-semibold">{displayCell(row, nameColumns)}</td>
+                          <td>{displayCell(row, phoneColumns)}</td>
+                          <td>{displayCell(row, postalColumns)}</td>
+                          <td>{displayCell(row, sourceColumns)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -176,19 +198,19 @@ export default function ImportPage() {
               <div className="grid gap-3 md:hidden">
                 {rows.slice(0, 20).map((row, index) => (
                   <article key={`${row.phone}-${index}`} className="rounded-lg border border-line bg-white p-4 shadow-sm">
-                    <div className="font-bold text-ink">{row.full_name}</div>
+                    <div className="font-bold text-ink">{displayCell(row, nameColumns) || "Lead"}</div>
                     <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
                       <div>
                         <span className="text-xs font-bold uppercase tracking-wide text-muted">Telefon</span>
-                        <p className="mt-1 font-semibold text-ink">{row.phone}</p>
+                        <p className="mt-1 font-semibold text-ink">{displayCell(row, phoneColumns)}</p>
                       </div>
                       <div>
                         <span className="text-xs font-bold uppercase tracking-wide text-muted">Kod</span>
-                        <p className="mt-1 font-semibold text-ink">{row.postal_code}</p>
+                        <p className="mt-1 font-semibold text-ink">{displayCell(row, postalColumns)}</p>
                       </div>
                       <div className="col-span-2">
                         <span className="text-xs font-bold uppercase tracking-wide text-muted">Źródło</span>
-                        <p className="mt-1 font-semibold text-ink">{row.source}</p>
+                        <p className="mt-1 font-semibold text-ink">{displayCell(row, sourceColumns) || "Import CSV"}</p>
                       </div>
                     </div>
                   </article>

@@ -24,7 +24,6 @@ import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
 import { StatTile } from "@/components/stat-tile";
 import { Alert, PageHeader, SectionHeader } from "@/components/ui";
-import { useLanguage } from "@/components/language-provider";
 import { endOfDay, escapeCsv, needsNextAction, startOfDay } from "@/lib/admin-leads";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { hasPermission } from "@/lib/permissions";
@@ -58,8 +57,7 @@ const sortOptions: Array<SortOption & { label: string }> = [
 ];
 
 export default function AdminDashboardPage() {
-  const { loading, profile } = useAuth(["owner", "admin", "menadzer", "finance", "viewer"]);
-  const { language } = useLanguage();
+  const { loading, profile } = useAuth(["owner", "admin", "kierownik", "finance", "viewer"]);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [salespeople, setSalespeople] = useState<Profile[]>([]);
   const [filters, setFilters] = useState<AdminLeadFilters>(initialFilters);
@@ -84,7 +82,6 @@ export default function AdminDashboardPage() {
   const isManager = isManagerRole(profile?.role);
   const canAssignLeads = canManageLeads(profile?.role);
   const canExportCurrentView = hasPermission(profile?.role, "data:export");
-  const isEnglish = language === "en";
 
   async function loadSalespeople() {
     if (!profile) return;
@@ -315,37 +312,7 @@ export default function AdminDashboardPage() {
 
   if (loading || !profile) return <LoadingScreen />;
 
-  const dashboardCopy = isEnglish
-    ? {
-        managerDescription: "Team leads, lead pool and current statuses.",
-        adminDescription: "All leads, assignments and current statuses.",
-        exportCsv: "Export CSV",
-        refresh: "Refresh",
-        stats: {
-          all: "All",
-          unassigned: "Unassigned",
-          assigned: "Assigned",
-          callbacks: "Call-back",
-          meetings: "Meetings",
-          contracts: "Contracts",
-          resignations: "Resignations",
-          noNextAction: "No action"
-        },
-        operationsTitle: "Post-contract operations",
-        operationsDescription: "Documents, accounting, logistics, installation and annex generation in one place.",
-        openOperations: "Open operations",
-        teamTitle: "Team results",
-        teamDescription: `${teamPerformance.length} salespeople in the current view. Details stay collapsed so the dashboard stays focused.`,
-        showTeam: "Show results",
-        hideTeam: "Hide results",
-        salesperson: "Salesperson",
-        leads: "Leads",
-        meetings: "Meetings",
-        contracts: "Contracts",
-        overdueCallbacks: "Overdue call-backs",
-        noAction: "No action"
-      }
-    : {
+  const dashboardCopy = {
         managerDescription: "Leady zespołu, baza do rozdania i bieżące statusy.",
         adminDescription: "Wszystkie leady, przypisania i bieżące statusy.",
         exportCsv: "Eksport CSV",
@@ -380,25 +347,15 @@ export default function AdminDashboardPage() {
       <div className="grid gap-5">
         <div data-tour-id="tour-dashboard">
           <PageHeader
-            title={
-              isEnglish
-                ? profile.role === "menadzer"
-                  ? "Manager dashboard"
-                  : profile.role === "finance"
-                    ? "Finance dashboard"
-                    : profile.role === "viewer"
-                      ? "Viewer dashboard"
-                      : "Admin dashboard"
-                : `Panel ${
-                    profile.role === "menadzer"
-                      ? "menadżera"
-                      : profile.role === "finance"
-                        ? "finansowy"
-                        : profile.role === "viewer"
-                          ? "podglądu"
-                          : "admina"
-                  }`
-            }
+            title={`Panel ${
+              profile.role === "kierownik"
+                ? "kierownika"
+                : profile.role === "finance"
+                  ? "finansowy"
+                  : profile.role === "viewer"
+                    ? "podglądu"
+                    : "admina"
+            }`}
             description={
               isManager
                 ? dashboardCopy.managerDescription
@@ -454,7 +411,7 @@ export default function AdminDashboardPage() {
                     <p className="mt-1 text-sm leading-6 text-muted">{dashboardCopy.teamDescription}</p>
                   ) : (
                     <p className="mt-1 text-sm text-muted">
-                      {teamPerformance.length} {isEnglish ? "people" : "osób"}
+                      {teamPerformance.length} osób
                     </p>
                   )}
                 </div>
@@ -536,7 +493,7 @@ export default function AdminDashboardPage() {
             <div>
               <h2 className="text-base font-bold text-ink">Filtry i sortowanie</h2>
               <p className="mt-1 text-sm text-muted">
-                {isEnglish ? "Active filters" : "Aktywne filtry"}: {activeFilterCount}
+                Aktywne filtry: {activeFilterCount}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -709,7 +666,7 @@ export default function AdminDashboardPage() {
             <div>
               <h2 className="text-base font-bold text-ink">Masowe przypisanie</h2>
               <p className="mt-1 text-sm text-muted">
-                {isEnglish ? "Selected leads" : "Zaznaczone leady"}: {selectedCount}
+                Zaznaczone leady: {selectedCount}
               </p>
             </div>
             <div className="grid gap-2 sm:grid-cols-[260px_auto]">
@@ -748,7 +705,7 @@ export default function AdminDashboardPage() {
             <h2 className="text-base font-bold text-ink">Leady</h2>
             <div className="flex items-center gap-2 text-sm text-muted">
               <Search className="h-4 w-4" aria-hidden="true" />
-              {busy ? (isEnglish ? "Refreshing" : "Odświeżanie") : `${leads.length} ${isEnglish ? "records" : "rekordów"}`}
+              {busy ? "Odświeżanie" : `${leads.length} rekordów`}
             </div>
           </div>
           <LeadTable

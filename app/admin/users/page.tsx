@@ -34,7 +34,7 @@ type OrgNode = {
 const roleToneClasses: Record<UserRole, string> = {
   owner: "border-ink/15 bg-ink text-white",
   admin: "border-sky/20 bg-sky/10 text-sky",
-  menadzer: "border-leaf/20 bg-leaf/10 text-leaf",
+  kierownik: "border-leaf/20 bg-leaf/10 text-leaf",
   handlowiec: "border-solar/25 bg-solar/10 text-[#8a5a00]",
   finance: "border-sky/20 bg-sky/10 text-sky",
   viewer: "border-line bg-[#f8fafc] text-muted",
@@ -43,32 +43,10 @@ const roleToneClasses: Record<UserRole, string> = {
   monter: "border-danger/20 bg-danger/10 text-danger"
 };
 
-const demoOrgMetaByEmail: Record<string, OrgMeta> = {
-  "demo@example.com": { title: "Administrator CRM", department: "Zarząd i administracja" },
-  "demo-menadzer@example.com": { title: "Menadżer sprzedaży", department: "Sprzedaż" },
-  "demo-handlowiec@example.com": { title: "Handlowiec B2C", department: "Sprzedaż" },
-  "demo-ksiegowy@example.com": { title: "Specjalista ds. księgowości", department: "Księgowość" },
-  "demo-logistyk@example.com": { title: "Koordynator logistyki", department: "Logistyka" },
-  "demo-monter@example.com": { title: "Monter prowadzący", department: "Montaż" },
-  "demo-owner@example.com": { title: "Właściciel / CEO", department: "Zarząd" },
-  "demo-dyrektor-sprzedazy@example.com": { title: "Dyrektor sprzedaży", department: "Sprzedaż" },
-  "demo-regionalny-wschod@example.com": { title: "Dyrektor regionalny - Wschód", department: "Sprzedaż" },
-  "demo-kierownik-b2b@example.com": { title: "Kierownik B2B", department: "Sprzedaż B2B" },
-  "demo-kierownik-b2c@example.com": { title: "Kierownik B2C", department: "Sprzedaż B2C" },
-  "demo-handlowiec-b2b@example.com": { title: "Handlowiec B2B", department: "Sprzedaż B2B" },
-  "demo-handlowiec-b2c@example.com": { title: "Handlowiec B2C", department: "Sprzedaż B2C" },
-  "demo-handlowiec-field@example.com": { title: "Doradca terenowy", department: "Sprzedaż terenowa" },
-  "demo-finanse@example.com": { title: "Analityk finansowania", department: "Finanse" },
-  "demo-dyrektor-operacyjny@example.com": { title: "Dyrektor operacyjny", department: "Operacje" },
-  "demo-magazyn@example.com": { title: "Specjalista magazynu", department: "Logistyka" },
-  "demo-monter-2@example.com": { title: "Monter", department: "Montaż" },
-  "demo-audyt@example.com": { title: "Podgląd zarządczy", department: "Audyt" }
-};
-
 const fallbackOrgMeta: Record<UserRole, OrgMeta> = {
   owner: { title: "Właściciel", department: "Zarząd" },
   admin: { title: "Administrator CRM", department: "Administracja" },
-  menadzer: { title: "Menadżer zespołu", department: "Zarządzanie" },
+  kierownik: { title: "Kierownik zespołu", department: "Zarządzanie" },
   handlowiec: { title: "Handlowiec", department: "Sprzedaż" },
   finance: { title: "Finanse", department: "Finanse" },
   viewer: { title: "Dostęp tylko do odczytu", department: "Podgląd" },
@@ -78,8 +56,6 @@ const fallbackOrgMeta: Record<UserRole, OrgMeta> = {
 };
 
 function orgMetaFor(profile: Profile): OrgMeta {
-  const email = profile.email?.toLowerCase();
-  if (email && demoOrgMetaByEmail[email]) return demoOrgMetaByEmail[email];
   return fallbackOrgMeta[profile.role];
 }
 
@@ -194,6 +170,7 @@ export default function UsersPage() {
   const [newRole, setNewRole] = useState<UserRole>("handlowiec");
   const [newManagerId, setNewManagerId] = useState("");
   const [newBusinessPhone, setNewBusinessPhone] = useState("");
+  const [newCanViewLeadPool, setNewCanViewLeadPool] = useState(false);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -252,7 +229,8 @@ export default function UsersPage() {
         password,
         role: newRole,
         managerId: newRole === "handlowiec" ? newManagerId || null : null,
-        businessPhone: newBusinessPhone || null
+        businessPhone: newBusinessPhone || null,
+        canViewLeadPool: newRole === "handlowiec" ? newCanViewLeadPool : false
       })
     });
 
@@ -268,13 +246,20 @@ export default function UsersPage() {
       setNewBusinessPhone("");
       setNewRole("handlowiec");
       setNewManagerId("");
+      setNewCanViewLeadPool(false);
       await loadUsers();
     }
 
     setBusy(false);
   }
 
-  async function updateUser(userId: string, role: UserRole, managerId?: string | null, businessPhone?: string) {
+  async function updateUser(
+    userId: string,
+    role: UserRole,
+    managerId?: string | null,
+    businessPhone?: string,
+    canViewLeadPool?: boolean
+  ) {
     if (!session) return;
 
     setBusy(true);
@@ -291,7 +276,8 @@ export default function UsersPage() {
         id: userId,
         role,
         managerId: role === "handlowiec" ? managerId || null : null,
-        ...(businessPhone !== undefined ? { businessPhone } : {})
+        ...(businessPhone !== undefined ? { businessPhone } : {}),
+        ...(canViewLeadPool !== undefined ? { canViewLeadPool } : {})
       })
     });
     const body = await response.json();
@@ -338,9 +324,10 @@ export default function UsersPage() {
   if (loading || !profile) return <LoadingScreen />;
 
   const visibleUsers = roleFilter ? users.filter((user) => user.role === roleFilter) : users;
-  const managers = users.filter((user) => user.role === "menadzer");
+  const managers = users.filter((user) => user.role === "kierownik");
   const salespeople = users.filter((user) => user.role === "handlowiec");
   const unassignedSalespeople = salespeople.filter((user) => !user.manager_id);
+  const leadPoolAccessCount = salespeople.filter((user) => user.can_view_lead_pool).length;
   const orgTree = buildOrgTree(users);
   const adminCount = users.filter((user) => user.role === "owner" || user.role === "admin").length;
   const operationsCount = users.filter((user) =>
@@ -362,7 +349,7 @@ export default function UsersPage() {
         />
 
 
-        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
           <div className="app-muted-panel">
             <div className="text-xs font-bold uppercase tracking-wide text-muted">Wszyscy</div>
             <div className="mt-2 text-3xl font-black text-ink">{users.length}</div>
@@ -372,12 +359,16 @@ export default function UsersPage() {
             <div className="mt-2 text-3xl font-black text-ink">{adminCount}</div>
           </div>
           <div className="app-muted-panel">
-            <div className="text-xs font-bold uppercase tracking-wide text-muted">Menadżerowie</div>
+            <div className="text-xs font-bold uppercase tracking-wide text-muted">Kierownicy</div>
             <div className="mt-2 text-3xl font-black text-ink">{managers.length}</div>
           </div>
           <div className="app-muted-panel">
             <div className="text-xs font-bold uppercase tracking-wide text-muted">Handlowcy</div>
             <div className="mt-2 text-3xl font-black text-ink">{salespeople.length}</div>
+          </div>
+          <div className="app-muted-panel">
+            <div className="text-xs font-bold uppercase tracking-wide text-muted">Dostęp do puli</div>
+            <div className="mt-2 text-3xl font-black text-ink">{leadPoolAccessCount}</div>
           </div>
           <div className="app-muted-panel">
             <div className="text-xs font-bold uppercase tracking-wide text-muted">Operacje</div>
@@ -444,7 +435,7 @@ export default function UsersPage() {
         >
           <SectionHeader icon={UserRoundCog} title="Dane konta" tone="leaf" />
 
-          <form onSubmit={createUser} className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr_180px_180px_220px_auto]">
+          <form onSubmit={createUser} className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr_180px_180px_220px_170px_auto]">
             <label>
               <span className="label">Imię i nazwisko</span>
               <input
@@ -493,6 +484,7 @@ export default function UsersPage() {
                   const nextRole = event.target.value as UserRole;
                   setNewRole(nextRole);
                   if (nextRole !== "handlowiec") setNewManagerId("");
+                  if (nextRole !== "handlowiec") setNewCanViewLeadPool(false);
                 }}
               >
                 {USER_ROLES.map((role) => (
@@ -503,20 +495,32 @@ export default function UsersPage() {
               </select>
             </label>
             <label>
-              <span className="label">Menadżer</span>
+              <span className="label">Kierownik</span>
               <select
                 className="field"
                 value={newManagerId}
                 onChange={(event) => setNewManagerId(event.target.value)}
                 disabled={newRole !== "handlowiec"}
               >
-                <option value="">Bez menadżera</option>
+                <option value="">Bez kierownika</option>
                 {managers.map((manager) => (
                   <option key={manager.id} value={manager.id}>
                     {manager.full_name}
                   </option>
                 ))}
               </select>
+            </label>
+            <label className="flex min-h-[68px] items-end">
+              <span className="flex min-h-11 w-full items-center gap-3 rounded-md border border-line bg-white px-3 text-sm font-bold text-ink">
+                <input
+                  type="checkbox"
+                  checked={newCanViewLeadPool}
+                  onChange={(event) => setNewCanViewLeadPool(event.target.checked)}
+                  disabled={newRole !== "handlowiec"}
+                  className="h-4 w-4 rounded border-line text-ink focus:ring-ink"
+                />
+                Pula leadów
+              </span>
             </label>
             <div className="flex items-end">
               <button type="submit" disabled={busy} className="btn-primary w-full">
@@ -539,21 +543,22 @@ export default function UsersPage() {
           )}
           {unassignedSalespeople.length > 0 ? (
             <Alert tone="warning" className="mt-4">
-              {unassignedSalespeople.length} handlowców nie ma przypisanego menadżera.
+              {unassignedSalespeople.length} handlowców nie ma przypisanego kierownika.
             </Alert>
           ) : null}
         </CollapsibleSection>
 
         <section className="overflow-hidden rounded-lg border border-line bg-white shadow-sm md:max-h-[58vh] md:overflow-y-auto">
           <div className="hidden overflow-x-auto md:block">
-          <table className="app-table min-w-[920px]">
+          <table className="app-table min-w-[1080px]">
             <thead>
               <tr>
                 <th className="px-4 py-3">Imię i nazwisko</th>
                 <th className="px-4 py-3">E-mail</th>
                 <th className="px-4 py-3">Telefon CRM</th>
                 <th className="px-4 py-3">Rola</th>
-                <th className="px-4 py-3">Menadżer</th>
+                <th className="px-4 py-3">Kierownik</th>
+                <th className="px-4 py-3">Pula leadów</th>
                 <th className="px-4 py-3">Utworzony</th>
                 <th className="px-4 py-3">Akcja</th>
               </tr>
@@ -580,7 +585,13 @@ export default function UsersPage() {
                       className="field min-w-40"
                       value={person.role}
                       onChange={(event) =>
-                        updateUser(person.id, event.target.value as UserRole, person.manager_id)
+                        updateUser(
+                          person.id,
+                          event.target.value as UserRole,
+                          person.manager_id,
+                          undefined,
+                          event.target.value === "handlowiec" ? person.can_view_lead_pool : false
+                        )
                       }
                       disabled={busy}
                     >
@@ -595,16 +606,32 @@ export default function UsersPage() {
                     <select
                       className="field min-w-48"
                       value={person.manager_id || ""}
-                      onChange={(event) => updateUser(person.id, person.role, event.target.value || null)}
+                      onChange={(event) =>
+                        updateUser(person.id, person.role, event.target.value || null, undefined, person.can_view_lead_pool)
+                      }
                       disabled={busy || person.role !== "handlowiec"}
                     >
-                      <option value="">Bez menadżera</option>
+                      <option value="">Bez kierownika</option>
                       {managers.map((manager) => (
                         <option key={manager.id} value={manager.id}>
                           {manager.full_name}
                         </option>
                       ))}
                     </select>
+                  </td>
+                  <td className="px-4 py-3 text-muted">
+                    <label className="inline-flex items-center gap-2 text-xs font-bold text-ink">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(person.can_view_lead_pool)}
+                        onChange={(event) =>
+                          updateUser(person.id, person.role, person.manager_id, undefined, event.target.checked)
+                        }
+                        disabled={busy || person.role !== "handlowiec"}
+                        className="h-4 w-4 rounded border-line text-ink focus:ring-ink"
+                      />
+                      widzi
+                    </label>
                   </td>
                   <td className="px-4 py-3 text-muted">
                     {new Intl.DateTimeFormat("pl-PL", {
@@ -665,7 +692,15 @@ export default function UsersPage() {
                     <select
                       className="field"
                       value={person.role}
-                      onChange={(event) => updateUser(person.id, event.target.value as UserRole, person.manager_id)}
+                      onChange={(event) =>
+                        updateUser(
+                          person.id,
+                          event.target.value as UserRole,
+                          person.manager_id,
+                          undefined,
+                          event.target.value === "handlowiec" ? person.can_view_lead_pool : false
+                        )
+                      }
                       disabled={busy}
                     >
                       {USER_ROLES.map((role) => (
@@ -676,20 +711,34 @@ export default function UsersPage() {
                     </select>
                   </label>
                   <label>
-                    <span className="label">Menadżer</span>
+                    <span className="label">Kierownik</span>
                     <select
                       className="field"
                       value={person.manager_id || ""}
-                      onChange={(event) => updateUser(person.id, person.role, event.target.value || null)}
+                      onChange={(event) =>
+                        updateUser(person.id, person.role, event.target.value || null, undefined, person.can_view_lead_pool)
+                      }
                       disabled={busy || person.role !== "handlowiec"}
                     >
-                      <option value="">Bez menadżera</option>
+                      <option value="">Bez kierownika</option>
                       {managers.map((manager) => (
                         <option key={manager.id} value={manager.id}>
                           {manager.full_name}
                         </option>
                       ))}
                     </select>
+                  </label>
+                  <label className="flex min-h-11 items-center gap-3 rounded-md border border-line bg-[#f8fafc] px-3 text-sm font-bold text-ink">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(person.can_view_lead_pool)}
+                      onChange={(event) =>
+                        updateUser(person.id, person.role, person.manager_id, undefined, event.target.checked)
+                      }
+                      disabled={busy || person.role !== "handlowiec"}
+                      className="h-4 w-4 rounded border-line text-ink focus:ring-ink"
+                    />
+                    Dostęp do puli leadów
                   </label>
                 </div>
                 <div className="mt-4 flex items-center justify-between gap-3">

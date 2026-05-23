@@ -6,6 +6,8 @@ import { useState, type ReactNode } from "react";
 import {
   BarChart3,
   Banknote,
+  Bot,
+  BookOpenCheck,
   Calculator,
   CalendarDays,
   FileUp,
@@ -14,7 +16,6 @@ import {
   Landmark,
   LogOut,
   Menu,
-  MousePointerClick,
   PanelLeft,
   ReceiptText,
   RotateCcw,
@@ -26,14 +27,11 @@ import {
   type LucideIcon
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
-import { DemoTour } from "@/components/demo-tour";
 import { useLanguage } from "@/components/language-provider";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { Alert, ConfirmDialog } from "@/components/ui";
 import { hasAnyPermission } from "@/lib/permissions";
 import type { Permission } from "@/lib/permissions";
 import { homePathForRole, isSalesRole, isSystemAdminRole, ROLE_LABELS } from "@/lib/roles";
-import { isDemoScope } from "@/lib/scope";
 import { supabase } from "@/lib/supabase";
 import type { Profile, UserRole } from "@/lib/types";
 
@@ -58,6 +56,8 @@ type NavigationLink = {
     | "navNewLead"
     | "navCalendar"
     | "navCalculators"
+    | "navMaterials"
+    | "navAssistant"
     | "navSettings"
     | "navImport"
     | "navUsers";
@@ -163,6 +163,8 @@ const navigationLinks: NavigationLink[] = [
   },
   { href: "/calendar", labelKey: "navCalendar", groupKey: "company", icon: CalendarDays, permissions: ["calendar:view"] },
   { href: "/calculators", labelKey: "navCalculators", groupKey: "company", icon: Calculator, permissions: ["offers:calculate"], tourId: "tour-nav-calculators" },
+  { href: "/materials", labelKey: "navMaterials", groupKey: "company", icon: BookOpenCheck, allowedRoles: ["owner", "admin", "kierownik", "handlowiec"] },
+  { href: "/assistant", labelKey: "navAssistant", groupKey: "company", icon: Bot, allowedRoles: ["owner", "admin", "kierownik", "handlowiec"] },
   { href: "/settings", labelKey: "navSettings", groupKey: "company", icon: Settings, permissions: ["settings:view"] },
   { href: "/admin/import", labelKey: "navImport", groupKey: "company", icon: FileUp, permissions: ["data:import"] },
   { href: "/admin/users", labelKey: "navUsers", groupKey: "company", icon: Landmark, permissions: ["users:manage"] }
@@ -175,29 +177,16 @@ const navigationGroups: Array<{ key: NavigationLink["groupKey"]; labelKey: "navG
   { key: "company", labelKey: "navGroupCompany" }
 ];
 
-const roleLabelsEn: Record<Profile["role"], string> = {
-  owner: "Owner",
-  admin: "Admin",
-  menadzer: "Manager",
-  handlowiec: "Sales",
-  finance: "Finance",
-  viewer: "Viewer",
-  ksiegowosc: "Accounting",
-  logistyk: "Logistics",
-  monter: "Installer"
-};
-
 export function AppShell({ profile, children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [returningLeads, setReturningLeads] = useState(false);
   const [returnConfirmOpen, setReturnConfirmOpen] = useState(false);
   const [shellNotice, setShellNotice] = useState<{ tone: "success" | "danger"; message: string } | null>(null);
   const homeHref = homePathForRole(profile.role);
-  const roleLabel = language === "en" ? roleLabelsEn[profile.role] : ROLE_LABELS[profile.role];
-  const canRunDemoTour = isDemoScope(profile.crm_environment) && isSystemAdminRole(profile.role);
+  const roleLabel = ROLE_LABELS[profile.role];
   const links = navigationLinks.filter((link) => {
     if (link.salesOnly && !isSalesRole(profile.role)) return false;
     if (link.hideWhenAnyPermission && hasAnyPermission(profile.role, link.hideWhenAnyPermission)) return false;
@@ -205,15 +194,16 @@ export function AppShell({ profile, children }: AppShellProps) {
     if (link.permissions) return hasAnyPermission(profile.role, link.permissions);
     return true;
   });
+  const bottomNav = [
+    links.find((link) => link.href === homeHref) || links[0],
+    links.find((link) => link.href === "/calendar"),
+    links.find((link) => link.href === "/assistant"),
+    links.find((link) => link.href === "/materials")
+  ].filter(Boolean) as NavigationLink[];
 
   async function signOut() {
     await supabase.auth.signOut();
     router.replace("/login");
-  }
-
-  function startDemoTour() {
-    window.dispatchEvent(new Event("bcrm:demo-tour-start"));
-    setMobileOpen(false);
   }
 
   async function confirmReturnOpenLeads() {
@@ -240,7 +230,7 @@ export function AppShell({ profile, children }: AppShellProps) {
     setReturnConfirmOpen(false);
     setShellNotice({
       tone: "success",
-      message: language === "en" ? `Returned leads: ${data?.length || 0}` : `Zwrócono leady: ${data?.length || 0}`
+      message: `Zwrócono leady: ${data?.length || 0}`
     });
     window.dispatchEvent(new Event("leads:changed"));
     router.replace(homePathForRole(profile.role));
@@ -304,12 +294,7 @@ export function AppShell({ profile, children }: AppShellProps) {
               <BrandMark size="sm" />
               <span>
                 <span className="flex items-center gap-2 text-sm font-bold leading-4">
-                  B-CRM
-                  {isDemoScope(profile.crm_environment) ? (
-                    <span className="rounded-md border border-sky/20 bg-sky/10 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide text-sky">
-                      Demo
-                    </span>
-                  ) : null}
+                  B-CRM Energy
                 </span>
                 <span className="block truncate text-xs text-muted">
                   {t("panelPrefix")}: {roleLabel}
@@ -335,20 +320,6 @@ export function AppShell({ profile, children }: AppShellProps) {
                 <span className="hidden sm:inline">{t("returnLeads")}</span>
               </button>
             ) : null}
-            {canRunDemoTour ? (
-              <button
-                type="button"
-                onClick={startDemoTour}
-                className="btn-secondary h-11 w-11 px-0 sm:w-auto sm:px-3"
-                title={language === "en" ? "Start guided demo" : "Uruchom samouczek"}
-              >
-                <MousePointerClick className="h-4 w-4" aria-hidden="true" />
-                <span className="hidden sm:inline">{language === "en" ? "Demo tour" : "Samouczek"}</span>
-              </button>
-            ) : null}
-            <div className="hidden md:block">
-              <LanguageSwitcher />
-            </div>
             <button
               type="button"
               onClick={signOut}
@@ -375,12 +346,7 @@ export function AppShell({ profile, children }: AppShellProps) {
                 <BrandMark size="sm" />
                 <div>
                   <div className="flex items-center gap-2 text-sm font-black text-ink">
-                    B-CRM
-                    {isDemoScope(profile.crm_environment) ? (
-                      <span className="rounded-md border border-sky/20 bg-sky/10 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide text-sky">
-                        Demo
-                      </span>
-                    ) : null}
+                    B-CRM Energy
                   </div>
                   <div className="text-xs text-muted">{roleLabel}</div>
                 </div>
@@ -388,9 +354,6 @@ export function AppShell({ profile, children }: AppShellProps) {
               <button type="button" onClick={() => setMobileOpen(false)} className="btn-icon" aria-label="Zamknij menu">
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
-            </div>
-            <div className="mb-3 md:hidden">
-              <LanguageSwitcher />
             </div>
             <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-muted">
               <PanelLeft className="h-4 w-4" aria-hidden="true" />
@@ -401,7 +364,7 @@ export function AppShell({ profile, children }: AppShellProps) {
         </div>
       ) : null}
 
-      <div className="app-layout mx-auto grid max-w-7xl gap-5 px-4 py-5 lg:grid-cols-[230px_1fr]">
+      <div className="app-layout mx-auto grid max-w-7xl gap-5 px-4 py-5 pb-24 lg:grid-cols-[230px_1fr] lg:pb-5">
         <aside className="app-sidebar hidden rounded-lg border border-line bg-white p-2 shadow-sm lg:sticky lg:top-20 lg:block lg:h-fit">
           <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-muted">
             <PanelLeft className="h-4 w-4" aria-hidden="true" />
@@ -420,6 +383,31 @@ export function AppShell({ profile, children }: AppShellProps) {
         </main>
       </div>
 
+      {bottomNav.length > 0 ? (
+        <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white/95 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-[0_-10px_28px_rgba(16,23,34,0.08)] backdrop-blur lg:hidden">
+          <div className="mx-auto grid max-w-lg grid-cols-4 gap-1">
+            {bottomNav.map((link) => {
+              const Icon = link.icon;
+              const active = pathname === link.href;
+
+              return (
+                <Link
+                  key={`bottom-${link.href}-${link.labelKey}`}
+                  href={link.href}
+                  title={t(link.labelKey)}
+                  className={`flex min-h-14 flex-col items-center justify-center rounded-lg px-2 py-1 text-[11px] font-black transition ${
+                    active ? "bg-ink text-white" : "text-muted hover:bg-[#eef3f8] hover:text-ink"
+                  }`}
+                >
+                  <Icon className="mb-0.5 h-5 w-5" aria-hidden="true" />
+                  <span className="max-w-full truncate">{t(link.labelKey)}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      ) : null}
+
       <ConfirmDialog
         open={returnConfirmOpen}
         title={t("returnLeadsTitle")}
@@ -430,9 +418,6 @@ export function AppShell({ profile, children }: AppShellProps) {
         onConfirm={confirmReturnOpenLeads}
         onClose={() => setReturnConfirmOpen(false)}
       />
-      {canRunDemoTour ? (
-        <DemoTour profile={profile} />
-      ) : null}
     </div>
   );
 }

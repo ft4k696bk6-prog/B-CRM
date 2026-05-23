@@ -9,3 +9,11 @@ tsconfig.tsbuildinfo
 *.log
 *.zip
 .vercel
+.playwright-cli
+test-results
+output
+app/ferrari
+public/showcase
+supabase/.temp
+.env*
+!.env.example

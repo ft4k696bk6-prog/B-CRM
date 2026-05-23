@@ -81,17 +81,7 @@ alter table if exists public.audit_events
   add constraint audit_events_crm_environment_check check (crm_environment in ('production', 'demo'));
 
 update public.profiles
-set crm_environment = case
-  when lower(coalesce(email, '')) in (
-    'demo@example.com',
-    'demo-menadzer@example.com',
-    'demo-handlowiec@example.com',
-    'demo-ksiegowy@example.com',
-    'demo-logistyk@example.com',
-    'demo-monter@example.com'
-  ) then 'demo'
-  else 'production'
-end;
+set crm_environment = 'production';
 
 update public.leads
 set crm_environment = case
@@ -321,14 +311,7 @@ begin
     requested_role := new.raw_user_meta_data ->> 'role';
   end if;
 
-  if lower(coalesce(new.email, '')) in (
-    'demo@example.com',
-    'demo-menadzer@example.com',
-    'demo-handlowiec@example.com',
-    'demo-ksiegowy@example.com',
-    'demo-logistyk@example.com',
-    'demo-monter@example.com'
-  ) or new.raw_user_meta_data ->> 'crm_environment' = 'demo' then
+  if new.raw_user_meta_data ->> 'crm_environment' = 'demo' then
     requested_environment := 'demo';
   end if;
 

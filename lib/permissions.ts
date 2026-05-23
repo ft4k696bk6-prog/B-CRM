@@ -105,7 +105,7 @@ export const PERMISSIONS: PermissionMatrix = {
     "data:export",
     "audit:view"
   ],
-  menadzer: [
+  kierownik: [
     "dashboard:view:own",
     "dashboard:view:team",
     "leads:view:own",

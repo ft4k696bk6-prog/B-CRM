@@ -1,4 +1,4 @@
-import type { DemoCustomerRecord } from "@/lib/demo-documents";
+import type { ContractCustomerRecord } from "@/lib/contract-documents";
 import type { Profile } from "@/lib/types";
 
 export type FinanceSimulation = {
@@ -12,7 +12,7 @@ export type FinanceSimulation = {
   updatedAt: string | null;
 };
 
-export type AccountingDemoDocument = {
+export type AccountingDocumentState = {
   packagePreparedAt: string | null;
   invoicePreviewAt: string | null;
   ksefPayloadAt: string | null;
@@ -47,7 +47,7 @@ export type InstallationCloseout = {
 
 export type DepartmentProcessState = {
   finance: FinanceSimulation;
-  accounting: AccountingDemoDocument;
+  accounting: AccountingDocumentState;
   warehouse: WarehouseDocument;
   logistics: LogisticsPlan;
   installation: InstallationCloseout;
@@ -84,7 +84,7 @@ export function calculateFinanceSimulation(
   };
 }
 
-export function defaultDepartmentState(contract: DemoCustomerRecord): DepartmentProcessState {
+export function defaultDepartmentState(contract: ContractCustomerRecord): DepartmentProcessState {
   const amount = parseMoneyValue(contract.grossPrice);
   const months = 120;
   const annualRate = 6.5;
@@ -135,7 +135,7 @@ export function defaultDepartmentState(contract: DemoCustomerRecord): Department
 
 export function normalizeDepartmentState(
   state: Partial<DepartmentProcessState> | null | undefined,
-  contract: DemoCustomerRecord
+  contract: ContractCustomerRecord
 ): DepartmentProcessState {
   const base = defaultDepartmentState(contract);
   const finance = { ...base.finance, ...state?.finance };
@@ -160,7 +160,7 @@ export function normalizeDepartmentState(
   };
 }
 
-export function readDepartmentState(storageKey: string, contract: DemoCustomerRecord) {
+export function readDepartmentState(storageKey: string, contract: ContractCustomerRecord) {
   if (typeof window === "undefined") return defaultDepartmentState(contract);
 
   try {

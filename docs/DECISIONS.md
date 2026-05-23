@@ -1,25 +1,25 @@
-# Technical Decisions
+# Decyzje techniczne
 
-## Decision: Use Supabase for auth and database
+## Decyzja: Supabase jako logowanie i baza danych
 
-Context: B-CRM needs authentication, role-aware data access and PostgreSQL-backed lead data.
+Kontekst: B-CRM potrzebuje logowania, kontroli dostępu według ról i bazy leadów opartej o PostgreSQL.
 
-Decision: Use Supabase Auth and Supabase PostgreSQL, with SQL files committed under `supabase/`.
+Decyzja: używamy Supabase Auth i Supabase PostgreSQL, a SQL trzymamy w katalogu `supabase/`.
 
-Consequences: The project can move quickly and remain inspectable, but production use requires careful RLS review and secret handling.
+Skutek: projekt da się szybko rozwijać i audytować, ale produkcja wymaga uważnego przeglądu RLS oraz pilnowania sekretów.
 
-## Decision: Centralize role and permission logic
+## Decyzja: role i uprawnienia w jednym miejscu
 
-Context: Admin, manager, sales and operational roles need different views and actions.
+Kontekst: admin, kierownik, handlowiec i role operacyjne widzą inne dane oraz mają inne akcje.
 
-Decision: Keep role normalization in `lib/roles.ts` and permission checks in `lib/permissions.ts`.
+Decyzja: normalizacja ról zostaje w `lib/roles.ts`, a sprawdzanie uprawnień w `lib/permissions.ts`.
 
-Consequences: Tests can cover access rules without rendering full pages. Route components still need gradual cleanup.
+Skutek: testy mogą sprawdzać dostęp bez renderowania całych ekranów. Ekrany aplikacji nadal powinny używać tych helperów konsekwentnie.
 
-## Decision: Treat the app as a production-like portfolio demo
+## Decyzja: Energy V2 jako produkt firmowy
 
-Context: The app demonstrates real CRM patterns but is not positioned as a fully production-managed system.
+Kontekst: Energy V2 jest CRM-em do prawdziwej pracy sprzedaży i realizacji, nie makietą pokazową.
 
-Decision: Document the project honestly as a production-like CRM demo.
+Decyzja: dokumentacja produktu opisuje role, procesy, migracje, integracje i wymagania jakościowe.
 
-Consequences: The portfolio stays credible while making room for roadmap items like e2e tests, monitoring and security review.
+Skutek: język pokazowy nie trafia do domyślnego UI ani publicznego README.

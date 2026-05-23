@@ -6,12 +6,15 @@ import {
   ArrowLeft,
   CalendarClock,
   Check,
+  ExternalLink,
   FileSignature,
+  Mail,
   MapPin,
   MessageSquarePlus,
   PhoneCall,
   RotateCcw,
   Save,
+  Send,
   UserCheck
 } from "lucide-react";
 import Link from "next/link";
@@ -27,7 +30,7 @@ import { Alert, EmptyState, SectionHeader } from "@/components/ui";
 import { ACTION_LABELS, LEAD_STATUSES, STATUS_LABELS, STATUS_TILE_TONES } from "@/lib/constants";
 import { hasAnyPermission } from "@/lib/permissions";
 import { formatDateTime, toDatetimeLocalValue } from "@/lib/date";
-import { formatPhoneReadable } from "@/lib/phone";
+import { formatPhoneReadable, normalizePhoneForDial } from "@/lib/phone";
 import { canManageLeads, homePathForRole, isManagerRole, isSalesRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { Lead, LeadHistory, LeadStatus, Profile } from "@/lib/types";
@@ -85,14 +88,28 @@ export default function LeadDetailsPage() {
   const [address, setAddress] = useState("");
   const [voivodeship, setVoivodeship] = useState("");
   const [county, setCounty] = useState("");
+  const [email, setEmail] = useState("");
   const [comment, setComment] = useState("");
+  const [offerNote, setOfferNote] = useState("");
+  const [offerMessage, setOfferMessage] = useState("");
+  const [offerUrl, setOfferUrl] = useState("");
   const [selectedAssignee, setSelectedAssignee] = useState("");
   const [businessPhone, setBusinessPhone] = useState("");
   const [busy, setBusy] = useState(false);
+  const [offerBusy, setOfferBusy] = useState(false);
   const [error, setError] = useState("");
 
   const canManage = canManageLeads(profile?.role);
-  const canEditLead = hasAnyPermission(profile?.role, ["leads:edit:own", "leads:edit:team", "leads:edit:all"]);
+  const canEditLeadByRole = hasAnyPermission(profile?.role, ["leads:edit:own", "leads:edit:team", "leads:edit:all"]);
+  const canEditLead = canManage || Boolean(lead && profile && canEditLeadByRole && lead.assigned_to === profile.id);
+  const canClaimLead = Boolean(
+    lead &&
+    profile &&
+    session?.access_token &&
+    isSalesRole(profile.role) &&
+    profile.can_view_lead_pool &&
+    !lead.assigned_to
+  );
   const canManageCalls = hasAnyPermission(profile?.role, ["calls:manage"]);
   const isManager = isManagerRole(profile?.role);
   const backHref = homePathForRole(profile?.role);
@@ -129,6 +146,7 @@ export default function LeadDetailsPage() {
     setAddress(nextLead.address || "");
     setVoivodeship(nextLead.voivodeship || "");
     setCounty(nextLead.county || "");
+    setEmail(nextLead.email || "");
     setSelectedAssignee(nextLead.assigned_to || "");
 
     await supabase
@@ -180,6 +198,33 @@ export default function LeadDetailsPage() {
 
   async function refresh() {
     await Promise.all([loadLead(), loadHistory()]);
+  }
+
+  async function claimLead() {
+    if (!lead || !session?.access_token) return;
+
+    setBusy(true);
+    setError("");
+
+    const response = await fetch("/api/leads/claim", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ leadId: lead.id })
+    });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      setError(result.error || "Nie udało się przejąć leada.");
+      setBusy(false);
+      return;
+    }
+
+    await refresh();
+    window.dispatchEvent(new Event("leads:changed"));
+    setBusy(false);
   }
 
   async function saveStatus(event: FormEvent<HTMLFormElement>) {
@@ -319,7 +364,9 @@ export default function LeadDetailsPage() {
         postal_code: postalCode.trim() || null,
         address: address.trim() || null,
         voivodeship: voivodeship || null,
-        county: county || null
+        county: county || null,
+        email: email.trim() || null,
+        email_key: email.trim() ? `email:${email.trim().toLowerCase()}` : null
       })
       .eq("id", lead.id)
       .eq("crm_environment", profile.crm_environment);
@@ -331,6 +378,46 @@ export default function LeadDetailsPage() {
     }
 
     setBusy(false);
+  }
+
+  async function sendOffer(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!lead || !profile || !session?.access_token) return;
+
+    setOfferBusy(true);
+    setOfferMessage("");
+    setOfferUrl("");
+    setError("");
+
+    const response = await fetch("/api/offers/email", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        leadId: lead.id,
+        recipientEmail: email,
+        subject: `Oferta Re-Energy System - ${lead.full_name}`,
+        note: offerNote,
+        templateKey: "meeting-offer"
+      })
+    });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      setError(result.error || "Nie udało się przygotować wysyłki oferty.");
+    } else {
+      setOfferUrl(result.portalUrl || "");
+      setOfferMessage(
+        result.mode === "email"
+          ? "Oferta została wysłana i tracking jest aktywny."
+          : "Oferta jest gotowa w portalu. Wysyłka e-mail czeka na konfigurację dostawcy."
+      );
+      await refresh();
+    }
+
+    setOfferBusy(false);
   }
 
   async function returnLead() {
@@ -416,21 +503,34 @@ export default function LeadDetailsPage() {
                 <div>
                   <h1 className="text-2xl font-bold text-ink">{lead.full_name}</h1>
                   <div className="mt-2 flex flex-wrap gap-2 text-sm text-muted">
-                    <span>{formatPhoneReadable(lead.phone)}</span>
+                    <a href={`tel:${normalizePhoneForDial(lead.phone) || lead.phone}`} className="font-semibold text-sky">
+                      {formatPhoneReadable(lead.phone)}
+                    </a>
+                    <span>·</span>
+                    <span>{lead.email || "brak e-maila"}</span>
                     <span>·</span>
                     <span>{lead.postal_code || "brak kodu"}</span>
                     <span>·</span>
                     <span>{lead.source || "bez źródła"}</span>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => document.getElementById("lead-call-section")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                  className="btn-primary"
-                >
-                  <PhoneCall className="h-4 w-4" aria-hidden="true" />
-                  Zadzwoń
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  {canClaimLead ? (
+                    <button type="button" onClick={claimLead} disabled={busy} className="btn-secondary">
+                      <UserCheck className="h-4 w-4" aria-hidden="true" />
+                      Przejmij z puli
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById("lead-call-section")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                    disabled={!canManage && lead.assigned_to !== profile.id}
+                    className="btn-primary"
+                  >
+                    <PhoneCall className="h-4 w-4" aria-hidden="true" />
+                    Zadzwoń
+                  </button>
+                </div>
               </div>
 
               {lead.status === "Umowa" ? (
@@ -509,6 +609,44 @@ export default function LeadDetailsPage() {
                   onBusinessPhoneSaved={setBusinessPhone}
                 />
               </div>
+            ) : null}
+
+            {canEditLead ? (
+              <form onSubmit={sendOffer} className="app-card">
+                <SectionHeader icon={Mail} title="Oferta dla klienta" tone="leaf" className="mb-4" />
+                {offerMessage ? <Alert tone="success" className="mb-4">{offerMessage}</Alert> : null}
+                <div className="grid gap-3 lg:grid-cols-[0.8fr_1.2fr_auto] lg:items-end">
+                  <label>
+                    <span className="label">E-mail klienta</span>
+                    <input
+                      className="field"
+                      type="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      placeholder="klient@example.com"
+                    />
+                  </label>
+                  <label>
+                    <span className="label">Krótka notatka do maila</span>
+                    <input
+                      className="field"
+                      value={offerNote}
+                      onChange={(event) => setOfferNote(event.target.value)}
+                      placeholder="np. wariant po spotkaniu, do decyzji klienta"
+                    />
+                  </label>
+                  <button type="submit" disabled={offerBusy || !email.trim()} className="btn-primary">
+                    <Send className="h-4 w-4" aria-hidden="true" />
+                    Wyślij
+                  </button>
+                </div>
+                {offerUrl ? (
+                  <a href={offerUrl} target="_blank" rel="noreferrer" className="btn-secondary mt-4 w-fit">
+                    <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                    Otwórz stronę oferty
+                  </a>
+                ) : null}
+              </form>
             ) : null}
 
             <section className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
@@ -648,6 +786,16 @@ export default function LeadDetailsPage() {
                 <form onSubmit={saveLeadData} className="app-card">
                   <SectionHeader icon={MapPin} title="Dane adresowe" tone="sky" className="mb-4" />
                   <div className="grid gap-3">
+                    <label>
+                      <span className="label">E-mail</span>
+                      <input
+                        className="field"
+                        type="email"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        placeholder="klient@example.com"
+                      />
+                    </label>
                     <label>
                       <span className="label">Kod pocztowy</span>
                       <input

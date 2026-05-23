@@ -131,15 +131,3 @@ alter table public.lead_activities
     'call_transcript',
     'ai_call_summary'
   ));
-
-update public.profiles
-set business_phone = case lower(coalesce(email, ''))
-  when 'demo@example.com' then '+48600100100'
-  when 'demo-menadzer@example.com' then '+48600100101'
-  when 'demo-handlowiec@example.com' then '+48600100102'
-  when 'demo-ksiegowy@example.com' then '+48600100103'
-  when 'demo-logistyk@example.com' then '+48600100104'
-  when 'demo-monter@example.com' then '+48600100105'
-  else business_phone
-end
-where crm_environment = 'demo';
