@@ -5,24 +5,16 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import {
   BarChart3,
-  Banknote,
-  Bot,
   BookOpenCheck,
   Calculator,
   CalendarDays,
-  FileUp,
-  FolderKanban,
-  Hammer,
   Landmark,
   LogOut,
   Menu,
   PanelLeft,
-  ReceiptText,
   RotateCcw,
   Settings,
-  Truck,
   UserPlus,
-  Warehouse,
   X,
   type LucideIcon
 } from "lucide-react";
@@ -46,22 +38,13 @@ type NavigationLink = {
     | "navDashboard"
     | "navTeamDashboard"
     | "navMyLeads"
-    | "navOperations"
-    | "navSales"
-    | "navFinance"
-    | "navAccounting"
-    | "navEquipment"
-    | "navLogistics"
-    | "navInstallation"
     | "navNewLead"
     | "navCalendar"
     | "navCalculators"
     | "navMaterials"
-    | "navAssistant"
     | "navSettings"
-    | "navImport"
     | "navUsers";
-  groupKey: "main" | "sales" | "operations" | "company";
+  groupKey: "main" | "sales" | "company";
   icon: LucideIcon;
   permissions?: Permission[];
   allowedRoles?: UserRole[];
@@ -113,67 +96,16 @@ const navigationLinks: NavigationLink[] = [
     permissions: ["leads:create:own", "leads:create:pool"],
     tourId: "tour-nav-new-lead"
   },
-  {
-    href: "/realizacja",
-    labelKey: "navOperations",
-    groupKey: "operations",
-    icon: FolderKanban,
-    permissions: ["operations:view"],
-    tourId: "tour-nav-process"
-  },
-  {
-    href: "/finance",
-    labelKey: "navFinance",
-    groupKey: "operations",
-    icon: Banknote,
-    allowedRoles: ["owner", "admin", "finance"],
-    tourId: "tour-nav-finance"
-  },
-  {
-    href: "/accounting",
-    labelKey: "navAccounting",
-    groupKey: "operations",
-    icon: ReceiptText,
-    allowedRoles: ["owner", "admin", "ksiegowosc"],
-    tourId: "tour-nav-accounting"
-  },
-  {
-    href: "/equipment",
-    labelKey: "navEquipment",
-    groupKey: "operations",
-    icon: Warehouse,
-    allowedRoles: ["owner", "admin", "logistyk"],
-    tourId: "tour-nav-equipment"
-  },
-  {
-    href: "/logistics",
-    labelKey: "navLogistics",
-    groupKey: "operations",
-    icon: Truck,
-    allowedRoles: ["owner", "admin", "logistyk"],
-    tourId: "tour-nav-logistics"
-  },
-  {
-    href: "/installation",
-    labelKey: "navInstallation",
-    groupKey: "operations",
-    icon: Hammer,
-    allowedRoles: ["owner", "admin", "monter"],
-    tourId: "tour-nav-installation"
-  },
   { href: "/calendar", labelKey: "navCalendar", groupKey: "company", icon: CalendarDays, permissions: ["calendar:view"] },
   { href: "/calculators", labelKey: "navCalculators", groupKey: "company", icon: Calculator, permissions: ["offers:calculate"], tourId: "tour-nav-calculators" },
   { href: "/materials", labelKey: "navMaterials", groupKey: "company", icon: BookOpenCheck, allowedRoles: ["owner", "admin", "kierownik", "handlowiec"] },
-  { href: "/assistant", labelKey: "navAssistant", groupKey: "company", icon: Bot, allowedRoles: ["owner", "admin", "kierownik", "handlowiec"] },
   { href: "/settings", labelKey: "navSettings", groupKey: "company", icon: Settings, permissions: ["settings:view"] },
-  { href: "/admin/import", labelKey: "navImport", groupKey: "company", icon: FileUp, permissions: ["data:import"] },
   { href: "/admin/users", labelKey: "navUsers", groupKey: "company", icon: Landmark, permissions: ["users:manage"] }
 ];
 
-const navigationGroups: Array<{ key: NavigationLink["groupKey"]; labelKey: "navGroupMain" | "navGroupSales" | "navGroupOperations" | "navGroupCompany" }> = [
+const navigationGroups: Array<{ key: NavigationLink["groupKey"]; labelKey: "navGroupMain" | "navGroupSales" | "navGroupCompany" }> = [
   { key: "main", labelKey: "navGroupMain" },
   { key: "sales", labelKey: "navGroupSales" },
-  { key: "operations", labelKey: "navGroupOperations" },
   { key: "company", labelKey: "navGroupCompany" }
 ];
 
@@ -197,7 +129,7 @@ export function AppShell({ profile, children }: AppShellProps) {
   const bottomNav = [
     links.find((link) => link.href === homeHref) || links[0],
     links.find((link) => link.href === "/calendar"),
-    links.find((link) => link.href === "/assistant"),
+    links.find((link) => link.href === "/calculators"),
     links.find((link) => link.href === "/materials")
   ].filter(Boolean) as NavigationLink[];
 

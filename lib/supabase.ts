@@ -19,10 +19,20 @@ type LocalProfile = {
   crm_environment: "production";
   created_at: string;
 };
+type LocalTableName =
+  | "leads"
+  | "lead_history"
+  | "lead_activities"
+  | "lead_files"
+  | "lead_reminders"
+  | "calendar_events"
+  | "daily_reports";
+type LocalDataStore = Partial<Record<LocalTableName, AnyRecord[]>>;
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const localCrmMode = process.env.NEXT_PUBLIC_LOCAL_CRM_MODE !== "false";
+const localDataStorageKey = "bcrm-production-local-data-v2";
 const adminPasswordHash =
   process.env.NEXT_PUBLIC_ADMIN_PASSWORD_SHA256 ||
   "7cf96e8817c8d0790943c395d7e7231ef9b91d263315edc687427389b2e16611";
@@ -81,57 +91,6 @@ const localProfiles: LocalProfile[] = [
   }
 ];
 
-const now = Date.now();
-const localLeads = [
-  lead("lead-001", "Jan Kowalski", "+48 600 700 800", "20-001", "Lublin, ul. Energetyczna 12", "Umowa", "sales-rep", "formularz", "BCRM/06/2026/001", -8, -2),
-  lead("lead-002", "Marta Wisniewska", "+48 501 220 330", "21-500", "Rokitno 18", "Spotkanie", "sales-rep", "polecenie", null, -5, -1),
-  lead("lead-003", "GreenPack Sp. z o.o.", "+48 512 300 110", "23-400", "Bilgoraj, ul. Przemyslowa 5", "Call back", "sales-rep", "B2B", null, -3, -0.5),
-  lead("lead-004", "Auto-Komfort", "+48 535 118 445", "08-500", "Ryki, ul. Serwisowa 14", "Przypisany", "sales-rep", "B2B", null, -2, -1),
-  lead("lead-005", "Justyna Sikora", "+48 537 908 222", "21-070", "Cycow, ul. Szkolna 2", "Nowy", null, "formularz", null, -1, -1),
-  lead("lead-006", "Piotr Markowski", "+48 543 776 221", "24-220", "Niedrzwica Duza, ul. Lipowa 4", "Do weryfikacji", "sales-rep", "wlasne", null, -6, -3)
-];
-
-function lead(
-  id: string,
-  full_name: string,
-  phone: string,
-  postal_code: string,
-  address: string,
-  status: string,
-  assigned_to: string | null,
-  source: string,
-  contract_number: string | null,
-  createdDaysAgo: number,
-  updatedHoursAgo: number
-) {
-  const updatedAt = new Date(now + updatedHoursAgo * 60 * 60 * 1000).toISOString();
-  return {
-    id,
-    full_name,
-    phone,
-    email: null,
-    phone_key: phone.replace(/\D/g, ""),
-    email_key: null,
-    postal_code,
-    address,
-    voivodeship: "lubelskie",
-    county: "lubelski",
-    status,
-    assigned_to,
-    source,
-    resignation_reason: null,
-    callback_at: status === "Call back" ? new Date(now + 3 * 60 * 60 * 1000).toISOString() : null,
-    meeting_at: status === "Spotkanie" ? new Date(now + 27 * 60 * 60 * 1000).toISOString() : null,
-    meeting_address: status === "Spotkanie" ? address : null,
-    meeting_note: status === "Spotkanie" ? "Notatka ze spotkania." : null,
-    contract_number,
-    crm_environment: "production",
-    created_at: new Date(now + createdDaysAgo * 24 * 60 * 60 * 1000).toISOString(),
-    updated_at: updatedAt,
-    last_opened_at: updatedAt
-  };
-}
-
 function getStorage() {
   if (typeof window === "undefined") return null;
   try {
@@ -176,6 +135,91 @@ function clearLocalSession() {
   getStorage()?.removeItem("bcrm-production-session");
 }
 
+function readLocalDataStore(): LocalDataStore {
+  const raw = getStorage()?.getItem(localDataStorageKey);
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw) as LocalDataStore;
+  } catch {
+    return {};
+  }
+}
+
+function writeLocalDataStore(store: LocalDataStore) {
+  getStorage()?.setItem(localDataStorageKey, JSON.stringify(store));
+}
+
+function isLocalTableName(table: string): table is LocalTableName {
+  return [
+    "leads",
+    "lead_history",
+    "lead_activities",
+    "lead_files",
+    "lead_reminders",
+    "calendar_events",
+    "daily_reports"
+  ].includes(table);
+}
+
+function readStoredRows(table: string): AnyRecord[] {
+  if (table === "profiles") return localProfiles.map((item) => ({ ...item }));
+  if (!isLocalTableName(table)) return [];
+  const store = readLocalDataStore();
+  return (store[table] || []).map((item) => ({ ...item }));
+}
+
+function writeStoredRows(table: string, rows: AnyRecord[]) {
+  if (!isLocalTableName(table)) return;
+  const store = readLocalDataStore();
+  store[table] = rows.map((item) => ({ ...item }));
+  writeLocalDataStore(store);
+}
+
+function localId(table: string) {
+  return `${table}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function normalizeLocalInsert(table: string, item: unknown) {
+  const row = { ...((item || {}) as AnyRecord) };
+  const timestamp = new Date().toISOString();
+
+  row.id = row.id || localId(table);
+
+  if (table === "leads") {
+    const phone = String(row.phone || "");
+    row.email = row.email || null;
+    row.phone_key = row.phone_key || phone.replace(/\D/g, "");
+    row.email_key = row.email_key || null;
+    row.postal_code = row.postal_code || null;
+    row.address = row.address || null;
+    row.voivodeship = row.voivodeship || null;
+    row.county = row.county || null;
+    row.status = row.status || "Nowy";
+    row.assigned_to = row.assigned_to || null;
+    row.source = row.source || "wlasne";
+    row.resignation_reason = row.resignation_reason || null;
+    row.callback_at = row.callback_at || null;
+    row.meeting_at = row.meeting_at || null;
+    row.meeting_address = row.meeting_address || null;
+    row.meeting_note = row.meeting_note || null;
+    row.contract_number = row.contract_number || null;
+    row.crm_environment = row.crm_environment || "production";
+    row.created_at = row.created_at || timestamp;
+    row.updated_at = row.updated_at || timestamp;
+    row.last_opened_at = row.last_opened_at || null;
+  }
+
+  if (table === "lead_history" || table === "lead_activities") {
+    row.created_at = row.created_at || timestamp;
+    row.user_id = row.user_id || "kacper-admin";
+    row.old_value = row.old_value || null;
+    row.new_value = row.new_value || null;
+    row.metadata = row.metadata || null;
+  }
+
+  return row;
+}
+
 async function sha256(value: string) {
   if (!globalThis.crypto?.subtle) return "";
   const data = new TextEncoder().encode(value);
@@ -194,15 +238,15 @@ function withRelations(row: AnyRecord) {
 }
 
 function tableRows(table: string) {
-  if (table === "profiles") return localProfiles.map((item) => ({ ...item }));
-  if (table === "leads") return localLeads.map((item) => withRelations({ ...item }));
-  if (table === "lead_history") return [];
-  if (table === "lead_activities") return [];
-  if (table === "lead_files") return [];
-  if (table === "lead_reminders") return [];
-  if (table === "calendar_events") return [];
-  if (table === "daily_reports") return [];
-  return [];
+  const rows = readStoredRows(table);
+  if (table === "leads") return rows.map((item) => withRelations(item));
+  if (table === "lead_history" || table === "lead_activities") {
+    return rows.map((item) => ({
+      ...item,
+      user_profile: localProfiles.find((profile) => profile.id === item.user_id) || null
+    }));
+  }
+  return rows;
 }
 
 function compareValues(left: unknown, right: unknown) {
@@ -326,20 +370,53 @@ class LocalQuery {
 
   private execute(): QueryResult {
     if (this.mutation?.type === "insert" || this.mutation?.type === "upsert") {
+      const currentRows = readStoredRows(this.table);
       const payload = Array.isArray(this.mutation.payload) ? this.mutation.payload : [this.mutation.payload];
-      const rows = payload.map((item) => ({ id: item.id || `local-${Date.now()}`, ...item }));
+      const rows = payload.map((item) => normalizeLocalInsert(this.table, item));
+
+      if (isLocalTableName(this.table)) {
+        if (this.mutation.type === "upsert") {
+          const nextRows = [...currentRows];
+          rows.forEach((row) => {
+            const index = nextRows.findIndex((item) => item.id === row.id);
+            if (index >= 0) {
+              nextRows[index] = { ...nextRows[index], ...row };
+            } else {
+              nextRows.push(row);
+            }
+          });
+          writeStoredRows(this.table, nextRows);
+        } else {
+          writeStoredRows(this.table, [...currentRows, ...rows]);
+        }
+      }
+
       return { data: this.singleRow ? rows[0] : rows, error: null };
     }
 
-    let rows = tableRows(this.table).filter((row) => this.matches(row));
-
     if (this.mutation?.type === "update") {
-      rows = rows.map((row) => ({ ...row, ...(this.mutation?.payload as AnyRecord) }));
+      const currentRows = readStoredRows(this.table);
+      const updatedRows = currentRows.map((row) =>
+        this.matches(row)
+          ? {
+              ...row,
+              ...(this.mutation?.payload as AnyRecord),
+              ...(this.table === "leads" ? { updated_at: new Date().toISOString() } : {})
+            }
+          : row
+      );
+      writeStoredRows(this.table, updatedRows);
     }
 
     if (this.mutation?.type === "delete") {
-      rows = [];
+      const currentRows = readStoredRows(this.table);
+      writeStoredRows(
+        this.table,
+        currentRows.filter((row) => !this.matches(row))
+      );
     }
+
+    let rows = tableRows(this.table).filter((row) => this.matches(row));
 
     if (this.orderBy) {
       const { column, ascending } = this.orderBy;
@@ -373,6 +450,8 @@ class LocalQuery {
 
   private matchesOr(row: AnyRecord, expression: string) {
     if (expression.includes("assigned_to.is.null") && row.assigned_to === null) return true;
+    const assignedEqMatch = expression.match(/assigned_to\.eq\.([^,]+)/);
+    if (assignedEqMatch && String(row.assigned_to) === assignedEqMatch[1]) return true;
     const assignedMatch = expression.match(/assigned_to\.in\.\(([^)]+)\)/);
     if (assignedMatch && assignedMatch[1].split(",").includes(String(row.assigned_to))) return true;
     if (expression.includes("status.eq.Umowa") && row.status === "Umowa") return true;

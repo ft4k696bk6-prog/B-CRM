@@ -1,15 +1,12 @@
-const CACHE_NAME = "bcrm-energy-v2";
+const CACHE_NAME = "bcrm-lean-sales-v1";
 const OFFLINE_URLS = [
   "/",
   "/sales",
   "/materials",
-  "/assistant",
   "/calculators",
-  "/materials/b-crm-energy-prezentacja.pdf",
-  "/materials/checklista-spotkania.pdf",
-  "/materials/net-billing.pdf",
-  "/materials/magazyn-energii.pdf",
-  "/materials/brama-umowy.pdf",
+  "/materials/prezentacja-re-energy-system.pdf",
+  "/materials/umowa-na-fotowoltaike.pdf",
+  "/materials/wniosek-kredytowy.pdf",
   "/icons/bcrm-icon.svg",
   "/products/ja-solar-panel.webp",
   "/products/deye-inverter.webp",

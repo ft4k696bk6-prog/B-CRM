@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Banknote, BatteryCharging, Calculator, Minus, Percent, Plus, Printer, Zap } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { PageHeader } from "@/components/ui";
+import { readOfferIdentity, type OfferIdentity } from "@/lib/offer-identity";
 import {
   EXTRA_NET_PRICES,
   INCLUDED_TOTAL_MARGIN_NET,
@@ -127,6 +128,8 @@ function boilerImageFor(layout: BoilerLayout) {
 export default function CalculatorsPage() {
   const { loading, profile } = useAuth(["owner", "admin", "kierownik", "handlowiec", "finance"]);
   const { settings } = usePricingSettings(profile?.role);
+  const profileFullName = profile?.full_name || "";
+  const [offerIdentity, setOfferIdentity] = useState<OfferIdentity>({ fullName: "", phone: "" });
   const [tab, setTab] = useState<CalculatorTab>("offer");
   const [vatRate, setVatRate] = useState<VatRate>(8);
   const [customerName, setCustomerName] = useState("");
@@ -248,6 +251,11 @@ export default function CalculatorsPage() {
     triangles,
     vatRate
   ]);
+
+  useEffect(() => {
+    if (!profileFullName) return;
+    setOfferIdentity(readOfferIdentity(profileFullName));
+  }, [profileFullName]);
 
   if (loading || !profile) return <LoadingScreen />;
 
@@ -477,7 +485,8 @@ export default function CalculatorsPage() {
               installmentAfter={offer.installmentAfterSubsidy}
               customerName={customerName}
               customerPhone={customerPhone}
-              preparedBy={profile.full_name}
+              preparedBy={offerIdentity.fullName || profile.full_name}
+              preparedPhone={offerIdentity.phone}
             />
           </section>
         ) : (
@@ -573,7 +582,8 @@ function OfferDocument({
   installmentAfter,
   customerName,
   customerPhone,
-  preparedBy
+  preparedBy,
+  preparedPhone
 }: {
   title: string;
   mode: OfferMode;
@@ -592,6 +602,7 @@ function OfferDocument({
   customerName: string;
   customerPhone: string;
   preparedBy: string;
+  preparedPhone: string;
 }) {
   return (
     <section className="offer-document relative mx-auto w-full max-w-[794px] overflow-hidden rounded-lg border border-line bg-white p-0 shadow-sm">
@@ -684,13 +695,14 @@ function OfferDocument({
 
         <div className="offer-signature mt-7 grid gap-3 text-base text-[#1f2024]">
           <div>Oferta przygotowana przez: <strong>{preparedBy || "______________________________"}</strong></div>
+          {preparedPhone.trim() ? <div>Telefon opiekuna: <strong>{preparedPhone.trim()}</strong></div> : null}
           <div>Akceptacja klienta: ______________________________________</div>
         </div>
 
         <footer className="offer-footer mt-12 grid gap-3 border-t border-line pt-4 text-[10px] leading-4 text-[#2f3440] sm:grid-cols-3">
           <div>Re-Energy System Sp. z o. o.<br />ul. Kowalska 5/203, 20-115 Lublin<br />NIP: {COMPANY_NIP}</div>
           <div>Biuro@re-energysystem.pl<br />www.re-energysystem.pl</div>
-          <div>+48 729 796 441</div>
+          <div>{preparedPhone.trim() || "+48 729 796 441"}</div>
         </footer>
       </div>
     </section>

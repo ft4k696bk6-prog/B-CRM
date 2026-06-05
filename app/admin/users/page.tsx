@@ -467,7 +467,7 @@ export default function UsersPage() {
               />
             </label>
             <label>
-              <span className="label">Telefon CRM</span>
+              <span className="label">Telefon ofertowy</span>
               <input
                 className="field"
                 value={newBusinessPhone}
@@ -555,7 +555,7 @@ export default function UsersPage() {
               <tr>
                 <th className="px-4 py-3">Imię i nazwisko</th>
                 <th className="px-4 py-3">E-mail</th>
-                <th className="px-4 py-3">Telefon CRM</th>
+                <th className="px-4 py-3">Telefon ofertowy</th>
                 <th className="px-4 py-3">Rola</th>
                 <th className="px-4 py-3">Kierownik</th>
                 <th className="px-4 py-3">Pula leadów</th>
@@ -675,7 +675,7 @@ export default function UsersPage() {
                 </div>
                 <div className="mt-4 grid gap-3">
                   <label>
-                    <span className="label">Telefon CRM</span>
+                    <span className="label">Telefon ofertowy</span>
                     <input
                       className="field"
                       value={phoneDrafts[person.id] ?? person.business_phone ?? ""}

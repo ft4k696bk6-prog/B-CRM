@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   Ban,
@@ -9,7 +8,6 @@ import {
   Database,
   FileDown,
   FileSignature,
-  FolderKanban,
   Inbox,
   ListChecks,
   PhoneCall,
@@ -23,7 +21,7 @@ import { LeadTable } from "@/components/lead-table";
 import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
 import { StatTile } from "@/components/stat-tile";
-import { Alert, PageHeader, SectionHeader } from "@/components/ui";
+import { Alert, PageHeader } from "@/components/ui";
 import { endOfDay, escapeCsv, needsNextAction, startOfDay } from "@/lib/admin-leads";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { hasPermission } from "@/lib/permissions";
@@ -327,9 +325,6 @@ export default function AdminDashboardPage() {
           resignations: "Rezygnacje",
           noNextAction: "Bez akcji"
         },
-        operationsTitle: "Realizacja po umowie",
-        operationsDescription: "Dokumenty, księgowość, logistyka, montaż i generator aneksu w jednym miejscu.",
-        openOperations: "Otwórz realizację",
         teamTitle: "Wyniki zespołu",
         teamDescription: `${teamPerformance.length} handlowców w aktualnym widoku. Szczegóły są schowane, żeby dashboard został zwarty.`,
         showTeam: "Pokaż wyniki",
@@ -387,15 +382,6 @@ export default function AdminDashboardPage() {
           <StatTile label={dashboardCopy.stats.contracts} value={stats.contracts} icon={FileSignature} tone="leaf" />
           <StatTile label={dashboardCopy.stats.resignations} value={stats.resignations} icon={Ban} tone="danger" />
           <StatTile label={dashboardCopy.stats.noNextAction} value={stats.noNextAction} icon={ListChecks} tone="warn" />
-        </section>
-
-        <section className="app-card">
-          <SectionHeader
-            icon={FolderKanban}
-            title={dashboardCopy.operationsTitle}
-            description={dashboardCopy.operationsDescription}
-            actions={<Link href="/realizacja" className="btn-primary">{dashboardCopy.openOperations}</Link>}
-          />
         </section>
 
         {teamPerformance.length > 0 ? (

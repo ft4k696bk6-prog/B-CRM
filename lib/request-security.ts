@@ -1,4 +1,3 @@
-import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 
 type RateLimitEntry = {
@@ -61,34 +60,4 @@ export async function readJsonBody<T>(request: Request, maxBytes = 128 * 1024): 
   } catch {
     throw new RequestBodyError("Niepoprawny JSON w treści żądania.", 400);
   }
-}
-
-function timingSafeEqual(a: string, b: string) {
-  const first = Buffer.from(a);
-  const second = Buffer.from(b);
-
-  return first.length === second.length && crypto.timingSafeEqual(first, second);
-}
-
-export function verifyTwilioSignature(request: Request, form: FormData) {
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
-  const signature = request.headers.get("x-twilio-signature");
-
-  if (!authToken) {
-    return { ok: true, skipped: true };
-  }
-
-  if (!signature) {
-    return { ok: false, skipped: false };
-  }
-
-  const url = request.url;
-  const params = Array.from(form.entries())
-    .filter(([, value]) => typeof value === "string")
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, value]) => `${key}${value}`)
-    .join("");
-  const expected = crypto.createHmac("sha1", authToken).update(`${url}${params}`).digest("base64");
-
-  return { ok: timingSafeEqual(expected, signature), skipped: false };
 }

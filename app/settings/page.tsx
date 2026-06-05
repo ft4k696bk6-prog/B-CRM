@@ -1,25 +1,26 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { Paintbrush2, PhoneCall, Save, Settings } from "lucide-react";
+import { IdCard, Paintbrush2, Save, Settings } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { useTheme } from "@/components/theme-provider";
 import { Alert, PageHeader, SectionHeader } from "@/components/ui";
+import { readOfferIdentity, writeOfferIdentity } from "@/lib/offer-identity";
 import { usePricingSettings } from "@/lib/pricing-settings";
 import { themePacks } from "@/lib/theme";
 import { useAuth } from "@/lib/use-auth";
 
 export default function SettingsPage() {
-  const { loading, profile, session } = useAuth();
+  const { loading, profile } = useAuth();
   const { theme, setTheme } = useTheme();
   const { settings, setSettings } = usePricingSettings(profile?.role);
   const [adminMargin, setAdminMargin] = useState(settings.adminMargin);
   const [salesMargin, setSalesMargin] = useState(settings.salesMargin);
-  const [businessPhone, setBusinessPhone] = useState("");
+  const [offerFullName, setOfferFullName] = useState("");
+  const [offerPhone, setOfferPhone] = useState("");
   const [saved, setSaved] = useState(false);
-  const [phoneSaved, setPhoneSaved] = useState(false);
-  const [phoneError, setPhoneError] = useState("");
+  const [offerIdentitySaved, setOfferIdentitySaved] = useState(false);
 
   useEffect(() => {
     setAdminMargin(settings.adminMargin);
@@ -27,8 +28,11 @@ export default function SettingsPage() {
   }, [settings.adminMargin, settings.salesMargin]);
 
   useEffect(() => {
-    setBusinessPhone(profile?.business_phone || "");
-  }, [profile?.business_phone]);
+    if (!profile) return;
+    const identity = readOfferIdentity(profile.full_name);
+    setOfferFullName(identity.fullName);
+    setOfferPhone(identity.phone);
+  }, [profile]);
 
   if (loading || !profile) return <LoadingScreen />;
 
@@ -42,31 +46,11 @@ export default function SettingsPage() {
     window.setTimeout(() => setSaved(false), 2500);
   }
 
-  async function saveBusinessPhone(event: FormEvent<HTMLFormElement>) {
+  function saveOfferIdentity(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!session) return;
-
-    setPhoneError("");
-    setPhoneSaved(false);
-
-    const response = await fetch("/api/profile", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify({ businessPhone })
-    });
-    const body = await response.json();
-
-    if (!response.ok) {
-      setPhoneError(body.error || "Nie udało się zapisać numeru.");
-      return;
-    }
-
-    setBusinessPhone(body.business_phone || "");
-    setPhoneSaved(true);
-    window.setTimeout(() => setPhoneSaved(false), 2500);
+    writeOfferIdentity({ fullName: offerFullName, phone: offerPhone });
+    setOfferIdentitySaved(true);
+    window.setTimeout(() => setOfferIdentitySaved(false), 2500);
   }
 
   return (
@@ -112,40 +96,45 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <form onSubmit={saveBusinessPhone} className="app-card max-w-2xl">
+        <form onSubmit={saveOfferIdentity} className="app-card max-w-2xl">
           <SectionHeader
-            icon={PhoneCall}
-            title="Dzwonienie z CRM"
-            description="Ten numer odbierze połączenie jako pierwszy, zanim CRM połączy klienta."
+            icon={IdCard}
+            title="Dane do oferty"
+            description="Te dane pojawią się w wygenerowanej ofercie dla klienta."
             tone="sky"
             className="mb-4"
           />
 
-          <label>
-            <span className="label">Mój numer służbowy</span>
-            <input
-              className="field"
-              value={businessPhone}
-              onChange={(event) => setBusinessPhone(event.target.value)}
-              placeholder="+48 600 000 000"
-            />
-          </label>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label>
+              <span className="label">Imię i nazwisko na ofercie</span>
+              <input
+                className="field"
+                value={offerFullName}
+                onChange={(event) => setOfferFullName(event.target.value)}
+                placeholder="np. Kacper Bernecki"
+              />
+            </label>
+            <label>
+              <span className="label">Telefon na ofercie</span>
+              <input
+                className="field"
+                value={offerPhone}
+                onChange={(event) => setOfferPhone(event.target.value)}
+                placeholder="+48 600 000 000"
+              />
+            </label>
+          </div>
 
-          {phoneError ? (
-            <Alert tone="danger" className="mt-4">
-              {phoneError}
-            </Alert>
-          ) : null}
-
-          {phoneSaved ? (
+          {offerIdentitySaved ? (
             <Alert tone="success" className="mt-4">
-              Zapisano numer do połączeń CRM.
+              Zapisano dane do oferty.
             </Alert>
           ) : null}
 
           <button type="submit" className="btn-primary mt-4">
             <Save className="h-4 w-4" aria-hidden="true" />
-            Zapisz numer
+            Zapisz dane
           </button>
         </form>
 

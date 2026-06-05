@@ -11,7 +11,6 @@ import {
   Mail,
   MapPin,
   MessageSquarePlus,
-  PhoneCall,
   RotateCcw,
   Save,
   Send,
@@ -22,10 +21,6 @@ import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
 import { StatusBadge } from "@/components/status-badge";
-import { ActivityLog } from "@/components/activity-log";
-import { FileList } from "@/components/file-list";
-import { LeadCallPanel } from "@/components/lead-call-panel";
-import { ReminderList } from "@/components/reminder-list";
 import { Alert, EmptyState, SectionHeader } from "@/components/ui";
 import { ACTION_LABELS, LEAD_STATUSES, STATUS_LABELS, STATUS_TILE_TONES } from "@/lib/constants";
 import { hasAnyPermission } from "@/lib/permissions";
@@ -94,7 +89,6 @@ export default function LeadDetailsPage() {
   const [offerMessage, setOfferMessage] = useState("");
   const [offerUrl, setOfferUrl] = useState("");
   const [selectedAssignee, setSelectedAssignee] = useState("");
-  const [businessPhone, setBusinessPhone] = useState("");
   const [busy, setBusy] = useState(false);
   const [offerBusy, setOfferBusy] = useState(false);
   const [error, setError] = useState("");
@@ -110,7 +104,6 @@ export default function LeadDetailsPage() {
     profile.can_view_lead_pool &&
     !lead.assigned_to
   );
-  const canManageCalls = hasAnyPermission(profile?.role, ["calls:manage"]);
   const isManager = isManagerRole(profile?.role);
   const backHref = homePathForRole(profile?.role);
 
@@ -190,7 +183,6 @@ export default function LeadDetailsPage() {
 
   useEffect(() => {
     if (!profile) return;
-    setBusinessPhone(profile.business_phone || "");
     loadLead();
     loadHistory();
     if (canManageLeads(profile.role)) loadSalespeople();
@@ -514,23 +506,12 @@ export default function LeadDetailsPage() {
                     <span>{lead.source || "bez źródła"}</span>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {canClaimLead ? (
-                    <button type="button" onClick={claimLead} disabled={busy} className="btn-secondary">
-                      <UserCheck className="h-4 w-4" aria-hidden="true" />
-                      Przejmij z puli
-                    </button>
-                  ) : null}
-                  <button
-                    type="button"
-                    onClick={() => document.getElementById("lead-call-section")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                    disabled={!canManage && lead.assigned_to !== profile.id}
-                    className="btn-primary"
-                  >
-                    <PhoneCall className="h-4 w-4" aria-hidden="true" />
-                    Zadzwoń
+                {canClaimLead ? (
+                  <button type="button" onClick={claimLead} disabled={busy} className="btn-secondary">
+                    <UserCheck className="h-4 w-4" aria-hidden="true" />
+                    Przejmij z puli
                   </button>
-                </div>
+                ) : null}
               </div>
 
               {lead.status === "Umowa" ? (
@@ -598,18 +579,6 @@ export default function LeadDetailsPage() {
                 </div>
               </dl>
             </section>
-
-            {session?.access_token ? (
-              <div id="lead-call-section">
-                <LeadCallPanel
-                  lead={lead}
-                  profile={{ ...profile, business_phone: businessPhone || profile.business_phone }}
-                  token={session.access_token}
-                  canManageCalls={canManageCalls}
-                  onBusinessPhoneSaved={setBusinessPhone}
-                />
-              </div>
-            ) : null}
 
             {canEditLead ? (
               <form onSubmit={sendOffer} className="app-card">
@@ -871,43 +840,7 @@ export default function LeadDetailsPage() {
             </section>
 
             <section className="app-card">
-              <h2 className="text-base font-bold text-ink">Aktywności</h2>
-              <div className="mt-4">
-                {session?.access_token && (
-                  <ActivityLog
-                    leadId={lead.id}
-                    token={session.access_token}
-                  />
-                )}
-              </div>
-            </section>
-
-            <section className="app-card">
-              <h2 className="text-base font-bold text-ink">Pliki</h2>
-              <div className="mt-4">
-                {session?.access_token && (
-                  <FileList
-                    leadId={lead.id}
-                    token={session.access_token}
-                  />
-                )}
-              </div>
-            </section>
-
-            <section className="app-card">
-              <h2 className="text-base font-bold text-ink">Przypomnienia</h2>
-              <div className="mt-4">
-                {session?.access_token && (
-                  <ReminderList
-                    leadId={lead.id}
-                    token={session.access_token}
-                  />
-                )}
-              </div>
-            </section>
-
-            <section className="app-card">
-              <h2 className="text-base font-bold text-ink">Historia leada</h2>
+              <h2 className="text-base font-bold text-ink">Komentarze i historia leada</h2>
               <div className="mt-4 grid gap-3">
                 {history.map((item) => (
                   <div key={item.id} className="rounded-md border border-line bg-[#f9fbfd] p-3">

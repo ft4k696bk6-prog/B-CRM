@@ -51,7 +51,7 @@ export default async function PublicOfferPage({ params }: OfferPageProps) {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href="/materials/b-crm-energy-prezentacja.pdf" data-offer-track="downloaded" className="btn-primary">
+              <a href="/materials/prezentacja-re-energy-system.pdf" data-offer-track="downloaded" className="btn-primary">
                 <FileText className="h-4 w-4" aria-hidden="true" />
                 Pobierz prezentację
               </a>

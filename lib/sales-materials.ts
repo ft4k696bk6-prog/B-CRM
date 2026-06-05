@@ -1,7 +1,7 @@
 export type SalesMaterial = {
   id: string;
   title: string;
-  category: "presentation" | "knowledge" | "checklist" | "contract" | "technical";
+  category: "presentation" | "catalog" | "contract" | "credit";
   description: string;
   href: string;
   offlineReady: boolean;
@@ -10,51 +10,91 @@ export type SalesMaterial = {
 export const salesMaterials: SalesMaterial[] = [
   {
     id: "client-presentation",
-    title: "Prezentacja dla klienta",
+    title: "Prezentacja Re-Energy System",
     category: "presentation",
-    description: "Ogólna prezentacja PV i magazynu energii bez cen, Pstryk oraz EMS/AI.",
-    href: "/materials/b-crm-energy-prezentacja.pdf",
+    description: "Aktualna prezentacja do rozmowy z klientem i pokazania oferty firmy.",
+    href: "/materials/prezentacja-re-energy-system.pdf",
     offlineReady: true
   },
   {
-    id: "meeting-checklist",
-    title: "Checklista spotkania",
-    category: "checklist",
-    description: "Dane, które handlowiec musi zebrać przed ofertą i umową.",
-    href: "/materials/checklista-spotkania.pdf",
-    offlineReady: true
-  },
-  {
-    id: "net-billing",
-    title: "Net-billing prostym językiem",
-    category: "knowledge",
-    description: "Krótka karta wiedzy do rozmowy z klientem bez straszenia technikaliami.",
-    href: "/materials/net-billing.pdf",
-    offlineReady: true
-  },
-  {
-    id: "storage-basics",
-    title: "Magazyn energii: rozmowa z klientem",
-    category: "knowledge",
-    description: "Jak wyjaśnić po co jest magazyn, kiedy ma sens i co realnie zmienia.",
-    href: "/materials/magazyn-energii.pdf",
-    offlineReady: true
-  },
-  {
-    id: "contract-gate",
-    title: "Brama umowy",
+    id: "pv-contract",
+    title: "Umowa na fotowoltaikę",
     category: "contract",
-    description: "Lista potwierdzeń handlowca, kierownika i admina przed puszczeniem procesu dalej.",
-    href: "/materials/brama-umowy.pdf",
+    description: "Wzór umowy dla klienta, dostępny do pobrania z poziomu CRM.",
+    href: "/materials/umowa-na-fotowoltaike.pdf",
     offlineReady: true
   },
   {
-    id: "equipment-fit",
-    title: "Dobór sprzętu i kompatybilność",
-    category: "technical",
-    description: "Skrót zasad: LV/HV, CAN/RS485, BMS, firmware i kiedy pytać technika.",
-    href: "/assistant",
-    offlineReady: false
+    id: "credit-application",
+    title: "Wniosek kredytowy",
+    category: "credit",
+    description: "Dokument finansowania dla klienta, gdy oferta przechodzi w kredyt.",
+    href: "/materials/wniosek-kredytowy.pdf",
+    offlineReady: true
+  },
+  {
+    id: "deye-1f",
+    title: "Karta katalogowa Deye 1F",
+    category: "catalog",
+    description: "Karta falownika hybrydowego jednofazowego Deye.",
+    href: "/materials/karta-deye-1f-hybryda.pdf",
+    offlineReady: true
+  },
+  {
+    id: "deye-3f",
+    title: "Karta katalogowa Deye 3F",
+    category: "catalog",
+    description: "Karta falownika hybrydowego trójfazowego Deye.",
+    href: "/materials/karta-deye-3f-hybryda.pdf",
+    offlineReady: true
+  },
+  {
+    id: "kon-tec-mana-5",
+    title: "Kon-TEC MANA 5",
+    category: "catalog",
+    description: "Karta katalogowa magazynu energii Kon-TEC MANA 5.",
+    href: "/materials/karta-kon-tec-mana-5.pdf",
+    offlineReady: true
+  },
+  {
+    id: "kon-tec-mana-10",
+    title: "Kon-TEC MANA 10",
+    category: "catalog",
+    description: "Karta katalogowa magazynu energii Kon-TEC MANA 10.",
+    href: "/materials/karta-kon-tec-mana-10.pdf",
+    offlineReady: true
+  },
+  {
+    id: "kon-tec-mana-16",
+    title: "Kon-TEC MANA 16",
+    category: "catalog",
+    description: "Karta katalogowa magazynu energii Kon-TEC MANA 16.",
+    href: "/materials/karta-kon-tec-mana-16.pdf",
+    offlineReady: true
+  },
+  {
+    id: "ja-solar-500w",
+    title: "Karta katalogowa JA Solar 500 W",
+    category: "catalog",
+    description: "Karta modułu JA Solar używanego w kalkulatorze oferty.",
+    href: "/materials/karta-ja-solar-500w.pdf",
+    offlineReady: true
+  },
+  {
+    id: "felicity-fla48280",
+    title: "Felicity FLA48280TG2-EU",
+    category: "catalog",
+    description: "Karta katalogowa magazynu energii Felicity.",
+    href: "/materials/karta-felicity-fla48280tg2-eu.pdf",
+    offlineReady: true
+  },
+  {
+    id: "felicity-fla48460",
+    title: "Felicity FLA48460TG2-EU",
+    category: "catalog",
+    description: "Karta katalogowa magazynu energii Felicity.",
+    href: "/materials/karta-felicity-fla48460tg2-eu.pdf",
+    offlineReady: true
   }
 ];
 

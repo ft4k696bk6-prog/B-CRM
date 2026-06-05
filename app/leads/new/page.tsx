@@ -10,6 +10,7 @@ import { RegionFields } from "@/components/region-fields";
 import { Alert, PageHeader, SectionHeader } from "@/components/ui";
 import { LEAD_SOURCES, type LeadSource } from "@/lib/lead-sources";
 import { canCreateManualLead, canManageLeads, homePathForRole } from "@/lib/roles";
+import { isLocalCrmFallback, supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/use-auth";
 
 const newLeadCopy = {
@@ -83,6 +84,23 @@ export default function NewLeadPage() {
       status: canManage ? "Nowy" : "Przypisany",
       assigned_to: canManage ? null : profile.id
     };
+
+    if (isLocalCrmFallback) {
+      const { data, error: localError } = await supabase
+        .from("leads")
+        .insert({ ...payload, crm_environment: profile.crm_environment })
+        .select("id")
+        .single();
+
+      if (localError || !data || !("id" in data)) {
+        setError(localError?.message || copy.errorCreate);
+        setBusy(false);
+        return;
+      }
+
+      router.replace(`/leads/${String(data.id)}`);
+      return;
+    }
 
     const response = await fetch("/api/leads", {
       method: "POST",

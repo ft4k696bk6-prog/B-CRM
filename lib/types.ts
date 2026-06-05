@@ -133,10 +133,7 @@ export type ActivityType =
   | "file_deleted"
   | "assigned"
   | "unassigned"
-  | "lead_created"
-  | "call_logged"
-  | "call_transcript"
-  | "ai_call_summary";
+  | "lead_created";
 
 export type LeadActivity = {
   id: string;
@@ -192,43 +189,6 @@ export type DailyReport = {
   summary: string | null;
   crm_environment: CrmDataScope;
   created_at: string;
-};
-
-export type LeadCallStatus =
-  | "queued"
-  | "ringing_user"
-  | "connecting_customer"
-  | "in_progress"
-  | "completed"
-  | "failed"
-  | "busy"
-  | "no_answer"
-  | "canceled"
-  | "demo_completed";
-
-export type LeadCall = {
-  id: string;
-  lead_id: string;
-  user_id: string;
-  crm_environment: CrmDataScope;
-  user_phone: string;
-  customer_phone: string;
-  status: LeadCallStatus;
-  recording_consent: boolean;
-  twilio_parent_call_sid: string | null;
-  twilio_child_call_sid: string | null;
-  twilio_recording_sid: string | null;
-  recording_url: string | null;
-  recording_duration_seconds: number | null;
-  duration_seconds: number | null;
-  transcript: string | null;
-  ai_summary: string | null;
-  ai_next_step: string | null;
-  note_saved_at: string | null;
-  metadata: Record<string, unknown> | null;
-  created_at: string;
-  updated_at: string;
-  user_profile?: Pick<Profile, "id" | "email" | "full_name" | "role"> | null;
 };
 
 export type Customer = {
@@ -618,21 +578,6 @@ export type CompatibilitySource = {
   metadata: Record<string, unknown>;
   created_at: string;
   updated_at: string;
-};
-
-export type AssistantQuery = {
-  id: string;
-  user_id: string | null;
-  lead_id: string | null;
-  crm_environment: CrmDataScope;
-  assistant_area: "technical" | "operations";
-  question: string;
-  answer: string | null;
-  verdict: CompatibilityVerdict | null;
-  missing_data: string[];
-  confirmed_action: boolean;
-  metadata: Record<string, unknown>;
-  created_at: string;
 };
 
 export type DeliveryChannel = "email" | "sms" | "phone" | "portal" | "paper" | "other";
