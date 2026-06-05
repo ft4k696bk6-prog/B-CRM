@@ -96,7 +96,7 @@ def header(c: canvas.Canvas, page: int, progress: float) -> None:
     c.drawString(M, PAGE_H - 46, "RE-ENERGY SYSTEM")
     c.setFont("Deck", 8)
     c.setFillColor(MUTED)
-    c.drawRightString(PAGE_W - M, PAGE_H - 42, f"{page:02d} / B-CRM Energy")
+    c.drawRightString(PAGE_W - M, PAGE_H - 42, f"{page:02d} / B-CRM")
     c.setStrokeColor(LINE)
     c.setLineWidth(0.8)
     c.line(M - 14, PAGE_H - 66, PAGE_W - M + 14, PAGE_H - 66)
@@ -336,7 +336,7 @@ def build() -> None:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     PUBLIC.parent.mkdir(parents=True, exist_ok=True)
     c = canvas.Canvas(str(OUT), pagesize=landscape(A4))
-    c.setTitle("B-CRM Energy - prezentacja klienta")
+    c.setTitle("B-CRM - prezentacja klienta")
     c.setAuthor("Re-Energy System")
     slides = [slide_1, slide_2, slide_3, slide_4, slide_5, slide_6, slide_7, slide_8, slide_9, slide_10]
     for slide in slides:

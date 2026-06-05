@@ -1,6 +1,6 @@
-# B-CRM Energy
+# B-CRM
 
-B-CRM Energy to firmowy CRM dla sprzedaży i realizacji OZE. Łączy pozyskiwanie leadów, pracę handlowca w terenie, kalkulacje, wysyłkę oferty, bramki umowy, magazyn, montaż i obsługę klienta po podpisaniu dokumentów.
+B-CRM to firmowy CRM dla sprzedaży i realizacji OZE. Łączy pozyskiwanie leadów, pracę handlowca w terenie, kalkulacje, wysyłkę oferty, bramki umowy, magazyn, montaż i obsługę klienta po podpisaniu dokumentów.
 
 Produkt jest projektowany pod zespoły podobne do Re-Energy System: szybka obsługa kontaktu, wygodna praca na telefonie, jasna kontrola kierownika i administratora oraz proces klienta spokojniejszy niż w typowym CRM.
 

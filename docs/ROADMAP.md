@@ -1,4 +1,4 @@
-# B-CRM Energy: roadmap
+# B-CRM: roadmap
 
 ## Krótki termin
 

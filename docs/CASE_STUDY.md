@@ -1,4 +1,4 @@
-# B-CRM Energy: opis wdrożenia
+# B-CRM: opis wdrożenia
 
 ## Problem
 
@@ -6,7 +6,7 @@ Firmy OZE potrzebują jednego miejsca do kontroli leadów, właściciela kontakt
 
 ## Cel
 
-B-CRM Energy porządkuje proces od pozyskania leada do realizacji. Każda rola widzi tylko to, co jest potrzebne do pracy: właściciel i admin kontrolują całość, kierownik pilnuje zespołu, handlowiec prowadzi kontakt, a role operacyjne przejmują temat po umowie.
+B-CRM porządkuje proces od pozyskania leada do realizacji. Każda rola widzi tylko to, co jest potrzebne do pracy: właściciel i admin kontrolują całość, kierownik pilnuje zespołu, handlowiec prowadzi kontakt, a role operacyjne przejmują temat po umowie.
 
 ## Role
 

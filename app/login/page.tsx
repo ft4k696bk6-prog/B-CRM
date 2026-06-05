@@ -65,7 +65,7 @@ export default function LoginPage() {
             <div className="flex items-center gap-3">
               <BrandMark />
               <div>
-                <h1 className="text-xl font-bold text-ink">B-CRM Energy</h1>
+                <h1 className="text-xl font-bold text-ink">B-CRM</h1>
                 <p className="text-sm text-muted">{t("loginSubtitle")}</p>
               </div>
             </div>

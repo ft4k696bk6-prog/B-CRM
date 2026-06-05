@@ -11,7 +11,7 @@
 
 ## 0.1.0
 
-- Dodano bazę B-CRM Energy z ekranami zależnymi od ról.
+- Dodano bazę B-CRM z ekranami zależnymi od ról.
 - Dodano leady, statusy, komentarze, callbacki, spotkania i historię.
 - Dodano pliki SQL Supabase dla schematu, polityk i użytkowników.
 - Dodano import CSV oraz przepływy ofert i PDF.

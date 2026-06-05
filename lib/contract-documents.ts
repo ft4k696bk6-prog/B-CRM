@@ -27,7 +27,7 @@ export const referenceContractData: ContractCustomerRecord = {
   contractNumber: "BCRM/05/2026/017",
   contractDate: "2026-05-17",
   sellerName: "Anna Nowak",
-  companyName: "B-CRM Energy Sp. z o.o.",
+  companyName: "B-CRM Sp. z o.o.",
   companyNip: "9480000000",
   clientName: "Jan Kowalski",
   phone: "600 700 800",

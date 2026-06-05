@@ -1,6 +1,6 @@
-# B-CRM Energy: opis produktu
+# B-CRM: opis produktu
 
-B-CRM Energy to operacyjny CRM dla firmy OZE. Ma prowadzić kontakt od formularza i pierwszego telefonu, przez spotkanie, kalkulację, ofertę, umowę, podpis online, magazyn i montaż.
+B-CRM to operacyjny CRM dla firmy OZE. Ma prowadzić kontakt od formularza i pierwszego telefonu, przez spotkanie, kalkulację, ofertę, umowę, podpis online, magazyn i montaż.
 
 ## Najważniejsze Moduły
 

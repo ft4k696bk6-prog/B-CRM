@@ -1,4 +1,4 @@
--- B-CRM Energy V2 data layer.
+-- B-CRM V2 data layer.
 -- Adds post-sales entities, status constraints and manager-level "kierownik" role support.
 
 alter table public.profiles

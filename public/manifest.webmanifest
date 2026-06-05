@@ -1,6 +1,6 @@
 {
-  "name": "B-CRM Energy",
-  "short_name": "B-CRM Energy",
+  "name": "B-CRM",
+  "short_name": "B-CRM",
   "description": "CRM dla sprzedaży OZE, procesu klienta, magazynu i montażu.",
   "start_url": "/",
   "scope": "/",

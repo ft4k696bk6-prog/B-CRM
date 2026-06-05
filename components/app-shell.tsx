@@ -294,7 +294,7 @@ export function AppShell({ profile, children }: AppShellProps) {
               <BrandMark size="sm" />
               <span>
                 <span className="flex items-center gap-2 text-sm font-bold leading-4">
-                  B-CRM Energy
+                  B-CRM
                 </span>
                 <span className="block truncate text-xs text-muted">
                   {t("panelPrefix")}: {roleLabel}
@@ -346,7 +346,7 @@ export function AppShell({ profile, children }: AppShellProps) {
                 <BrandMark size="sm" />
                 <div>
                   <div className="flex items-center gap-2 text-sm font-black text-ink">
-                    B-CRM Energy
+                    B-CRM
                   </div>
                   <div className="text-xs text-muted">{roleLabel}</div>
                 </div>

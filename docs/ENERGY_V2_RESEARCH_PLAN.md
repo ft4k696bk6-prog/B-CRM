@@ -1,6 +1,6 @@
-# B-CRM Energy V2: plan researchu
+# B-CRM V2: plan researchu
 
-Ten dokument opisuje zakres researchu dla B-CRM Energy V2. Nie jest specyfikacją wdrożenia i nie zmienia działania aplikacji bez osobnej decyzji.
+Ten dokument opisuje zakres researchu dla B-CRM V2. Nie jest specyfikacją wdrożenia i nie zmienia działania aplikacji bez osobnej decyzji.
 
 Celem jest sprawdzenie integracji i procesów przydatnych dla firmy OZE: import z Google Drive, Meta Lead Ads, podpis online z SMS, PWA offline i asystent kompatybilności sprzętu.
 
