@@ -554,11 +554,11 @@ export default function LeadDetailsPage() {
                   </dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
-                  <dt className="label">Dodany</dt>
+                  <dt className="label">Data dodania</dt>
                   <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.created_at)}</dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
-                  <dt className="label">Modyfikacja</dt>
+                  <dt className="label">Ostatnia modyfikacja</dt>
                   <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.updated_at)}</dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">

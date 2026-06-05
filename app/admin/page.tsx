@@ -44,9 +44,11 @@ const initialFilters: AdminLeadFilters = {
   assignedTo: ""
 };
 
+const LEAD_PAGE_SIZE = 1000;
+
 const sortOptions: Array<SortOption & { label: string }> = [
-  { label: "Dodane: najnowsze", column: "created_at", direction: "desc" },
-  { label: "Dodane: najstarsze", column: "created_at", direction: "asc" },
+  { label: "Data dodania: najnowsze", column: "created_at", direction: "desc" },
+  { label: "Data dodania: najstarsze", column: "created_at", direction: "asc" },
   { label: "Modyfikacja: najnowsza", column: "updated_at", direction: "desc" },
   { label: "Ostatnie otwarcie", column: "last_opened_at", direction: "desc" },
   { label: "Imię i nazwisko", column: "full_name", direction: "asc" },
@@ -113,16 +115,28 @@ export default function AdminDashboardPage() {
   async function loadStats() {
     if (!profile) return;
 
-    let query = supabase
-      .from("leads")
-      .select("id,status,assigned_to,meeting_at,callback_at")
-      .eq("crm_environment", profile.crm_environment);
+    const rows: Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at" | "callback_at">[] = [];
 
-    query = applyManagerScope(query);
+    for (let from = 0; ; from += LEAD_PAGE_SIZE) {
+      let query = supabase
+        .from("leads")
+        .select("id,status,assigned_to,meeting_at,callback_at")
+        .eq("crm_environment", profile.crm_environment);
 
-    const { data } = await query;
+      query = applyManagerScope(query);
 
-    const rows = (data || []) as Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at" | "callback_at">[];
+      const { data, error: statsError } = await query.range(from, from + LEAD_PAGE_SIZE - 1);
+
+      if (statsError) {
+        setError(statsError.message);
+        return;
+      }
+
+      const page = (data || []) as Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at" | "callback_at">[];
+      rows.push(...page);
+      if (page.length < LEAD_PAGE_SIZE) break;
+    }
+
     setStats({
       all: rows.length,
       unassigned: rows.filter((lead) => !lead.assigned_to && lead.status !== "Zwrot").length,
@@ -141,48 +155,56 @@ export default function AdminDashboardPage() {
     setBusy(true);
     setError("");
 
-    let query = supabase
-      .from("leads")
-      .select(
-        "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)"
-      )
-      .eq("crm_environment", profile.crm_environment)
-      .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false })
-      .limit(1000);
+    const nextLeads: Lead[] = [];
 
-    if (filters.createdFrom) query = query.gte("created_at", startOfDay(filters.createdFrom));
-    if (filters.createdTo) query = query.lte("created_at", endOfDay(filters.createdTo));
-    if (filters.updatedFrom) query = query.gte("updated_at", startOfDay(filters.updatedFrom));
-    if (filters.updatedTo) query = query.lte("updated_at", endOfDay(filters.updatedTo));
-    if (filters.openedFrom) query = query.gte("last_opened_at", startOfDay(filters.openedFrom));
-    if (filters.openedTo) query = query.lte("last_opened_at", endOfDay(filters.openedTo));
-    if (filters.postalCode) query = query.ilike("postal_code", `%${filters.postalCode}%`);
-    if (filters.voivodeship) query = query.ilike("voivodeship", `%${filters.voivodeship}%`);
-    if (filters.county) query = query.ilike("county", `%${filters.county}%`);
-    if (filters.status) query = query.eq("status", filters.status as LeadStatus);
+    for (let from = 0; ; from += LEAD_PAGE_SIZE) {
+      let query = supabase
+        .from("leads")
+        .select(
+          "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)"
+        )
+        .eq("crm_environment", profile.crm_environment)
+        .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false });
 
-    if (isManager && !filters.assignedTo) {
-      query = applyManagerScope(query);
+      if (filters.createdFrom) query = query.gte("created_at", startOfDay(filters.createdFrom));
+      if (filters.createdTo) query = query.lte("created_at", endOfDay(filters.createdTo));
+      if (filters.updatedFrom) query = query.gte("updated_at", startOfDay(filters.updatedFrom));
+      if (filters.updatedTo) query = query.lte("updated_at", endOfDay(filters.updatedTo));
+      if (filters.openedFrom) query = query.gte("last_opened_at", startOfDay(filters.openedFrom));
+      if (filters.openedTo) query = query.lte("last_opened_at", endOfDay(filters.openedTo));
+      if (filters.postalCode) query = query.ilike("postal_code", `%${filters.postalCode}%`);
+      if (filters.voivodeship) query = query.ilike("voivodeship", `%${filters.voivodeship}%`);
+      if (filters.county) query = query.ilike("county", `%${filters.county}%`);
+      if (filters.status) query = query.eq("status", filters.status as LeadStatus);
+
+      if (isManager && !filters.assignedTo) {
+        query = applyManagerScope(query);
+      }
+
+      if (filters.assignedTo === "__unassigned") {
+        query = query.is("assigned_to", null).neq("status", "Zwrot");
+      } else if (filters.assignedTo === "__returned") {
+        query = query.eq("status", "Zwrot");
+        if (isManager) query = applyManagerScope(query);
+      } else if (filters.assignedTo) {
+        query = query.eq("assigned_to", filters.assignedTo);
+      }
+
+      const { data, error: leadsError } = await query.range(from, from + LEAD_PAGE_SIZE - 1);
+
+      if (leadsError) {
+        setError(leadsError.message);
+        setBusy(false);
+        return;
+      }
+
+      const page = (data || []) as Lead[];
+      nextLeads.push(...page);
+      if (page.length < LEAD_PAGE_SIZE) break;
     }
 
-    if (filters.assignedTo === "__unassigned") {
-      query = query.is("assigned_to", null).neq("status", "Zwrot");
-    } else if (filters.assignedTo === "__returned") {
-      query = query.eq("status", "Zwrot");
-      if (isManager) query = applyManagerScope(query);
-    } else if (filters.assignedTo) {
-      query = query.eq("assigned_to", filters.assignedTo);
-    }
-
-    const { data, error: leadsError } = await query;
-
-    if (leadsError) {
-      setError(leadsError.message);
-    } else {
-      setLeads((data || []) as Lead[]);
-      setSelectedIds([]);
-    }
-
+    setLeads(nextLeads);
+    setSelectedIds([]);
     setBusy(false);
   }
 
@@ -255,7 +277,7 @@ export default function AdminDashboardPage() {
       "Oddzwonienie",
       "Spotkanie",
       "Źródło",
-      "Utworzony",
+      "Data dodania",
       "Zaktualizowany"
     ];
     const rows = leads.map((lead) => [
@@ -521,7 +543,7 @@ export default function AdminDashboardPage() {
           {showFilters ? (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             <label>
-              <span className="label">Dodane od</span>
+              <span className="label">Data dodania od</span>
               <input
                 className="field"
                 type="date"
@@ -530,7 +552,7 @@ export default function AdminDashboardPage() {
               />
             </label>
             <label>
-              <span className="label">Dodane do</span>
+              <span className="label">Data dodania do</span>
               <input
                 className="field"
                 type="date"

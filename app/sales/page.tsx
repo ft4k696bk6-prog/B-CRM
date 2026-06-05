@@ -19,8 +19,15 @@ import { Alert, EmptyState, PageHeader, SectionHeader } from "@/components/ui";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { formatDateTime, isPast, isToday } from "@/lib/date";
 import { supabase } from "@/lib/supabase";
-import type { Lead, LeadStatus } from "@/lib/types";
+import type { Lead, LeadStatus, SortOption } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
+
+const LEAD_PAGE_SIZE = 1000;
+
+const sortOptions: Array<SortOption & { label: string }> = [
+  { label: "Data dodania: najnowsze", column: "created_at", direction: "desc" },
+  { label: "Data dodania: najstarsze", column: "created_at", direction: "asc" }
+];
 
 function needsNextAction(lead: Pick<Lead, "status" | "callback_at" | "meeting_at">) {
   if (["Umowa", "Rezygnacja", "Zwrot"].includes(lead.status)) return false;
@@ -31,6 +38,7 @@ export default function SalesDashboardPage() {
   const { loading, profile } = useAuth("handlowiec");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "">("");
+  const [sort, setSort] = useState<SortOption>(sortOptions[0]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -40,36 +48,44 @@ export default function SalesDashboardPage() {
     setBusy(true);
     setError("");
 
-    let query = supabase
-      .from("leads")
-      .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)")
-      .eq("crm_environment", profile.crm_environment)
-      .order("updated_at", { ascending: false })
-      .limit(1000);
+    const nextLeads: Lead[] = [];
 
-    if (profile.can_view_lead_pool) {
-      query = query.or(`assigned_to.eq.${profile.id},assigned_to.is.null`);
-    } else {
-      query = query.eq("assigned_to", profile.id);
+    for (let from = 0; ; from += LEAD_PAGE_SIZE) {
+      let query = supabase
+        .from("leads")
+        .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)")
+        .eq("crm_environment", profile.crm_environment)
+        .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false });
+
+      if (profile.can_view_lead_pool) {
+        query = query.or(`assigned_to.eq.${profile.id},assigned_to.is.null`);
+      } else {
+        query = query.eq("assigned_to", profile.id);
+      }
+
+      if (statusFilter) query = query.eq("status", statusFilter);
+
+      const { data, error: leadsError } = await query.range(from, from + LEAD_PAGE_SIZE - 1);
+
+      if (leadsError) {
+        setError(leadsError.message);
+        setBusy(false);
+        return;
+      }
+
+      const page = (data || []) as Lead[];
+      nextLeads.push(...page);
+      if (page.length < LEAD_PAGE_SIZE) break;
     }
 
-    if (statusFilter) query = query.eq("status", statusFilter);
-
-    const { data, error: leadsError } = await query;
-
-    if (leadsError) {
-      setError(leadsError.message);
-    } else {
-      setLeads((data || []) as Lead[]);
-    }
-
+    setLeads(nextLeads);
     setBusy(false);
   }
 
   useEffect(() => {
     if (!profile) return;
     loadLeads();
-  }, [profile?.id, profile?.crm_environment, statusFilter]);
+  }, [profile?.id, profile?.crm_environment, statusFilter, sort]);
 
   useEffect(() => {
     function refreshLeads() {
@@ -78,7 +94,7 @@ export default function SalesDashboardPage() {
 
     window.addEventListener("leads:changed", refreshLeads);
     return () => window.removeEventListener("leads:changed", refreshLeads);
-  }, [profile?.id, profile?.crm_environment, statusFilter]);
+  }, [profile?.id, profile?.crm_environment, statusFilter, sort]);
 
   const overdueCallbacks = useMemo(
     () =>
@@ -233,7 +249,7 @@ export default function SalesDashboardPage() {
         ) : null}
 
         <section className="app-card">
-          <div className="max-w-xs">
+          <div className="grid gap-3 md:grid-cols-2">
             <label>
               <span className="label">Szybki filtr statusu</span>
               <select
@@ -245,6 +261,26 @@ export default function SalesDashboardPage() {
                 {LEAD_STATUSES.map((status) => (
                   <option key={status} value={status}>
                     {status}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span className="label">Sortowanie</span>
+              <select
+                className="field"
+                value={`${sort.column}:${sort.direction}`}
+                onChange={(event) => {
+                  const [column, direction] = event.target.value.split(":");
+                  setSort({ column: column as SortOption["column"], direction: direction as "asc" | "desc" });
+                }}
+              >
+                {sortOptions.map((option) => (
+                  <option
+                    key={`${option.column}:${option.direction}`}
+                    value={`${option.column}:${option.direction}`}
+                  >
+                    {option.label}
                   </option>
                 ))}
               </select>

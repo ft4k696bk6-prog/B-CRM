@@ -65,7 +65,7 @@ export function LeadTable({
     status: "Status",
     salesperson: "Handlowiec",
     dates: "Terminy",
-    created: "Dodany",
+    created: "Data dodania",
     noCode: "brak kodu",
     unassigned: "Nieprzypisany",
     openLeadCard: "Otwórz kartę leada",

@@ -299,6 +299,7 @@ function compareValues(left: unknown, right: unknown) {
 class LocalQuery {
   private filters: Filter[] = [];
   private orderBy: { column: string; ascending: boolean } | null = null;
+  private rowOffset = 0;
   private maxRows: number | null = null;
   private singleRow = false;
   private mutation: { type: "update" | "insert" | "upsert" | "delete"; payload?: unknown } | null = null;
@@ -385,11 +386,13 @@ class LocalQuery {
   }
 
   limit(value: number) {
+    this.rowOffset = 0;
     this.maxRows = value;
     return this;
   }
 
   range(from: number, to: number) {
+    this.rowOffset = Math.max(from, 0);
     this.maxRows = Math.max(to - from + 1, 0);
     return this;
   }
@@ -466,7 +469,7 @@ class LocalQuery {
       rows.sort((a, b) => (ascending ? 1 : -1) * compareValues(a[column], b[column]));
     }
 
-    if (this.maxRows !== null) rows = rows.slice(0, this.maxRows);
+    if (this.maxRows !== null) rows = rows.slice(this.rowOffset, this.rowOffset + this.maxRows);
 
     return { data: this.singleRow ? rows[0] || null : rows, error: null };
   }
