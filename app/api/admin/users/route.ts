@@ -45,6 +45,61 @@ type AdminProfile = {
   crm_environment: string | null;
 };
 
+const localCrmMode = process.env.NEXT_PUBLIC_LOCAL_CRM_MODE !== "false";
+const localAdminToken = "local-token-kacper-admin";
+
+const localFallbackUsers: ProfileRow[] = [
+  {
+    id: "sales-rep",
+    email: "handlowiec@b-crm.local",
+    full_name: "Handlowiec",
+    role: "handlowiec",
+    manager_id: "sales-manager",
+    business_phone: null,
+    can_view_lead_pool: true,
+    crm_environment: "production",
+    created_at: "2026-06-05T10:20:00.000Z"
+  },
+  {
+    id: "sales-manager",
+    email: "manager@b-crm.local",
+    full_name: "Manager sprzedazy",
+    role: "kierownik",
+    manager_id: "kacper-admin",
+    business_phone: null,
+    can_view_lead_pool: false,
+    crm_environment: "production",
+    created_at: "2026-06-05T10:10:00.000Z"
+  },
+  {
+    id: "kacper-admin",
+    email: "kacper.bernecki@gmail.com",
+    full_name: "Kacper Bernecki",
+    role: "admin",
+    manager_id: null,
+    business_phone: null,
+    can_view_lead_pool: false,
+    crm_environment: "production",
+    created_at: "2026-06-05T10:00:00.000Z"
+  }
+];
+
+function isLocalAdminRequest(request: Request) {
+  const authHeader = request.headers.get("authorization");
+  const token = authHeader?.startsWith("Bearer ") ? authHeader.replace("Bearer ", "") : null;
+  return localCrmMode && token === localAdminToken;
+}
+
+function localAdminMutationResponse() {
+  return NextResponse.json(
+    {
+      error:
+        "Konto admina dziala w trybie prywatnym. Tworzenie i zmiana dodatkowych kont wymaga podpiecia stalej bazy Supabase."
+    },
+    { status: 409 }
+  );
+}
+
 function dbCompatibleRole(role: UserRole) {
   if (role === "handlowiec") return "sales";
   if (role === "kierownik") return "manager";
@@ -221,6 +276,15 @@ async function requireAdmin(request: Request) {
 }
 
 export async function GET(request: Request) {
+  if (isLocalAdminRequest(request)) {
+    const users = localFallbackUsers.map((user) => ({
+      ...user,
+      role: normalizeRole(user.role, user.email)
+    }));
+
+    return NextResponse.json({ users });
+  }
+
   const auth = await requireAdmin(request);
   if (auth.error) return auth.error;
 
@@ -264,6 +328,8 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    if (isLocalAdminRequest(request)) return localAdminMutationResponse();
+
     const auth = await requireAdmin(request);
     if (auth.error) return auth.error;
 
@@ -367,6 +433,8 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
+    if (isLocalAdminRequest(request)) return localAdminMutationResponse();
+
     const auth = await requireAdmin(request);
     if (auth.error) return auth.error;
 
@@ -496,6 +564,8 @@ export async function PATCH(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    if (isLocalAdminRequest(request)) return localAdminMutationResponse();
+
     const auth = await requireAdmin(request);
     if (auth.error) return auth.error;
 
