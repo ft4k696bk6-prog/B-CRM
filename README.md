@@ -1,12 +1,12 @@
-# B-CRM
+# B-CRM DEMO
 
-B-CRM is a production-like CRM demo for sales teams that need to manage leads, statuses, callbacks, meetings, comments, offers and role-based workflows in one web app.
+B-CRM DEMO is a production-like CRM demo for sales teams that need to manage leads, statuses, callbacks, meetings, comments, offers and role-based workflows in one web app.
 
-PL: B-CRM to aplikacja CRM do obsługi leadów i procesu sprzedażowego, z rolami użytkowników, dashboardami, historią działań i bazą Supabase/PostgreSQL.
+PL: B-CRM DEMO to aplikacja CRM do obsługi leadów i procesu sprzedażowego, z rolami użytkowników, dashboardami, historią działań i bazą demo.
 
 ## Live demo
 
-https://b-crm-berni.vercel.app/login
+https://b-crm-demo-berni.vercel.app/login
 
 Demo accounts are available on the login screen.
 
@@ -77,7 +77,7 @@ Create `.env.local` from `.env.example`.
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-NEXT_PUBLIC_DEMO_MODE=false
+NEXT_PUBLIC_DEMO_MODE=true
 NEXT_PUBLIC_APP_URL=
 
 TWILIO_ACCOUNT_SID=

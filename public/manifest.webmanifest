@@ -1,7 +1,7 @@
 {
-  "name": "B-CRM",
-  "short_name": "B-CRM",
-  "description": "Enterprise CRM dla sprzedaży, realizacji i rozliczeń.",
+  "name": "B-CRM DEMO",
+  "short_name": "B-CRM DEMO",
+  "description": "Portfolio demo CRM dla sprzedaży, realizacji i rozliczeń.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

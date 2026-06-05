@@ -16,6 +16,7 @@ type DemoProfile = {
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const forceDemoSupabase = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
 
 function isRealSupabaseUrl(value?: string) {
   return Boolean(
@@ -35,9 +36,10 @@ function isRealSupabaseKey(value?: string) {
   );
 }
 
-const hasRealSupabase = isRealSupabaseUrl(supabaseUrl) && isRealSupabaseKey(supabaseAnonKey);
+const hasRealSupabase =
+  !forceDemoSupabase && isRealSupabaseUrl(supabaseUrl) && isRealSupabaseKey(supabaseAnonKey);
 
-export const isDemoSupabaseFallback = !hasRealSupabase;
+export const isDemoSupabaseFallback = forceDemoSupabase || !hasRealSupabase;
 export const isSupabaseConfigured = hasRealSupabase || isDemoSupabaseFallback;
 
 const demoProfiles: DemoProfile[] = [

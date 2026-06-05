@@ -19,7 +19,7 @@ import { Alert } from "@/components/ui";
 import { homePathForRole, normalizeRole } from "@/lib/roles";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
-const demoModeEnabled = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+const demoModeEnabled = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
 
 const demoOptions = [
   {
@@ -80,8 +80,11 @@ const demoOptions = [
 
 type DemoAccountKey = (typeof demoOptions)[number]["key"];
 
-function getDemoAccount(key: string) {
-  return demoOptions.find((account) => account.key === key);
+function getDemoAccount(identifier: string) {
+  const normalizedIdentifier = identifier.trim().toLowerCase();
+  return demoOptions.find(
+    (account) => account.key === normalizedIdentifier || account.email === normalizedIdentifier
+  );
 }
 
 function resolveCredentials(identifier: string, typedPassword: string) {
@@ -105,7 +108,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showDemoMenu, setShowDemoMenu] = useState(false);
+  const [showDemoMenu, setShowDemoMenu] = useState(true);
 
   async function finishLogin(signInEmail: string, signInPassword: string) {
     setError("");
@@ -160,7 +163,7 @@ export default function LoginPage() {
             <div className="flex items-center gap-3">
               <BrandMark />
               <div>
-                <h1 className="text-xl font-bold text-ink">B-CRM</h1>
+                <h1 className="text-xl font-bold text-ink">B-CRM DEMO</h1>
                 <p className="text-sm text-muted">{t("loginSubtitle")}</p>
               </div>
             </div>
@@ -246,6 +249,9 @@ export default function LoginPage() {
                         {language === "pl" ? option.labelPl : option.labelEn}
                       </span>
                       <span className="block truncate text-xs text-muted">{t(option.descriptionKey)}</span>
+                      <span className="mt-1 block text-[11px] font-bold text-muted">
+                        {option.key} / demo
+                      </span>
                     </span>
                   </button>
                 );

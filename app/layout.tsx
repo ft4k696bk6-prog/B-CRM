@@ -8,8 +8,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "B-CRM",
-  description: "CRM sprzedażowo-operacyjny dla firm OZE",
+  title: "B-CRM DEMO",
+  description: "Portfolio demo CRM dla sprzedaży i obsługi leadów",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "B-CRM"
+    title: "B-CRM DEMO"
   }
 };
 
