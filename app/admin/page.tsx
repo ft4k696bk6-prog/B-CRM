@@ -19,13 +19,14 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { LeadTable } from "@/components/lead-table";
 import { LoadingScreen } from "@/components/loading-screen";
+import { PaginationControls } from "@/components/pagination-controls";
 import { RegionFields } from "@/components/region-fields";
 import { StatTile } from "@/components/stat-tile";
 import { Alert, PageHeader } from "@/components/ui";
 import { endOfDay, escapeCsv, needsNextAction, startOfDay } from "@/lib/admin-leads";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { hasPermission } from "@/lib/permissions";
-import { canManageLeads, isManagerRole } from "@/lib/roles";
+import { ROLE_LABELS, canManageLeads, isManagerRole, normalizeRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { AdminLeadFilters, Lead, LeadStatus, Profile, SortOption } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
@@ -44,7 +45,18 @@ const initialFilters: AdminLeadFilters = {
   assignedTo: ""
 };
 
-const LEAD_PAGE_SIZE = 1000;
+const DEFAULT_LEAD_PAGE_SIZE = 15;
+const LEAD_PAGE_SIZE_OPTIONS = [15, 30, 60];
+
+type AdminStatCount =
+  | "all"
+  | "unassigned"
+  | "assigned"
+  | "callbacks"
+  | "meetings"
+  | "contracts"
+  | "resignations"
+  | "noNextAction";
 
 const sortOptions: Array<SortOption & { label: string }> = [
   { label: "Data dodania: najnowsze", column: "created_at", direction: "desc" },
@@ -59,13 +71,16 @@ const sortOptions: Array<SortOption & { label: string }> = [
 export default function AdminDashboardPage() {
   const { loading, profile } = useAuth(["owner", "admin", "kierownik", "finance", "viewer"]);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [salespeople, setSalespeople] = useState<Profile[]>([]);
+  const [assignees, setAssignees] = useState<Profile[]>([]);
   const [filters, setFilters] = useState<AdminLeadFilters>(initialFilters);
   const [sort, setSort] = useState<SortOption>(sortOptions[0]);
+  const [leadPage, setLeadPage] = useState(1);
+  const [leadPageSize, setLeadPageSize] = useState(DEFAULT_LEAD_PAGE_SIZE);
+  const [totalLeads, setTotalLeads] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [showTeamResults, setShowTeamResults] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [selectedSalesperson, setSelectedSalesperson] = useState("");
+  const [selectedAssignee, setSelectedAssignee] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [stats, setStats] = useState({
@@ -83,70 +98,110 @@ export default function AdminDashboardPage() {
   const canAssignLeads = canManageLeads(profile?.role);
   const canExportCurrentView = hasPermission(profile?.role, "data:export");
 
-  async function loadSalespeople() {
+  async function loadAssignees() {
     if (!profile) return;
 
     let query = supabase
       .from("profiles")
       .select("*")
-      .in("role", ["handlowiec", "sales"])
+      .in("role", ["handlowiec", "sales", "kierownik", "manager"])
       .eq("crm_environment", profile.crm_environment)
       .order("full_name", { ascending: true });
 
-    if (isManager && profile) query = query.eq("manager_id", profile.id);
+    if (isManager && profile) query = query.or(`manager_id.eq.${profile.id},id.eq.${profile.id}`);
 
     const { data } = await query;
 
-    setSalespeople((data || []) as Profile[]);
+    setAssignees((data || []) as Profile[]);
   }
 
-  function applyManagerScope<T extends { in: (column: string, values: string[]) => T; or: (filters: string) => T }>(query: T) {
+  function applyManagerScope<T extends { or: (filters: string) => T }>(query: T) {
     if (!isManager) return query;
 
-    const teamIds = salespeople.map((person) => person.id);
+    const ownerIds = Array.from(new Set([profile?.id, ...assignees.map((person) => person.id)].filter(Boolean)));
 
-    if (teamIds.length === 0) {
+    if (ownerIds.length === 0) {
       return query.or("assigned_to.is.null");
     }
 
-    return query.or(`assigned_to.in.(${teamIds.join(",")}),assigned_to.is.null`);
+    return query.or(`assigned_to.in.(${ownerIds.join(",")}),assigned_to.is.null`);
+  }
+
+  async function countLeads(kind: AdminStatCount = "all") {
+    if (!profile) return 0;
+
+    let query = supabase
+      .from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("crm_environment", profile.crm_environment);
+
+    query = applyManagerScope(query);
+
+    if (kind === "unassigned") {
+      query = query.is("assigned_to", null).neq("status", "Zwrot");
+    } else if (kind === "assigned") {
+      query = query.not("assigned_to", "is", null);
+    } else if (kind === "callbacks") {
+      query = query.eq("status", "Call back");
+    } else if (kind === "meetings") {
+      query = query.or("status.eq.Spotkanie,meeting_at.not.is.null");
+    } else if (kind === "contracts") {
+      query = query.eq("status", "Umowa");
+    } else if (kind === "resignations") {
+      query = query.eq("status", "Rezygnacja");
+    } else if (kind === "noNextAction") {
+      query = query
+        .not("status", "in", "(Umowa,Rezygnacja,Zwrot)")
+        .is("callback_at", null)
+        .is("meeting_at", null);
+    }
+
+    const { data, error: countError, count } = await query;
+
+    if (countError) {
+      throw new Error(countError.message);
+    }
+
+    return typeof count === "number" ? count : Array.isArray(data) ? data.length : 0;
   }
 
   async function loadStats() {
     if (!profile) return;
 
-    const rows: Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at" | "callback_at">[] = [];
+    try {
+      const [
+        all,
+        unassigned,
+        assigned,
+        callbacks,
+        meetings,
+        contracts,
+        resignations,
+        noNextAction
+      ] = await Promise.all([
+        countLeads(),
+        countLeads("unassigned"),
+        countLeads("assigned"),
+        countLeads("callbacks"),
+        countLeads("meetings"),
+        countLeads("contracts"),
+        countLeads("resignations"),
+        countLeads("noNextAction")
+      ]);
 
-    for (let from = 0; ; from += LEAD_PAGE_SIZE) {
-      let query = supabase
-        .from("leads")
-        .select("id,status,assigned_to,meeting_at,callback_at")
-        .eq("crm_environment", profile.crm_environment);
-
-      query = applyManagerScope(query);
-
-      const { data, error: statsError } = await query.range(from, from + LEAD_PAGE_SIZE - 1);
-
-      if (statsError) {
-        setError(statsError.message);
-        return;
-      }
-
-      const page = (data || []) as Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at" | "callback_at">[];
-      rows.push(...page);
-      if (page.length < LEAD_PAGE_SIZE) break;
+      setStats({
+        all,
+        unassigned,
+        assigned,
+        callbacks,
+        meetings,
+        contracts,
+        resignations,
+        noNextAction
+      });
+    } catch (statsError) {
+      setError(statsError instanceof Error ? statsError.message : "Nie udało się pobrać statystyk.");
     }
-
-    setStats({
-      all: rows.length,
-      unassigned: rows.filter((lead) => !lead.assigned_to && lead.status !== "Zwrot").length,
-      assigned: rows.filter((lead) => Boolean(lead.assigned_to)).length,
-      callbacks: rows.filter((lead) => lead.status === "Call back").length,
-      meetings: rows.filter((lead) => lead.status === "Spotkanie" || lead.meeting_at).length,
-      contracts: rows.filter((lead) => lead.status === "Umowa").length,
-      resignations: rows.filter((lead) => lead.status === "Rezygnacja").length,
-      noNextAction: rows.filter(needsNextAction).length
-    });
   }
 
   async function loadLeads() {
@@ -155,69 +210,86 @@ export default function AdminDashboardPage() {
     setBusy(true);
     setError("");
 
-    const nextLeads: Lead[] = [];
+    const from = (leadPage - 1) * leadPageSize;
+    const to = from + leadPageSize - 1;
 
-    for (let from = 0; ; from += LEAD_PAGE_SIZE) {
-      let query = supabase
-        .from("leads")
-        .select(
-          "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)"
-        )
-        .eq("crm_environment", profile.crm_environment)
-        .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false });
+    let query = supabase
+      .from("leads")
+      .select(
+        "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)",
+        { count: "exact" }
+      )
+      .eq("crm_environment", profile.crm_environment)
+      .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false });
 
-      if (filters.createdFrom) query = query.gte("created_at", startOfDay(filters.createdFrom));
-      if (filters.createdTo) query = query.lte("created_at", endOfDay(filters.createdTo));
-      if (filters.updatedFrom) query = query.gte("updated_at", startOfDay(filters.updatedFrom));
-      if (filters.updatedTo) query = query.lte("updated_at", endOfDay(filters.updatedTo));
-      if (filters.openedFrom) query = query.gte("last_opened_at", startOfDay(filters.openedFrom));
-      if (filters.openedTo) query = query.lte("last_opened_at", endOfDay(filters.openedTo));
-      if (filters.postalCode) query = query.ilike("postal_code", `%${filters.postalCode}%`);
-      if (filters.voivodeship) query = query.ilike("voivodeship", `%${filters.voivodeship}%`);
-      if (filters.county) query = query.ilike("county", `%${filters.county}%`);
-      if (filters.status) query = query.eq("status", filters.status as LeadStatus);
+    if (filters.createdFrom) query = query.gte("created_at", startOfDay(filters.createdFrom));
+    if (filters.createdTo) query = query.lte("created_at", endOfDay(filters.createdTo));
+    if (filters.updatedFrom) query = query.gte("updated_at", startOfDay(filters.updatedFrom));
+    if (filters.updatedTo) query = query.lte("updated_at", endOfDay(filters.updatedTo));
+    if (filters.openedFrom) query = query.gte("last_opened_at", startOfDay(filters.openedFrom));
+    if (filters.openedTo) query = query.lte("last_opened_at", endOfDay(filters.openedTo));
+    if (filters.postalCode) query = query.ilike("postal_code", `%${filters.postalCode}%`);
+    if (filters.voivodeship) query = query.ilike("voivodeship", `%${filters.voivodeship}%`);
+    if (filters.county) query = query.ilike("county", `%${filters.county}%`);
+    if (filters.status) query = query.eq("status", filters.status as LeadStatus);
 
-      if (isManager && !filters.assignedTo) {
-        query = applyManagerScope(query);
-      }
-
-      if (filters.assignedTo === "__unassigned") {
-        query = query.is("assigned_to", null).neq("status", "Zwrot");
-      } else if (filters.assignedTo === "__returned") {
-        query = query.eq("status", "Zwrot");
-        if (isManager) query = applyManagerScope(query);
-      } else if (filters.assignedTo) {
-        query = query.eq("assigned_to", filters.assignedTo);
-      }
-
-      const { data, error: leadsError } = await query.range(from, from + LEAD_PAGE_SIZE - 1);
-
-      if (leadsError) {
-        setError(leadsError.message);
-        setBusy(false);
-        return;
-      }
-
-      const page = (data || []) as Lead[];
-      nextLeads.push(...page);
-      if (page.length < LEAD_PAGE_SIZE) break;
+    if (isManager && !filters.assignedTo) {
+      query = applyManagerScope(query);
     }
 
-    setLeads(nextLeads);
+    if (filters.assignedTo === "__unassigned") {
+      query = query.is("assigned_to", null).neq("status", "Zwrot");
+    } else if (filters.assignedTo === "__returned") {
+      query = query.eq("status", "Zwrot");
+      if (isManager) query = applyManagerScope(query);
+    } else if (filters.assignedTo) {
+      query = query.eq("assigned_to", filters.assignedTo);
+    }
+
+    const { data, error: leadsError, count } = await query.range(from, to);
+
+    if (leadsError) {
+      setError(leadsError.message);
+      setBusy(false);
+      return;
+    }
+
+    const page = (data || []) as Lead[];
+    const nextTotal =
+      typeof count === "number"
+        ? count
+        : from + page.length + (page.length === leadPageSize ? 1 : 0);
+
+    if (nextTotal > 0 && from >= nextTotal && leadPage > 1) {
+      setLeadPage(Math.max(1, Math.ceil(nextTotal / leadPageSize)));
+      setBusy(false);
+      return;
+    }
+
+    setTotalLeads(nextTotal);
+    setLeads(page);
     setSelectedIds([]);
     setBusy(false);
   }
 
   useEffect(() => {
     if (!profile) return;
-    loadSalespeople();
+    loadAssignees();
   }, [profile?.id, profile?.crm_environment]);
+
+  useEffect(() => {
+    setLeadPage(1);
+  }, [filters, sort, leadPageSize, profile?.id, profile?.crm_environment]);
 
   useEffect(() => {
     if (!profile) return;
     loadStats();
+  }, [profile?.id, profile?.crm_environment, assignees]);
+
+  useEffect(() => {
+    if (!profile) return;
     loadLeads();
-  }, [filters, profile?.id, profile?.crm_environment, sort, salespeople]);
+  }, [filters, profile?.id, profile?.crm_environment, sort, assignees, leadPage, leadPageSize]);
 
   const selectedCount = selectedIds.length;
 
@@ -228,7 +300,7 @@ export default function AdminDashboardPage() {
 
   const teamPerformance = useMemo(
     () =>
-      salespeople
+      assignees
         .map((person) => {
           const assigned = leads.filter((lead) => lead.assigned_to === person.id);
           return {
@@ -246,7 +318,7 @@ export default function AdminDashboardPage() {
           };
         })
         .sort((a, b) => b.contracts - a.contracts || b.meetings - a.meetings || b.leads - a.leads),
-    [leads, salespeople]
+    [leads, assignees]
   );
 
   function updateFilter(key: keyof AdminLeadFilters, value: string) {
@@ -273,7 +345,7 @@ export default function AdminDashboardPage() {
       "Województwo",
       "Powiat",
       "Status",
-      "Handlowiec",
+      "Opiekun",
       "Oddzwonienie",
       "Spotkanie",
       "Źródło",
@@ -304,8 +376,12 @@ export default function AdminDashboardPage() {
     URL.revokeObjectURL(url);
   }
 
+  function assigneeLabel(person: Profile) {
+    return `${person.full_name} · ${ROLE_LABELS[normalizeRole(person.role)]}`;
+  }
+
   async function assignSelected() {
-    if (!profile || !selectedSalesperson || selectedIds.length === 0) return;
+    if (!profile || !selectedAssignee || selectedIds.length === 0) return;
 
     setBusy(true);
     setError("");
@@ -313,7 +389,7 @@ export default function AdminDashboardPage() {
     const { error: assignError } = await supabase
       .from("leads")
       .update({
-        assigned_to: selectedSalesperson,
+        assigned_to: selectedAssignee,
         status: "Przypisany"
       })
       .eq("crm_environment", profile.crm_environment)
@@ -323,7 +399,7 @@ export default function AdminDashboardPage() {
       setError(assignError.message);
     } else {
       setSelectedIds([]);
-      setSelectedSalesperson("");
+      setSelectedAssignee("");
       await Promise.all([loadStats(), loadLeads()]);
     }
 
@@ -334,7 +410,7 @@ export default function AdminDashboardPage() {
 
   const dashboardCopy = {
         managerDescription: "Leady zespołu, baza do rozdania i aktualne statusy.",
-        adminDescription: "Leady, przypisania, statusy i wyniki handlowców.",
+        adminDescription: "Leady, przypisania, statusy i wyniki opiekunów.",
         exportCsv: "Eksport CSV",
         refresh: "Odśwież",
         stats: {
@@ -348,10 +424,10 @@ export default function AdminDashboardPage() {
           noNextAction: "Bez akcji"
         },
         teamTitle: "Wyniki zespołu",
-        teamDescription: `${teamPerformance.length} handlowców w aktualnym widoku. Szczegóły są schowane, żeby dashboard został zwarty.`,
+        teamDescription: `${teamPerformance.length} opiekunów w aktualnej stronie widoku. Szczegóły są schowane, żeby dashboard został zwarty.`,
         showTeam: "Pokaż wyniki",
         hideTeam: "Ukryj wyniki",
-        salesperson: "Handlowiec",
+        salesperson: "Opiekun",
         leads: "Leady",
         meetings: "Spotkania",
         contracts: "Umowy",
@@ -628,18 +704,18 @@ export default function AdminDashboardPage() {
               </select>
             </label>
             <label>
-              <span className="label">Handlowiec</span>
+              <span className="label">Opiekun</span>
               <select
                 className="field"
                 value={filters.assignedTo}
                 onChange={(event) => updateFilter("assignedTo", event.target.value)}
               >
-                <option value="">Wszyscy</option>
+                <option value="">Wszyscy opiekunowie</option>
                 <option value="__unassigned">Nieprzypisane</option>
                 <option value="__returned">Zwrócone</option>
-                {salespeople.map((person) => (
+                {assignees.map((person) => (
                   <option key={person.id} value={person.id}>
-                    {person.full_name}
+                    {assigneeLabel(person)}
                   </option>
                 ))}
               </select>
@@ -680,20 +756,20 @@ export default function AdminDashboardPage() {
             <div className="grid gap-2 sm:grid-cols-[260px_auto]">
               <select
                 className="field"
-                value={selectedSalesperson}
-                onChange={(event) => setSelectedSalesperson(event.target.value)}
+                value={selectedAssignee}
+                onChange={(event) => setSelectedAssignee(event.target.value)}
               >
-                <option value="">Wybierz handlowca</option>
-                {salespeople.map((person) => (
+                <option value="">Wybierz opiekuna</option>
+                {assignees.map((person) => (
                   <option key={person.id} value={person.id}>
-                    {person.full_name}
+                    {assigneeLabel(person)}
                   </option>
                 ))}
               </select>
               <button
                 type="button"
                 onClick={assignSelected}
-                disabled={busy || !selectedSalesperson || selectedIds.length === 0}
+                disabled={busy || !selectedAssignee || selectedIds.length === 0}
                 className="btn-primary"
               >
                 <UserCheck className="h-4 w-4" aria-hidden="true" />
@@ -713,9 +789,19 @@ export default function AdminDashboardPage() {
             <h2 className="text-base font-bold text-ink">Leady</h2>
             <div className="flex items-center gap-2 text-sm text-muted">
               <Search className="h-4 w-4" aria-hidden="true" />
-              {busy ? "Odświeżanie" : `${leads.length} rekordów`}
+              {busy ? "Odświeżanie" : `${totalLeads} rekordów`}
             </div>
           </div>
+          <PaginationControls
+            page={leadPage}
+            pageSize={leadPageSize}
+            pageSizeOptions={LEAD_PAGE_SIZE_OPTIONS}
+            totalItems={totalLeads}
+            loadedItems={leads.length}
+            busy={busy}
+            onPageChange={setLeadPage}
+            onPageSizeChange={setLeadPageSize}
+          />
           <LeadTable
             leads={leads}
             selectable={canAssignLeads}

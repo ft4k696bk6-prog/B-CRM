@@ -14,6 +14,8 @@
   --sky: 48 103 176;
   --warn: 188 98 27;
   --danger: 181 58 67;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 html[data-theme="premium"] {
@@ -75,12 +77,31 @@ html[data-theme="berry"] {
 body {
   margin: 0;
   min-width: 320px;
+  position: relative;
   background:
-    linear-gradient(180deg, rgb(250 252 255), rgb(var(--canvas)) 360px),
+    linear-gradient(180deg, rgb(252 253 255), rgb(var(--canvas)) 420px),
     rgb(var(--canvas));
   color: rgb(var(--ink));
   font-feature-settings: "cv02", "cv03", "cv04";
   text-rendering: optimizeLegibility;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgb(30 41 59 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(30 41 59 / 0.035) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(180deg, black, transparent 72%);
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
 }
 
 ::selection {
@@ -143,7 +164,7 @@ textarea:focus-visible {
 
 @layer components {
   .field {
-    @apply min-h-11 w-full border border-line bg-white px-3 py-2 text-sm font-semibold text-ink outline-none transition placeholder:font-medium placeholder:text-[#99a3b4] hover:border-[#c7d1df] focus:border-sky focus:ring-2 focus:ring-sky/15 disabled:cursor-not-allowed disabled:bg-[#f3f6fa] disabled:text-muted;
+    @apply min-h-11 w-full border border-line bg-white px-3 py-2 text-sm font-semibold text-ink shadow-[0_1px_0_rgba(18,24,37,0.03)] outline-none transition placeholder:font-medium placeholder:text-[#99a3b4] hover:border-[#c7d1df] focus:border-sky focus:ring-2 focus:ring-sky/15 disabled:cursor-not-allowed disabled:bg-[#f3f6fa] disabled:text-muted;
   }
 
   .label {
@@ -151,27 +172,44 @@ textarea:focus-visible {
   }
 
   .btn-primary {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:-translate-y-px hover:bg-[#222b3d] active:translate-y-0 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-55;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-bold text-white shadow-[0_12px_24px_rgba(18,24,37,0.16)] transition hover:-translate-y-px hover:bg-[#222b3d] active:translate-y-0 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-55;
   }
 
   .btn-secondary {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-line bg-white px-4 py-2 text-sm font-bold text-ink shadow-sm transition hover:-translate-y-px hover:border-ink hover:bg-[#f8fafc] active:translate-y-0 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-55;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-line bg-white px-4 py-2 text-sm font-bold text-ink shadow-[0_8px_20px_rgba(18,24,37,0.055)] transition hover:-translate-y-px hover:border-ink hover:bg-[#f8fafc] active:translate-y-0 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-55;
   }
 
   .btn-danger {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-danger px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:-translate-y-px hover:opacity-90 active:translate-y-0 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-55;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-danger px-4 py-2 text-sm font-bold text-white shadow-[0_12px_24px_rgba(181,58,67,0.18)] transition hover:-translate-y-px hover:opacity-90 active:translate-y-0 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-55;
   }
 
   .btn-icon {
-    @apply inline-flex h-11 w-11 flex-none items-center justify-center rounded-md border border-line bg-white text-muted shadow-sm transition hover:border-ink hover:bg-[#f8fafc] hover:text-ink disabled:cursor-not-allowed disabled:opacity-55;
+    @apply inline-flex h-11 w-11 flex-none items-center justify-center rounded-md border border-line bg-white text-muted shadow-[0_8px_20px_rgba(18,24,37,0.055)] transition hover:border-ink hover:bg-[#f8fafc] hover:text-ink disabled:cursor-not-allowed disabled:opacity-55;
   }
 
   .btn-ghost {
     @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-bold text-muted transition hover:bg-[#eef3f8] hover:text-ink disabled:cursor-not-allowed disabled:opacity-55;
   }
 
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger,
+  .btn-icon,
+  .btn-ghost {
+    transition-duration: 180ms;
+    transition-timing-function: var(--ease-out);
+  }
+
+  .btn-primary:active,
+  .btn-secondary:active,
+  .btn-danger:active,
+  .btn-icon:active,
+  .btn-ghost:active {
+    transform: scale(0.98);
+  }
+
   .app-card {
-    @apply rounded-lg border border-line bg-white p-5 shadow-[0_10px_28px_rgba(18,24,37,0.055)];
+    @apply rounded-lg border border-line bg-white/95 p-5 shadow-[0_18px_44px_rgba(18,24,37,0.07)];
   }
 
   .app-muted-panel {
@@ -187,11 +225,11 @@ textarea:focus-visible {
   }
 
   .app-table thead {
-    @apply border-b border-line bg-[#f8fafc] text-xs uppercase tracking-wide text-muted;
+    @apply sticky top-0 z-10 border-b border-line bg-[#f8fafc]/95 text-xs uppercase tracking-wide text-muted backdrop-blur;
   }
 
   .app-table th {
-    @apply px-4 py-3 font-black;
+    @apply whitespace-nowrap px-4 py-3 font-black;
   }
 
   .app-table td {
@@ -204,6 +242,8 @@ textarea:focus-visible {
 
   .app-table tbody tr {
     @apply transition hover:bg-[#f6f9fd];
+    transition-duration: 140ms;
+    transition-timing-function: var(--ease-out);
   }
 
   .app-table a,

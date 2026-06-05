@@ -479,7 +479,14 @@ export async function PATCH(request: Request) {
       );
     }
 
-    if (isSystemAdminRole(targetRole) && role !== targetRole && id !== auth.user.id) {
+    const isSystemAdminRoleChange = isSystemAdminRole(targetRole) && isSystemAdminRole(role);
+
+    if (
+      isSystemAdminRole(targetRole) &&
+      role !== targetRole &&
+      id !== auth.user.id &&
+      !isSystemAdminRoleChange
+    ) {
       return NextResponse.json(
         { error: "Nie można odebrać roli właściciela lub admina innemu administratorowi." },
         { status: 403 }

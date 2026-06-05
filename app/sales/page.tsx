@@ -14,6 +14,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { LeadTable } from "@/components/lead-table";
 import { LoadingScreen } from "@/components/loading-screen";
+import { PaginationControls } from "@/components/pagination-controls";
 import { StatTile } from "@/components/stat-tile";
 import { Alert, EmptyState, PageHeader, SectionHeader } from "@/components/ui";
 import { LEAD_STATUSES } from "@/lib/constants";
@@ -22,7 +23,14 @@ import { supabase } from "@/lib/supabase";
 import type { Lead, LeadStatus, SortOption } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
 
-const LEAD_PAGE_SIZE = 1000;
+const DEFAULT_LEAD_PAGE_SIZE = 15;
+const LEAD_PAGE_SIZE_OPTIONS = [15, 30, 60];
+type SalesStatCount =
+  | "visible"
+  | "upcomingCallbacks"
+  | "todayMeetings"
+  | "overdueCallbacks"
+  | "noNextAction";
 
 const sortOptions: Array<SortOption & { label: string }> = [
   { label: "Data dodania: najnowsze", column: "created_at", direction: "desc" },
@@ -37,10 +45,89 @@ function needsNextAction(lead: Pick<Lead, "status" | "callback_at" | "meeting_at
 export default function SalesDashboardPage() {
   const { loading, profile } = useAuth("handlowiec");
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [totalLeads, setTotalLeads] = useState(0);
+  const [leadPage, setLeadPage] = useState(1);
+  const [leadPageSize, setLeadPageSize] = useState(DEFAULT_LEAD_PAGE_SIZE);
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "">("");
   const [sort, setSort] = useState<SortOption>(sortOptions[0]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [stats, setStats] = useState({
+    visible: 0,
+    upcomingCallbacks: 0,
+    todayMeetings: 0,
+    overdueCallbacks: 0,
+    noNextAction: 0
+  });
+
+  function applyLeadScope<T extends { eq: (column: string, value: string) => T; or: (filters: string) => T }>(query: T) {
+    if (!profile) return query;
+
+    if (profile.can_view_lead_pool) {
+      return query.or(`assigned_to.eq.${profile.id},assigned_to.is.null`);
+    }
+
+    return query.eq("assigned_to", profile.id);
+  }
+
+  async function countLeads(kind: SalesStatCount = "visible") {
+    if (!profile) return 0;
+
+    let query = supabase
+      .from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("crm_environment", profile.crm_environment);
+
+    query = applyLeadScope(query);
+    if (statusFilter) query = query.eq("status", statusFilter);
+
+    if (kind === "upcomingCallbacks") {
+      query = query.eq("status", "Call back").gte("callback_at", new Date().toISOString());
+    } else if (kind === "todayMeetings") {
+      const todayStart = new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
+      const todayEnd = new Date(new Date().setHours(23, 59, 59, 999)).toISOString();
+      query = query.gte("meeting_at", todayStart).lte("meeting_at", todayEnd);
+    } else if (kind === "overdueCallbacks") {
+      query = query.eq("status", "Call back").lt("callback_at", new Date().toISOString());
+    } else if (kind === "noNextAction") {
+      query = query
+        .not("status", "in", "(Umowa,Rezygnacja,Zwrot)")
+        .is("callback_at", null)
+        .is("meeting_at", null);
+    }
+
+    const { data, error: countError, count } = await query;
+
+    if (countError) {
+      throw new Error(countError.message);
+    }
+
+    return typeof count === "number" ? count : Array.isArray(data) ? data.length : 0;
+  }
+
+  async function loadStats() {
+    if (!profile) return;
+
+    try {
+      const [visible, upcomingCallbacks, todayMeetings, overdueCallbacks, noNextAction] = await Promise.all([
+        countLeads(),
+        countLeads("upcomingCallbacks"),
+        countLeads("todayMeetings"),
+        countLeads("overdueCallbacks"),
+        countLeads("noNextAction")
+      ]);
+
+      setStats({
+        visible,
+        upcomingCallbacks,
+        todayMeetings,
+        overdueCallbacks,
+        noNextAction
+      });
+    } catch (statsError) {
+      setError(statsError instanceof Error ? statsError.message : "Nie udało się pobrać statystyk.");
+    }
+  }
 
   async function loadLeads() {
     if (!profile) return;
@@ -48,66 +135,74 @@ export default function SalesDashboardPage() {
     setBusy(true);
     setError("");
 
-    const nextLeads: Lead[] = [];
+    const from = (leadPage - 1) * leadPageSize;
+    const to = from + leadPageSize - 1;
 
-    for (let from = 0; ; from += LEAD_PAGE_SIZE) {
-      let query = supabase
-        .from("leads")
-        .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)")
-        .eq("crm_environment", profile.crm_environment)
-        .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false });
+    let query = supabase
+      .from("leads")
+      .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)", {
+        count: "exact"
+      })
+      .eq("crm_environment", profile.crm_environment)
+      .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false });
 
-      if (profile.can_view_lead_pool) {
-        query = query.or(`assigned_to.eq.${profile.id},assigned_to.is.null`);
-      } else {
-        query = query.eq("assigned_to", profile.id);
-      }
+    query = applyLeadScope(query);
 
-      if (statusFilter) query = query.eq("status", statusFilter);
+    if (statusFilter) query = query.eq("status", statusFilter);
 
-      const { data, error: leadsError } = await query.range(from, from + LEAD_PAGE_SIZE - 1);
+    const { data, error: leadsError, count } = await query.range(from, to);
 
-      if (leadsError) {
-        setError(leadsError.message);
-        setBusy(false);
-        return;
-      }
-
-      const page = (data || []) as Lead[];
-      nextLeads.push(...page);
-      if (page.length < LEAD_PAGE_SIZE) break;
+    if (leadsError) {
+      setError(leadsError.message);
+      setBusy(false);
+      return;
     }
 
-    setLeads(nextLeads);
+    const page = (data || []) as Lead[];
+    const nextTotal =
+      typeof count === "number"
+        ? count
+        : from + page.length + (page.length === leadPageSize ? 1 : 0);
+
+    if (nextTotal > 0 && from >= nextTotal && leadPage > 1) {
+      setLeadPage(Math.max(1, Math.ceil(nextTotal / leadPageSize)));
+      setBusy(false);
+      return;
+    }
+
+    setTotalLeads(nextTotal);
+    setLeads(page);
     setBusy(false);
   }
 
   useEffect(() => {
+    setLeadPage(1);
+  }, [profile?.id, profile?.crm_environment, statusFilter, sort, leadPageSize]);
+
+  useEffect(() => {
+    if (!profile) return;
+    loadStats();
+  }, [profile?.id, profile?.crm_environment, statusFilter]);
+
+  useEffect(() => {
     if (!profile) return;
     loadLeads();
-  }, [profile?.id, profile?.crm_environment, statusFilter, sort]);
+  }, [profile?.id, profile?.crm_environment, statusFilter, sort, leadPage, leadPageSize]);
 
   useEffect(() => {
     function refreshLeads() {
+      loadStats();
       loadLeads();
     }
 
     window.addEventListener("leads:changed", refreshLeads);
     return () => window.removeEventListener("leads:changed", refreshLeads);
-  }, [profile?.id, profile?.crm_environment, statusFilter, sort]);
+  }, [profile?.id, profile?.crm_environment, statusFilter, sort, leadPage, leadPageSize]);
 
   const overdueCallbacks = useMemo(
     () =>
       leads.filter(
         (lead) => lead.status === "Call back" && lead.callback_at && isPast(lead.callback_at)
-      ),
-    [leads]
-  );
-
-  const upcomingCallbacks = useMemo(
-    () =>
-      leads.filter(
-        (lead) => lead.status === "Call back" && lead.callback_at && !isPast(lead.callback_at)
       ),
     [leads]
   );
@@ -150,31 +245,31 @@ export default function SalesDashboardPage() {
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <StatTile
             label={profile.can_view_lead_pool ? "Moje i z puli" : "Moje leady"}
-            value={leads.length}
+            value={stats.visible}
             icon={ClipboardList}
             tone="sky"
           />
           <StatTile
             label="Oddzwonienia"
-            value={upcomingCallbacks.length}
+            value={stats.upcomingCallbacks}
             icon={PhoneCall}
             tone="warn"
           />
           <StatTile
             label="Dzisiejsze spotkania"
-            value={todayMeetings.length}
+            value={stats.todayMeetings}
             icon={CalendarDays}
             tone="leaf"
           />
           <StatTile
             label="Zaległe oddzwonienia"
-            value={overdueCallbacks.length}
+            value={stats.overdueCallbacks}
             icon={AlertTriangle}
             tone="danger"
           />
           <StatTile
             label="Bez akcji"
-            value={leadsWithoutNextAction.length}
+            value={stats.noNextAction}
             icon={ListChecks}
             tone="warn"
           />
@@ -297,8 +392,18 @@ export default function SalesDashboardPage() {
         <section className="grid gap-3">
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-base font-bold text-ink">{profile.can_view_lead_pool ? "Moje leady i pula" : "Moje leady"}</h2>
-            <div className="text-sm text-muted">{busy ? "Odświeżanie" : `${leads.length} rekordów`}</div>
+            <div className="text-sm text-muted">{busy ? "Odświeżanie" : `${totalLeads} rekordów`}</div>
           </div>
+          <PaginationControls
+            page={leadPage}
+            pageSize={leadPageSize}
+            pageSizeOptions={LEAD_PAGE_SIZE_OPTIONS}
+            totalItems={totalLeads}
+            loadedItems={leads.length}
+            busy={busy}
+            onPageChange={setLeadPage}
+            onPageSizeChange={setLeadPageSize}
+          />
           <LeadTable leads={leads} showAssignee={profile.can_view_lead_pool} />
         </section>
       </div>

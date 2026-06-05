@@ -63,7 +63,7 @@ export function LeadTable({
     phone: "Telefon",
     region: "Region",
     status: "Status",
-    salesperson: "Handlowiec",
+    salesperson: "Opiekun",
     dates: "Terminy",
     created: "Data dodania",
     noCode: "brak kodu",
@@ -75,7 +75,7 @@ export function LeadTable({
   };
 
   return (
-    <div className="overflow-hidden rounded-lg border border-line bg-white shadow-sm">
+    <div className="overflow-hidden rounded-lg border border-line bg-white/95 shadow-[0_18px_44px_rgba(18,24,37,0.065)]">
       {selectable && leads.length > 0 ? (
         <div className="flex items-center justify-between gap-3 border-b border-line bg-[#f8fafc] px-4 py-3 md:hidden">
           <label className="flex min-h-11 items-center gap-3 text-sm font-bold text-ink">
@@ -91,7 +91,7 @@ export function LeadTable({
         </div>
       ) : null}
 
-      <div className="hidden overflow-x-auto md:block">
+      <div className="hidden max-h-[690px] overflow-auto md:block">
         <table className="app-table min-w-[960px]">
           <thead>
             <tr>
@@ -172,13 +172,15 @@ export function LeadTable({
                   {lead.meeting_at ? <div>{formatDateTime(lead.meeting_at)}</div> : null}
                   {!lead.callback_at && !lead.meeting_at ? "—" : null}
                 </td>
-                <td className="px-4 py-3 align-top font-semibold tabular-nums text-muted">
-                  {formatDateTime(lead.created_at)}
+                <td className="px-4 py-3 align-top">
+                  <span className="inline-flex rounded-md border border-line bg-[#f8fafc] px-2 py-1 text-xs font-black tabular-nums text-muted">
+                    {formatDateTime(lead.created_at)}
+                  </span>
                 </td>
                 <td className="px-4 py-3 align-top">
                   <Link
                     href={`/leads/${lead.id}`}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-line text-muted transition hover:border-ink hover:text-ink"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-line bg-white text-muted shadow-[0_6px_16px_rgba(18,24,37,0.05)] transition hover:border-ink hover:text-ink"
                     title={labels.openLeadCard}
                   >
                     <ExternalLink className="h-4 w-4" aria-hidden="true" />

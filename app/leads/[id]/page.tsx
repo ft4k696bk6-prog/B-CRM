@@ -26,7 +26,7 @@ import { ACTION_LABELS, LEAD_STATUSES, STATUS_LABELS, STATUS_TILE_TONES } from "
 import { hasAnyPermission } from "@/lib/permissions";
 import { formatDateTime, toDatetimeLocalValue } from "@/lib/date";
 import { formatPhoneReadable, normalizePhoneForDial } from "@/lib/phone";
-import { canManageLeads, homePathForRole, isManagerRole, isSalesRole } from "@/lib/roles";
+import { ROLE_LABELS, canManageLeads, homePathForRole, isManagerRole, isSalesRole, normalizeRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { Lead, LeadHistory, LeadStatus, Profile } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
@@ -170,15 +170,19 @@ export default function LeadDetailsPage() {
     let query = supabase
       .from("profiles")
       .select("*")
-      .in("role", ["handlowiec", "sales"])
+      .in("role", ["handlowiec", "sales", "kierownik", "manager"])
       .eq("crm_environment", profile.crm_environment)
       .order("full_name", { ascending: true });
 
-    if (isManager && profile) query = query.eq("manager_id", profile.id);
+    if (isManager && profile) query = query.or(`manager_id.eq.${profile.id},id.eq.${profile.id}`);
 
     const { data } = await query;
 
     setSalespeople((data || []) as Profile[]);
+  }
+
+  function assigneeLabel(person: Profile) {
+    return `${person.full_name} · ${ROLE_LABELS[normalizeRole(person.role)]}`;
   }
 
   useEffect(() => {
@@ -542,7 +546,7 @@ export default function LeadDetailsPage() {
                   </dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
-                  <dt className="label">Handlowiec</dt>
+                  <dt className="label">Opiekun</dt>
                   <dd className="text-sm font-semibold text-ink">
                     {lead.assigned_profile?.full_name || "Nieprzypisany"}
                   </dd>
@@ -800,7 +804,7 @@ export default function LeadDetailsPage() {
                   <form onSubmit={assignLead} className="app-card">
                     <SectionHeader icon={UserCheck} title="Przypisanie" tone="leaf" className="mb-4" />
                     <label>
-                      <span className="label">Handlowiec</span>
+                      <span className="label">Opiekun</span>
                       <select
                         className="field"
                         value={selectedAssignee}
@@ -809,7 +813,7 @@ export default function LeadDetailsPage() {
                         <option value="">Nieprzypisany</option>
                         {salespeople.map((person) => (
                           <option key={person.id} value={person.id}>
-                            {person.full_name}
+                            {assigneeLabel(person)}
                           </option>
                         ))}
                       </select>

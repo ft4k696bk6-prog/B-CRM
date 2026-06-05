@@ -191,12 +191,15 @@ export function AppShell({ profile, children }: AppShellProps) {
                     href={link.href}
                     data-tour-id={link.tourId}
                     onClick={() => closeOnClick && setMobileOpen(false)}
-                    className={`flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-bold transition ${
+                    className={`relative flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-bold transition ${
                       active
-                        ? "bg-ink text-white shadow-sm"
+                        ? "bg-ink text-white shadow-[0_12px_22px_rgba(18,24,37,0.16)]"
                         : "text-muted hover:bg-[#eef3f8] hover:text-ink"
                     }`}
                   >
+                    {active ? (
+                      <span className="absolute left-1 top-1/2 h-5 w-1 -translate-y-1/2 rounded-full bg-solar" aria-hidden="true" />
+                    ) : null}
                     <Icon className="h-4 w-4" aria-hidden="true" />
                     {t(link.labelKey)}
                   </Link>
@@ -211,8 +214,8 @@ export function AppShell({ profile, children }: AppShellProps) {
 
   return (
     <div className="min-h-screen text-ink">
-      <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+      <header className="sticky top-0 z-30 border-b border-line bg-white/88 shadow-[0_10px_30px_rgba(18,24,37,0.045)] backdrop-blur-xl">
+        <div className="mx-auto flex max-w-[1520px] items-center justify-between gap-4 px-4 py-3">
           <div className="flex min-w-0 items-center gap-2">
             <button
               type="button"
@@ -236,7 +239,7 @@ export function AppShell({ profile, children }: AppShellProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="hidden text-right sm:block">
+            <div className="hidden rounded-md border border-line bg-[#f8fafc] px-3 py-2 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.82)] sm:block">
               <div className="text-sm font-semibold">{profile.full_name}</div>
               <div className="text-xs text-muted">{profile.email}</div>
             </div>
@@ -272,7 +275,7 @@ export function AppShell({ profile, children }: AppShellProps) {
             aria-label="Zamknij menu"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="relative flex h-full w-[min(88vw,340px)] flex-col border-r border-line bg-white p-3 shadow-soft">
+          <aside className="relative flex h-full w-[min(88vw,340px)] flex-col border-r border-line bg-white/96 p-3 shadow-soft backdrop-blur-xl">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <BrandMark size="sm" />
@@ -296,8 +299,8 @@ export function AppShell({ profile, children }: AppShellProps) {
         </div>
       ) : null}
 
-      <div className="app-layout mx-auto grid max-w-7xl gap-5 px-4 py-5 pb-24 lg:grid-cols-[230px_1fr] lg:pb-5">
-        <aside className="app-sidebar hidden rounded-lg border border-line bg-white p-2 shadow-sm lg:sticky lg:top-20 lg:block lg:h-fit">
+      <div className="app-layout mx-auto grid max-w-[1520px] gap-5 px-4 py-5 pb-24 lg:grid-cols-[260px_minmax(0,1fr)] lg:pb-5">
+        <aside className="app-sidebar hidden rounded-lg border border-line bg-white/92 p-2 shadow-[0_18px_44px_rgba(18,24,37,0.065)] backdrop-blur-xl lg:sticky lg:top-20 lg:block lg:h-fit">
           <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-muted">
             <PanelLeft className="h-4 w-4" aria-hidden="true" />
             {t("menu")}
