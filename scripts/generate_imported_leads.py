@@ -4,7 +4,7 @@ import json
 import re
 import sys
 from dataclasses import dataclass, field
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timezone
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +17,7 @@ DEFAULT_FILES = [
     Path("/Users/kacperbernecki/Downloads/Re energy leady.xlsx"),
 ]
 OUTPUT_FILE = PROJECT_ROOT / "lib" / "imported-leads.ts"
+FALLBACK_CREATED_AT = "2026-06-05T12:00:00Z"
 
 VOIVODESHIPS = {
     "dolnośląskie",
@@ -118,6 +119,8 @@ def email_key(value: Any) -> tuple[str | None, str | None]:
 
 def parse_date(value: Any) -> str | None:
     if isinstance(value, datetime):
+        if value.tzinfo:
+            return value.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
         return value.isoformat(timespec="seconds") + "Z"
     if isinstance(value, date):
         return datetime.combine(value, time(hour=12)).isoformat(timespec="seconds") + "Z"
@@ -126,11 +129,94 @@ def parse_date(value: Any) -> str | None:
     if not value_text:
         return None
 
-    for pattern in ("%d.%m.%Y", "%d.%m.%y", "%Y-%m-%d", "%d/%m/%Y", "%d/%m/%y"):
+    if re.match(r"^\d{4}-\d{2}-\d{2}([T\s]|$)", value_text):
         try:
-            return datetime.combine(datetime.strptime(value_text[:10], pattern).date(), time(hour=12)).isoformat(timespec="seconds") + "Z"
+            parsed = datetime.fromisoformat(value_text.replace("Z", "+00:00"))
+            if parsed.tzinfo:
+                return parsed.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+            return parsed.isoformat(timespec="seconds") + "Z"
         except ValueError:
             pass
+
+    patterns = (
+        "%d.%m.%Y",
+        "%d.%m.%y",
+        "%Y-%m-%d",
+        "%Y-%m-%d %H:%M:%S",
+        "%d/%m/%Y",
+        "%d/%m/%y",
+        "%m/%d/%Y",
+        "%m/%d/%y",
+        "%m/%d/%Y %I:%M%p",
+        "%m/%d/%y %I:%M%p",
+    )
+    for candidate in dict.fromkeys([value_text, value_text[:10]]):
+        for pattern in patterns:
+            try:
+                return datetime.combine(datetime.strptime(candidate, pattern).date(), time(hour=12)).isoformat(timespec="seconds") + "Z"
+            except ValueError:
+                pass
+    return None
+
+
+def is_probable_date_cell(value: Any) -> bool:
+    if isinstance(value, (datetime, date)):
+        return True
+    value_text = clean_text(value, 80)
+    return bool(
+        re.match(r"^\d{4}-\d{2}-\d{2}([T\s]|$)", value_text)
+        or re.match(r"^\d{1,2}[./]\d{1,2}[./]\d{2,4}(\s|$)", value_text)
+    )
+
+
+def normalized_name(value: Any) -> str:
+    value_text = clean_text(value, 180)
+    value_text = re.sub(r"[\w.+-]+@[\w.-]+\.[a-z]{2,}", " ", value_text, flags=re.IGNORECASE)
+    return re.sub(r"\s+", " ", value_text).strip()
+
+
+def looks_like_person_name(value: str) -> bool:
+    normalized = normalize_key(value)
+    if not value or normalized in {"imie", "imie i nazwisko", "telefon", "adres", "brak"}:
+        return False
+    if is_probable_date_cell(value):
+        return False
+    if re.search(r"\d", value):
+        return False
+    return bool(re.search(r"[A-Za-zĄĆĘŁŃÓŚŻŹąćęłńóśżź]{2,}", value))
+
+
+def name_from_row(row: tuple[Any, ...], phone_index: int) -> str:
+    preferred_indexes: list[int] = []
+    if phone_index >= 3:
+        preferred_indexes.append(2)
+    if phone_index > 0:
+        preferred_indexes.append(phone_index - 1)
+    preferred_indexes.extend(range(max(0, phone_index - 3), phone_index))
+
+    for index in dict.fromkeys(preferred_indexes):
+        if index < len(row):
+            name = normalized_name(row[index])
+            if looks_like_person_name(name):
+                return name
+    return ""
+
+
+def comment_date_from_text(value: Any) -> str | None:
+    value_text = clean_text(value, 300)
+    if not value_text:
+        return None
+    for pattern in (
+        r"\b\d{1,2}\.\d{1,2}\.\d{4}\b",
+        r"\b\d{1,2}\.\d{1,2}\.\d{2}\b",
+        r"\b\d{1,2}/\d{1,2}/\d{4}\b",
+        r"\b\d{1,2}/\d{1,2}/\d{2}\b",
+    ):
+        match = re.search(pattern, value_text)
+        if match:
+            parsed = parse_date(match.group(0))
+            if parsed:
+                return parsed
     return None
 
 
@@ -194,6 +280,8 @@ def status_score(status: str) -> int:
 
 def find_phone_index(row: tuple[Any, ...]) -> tuple[int, str, str] | None:
     for index, value in enumerate(row):
+        if is_probable_date_cell(value):
+            continue
         normalized = normalize_phone(value)
         if normalized[0] and normalized[1]:
             return index, normalized[0], normalized[1]
@@ -243,7 +331,7 @@ def rows_from_meta_workbook(path: Path) -> list[ImportRow]:
             if not phone_key and not key:
                 continue
 
-            name = clean_text(get(row, "full_name", "name", "imie i nazwisko"), 180) or f"Klient {phone or email}"
+            name = normalized_name(get(row, "full_name", "name", "imie i nazwisko")) or f"Klient {phone or email}"
             created_at = parse_date(get(row, "created_time", "created_at", "data"))
             row_source = clean_text(get(row, "form_name", "campaign_name", "adset_name"), 160) or source
             status_text = clean_text(get(row, "lead_status", "status"), 80)
@@ -293,9 +381,8 @@ def rows_from_re_energy(path: Path) -> list[ImportRow]:
             phone_index, phone, phone_key = phone_info
             email, key = first_email(row)
             created_at = parse_date(row[0] if row else None)
-            name_index = 2 if phone_index >= 3 else max(phone_index - 1, 0)
-            name = clean_text(row[name_index] if name_index < len(row) else "", 180)
-            if not name or normalize_key(name) in {"imie", "imie i nazwisko", "telefon", "adres"}:
+            name = name_from_row(row, phone_index)
+            if not name:
                 name = f"Klient {phone}"
 
             right = list(row[phone_index + 1 :])
@@ -311,6 +398,8 @@ def rows_from_re_energy(path: Path) -> list[ImportRow]:
             if "styczen" in sheet_key or "luty" in sheet_key:
                 product = right[1] if len(right) > 1 else product
                 comment_cell = right[2] if len(right) > 2 else comment_cell
+            if not created_at:
+                created_at = comment_date_from_text(comment_cell)
 
             comment = build_comment(source, f"wiersz {row_number}", product, comment_cell)
             status_hint = "Spotkanie" if "spotkania" in sheet_key else clean_text(row[1] if len(row) > 1 else "", 80)
@@ -344,7 +433,7 @@ def rows_from_calendar_sheet(file_name: str, sheet: Any) -> list[ImportRow]:
 
     days = rows[0]
     for row_number, row in enumerate(rows[2:], start=3):
-        for start in range(0, len(row), 4):
+        for start in range(1, len(row), 4):
             phone_cell = row[start + 2] if start + 2 < len(row) else None
             normalized = normalize_phone(phone_cell)
             if not normalized[0] or not normalized[1]:
@@ -395,7 +484,7 @@ def aggregate(rows: list[ImportRow]) -> tuple[list[LeadAggregate], int]:
             continue
 
         lead_id = "imported-lead-" + re.sub(r"[^a-z0-9]+", "-", key.lower()).strip("-")
-        created_at = row.created_at or "2026-06-05T12:00:00Z"
+        created_at = row.created_at or FALLBACK_CREATED_AT
 
         if key not in leads:
             leads[key] = LeadAggregate(
@@ -421,7 +510,13 @@ def aggregate(rows: list[ImportRow]) -> tuple[list[LeadAggregate], int]:
             lead.address = lead.address or row.address
             lead.voivodeship = lead.voivodeship or row.voivodeship
             lead.postal_code = lead.postal_code or row.postal_code
-            lead.updated_at = max(lead.updated_at, created_at)
+            if row.created_at:
+                if lead.created_at == FALLBACK_CREATED_AT or row.created_at < lead.created_at:
+                    lead.created_at = row.created_at
+                if lead.updated_at == FALLBACK_CREATED_AT:
+                    lead.updated_at = row.created_at
+                else:
+                    lead.updated_at = max(lead.updated_at, row.created_at)
             if status_score(row.status) > status_score(lead.status):
                 lead.status = row.status
 
@@ -475,7 +570,7 @@ def history_to_dict(lead: LeadAggregate, index: int, comment: tuple[str, str, st
 def write_output(leads: list[LeadAggregate], duplicate_rows: int, files: list[Path], source_rows: int) -> None:
     lead_rows = [lead_to_dict(lead) for lead in leads]
     histories = [history_to_dict(lead, index, comment) for lead in leads for index, comment in enumerate(lead.comments)]
-    generated_at = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+    generated_at = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
     version = f"imported-leads-{generated_at}-{len(lead_rows)}"
     payload = (
         'import type { Lead, LeadHistory } from "@/lib/types";\n\n'
