@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/integrations/google-drive/leads",
+      "schedule": "0 5 * * *"
+    }
+  ]
+}

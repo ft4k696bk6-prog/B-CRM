@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
-import { normalizeLeadImportRow, normalizeEmailKey, normalizePhoneKey } from "@/lib/lead-import";
+import { ingestRawLeadRows } from "@/lib/server-lead-ingest";
 import { getServiceClient } from "@/lib/server-auth";
 
 type MetaLeadField = {
@@ -130,65 +130,33 @@ export async function POST(request: Request) {
         source: "Meta Lead Ads",
         status: "Nowy",
         created_at: details.created_time,
-        comment: `Meta Lead Ads: form_id=${details.form_id || value.form_id || "unknown"}`
+        comment: [
+          `Meta Lead Ads: leadgen_id=${value.leadgen_id}`,
+          `form_id=${details.form_id || value.form_id || "unknown"}`,
+          `page_id=${details.page_id || value.page_id || "unknown"}`,
+          `ad_id=${details.ad_id || value.ad_id || "unknown"}`
+        ].join(" | ")
       };
-      const normalized = normalizeLeadImportRow(rawLead);
 
-      if (!normalized.ok) {
-        skipped.push(value.leadgen_id!);
-        continue;
-      }
-
-      const phoneKey = normalized.row.dedupe_key.startsWith("phone:") ? normalized.row.dedupe_key : normalizePhoneKey(normalized.row.phone);
-      const emailKey = normalizeEmailKey(normalized.row.email);
-
-      const duplicateByPhone = phoneKey
-        ? await supabaseAdmin.from("leads").select("id").eq("crm_environment", "production").eq("phone_key", phoneKey).maybeSingle()
-        : { data: null };
-      const duplicateByEmail = emailKey
-        ? await supabaseAdmin.from("leads").select("id").eq("crm_environment", "production").eq("email_key", emailKey).maybeSingle()
-        : { data: null };
-
-      if (duplicateByPhone.data?.id || duplicateByEmail.data?.id) {
-        skipped.push(value.leadgen_id!);
-        continue;
-      }
-
-      const { data: lead, error } = await supabaseAdmin
-        .from("leads")
-        .insert({
-          full_name: normalized.row.full_name,
-          phone: normalized.row.phone,
-          email: normalized.row.email,
-          phone_key: phoneKey || null,
-          email_key: emailKey || null,
-          postal_code: normalized.row.postal_code,
-          address: normalized.row.address,
-          voivodeship: normalized.row.voivodeship,
-          county: normalized.row.county,
-          source: "Meta Lead Ads",
-          status: "Nowy",
-          assigned_to: null,
-          crm_environment: "production"
-        })
-        .select("id")
-        .single();
-
-      if (error || !lead) {
-        skipped.push(value.leadgen_id!);
-        continue;
-      }
-
-      imported.push(lead.id);
-      await supabaseAdmin.from("lead_history").insert({
-        lead_id: lead.id,
-        action_type: "meta_lead_ads",
-        description: `Lead z formularza Meta. leadgen_id=${value.leadgen_id}`
+      const result = await ingestRawLeadRows({
+        supabaseAdmin,
+        rows: [rawLead],
+        source: "Meta Lead Ads",
+        fileName: `meta-lead-${value.leadgen_id}`,
+        crmEnvironment: "production"
       });
+
+      if (result.error || result.imported === 0) {
+        skipped.push(value.leadgen_id!);
+        continue;
+      }
+
+      const leadId = result.importedIds[0];
+      imported.push(leadId);
       await notifyManagers({
         title: "Nowy lead z Facebooka",
         body: "CRM odebrał lead z formularza Re-Energy System.",
-        entityId: lead.id
+        entityId: leadId
       }).catch(() => undefined);
     }
 

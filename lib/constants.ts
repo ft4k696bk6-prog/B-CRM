@@ -75,6 +75,7 @@ export const ACTION_LABELS: Record<string, string> = {
   lead_created: "Dodanie leada",
   callback_set: "Oddzwonienie",
   import_comment: "Komentarz z importu",
+  meta_lead_ads: "Lead z Facebooka",
   meeting_set: "Spotkanie",
   meeting_address: "Adres spotkania",
   meeting_note: "Notatka po spotkaniu",

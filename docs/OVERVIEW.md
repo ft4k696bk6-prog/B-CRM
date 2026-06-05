@@ -5,7 +5,7 @@ B-CRM to operacyjny CRM dla firmy OZE. Ma prowadzić kontakt od formularza i pie
 ## Najważniejsze Moduły
 
 - Pula leadów dla owner/admin/kierownik oraz handlowców z nadanym dostępem.
-- Import leadów z plików Google Drive po eksporcie do CSV/XLSX.
+- Automatyczny import leadów z Google Drive: Google Sheets, XLSX i CSV.
 - Meta Lead Ads webhook dla nowych formularzy.
 - Karta leada z komentarzami, historią, przypomnieniami, kliknięciem w numer telefonu i procesem spotkania.
 - Kalkulatory: instalacja PV, magazyn energii, opłacalność i koszt dodatkowego kabla powyżej limitu.
