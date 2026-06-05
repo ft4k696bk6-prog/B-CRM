@@ -94,7 +94,7 @@ function localAdminMutationResponse() {
   return NextResponse.json(
     {
       error:
-        "Konto admina dziala w trybie prywatnym. Tworzenie i zmiana dodatkowych kont wymaga podpiecia stalej bazy Supabase."
+        "Konto administratora działa. Dodawanie kolejnych kont wymaga włączenia stałej bazy użytkowników."
     },
     { status: 409 }
   );

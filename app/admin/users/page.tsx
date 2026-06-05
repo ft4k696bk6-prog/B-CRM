@@ -45,7 +45,7 @@ const roleToneClasses: Record<UserRole, string> = {
 
 const fallbackOrgMeta: Record<UserRole, OrgMeta> = {
   owner: { title: "Właściciel", department: "Zarząd" },
-  admin: { title: "Administrator CRM", department: "Administracja" },
+  admin: { title: "Administrator", department: "Administracja" },
   kierownik: { title: "Kierownik zespołu", department: "Zarządzanie" },
   handlowiec: { title: "Handlowiec", department: "Sprzedaż" },
   finance: { title: "Finanse", department: "Finanse" },
@@ -339,7 +339,7 @@ export default function UsersPage() {
       <div className="grid gap-5">
         <PageHeader
           title="Użytkownicy"
-          description="Konta, role i przypisania w CRM."
+          description="Handlowcy, kierownicy i dostęp do firmowej bazy leadów."
           actions={
             <button type="button" onClick={loadUsers} className="btn-secondary">
               <RefreshCw className="h-4 w-4" aria-hidden="true" />
@@ -355,7 +355,7 @@ export default function UsersPage() {
             <div className="mt-2 text-3xl font-black text-ink">{users.length}</div>
           </div>
           <div className="app-muted-panel">
-            <div className="text-xs font-bold uppercase tracking-wide text-muted">Admin</div>
+            <div className="text-xs font-bold uppercase tracking-wide text-muted">Administratorzy</div>
             <div className="mt-2 text-3xl font-black text-ink">{adminCount}</div>
           </div>
           <div className="app-muted-panel">

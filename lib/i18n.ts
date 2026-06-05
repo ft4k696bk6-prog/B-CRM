@@ -12,12 +12,12 @@ export function isAppLanguage(value: string | null): value is AppLanguage {
 
 export const copy = {
   pl: {
-    loginSubtitle: "Logowanie do panelu",
+    loginSubtitle: "Logowanie do B-CRM",
     email: "E-mail",
     password: "Hasło",
     signIn: "Zaloguj",
     signingIn: "Logowanie",
-    supabaseMissing: "Brakuje danych Supabase w pliku .env.local.",
+    supabaseMissing: "Panel chwilowo nie jest gotowy do logowania. Skontaktuj się z administratorem.",
     loginError: "Nie udało się zalogować. Sprawdź e-mail i hasło.",
     panelPrefix: "Panel",
     navDashboard: "Panel",
@@ -35,8 +35,8 @@ export const copy = {
     menu: "Menu",
     signOut: "Wyloguj",
     returnLeads: "Zwrot leadów",
-    returnLeadsTitle: "Zwróć leady bez call-backu i spotkania",
+    returnLeadsTitle: "Zwróć leady bez oddzwonienia i spotkania",
     returnLeadsConfirm:
-      "Zwrócić wszystkie leady bez zaplanowanego call-backu i spotkania? Leady ze statusem Call-back i Spotkanie zostaną u Ciebie."
+      "Zwrócić wszystkie leady bez zaplanowanego oddzwonienia i spotkania? Leady ze statusem Oddzwonienie i Spotkanie zostaną u Ciebie."
   }
 } as const;

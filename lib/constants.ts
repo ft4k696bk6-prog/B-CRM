@@ -43,7 +43,7 @@ export const STATUS_TONES: Record<LeadStatus, string> = {
 export const STATUS_LABELS: Record<LeadStatus, string> = {
   Nowy: "Nowy",
   Przypisany: "Przypisany",
-  "Call back": "Call-back",
+  "Call back": "Oddzwonienie",
   Spotkanie: "Spotkanie",
   "Po spotkaniu": "Po spotkaniu",
   "Oferta wysłana": "Oferta wysłana",
@@ -63,7 +63,7 @@ export const STATUS_LABELS: Record<LeadStatus, string> = {
 export const ACTION_LABELS: Record<string, string> = {
   comment: "Komentarz",
   status_change: "Zmiana statusu",
-  callback_scheduled: "Call-back zaplanowany",
+  callback_scheduled: "Oddzwonienie zaplanowane",
   meeting_scheduled: "Spotkanie zaplanowane",
   meeting_address_changed: "Adres spotkania",
   contract_number_set: "Numer umowy",
@@ -73,7 +73,8 @@ export const ACTION_LABELS: Record<string, string> = {
   assigned: "Przypisanie",
   unassigned: "Odznaczenie",
   lead_created: "Dodanie leada",
-  callback_set: "Call-back",
+  callback_set: "Oddzwonienie",
+  import_comment: "Komentarz z importu",
   meeting_set: "Spotkanie",
   meeting_address: "Adres spotkania",
   meeting_note: "Notatka po spotkaniu",

@@ -14,7 +14,7 @@ export const USER_ROLES = [
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   owner: "Właściciel",
-  admin: "Admin",
+  admin: "Administrator",
   kierownik: "Kierownik",
   handlowiec: "Handlowiec",
   finance: "Finanse",
@@ -25,8 +25,8 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 };
 
 export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
-  owner: "Pełna kontrola nad CRM, rolami, danymi, ustawieniami i eksportem.",
-  admin: "Zarządza operacyjnie CRM, użytkownikami, importem, leadami i ustawieniami.",
+  owner: "Pełny dostęp do użytkowników, leadów, ustawień i eksportów.",
+  admin: "Zarządza użytkownikami, bazą leadów i ustawieniami firmy.",
   kierownik: "Prowadzi zespół handlowców, rozdziela leady i kontroluje wyniki zespołu.",
   handlowiec: "Pracuje na własnych leadach, zadaniach, spotkaniach, ofertach i aktywnościach.",
   finance: "Widok finansowy: umowy, raporty i dane potrzebne do rozliczeń.",

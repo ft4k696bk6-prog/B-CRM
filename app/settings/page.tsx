@@ -64,7 +64,7 @@ export default function SettingsPage() {
         <section className="app-card">
           <SectionHeader
             icon={Paintbrush2}
-            title="Wygląd CRM"
+            title="Wygląd panelu"
             description="Gotowe pakiety kolorystyczne dla interfejsu."
             tone="sky"
             className="mb-4"

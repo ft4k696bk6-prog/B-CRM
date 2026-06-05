@@ -27,15 +27,15 @@ const statusAliases: Array<[RegExp, LeadStatus]> = [
   [/zimn|stara baza|cold/i, "Zimna baza"],
   [/um[oó]w|spotkan|kalendarz|wizyta/i, "Spotkanie"],
   [/callback|call back|oddzwo|ponowny kontakt/i, "Call back"],
-  [/nie odebra|brak kontaktu/i, "Nie odebrał"],
-  [/b[lł][eę]dny|z[lł]y numer|niepoprawny numer/i, "Błędny numer"],
-  [/rezygn|nie chce|brak zgody/i, "Rezygnacja"],
+  [/\bn\.?\s*o\.?\b|nie\s*odbiera|nieodebra|nie odebra|brak kontaktu/i, "Nie odebrał"],
+  [/pomy[lł]ka numeru|nie ma takiego numeru|s[lł]u[zż]bowy numer|b[lł][eę]dny|z[lł]y numer|niepoprawny numer/i, "Błędny numer"],
+  [/rezygn|nie chce|brak zgody|ju[zż] ma|nie potrzebuje|nie op[lł]aca|nic nie dop[lł]aca|nie aktualne/i, "Rezygnacja"],
   [/zwrot/i, "Zwrot"],
   [/weryfik/i, "Do weryfikacji"],
   [/umowa|podpis/i, "Umowa"],
   [/po spotk/i, "Po spotkaniu"],
   [/przypis/i, "Przypisany"],
-  [/now/i, "Nowy"]
+  [/nie dzwonione|niedzwonione|created|utworzon|now/i, "Nowy"]
 ];
 
 const fieldAliases = {
@@ -132,7 +132,7 @@ export function mapLeadImportStatus(input: {
   if (alias) return alias[1];
 
   const fresh = input.createdAt ? input.createdAt.getFullYear() >= now.getFullYear() : false;
-  if (fresh && input.comment?.trim()) return "Nowy";
+  if (fresh) return "Nowy";
   return "Zimna baza";
 }
 

@@ -70,7 +70,7 @@ export default async function PublicOfferPage({ params }: OfferPageProps) {
             {[
               { icon: Zap, title: "Produkcja", text: "Instalacja pracuje wtedy, gdy dom zużywa energię i kiedy oddaje nadwyżkę do sieci." },
               { icon: BatteryCharging, title: "Magazyn", text: "Część energii zostaje na wieczór, awarie i większą autokonsumpcję." },
-              { icon: ShieldCheck, title: "Proces", text: "CRM prowadzi checklistę danych, dokumentów, podpisu i realizacji." },
+              { icon: ShieldCheck, title: "Proces", text: "B-CRM porządkuje dane, dokumenty, podpis i realizację." },
               { icon: CheckCircle2, title: "Następny krok", text: "Po akceptacji przygotowujemy dokumenty i bramę umowy do zatwierdzenia." }
             ].map((item) => (
               <div key={item.title} className="rounded-lg border border-[#d7e2dc] bg-white p-4">

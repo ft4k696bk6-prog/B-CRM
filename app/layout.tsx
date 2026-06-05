@@ -7,7 +7,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "B-CRM",
-  description: "CRM dla sprzedaży, procesu klienta, magazynu i montażu.",
+  description: "B-CRM dla sprzedaży, leadów, ofert i pracy handlowców.",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [

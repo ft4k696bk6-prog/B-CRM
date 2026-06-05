@@ -20,7 +20,7 @@ export const salesMaterials: SalesMaterial[] = [
     id: "pv-contract",
     title: "Umowa na fotowoltaikę",
     category: "contract",
-    description: "Wzór umowy dla klienta, dostępny do pobrania z poziomu CRM.",
+    description: "Wzór umowy dla klienta, gotowy do pobrania przez handlowca.",
     href: "/materials/umowa-na-fotowoltaike.pdf",
     offlineReady: true
   },
@@ -105,7 +105,7 @@ export const meetingChecklist = [
   "Zapisz aktualny rachunek, zużycie roczne i taryfę.",
   "Ustal moc instalacji, magazyn, wariant montażu i łączną długość kabla.",
   "Dodaj notatkę po spotkaniu albo nagraj komentarz głosowy.",
-  "Wyślij ofertę na e-mail klienta z CRM i sprawdź zdarzenia otwarcia/pobrania.",
+  "Wyślij ofertę na e-mail klienta i sprawdź otwarcie lub pobranie.",
   "Przekaż umowę do kierownika dopiero po kompletnej checkliście."
 ];
 

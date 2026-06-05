@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { importedLeadHistorySeedRows, importedLeadSeedMeta, importedLeadSeedRows } from "@/lib/imported-leads";
 
 type AnyRecord = Record<string, unknown>;
 type QueryResult = { data: unknown; error: null | { message: string } };
@@ -33,6 +34,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const localCrmMode = process.env.NEXT_PUBLIC_LOCAL_CRM_MODE !== "false";
 const localDataStorageKey = "bcrm-production-local-data-v2";
+const localSeedStorageKey = "bcrm-production-import-seed-version";
 const adminPasswordHash =
   process.env.NEXT_PUBLIC_ADMIN_PASSWORD_SHA256 ||
   "7cf96e8817c8d0790943c395d7e7231ef9b91d263315edc687427389b2e16611";
@@ -137,12 +139,53 @@ function clearLocalSession() {
 
 function readLocalDataStore(): LocalDataStore {
   const raw = getStorage()?.getItem(localDataStorageKey);
-  if (!raw) return {};
+  if (!raw) return withImportedLeadSeed({});
   try {
-    return JSON.parse(raw) as LocalDataStore;
+    return withImportedLeadSeed(JSON.parse(raw) as LocalDataStore);
   } catch {
-    return {};
+    return withImportedLeadSeed({});
   }
+}
+
+function mergeSeedRows(existingRows: AnyRecord[] | undefined, seedRows: AnyRecord[], keys: string[]) {
+  const rows = [...(existingRows || [])];
+
+  seedRows.forEach((seed) => {
+    const index = rows.findIndex((row) =>
+      keys.some((key) => {
+        const left = row[key];
+        const right = seed[key];
+        return Boolean(left && right && left === right);
+      })
+    );
+
+    if (index >= 0) {
+      rows[index] = { ...seed, ...rows[index] };
+    } else {
+      rows.push({ ...seed });
+    }
+  });
+
+  return rows;
+}
+
+function withImportedLeadSeed(store: LocalDataStore): LocalDataStore {
+  if (importedLeadSeedRows.length === 0 && importedLeadHistorySeedRows.length === 0) return store;
+
+  const storage = getStorage();
+  const currentVersion = storage?.getItem(localSeedStorageKey);
+  if (currentVersion === importedLeadSeedMeta.version) return store;
+
+  const nextStore: LocalDataStore = {
+    ...store,
+    leads: mergeSeedRows(store.leads, importedLeadSeedRows, ["id", "phone_key", "email_key"]),
+    lead_history: mergeSeedRows(store.lead_history, importedLeadHistorySeedRows, ["id"])
+  };
+
+  storage?.setItem(localDataStorageKey, JSON.stringify(nextStore));
+  storage?.setItem(localSeedStorageKey, importedLeadSeedMeta.version);
+
+  return nextStore;
 }
 
 function writeLocalDataStore(store: LocalDataStore) {

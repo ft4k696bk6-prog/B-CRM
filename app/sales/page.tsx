@@ -108,7 +108,7 @@ export default function SalesDashboardPage() {
 
   const workQueue = useMemo(
     () => [
-      ...overdueCallbacks.map((lead) => ({ lead, reason: "Zaległy call-back" })),
+      ...overdueCallbacks.map((lead) => ({ lead, reason: "Zaległe oddzwonienie" })),
       ...todayMeetings.map((lead) => ({ lead, reason: "Spotkanie dzisiaj" })),
       ...leadsWithoutNextAction.map((lead) => ({ lead, reason: "Brak następnej akcji" }))
     ].slice(0, 8),
@@ -122,7 +122,7 @@ export default function SalesDashboardPage() {
       <div className="grid gap-5">
         <PageHeader
           title="Panel handlowca"
-          description="Leady, call-backi i spotkania."
+          description="Twoje leady, oddzwonienia i spotkania."
           actions={
             <button type="button" onClick={loadLeads} className="btn-secondary">
               <RefreshCw className="h-4 w-4" aria-hidden="true" />
@@ -139,7 +139,7 @@ export default function SalesDashboardPage() {
             tone="sky"
           />
           <StatTile
-            label="Call-back"
+            label="Oddzwonienia"
             value={upcomingCallbacks.length}
             icon={PhoneCall}
             tone="warn"
@@ -151,7 +151,7 @@ export default function SalesDashboardPage() {
             tone="leaf"
           />
           <StatTile
-            label="Zaległe call-backi"
+            label="Zaległe oddzwonienia"
             value={overdueCallbacks.length}
             icon={AlertTriangle}
             tone="danger"
@@ -193,7 +193,7 @@ export default function SalesDashboardPage() {
           <section className="rounded-lg border border-danger/20 bg-danger/10 p-4">
             <SectionHeader
               icon={AlertTriangle}
-              title="Zaległe call-backi"
+              title="Zaległe oddzwonienia"
               tone="danger"
               className="text-danger"
             />

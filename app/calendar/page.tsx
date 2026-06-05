@@ -407,14 +407,14 @@ export default function CalendarPage() {
             <div className="label">{"Ten tydzień"}</div>
             <div className="text-2xl font-black text-ink">{weekMeetings}</div>
             <div className="mt-1 text-sm text-muted">
-              {weekCallbacks} {"call-backów"}
+              {weekCallbacks} {"oddzwonień"}
             </div>
           </div>
           <div className="app-card">
             <div className="label">{"Ten miesiąc"}</div>
             <div className="text-2xl font-black text-ink">{meetings.length}</div>
             <div className="mt-1 text-sm text-muted">
-              {callbacks.length} {"call-backów"}
+              {callbacks.length} {"oddzwonień"}
             </div>
           </div>
           <div className="app-card">
@@ -459,7 +459,7 @@ export default function CalendarPage() {
               <div>
                 <h2 className="text-base font-bold capitalize text-ink">{monthLabel(month, locale)}</h2>
                 <p className="text-sm text-muted">
-                  {`${meetings.length} spotkań · ${callbacks.length} call-backów · ${internal.length} wewnętrzne`}
+                  {`${meetings.length} spotkań · ${callbacks.length} oddzwonień · ${internal.length} wewnętrzne`}
                 </p>
               </div>
             </div>
@@ -525,7 +525,7 @@ export default function CalendarPage() {
             <div className="mt-1 text-sm text-muted">{formatDate(selectedDate.toISOString())}</div>
             <div className="mt-3 grid gap-2">
               {selectedDayEvents.map((event) => (<EventRow key={event.id} event={event}/>))}
-              {!busy && selectedDayEvents.length === 0 ? (<EmptyState title={"Brak wydarzeń"} description={"Brak spotkań, call-backów i wpisów wewnętrznych w tym dniu."}/>) : null}
+              {!busy && selectedDayEvents.length === 0 ? (<EmptyState title={"Brak wydarzeń"} description={"Brak spotkań, oddzwonień i wpisów wewnętrznych w tym dniu."}/>) : null}
             </div>
           </div>
 

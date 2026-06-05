@@ -148,7 +148,7 @@ export default function MaterialsPage() {
           <SectionHeader icon={BookOpenCheck} title="Porządek materiałów" tone="sky" />
           <p className="text-sm leading-6 text-muted">
             Skarbnica pokazuje wyłącznie materiały z bieżącego zestawu: karty katalogowe, prezentację,
-            umowę, wniosek kredytowy oraz realizacje. Stare materiały robocze zostały usunięte z widoku.
+            umowę, wniosek kredytowy oraz realizacje. Widok jest uporządkowany pod rozmowę z klientem i pracę handlowca.
           </p>
         </section>
       </div>

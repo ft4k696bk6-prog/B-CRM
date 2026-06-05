@@ -237,7 +237,7 @@ export default function LeadDetailsPage() {
 
     if (status === "Call back") {
       if (!callbackAt) {
-        setError("Wybierz datę i godzinę callbacku.");
+        setError("Wybierz datę i godzinę oddzwonienia.");
         setBusy(false);
         return;
       }
@@ -562,7 +562,7 @@ export default function LeadDetailsPage() {
                   <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.updated_at)}</dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
-                  <dt className="label">Call-back</dt>
+                  <dt className="label">Oddzwonienie</dt>
                   <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.callback_at)}</dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
@@ -642,7 +642,7 @@ export default function LeadDetailsPage() {
                             <span className="block text-sm font-black">{STATUS_LABELS[item]}</span>
                             <span className="mt-1 block text-xs opacity-80">
                               {item === "Call back"
-                                ? "Ustaw termin kontaktu"
+                                ? "Ustaw termin oddzwonienia"
                                 : item === "Spotkanie"
                                   ? "Wymaga terminu i adresu"
                                   : item === "Po spotkaniu"
@@ -671,7 +671,7 @@ export default function LeadDetailsPage() {
 
                   {status === "Call back" ? (
                     <label>
-                      <span className="label">Data i godzina call-backu</span>
+                      <span className="label">Data i godzina oddzwonienia</span>
                       <input
                         className="field"
                         type="datetime-local"

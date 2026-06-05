@@ -252,7 +252,7 @@ export default function AdminDashboardPage() {
       "Powiat",
       "Status",
       "Handlowiec",
-      "Call-back",
+      "Oddzwonienie",
       "Spotkanie",
       "Źródło",
       "Utworzony",
@@ -311,15 +311,15 @@ export default function AdminDashboardPage() {
   if (loading || !profile) return <LoadingScreen />;
 
   const dashboardCopy = {
-        managerDescription: "Leady zespołu, baza do rozdania i bieżące statusy.",
-        adminDescription: "Wszystkie leady, przypisania i bieżące statusy.",
+        managerDescription: "Leady zespołu, baza do rozdania i aktualne statusy.",
+        adminDescription: "Leady, przypisania, statusy i wyniki handlowców.",
         exportCsv: "Eksport CSV",
         refresh: "Odśwież",
         stats: {
           all: "Wszystkie",
           unassigned: "Nieprzypisane",
           assigned: "Przypisane",
-          callbacks: "Call-back",
+          callbacks: "Oddzwonienia",
           meetings: "Spotkania",
           contracts: "Umowy",
           resignations: "Rezygnacje",
@@ -333,7 +333,7 @@ export default function AdminDashboardPage() {
         leads: "Leady",
         meetings: "Spotkania",
         contracts: "Umowy",
-        overdueCallbacks: "Zaległe call-backi",
+        overdueCallbacks: "Zaległe oddzwonienia",
         noAction: "Bez akcji"
       };
 
@@ -349,7 +349,7 @@ export default function AdminDashboardPage() {
                   ? "finansowy"
                   : profile.role === "viewer"
                     ? "podglądu"
-                    : "admina"
+                    : "sprzedaży"
             }`}
             description={
               isManager
