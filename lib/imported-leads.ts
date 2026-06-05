@@ -1,8 +1,8 @@
 import type { Lead, LeadHistory } from "@/lib/types";
 
 export const importedLeadSeedMeta = {
-  "version": "imported-leads-2026-06-05T19:26:25Z-1426",
-  "generatedAt": "2026-06-05T19:26:25Z",
+  "version": "imported-leads-2026-06-05T23:20:42Z-1426",
+  "generatedAt": "2026-06-05T23:20:42Z",
   "sourceFiles": [
     "Leady WSZYSTKIE 2026.xlsx",
     "Re energy leady.xlsx"
@@ -902,7 +902,7 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2025-01-28T00:00:00Z",
+    "created_at": "2026-04-28T05:06:25Z",
     "updated_at": "2026-04-28T05:06:25Z",
     "last_opened_at": null,
     "source": "Formularz PODKARPACKIE MAGAZYN ENERGII-copy",
@@ -1727,7 +1727,7 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2025-05-14T00:00:00Z",
+    "created_at": "2026-05-02T12:49:19Z",
     "updated_at": "2026-05-02T12:49:19Z",
     "last_opened_at": null,
     "source": "Formularz PODKARPACKIE MAGAZYN ENERGII-copy",
@@ -2027,7 +2027,7 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
+    "created_at": "2026-04-30T20:38:31Z",
     "updated_at": "2026-04-30T20:38:31Z",
     "last_opened_at": null,
     "source": "Lubelskie Magazyny Energii",
@@ -2072,12 +2072,12 @@ export const importedLeadSeedRows = [
     "email": "zbigniewlatawiec66@gmail.com",
     "phone_key": "phone:+48531171405",
     "email_key": "email:zbigniewlatawiec66@gmail.com",
-    "address": "37-415 Sandomierz",
+    "address": null,
     "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2025-03-21T00:00:00Z",
+    "created_at": "2026-05-02T12:49:35Z",
     "updated_at": "2026-05-02T12:49:35Z",
     "last_opened_at": null,
     "source": "Lubelskie Magazyny Energii",
@@ -2847,7 +2847,7 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48886814605",
     "email_key": null,
-    "address": "z:37-415 kolo sandomierza",
+    "address": null,
     "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Nie odebrał",
@@ -3402,7 +3402,7 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2024-09-14T07:21:13Z",
+    "created_at": "2026-05-14T15:15:55Z",
     "updated_at": "2026-05-14T15:15:55Z",
     "last_opened_at": null,
     "source": "Formularz PODKARPACKIE MAGAZYN ENERGII-copy",
@@ -4302,7 +4302,7 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
+    "created_at": "2026-06-03T15:54:30Z",
     "updated_at": "2026-06-03T15:54:30Z",
     "last_opened_at": null,
     "source": "Formularz PODKARPACKIE MAGAZYN ENERGII-copy",
@@ -5003,7 +5003,7 @@ export const importedLeadSeedRows = [
     "status": "Spotkanie",
     "assigned_to": null,
     "created_at": "2026-04-19T17:21:29Z",
-    "updated_at": "2026-08-17T12:00:00Z",
+    "updated_at": "2026-04-19T17:21:29Z",
     "last_opened_at": null,
     "source": "Lubelskie Magazyny Energii",
     "resignation_reason": null,
@@ -5027,7 +5027,7 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-26T12:00:00Z",
+    "created_at": "2026-04-20T05:28:20Z",
     "updated_at": "2026-04-20T05:28:20Z",
     "last_opened_at": null,
     "source": "Lubelskie Magazyny Energii",
@@ -5247,7 +5247,7 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48664759182",
     "email_key": null,
-    "address": "z:37-204 przeworsk 0,5h",
+    "address": null,
     "voivodeship": "Lubelskie",
     "county": null,
     "status": "Nie odebrał",
@@ -5327,7 +5327,7 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2025-05-14T00:00:00Z",
+    "created_at": "2026-05-24T21:45:13Z",
     "updated_at": "2026-05-24T21:45:13Z",
     "last_opened_at": null,
     "source": "Lubelskie Magazyny Energii",
@@ -5477,7 +5477,7 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2024-12-12T00:00:00Z",
+    "created_at": "2026-06-03T16:01:52Z",
     "updated_at": "2026-06-03T16:01:52Z",
     "last_opened_at": null,
     "source": "Lubelskie Magazyny Energii",
@@ -7177,7 +7177,7 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2025-01-03T00:00:00Z",
+    "created_at": "2026-04-25T11:31:24Z",
     "updated_at": "2026-04-25T11:31:24Z",
     "last_opened_at": null,
     "source": "Świętokrzyskie Magazyny Energii",
@@ -7475,10 +7475,10 @@ export const importedLeadSeedRows = [
     "address": "Borsuk",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-01-30T10:39:49Z",
-    "updated_at": "2026-06-03T22:03:00Z",
+    "created_at": "2025-01-30T10:39:49Z",
+    "updated_at": "2025-06-03T22:03:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7500,10 +7500,10 @@ export const importedLeadSeedRows = [
     "address": "Zamosc",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-01T08:50:36Z",
-    "updated_at": "2026-02-01T08:50:36Z",
+    "created_at": "2025-02-01T08:50:36Z",
+    "updated_at": "2025-02-01T08:50:36Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7527,8 +7527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-02-03T08:31:53Z",
-    "updated_at": "2026-02-03T08:31:53Z",
+    "created_at": "2025-02-03T08:31:53Z",
+    "updated_at": "2025-02-03T08:31:53Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7550,10 +7550,10 @@ export const importedLeadSeedRows = [
     "address": "kloczew",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-14T15:52:15Z",
-    "updated_at": "2026-02-14T15:52:15Z",
+    "created_at": "2025-02-14T15:52:15Z",
+    "updated_at": "2025-02-14T15:52:15Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7575,10 +7575,10 @@ export const importedLeadSeedRows = [
     "address": "Ułęż",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-14T15:52:15Z",
-    "updated_at": "2026-02-14T15:52:15Z",
+    "created_at": "2025-02-14T15:52:15Z",
+    "updated_at": "2025-02-14T15:52:15Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7600,10 +7600,10 @@ export const importedLeadSeedRows = [
     "address": "Stezyca",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-14T15:52:15Z",
-    "updated_at": "2026-02-14T15:52:15Z",
+    "created_at": "2025-02-14T15:52:15Z",
+    "updated_at": "2025-02-14T15:52:15Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7625,10 +7625,10 @@ export const importedLeadSeedRows = [
     "address": "Janowiec",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-14T15:52:15Z",
-    "updated_at": "2026-02-14T15:52:15Z",
+    "created_at": "2025-02-14T15:52:15Z",
+    "updated_at": "2025-02-14T15:52:15Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7650,10 +7650,10 @@ export const importedLeadSeedRows = [
     "address": "21-030",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-14T15:52:15Z",
-    "updated_at": "2026-02-14T15:52:15Z",
+    "created_at": "2025-02-14T15:52:15Z",
+    "updated_at": "2025-02-14T15:52:15Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7675,10 +7675,10 @@ export const importedLeadSeedRows = [
     "address": "08-106",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-14T15:52:15Z",
-    "updated_at": "2026-02-14T15:52:15Z",
+    "created_at": "2025-02-14T15:52:15Z",
+    "updated_at": "2025-02-14T15:52:15Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7700,10 +7700,10 @@ export const importedLeadSeedRows = [
     "address": "78-550",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-14T15:52:15Z",
-    "updated_at": "2026-02-14T15:52:15Z",
+    "created_at": "2025-02-14T15:52:15Z",
+    "updated_at": "2025-02-14T15:52:15Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7725,10 +7725,10 @@ export const importedLeadSeedRows = [
     "address": "21-044",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-14T15:52:15Z",
-    "updated_at": "2026-02-14T15:52:15Z",
+    "created_at": "2025-02-14T15:52:15Z",
+    "updated_at": "2025-02-14T15:52:15Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7750,10 +7750,10 @@ export const importedLeadSeedRows = [
     "address": "24-200",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-14T15:52:15Z",
-    "updated_at": "2026-02-14T15:52:15Z",
+    "created_at": "2025-02-14T15:52:15Z",
+    "updated_at": "2025-02-14T15:52:15Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7777,8 +7777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-02-24T18:27:25Z",
-    "updated_at": "2026-02-24T18:27:25Z",
+    "created_at": "2025-02-24T18:27:25Z",
+    "updated_at": "2025-02-24T18:27:25Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7802,8 +7802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-02-27T20:32:59Z",
-    "updated_at": "2026-02-27T20:32:59Z",
+    "created_at": "2025-02-27T20:32:59Z",
+    "updated_at": "2025-02-27T20:32:59Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7825,10 +7825,10 @@ export const importedLeadSeedRows = [
     "address": "Biłgoraj",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-01T16:54:29Z",
-    "updated_at": "2026-03-01T16:54:29Z",
+    "created_at": "2025-03-01T16:54:29Z",
+    "updated_at": "2025-03-01T16:54:29Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7852,8 +7852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-03-02T20:54:26Z",
-    "updated_at": "2026-03-02T20:54:26Z",
+    "created_at": "2025-03-02T20:54:26Z",
+    "updated_at": "2025-03-02T20:54:26Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7877,8 +7877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-03-03T17:41:32Z",
-    "updated_at": "2026-03-03T17:41:32Z",
+    "created_at": "2025-03-03T17:41:32Z",
+    "updated_at": "2025-03-03T17:41:32Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7902,8 +7902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-02-24T18:34:25Z",
-    "updated_at": "2026-02-24T18:34:25Z",
+    "created_at": "2025-02-24T18:34:25Z",
+    "updated_at": "2025-02-24T18:34:25Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7927,8 +7927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-02-24T18:35:25Z",
-    "updated_at": "2026-02-24T18:35:25Z",
+    "created_at": "2025-02-24T18:35:25Z",
+    "updated_at": "2025-02-24T18:35:25Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7952,8 +7952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-03-04T18:25:45Z",
-    "updated_at": "2026-03-04T18:25:45Z",
+    "created_at": "2025-03-04T18:25:45Z",
+    "updated_at": "2025-03-04T18:25:45Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -7977,8 +7977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-05T10:37:33Z",
-    "updated_at": "2026-03-05T10:37:33Z",
+    "created_at": "2025-03-05T10:37:33Z",
+    "updated_at": "2025-03-05T10:37:33Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8002,8 +8002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-02-03T04:00:00Z",
-    "updated_at": "2026-02-03T04:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-02-03T04:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8025,10 +8025,10 @@ export const importedLeadSeedRows = [
     "address": "zamość",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-03T01:25:00Z",
-    "updated_at": "2026-02-03T01:25:00Z",
+    "created_at": "2025-02-03T01:25:00Z",
+    "updated_at": "2025-02-03T01:25:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8050,10 +8050,10 @@ export const importedLeadSeedRows = [
     "address": "55-140, BRAK",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-07-03T00:40:00Z",
-    "updated_at": "2026-07-03T00:40:00Z",
+    "created_at": "2025-07-03T00:40:00Z",
+    "updated_at": "2025-07-03T00:40:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8075,10 +8075,10 @@ export const importedLeadSeedRows = [
     "address": "02-928, BRAK",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-10T00:00:00Z",
-    "updated_at": "2026-03-10T00:00:00Z",
+    "created_at": "2025-03-10T00:00:00Z",
+    "updated_at": "2025-03-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8100,10 +8100,10 @@ export const importedLeadSeedRows = [
     "address": "08-206, BRAK",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-16T00:00:00Z",
-    "updated_at": "2026-03-16T00:00:00Z",
+    "created_at": "2025-03-16T00:00:00Z",
+    "updated_at": "2025-03-16T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8125,10 +8125,10 @@ export const importedLeadSeedRows = [
     "address": "87720.0, BRAK",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-16T00:00:00Z",
-    "updated_at": "2026-03-16T00:00:00Z",
+    "created_at": "2025-03-16T00:00:00Z",
+    "updated_at": "2025-03-16T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8150,10 +8150,10 @@ export const importedLeadSeedRows = [
     "address": "08-503, BRAK",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-16T00:00:00Z",
-    "updated_at": "2026-03-16T00:00:00Z",
+    "created_at": "2025-03-16T00:00:00Z",
+    "updated_at": "2025-03-16T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8175,10 +8175,10 @@ export const importedLeadSeedRows = [
     "address": "05-102, BRAK",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-18T00:00:00Z",
-    "updated_at": "2026-03-18T00:00:00Z",
+    "created_at": "2025-03-18T00:00:00Z",
+    "updated_at": "2025-03-18T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8202,8 +8202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:04:44Z",
+    "updated_at": "2025-03-17T21:04:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8227,8 +8227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:05:44Z",
+    "updated_at": "2025-03-17T21:05:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8252,8 +8252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:06:44Z",
+    "updated_at": "2025-03-17T21:06:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8277,8 +8277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:07:44Z",
+    "updated_at": "2025-03-17T21:07:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8302,8 +8302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:09:44Z",
+    "updated_at": "2025-03-17T21:09:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8327,8 +8327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:12:44Z",
+    "updated_at": "2025-03-17T21:12:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8347,13 +8347,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48517542336",
     "email_key": null,
-    "address": "lublin",
+    "address": null,
     "voivodeship": "Lubelskie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:13:44Z",
+    "updated_at": "2025-03-17T21:13:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8377,8 +8377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:14:44Z",
+    "updated_at": "2025-03-17T21:14:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8397,13 +8397,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48603792005",
     "email_key": null,
-    "address": "Lublin, Konopnica, nowe_zasady_(net-billing)",
+    "address": "nowe_zasady_(net-billing)",
     "voivodeship": "Lubelskie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:15:44Z",
+    "updated_at": "2025-03-17T21:15:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8427,8 +8427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:16:44Z",
+    "updated_at": "2025-03-17T21:16:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8452,8 +8452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:17:44Z",
+    "updated_at": "2025-03-17T21:17:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8477,8 +8477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-30T20:01:37Z",
+    "updated_at": "2025-03-30T20:01:37Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8502,8 +8502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-31T06:34:57Z",
+    "updated_at": "2025-03-31T06:34:57Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8527,8 +8527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-04-06T00:00:00Z",
+    "updated_at": "2025-04-06T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8552,8 +8552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-04-07T00:00:00Z",
+    "updated_at": "2025-04-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8577,8 +8577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-04-02T18:34:23Z",
+    "updated_at": "2025-04-02T18:34:23Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8602,8 +8602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-04-04T14:20:18Z",
+    "updated_at": "2025-04-04T14:20:18Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8622,13 +8622,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48691123023",
     "email_key": null,
-    "address": "Lublin, największa_dotacja",
+    "address": "największa_dotacja",
     "voivodeship": "Lubelskie",
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-03-22T12:00:00Z",
-    "updated_at": "2026-03-22T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-04-07T21:46:33Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8652,8 +8652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-04-03T19:50:59Z",
+    "updated_at": "2025-04-03T19:50:59Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8677,8 +8677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8702,8 +8702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Rezygnacja",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8727,8 +8727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-03-18T12:00:00Z",
-    "updated_at": "2026-03-18T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-03-18T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8752,8 +8752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-22T12:00:00Z",
-    "updated_at": "2026-03-22T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-03-22T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8777,8 +8777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-26T12:00:00Z",
-    "updated_at": "2026-03-26T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-03-26T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8802,8 +8802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8827,8 +8827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8852,8 +8852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8877,8 +8877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8902,8 +8902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8927,8 +8927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8952,8 +8952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -8977,8 +8977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9002,8 +9002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-04-05T09:59:56Z",
+    "updated_at": "2025-04-05T09:59:56Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9027,8 +9027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-04-05T10:22:14Z",
+    "updated_at": "2025-04-05T10:22:14Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9052,8 +9052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-04-07T01:00:16Z",
+    "updated_at": "2025-04-07T01:00:16Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9077,8 +9077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-04-07T10:06:31Z",
+    "updated_at": "2025-04-07T10:06:31Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9102,8 +9102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-10T08:57:15Z",
+    "updated_at": "2025-03-10T08:57:15Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9127,8 +9127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-10T09:00:15Z",
+    "updated_at": "2025-03-10T09:00:15Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9152,8 +9152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9177,8 +9177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9202,8 +9202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-12-10T12:00:00Z",
+    "updated_at": "2025-12-10T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9227,8 +9227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9252,8 +9252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9277,8 +9277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9300,10 +9300,10 @@ export const importedLeadSeedRows = [
     "address": "20-639",
     "voivodeship": "Lubelskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-05-23T12:00:00Z",
-    "updated_at": "2026-05-23T12:00:00Z",
+    "created_at": "2025-05-23T12:00:00Z",
+    "updated_at": "2025-05-23T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / LUBELSKIE",
     "resignation_reason": null,
@@ -9327,8 +9327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9352,8 +9352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9377,8 +9377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9402,8 +9402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9427,8 +9427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9452,8 +9452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9477,8 +9477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9502,8 +9502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9527,8 +9527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-03T12:00:00Z",
-    "updated_at": "2026-03-03T12:00:00Z",
+    "created_at": "2025-03-03T12:00:00Z",
+    "updated_at": "2025-03-03T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9552,8 +9552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9577,8 +9577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2024-10-04T00:00:00Z",
-    "updated_at": "2024-10-04T00:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-10-04T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9602,8 +9602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9627,8 +9627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9652,8 +9652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9677,8 +9677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9702,8 +9702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9727,8 +9727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-21T12:00:00Z",
-    "updated_at": "2026-03-21T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-03-21T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9752,8 +9752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9777,8 +9777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9802,8 +9802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9827,8 +9827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-05T00:00:00Z",
-    "updated_at": "2026-03-05T00:00:00Z",
+    "created_at": "2025-03-05T00:00:00Z",
+    "updated_at": "2025-03-05T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9852,8 +9852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-03T20:05:00Z",
-    "updated_at": "2026-06-03T20:05:00Z",
+    "created_at": "2025-06-03T20:05:00Z",
+    "updated_at": "2025-06-03T20:05:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9877,8 +9877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-03T14:40:00Z",
-    "updated_at": "2026-06-03T14:40:00Z",
+    "created_at": "2025-06-03T14:40:00Z",
+    "updated_at": "2025-06-03T14:40:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9902,8 +9902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-10T00:00:00Z",
-    "updated_at": "2026-03-10T00:00:00Z",
+    "created_at": "2025-03-10T00:00:00Z",
+    "updated_at": "2025-03-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9927,8 +9927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-10T00:00:00Z",
-    "updated_at": "2026-03-10T00:00:00Z",
+    "created_at": "2025-03-10T00:00:00Z",
+    "updated_at": "2025-03-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9952,8 +9952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-10T00:00:00Z",
-    "updated_at": "2026-03-10T00:00:00Z",
+    "created_at": "2025-03-10T00:00:00Z",
+    "updated_at": "2025-03-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -9977,8 +9977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-10T00:00:00Z",
-    "updated_at": "2026-03-10T00:00:00Z",
+    "created_at": "2025-03-10T00:00:00Z",
+    "updated_at": "2025-03-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10002,8 +10002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-10T00:00:00Z",
-    "updated_at": "2026-03-10T00:00:00Z",
+    "created_at": "2025-03-10T00:00:00Z",
+    "updated_at": "2025-03-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10027,8 +10027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-10T00:00:00Z",
-    "updated_at": "2026-03-10T00:00:00Z",
+    "created_at": "2025-03-10T00:00:00Z",
+    "updated_at": "2025-03-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10052,8 +10052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-11T00:00:00Z",
-    "updated_at": "2026-03-11T00:00:00Z",
+    "created_at": "2025-03-11T00:00:00Z",
+    "updated_at": "2025-03-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10077,8 +10077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-11T00:00:00Z",
-    "updated_at": "2026-03-11T00:00:00Z",
+    "created_at": "2025-03-11T00:00:00Z",
+    "updated_at": "2025-03-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10102,8 +10102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-13T00:00:00Z",
-    "updated_at": "2026-03-13T00:00:00Z",
+    "created_at": "2025-03-13T00:00:00Z",
+    "updated_at": "2025-03-13T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10127,8 +10127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2024-11-19T00:00:00Z",
-    "updated_at": "2026-03-13T00:00:00Z",
+    "created_at": "2025-03-13T00:00:00Z",
+    "updated_at": "2025-11-19T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10152,8 +10152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-14T12:00:00Z",
-    "updated_at": "2026-03-14T12:00:00Z",
+    "created_at": "2025-03-14T12:00:00Z",
+    "updated_at": "2025-03-14T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10177,8 +10177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-17T12:00:00Z",
-    "updated_at": "2026-03-17T12:00:00Z",
+    "created_at": "2025-03-17T12:00:00Z",
+    "updated_at": "2025-03-17T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10202,8 +10202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10227,8 +10227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10252,8 +10252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-21T12:00:00Z",
-    "updated_at": "2026-03-21T12:00:00Z",
+    "created_at": "2025-03-21T12:00:00Z",
+    "updated_at": "2025-03-21T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10277,8 +10277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10302,8 +10302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10327,8 +10327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10352,8 +10352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10377,8 +10377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10402,8 +10402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10427,8 +10427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10452,8 +10452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-05-06T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10477,8 +10477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10502,8 +10502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10527,8 +10527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10552,8 +10552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10577,8 +10577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10602,8 +10602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10627,8 +10627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10652,8 +10652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10672,13 +10672,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48668813673",
     "email_key": null,
-    "address": "Skarzysko Koscielne, nowe_zasady_(net-billing)",
-    "voivodeship": null,
+    "address": "nowe_zasady_(net-billing)",
+    "voivodeship": "Świętokrzyskie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-10T22:05:13Z",
+    "updated_at": "2025-03-10T22:05:13Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10697,13 +10697,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48781134429",
     "email_key": null,
-    "address": "Stojewsko, stare_zasady_(przed_1_kwietnia_2022r)",
-    "voivodeship": null,
+    "address": "stare_zasady_(przed_1_kwietnia_2022r)",
+    "voivodeship": "Świętokrzyskie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-12T12:27:53Z",
+    "updated_at": "2025-03-12T12:27:53Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10722,13 +10722,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48723989525",
     "email_key": null,
-    "address": "Marchocice pow.Włoszczowa gm.Secemin, stare_zasady_(przed_1_kwietnia_2022r)",
-    "voivodeship": null,
+    "address": "stare_zasady_(przed_1_kwietnia_2022r)",
+    "voivodeship": "Świętokrzyskie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-12T12:44:13Z",
+    "updated_at": "2025-03-12T12:44:13Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10747,13 +10747,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48600755722",
     "email_key": null,
-    "address": "Busko-Zdrój, stare_zasady_(przed_1_kwietnia_2022r)",
-    "voivodeship": null,
+    "address": "stare_zasady_(przed_1_kwietnia_2022r)",
+    "voivodeship": "Świętokrzyskie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-12T16:40:42Z",
+    "updated_at": "2025-03-12T16:40:42Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10772,13 +10772,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48511151116",
     "email_key": null,
-    "address": "Grzymała, nowe_zasady_(net-billing)",
-    "voivodeship": null,
+    "address": "nowe_zasady_(net-billing)",
+    "voivodeship": "Świętokrzyskie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-14T07:59:48Z",
+    "updated_at": "2025-03-14T07:59:48Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10797,13 +10797,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48693559638",
     "email_key": null,
-    "address": "Sandomierz, stare_zasady_(przed_1_kwietnia_2022r)",
-    "voivodeship": null,
+    "address": "stare_zasady_(przed_1_kwietnia_2022r)",
+    "voivodeship": "Świętokrzyskie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-14T10:17:13Z",
+    "updated_at": "2025-03-14T10:17:13Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10822,13 +10822,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48609412516",
     "email_key": null,
-    "address": "Połaniec, nowe_zasady_(net-billing)",
-    "voivodeship": null,
+    "address": "nowe_zasady_(net-billing)",
+    "voivodeship": "Świętokrzyskie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-16T05:15:36Z",
+    "updated_at": "2025-03-16T05:15:36Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10852,8 +10852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-02-23T16:55:16Z",
-    "updated_at": "2026-02-23T16:55:16Z",
+    "created_at": "2025-02-23T16:55:16Z",
+    "updated_at": "2025-02-23T16:55:16Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10877,8 +10877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-02-24T20:43:18Z",
-    "updated_at": "2026-02-24T20:43:18Z",
+    "created_at": "2025-02-24T20:43:18Z",
+    "updated_at": "2025-02-24T20:43:18Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10902,8 +10902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-02-25T18:55:34Z",
-    "updated_at": "2026-02-25T18:55:34Z",
+    "created_at": "2025-02-25T18:55:34Z",
+    "updated_at": "2025-02-25T18:55:34Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10927,8 +10927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-16T12:00:00Z",
-    "updated_at": "2026-03-16T12:00:00Z",
+    "created_at": "2025-03-16T12:00:00Z",
+    "updated_at": "2025-03-16T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10952,8 +10952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -10978,7 +10978,7 @@ export const importedLeadSeedRows = [
     "status": "Spotkanie",
     "assigned_to": null,
     "created_at": "2025-03-08T00:00:00Z",
-    "updated_at": "2026-03-22T12:00:00Z",
+    "updated_at": "2025-03-22T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11002,8 +11002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-22T12:00:00Z",
-    "updated_at": "2026-03-22T12:00:00Z",
+    "created_at": "2025-03-22T12:00:00Z",
+    "updated_at": "2025-03-22T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11027,8 +11027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-23T12:00:00Z",
-    "updated_at": "2026-03-23T12:00:00Z",
+    "created_at": "2025-03-23T12:00:00Z",
+    "updated_at": "2025-03-23T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11052,8 +11052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-27T12:00:00Z",
-    "updated_at": "2026-03-27T12:00:00Z",
+    "created_at": "2025-03-27T12:00:00Z",
+    "updated_at": "2025-03-27T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11077,8 +11077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-27T12:00:00Z",
-    "updated_at": "2026-03-27T12:00:00Z",
+    "created_at": "2025-03-27T12:00:00Z",
+    "updated_at": "2025-03-27T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11102,8 +11102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-27T12:00:00Z",
-    "updated_at": "2026-03-27T12:00:00Z",
+    "created_at": "2025-03-27T12:00:00Z",
+    "updated_at": "2025-03-27T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11127,8 +11127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-26T12:00:00Z",
-    "updated_at": "2026-03-26T12:00:00Z",
+    "created_at": "2025-03-26T12:00:00Z",
+    "updated_at": "2025-03-26T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11152,8 +11152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2026-03-27T12:00:00Z",
+    "created_at": "2025-03-27T12:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11177,8 +11177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11202,8 +11202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-27T12:00:00Z",
-    "updated_at": "2026-03-27T12:00:00Z",
+    "created_at": "2025-03-27T12:00:00Z",
+    "updated_at": "2025-03-27T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11227,8 +11227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11252,8 +11252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11277,8 +11277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11302,8 +11302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11327,8 +11327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11352,8 +11352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-17T12:00:00Z",
-    "updated_at": "2026-03-17T12:00:00Z",
+    "created_at": "2025-03-17T12:00:00Z",
+    "updated_at": "2025-03-17T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11377,8 +11377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-19T12:00:00Z",
-    "updated_at": "2026-03-19T12:00:00Z",
+    "created_at": "2025-03-19T12:00:00Z",
+    "updated_at": "2025-03-19T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11403,7 +11403,7 @@ export const importedLeadSeedRows = [
     "status": "Spotkanie",
     "assigned_to": null,
     "created_at": "2025-03-21T00:00:00Z",
-    "updated_at": "2026-03-24T12:00:00Z",
+    "updated_at": "2025-03-24T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11427,8 +11427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11452,8 +11452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11477,8 +11477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11502,8 +11502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11527,8 +11527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11552,8 +11552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11577,8 +11577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11602,8 +11602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11627,8 +11627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2024-11-04T00:00:00Z",
-    "updated_at": "2024-11-04T00:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-11-04T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11652,8 +11652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11677,8 +11677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11702,8 +11702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11727,8 +11727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11752,8 +11752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11777,8 +11777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11802,8 +11802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11827,8 +11827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11852,8 +11852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11877,8 +11877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11902,8 +11902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-08-03T12:42:00Z",
-    "updated_at": "2026-08-03T12:42:00Z",
+    "created_at": "2025-08-03T12:42:00Z",
+    "updated_at": "2025-08-03T12:42:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11927,8 +11927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11952,8 +11952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -11977,8 +11977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-26T12:00:00Z",
-    "updated_at": "2026-03-26T12:00:00Z",
+    "created_at": "2025-03-26T12:00:00Z",
+    "updated_at": "2025-03-26T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12002,8 +12002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12027,8 +12027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12052,8 +12052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12077,8 +12077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12102,8 +12102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12127,8 +12127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12152,7 +12152,7 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2025-05-14T00:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
     "updated_at": "2025-05-14T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
@@ -12177,8 +12177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12202,8 +12202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12227,8 +12227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12252,8 +12252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12277,8 +12277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12302,8 +12302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12327,8 +12327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12352,8 +12352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12377,8 +12377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12402,8 +12402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12427,8 +12427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-22T12:00:00Z",
-    "updated_at": "2026-03-22T12:00:00Z",
+    "created_at": "2025-03-22T12:00:00Z",
+    "updated_at": "2025-03-22T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12452,8 +12452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-24T12:00:00Z",
-    "updated_at": "2026-03-24T12:00:00Z",
+    "created_at": "2025-03-24T12:00:00Z",
+    "updated_at": "2025-03-24T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12477,8 +12477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12502,8 +12502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12527,8 +12527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12552,8 +12552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12577,8 +12577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12602,8 +12602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-19T12:00:00Z",
-    "updated_at": "2026-03-19T12:00:00Z",
+    "created_at": "2025-03-19T12:00:00Z",
+    "updated_at": "2025-03-19T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12622,13 +12622,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48607835774",
     "email_key": null,
-    "address": "37-200 Przeworsk Chrusciela 16",
+    "address": null,
     "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-25T12:00:00Z",
-    "updated_at": "2026-03-25T12:00:00Z",
+    "created_at": "2025-03-25T12:00:00Z",
+    "updated_at": "2025-03-25T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12652,8 +12652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-08-03T12:42:00Z",
-    "updated_at": "2026-08-03T12:42:00Z",
+    "created_at": "2025-08-03T12:42:00Z",
+    "updated_at": "2025-08-03T12:42:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12677,8 +12677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-23T12:00:00Z",
-    "updated_at": "2026-03-23T12:00:00Z",
+    "created_at": "2025-03-23T12:00:00Z",
+    "updated_at": "2025-03-23T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12702,8 +12702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12727,8 +12727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12752,8 +12752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12777,8 +12777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12802,8 +12802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-04-01T00:00:00Z",
-    "updated_at": "2026-04-01T00:00:00Z",
+    "created_at": "2025-04-01T00:00:00Z",
+    "updated_at": "2025-04-01T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12827,8 +12827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12852,8 +12852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-05-23T12:00:00Z",
-    "updated_at": "2026-05-23T12:00:00Z",
+    "created_at": "2025-05-23T12:00:00Z",
+    "updated_at": "2025-05-23T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12877,8 +12877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-05-21T12:00:00Z",
-    "updated_at": "2026-05-21T12:00:00Z",
+    "created_at": "2025-05-21T12:00:00Z",
+    "updated_at": "2025-05-21T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12902,8 +12902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-05-21T12:00:00Z",
-    "updated_at": "2026-05-21T12:00:00Z",
+    "created_at": "2025-05-21T12:00:00Z",
+    "updated_at": "2025-05-21T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12927,8 +12927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12952,8 +12952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -12977,8 +12977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -13002,8 +13002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Nie umówione",
     "resignation_reason": null,
@@ -13027,8 +13027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-03-07T12:00:00Z",
-    "updated_at": "2026-03-07T12:00:00Z",
+    "created_at": "2025-03-07T12:00:00Z",
+    "updated_at": "2025-03-07T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13052,8 +13052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13077,8 +13077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2024-11-12T00:00:00Z",
-    "updated_at": "2024-11-12T00:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-11-12T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13102,8 +13102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13127,8 +13127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Rezygnacja",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13152,8 +13152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13177,8 +13177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-03-23T12:00:00Z",
-    "updated_at": "2026-03-23T12:00:00Z",
+    "created_at": "2025-03-23T12:00:00Z",
+    "updated_at": "2025-03-23T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13202,8 +13202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2024-12-31T10:01:09Z",
-    "updated_at": "2026-03-23T12:00:00Z",
+    "created_at": "2025-03-23T12:00:00Z",
+    "updated_at": "2025-12-31T10:01:09Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13227,8 +13227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13252,8 +13252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13277,8 +13277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13302,8 +13302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-05-26T12:00:00Z",
+    "updated_at": "2025-05-26T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13327,8 +13327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13352,8 +13352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13377,8 +13377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13402,8 +13402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2024-12-28T21:32:25Z",
-    "updated_at": "2024-12-28T21:32:25Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-12-28T21:32:25Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13427,8 +13427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13452,8 +13452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13477,8 +13477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13502,8 +13502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13527,8 +13527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13552,8 +13552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13577,8 +13577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13602,8 +13602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13627,8 +13627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13652,8 +13652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13677,8 +13677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-06-15T12:00:00Z",
+    "updated_at": "2025-06-15T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13702,8 +13702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13727,8 +13727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13752,8 +13752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13777,8 +13777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13802,8 +13802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-05-27T12:00:00Z",
+    "updated_at": "2025-05-27T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13827,8 +13827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13852,8 +13852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13877,8 +13877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13897,13 +13897,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48692655710",
     "email_key": null,
-    "address": "37-200 przeworsk",
+    "address": null,
     "voivodeship": "Podkarpackie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-05-22T12:00:00Z",
-    "updated_at": "2026-05-22T12:00:00Z",
+    "created_at": "2025-05-22T12:00:00Z",
+    "updated_at": "2025-05-22T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13922,13 +13922,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48691205807",
     "email_key": null,
-    "address": "37-124",
+    "address": null,
     "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-05-20T12:00:00Z",
-    "updated_at": "2026-05-20T12:00:00Z",
+    "created_at": "2025-05-20T12:00:00Z",
+    "updated_at": "2025-05-20T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13952,8 +13952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-05-20T12:00:00Z",
-    "updated_at": "2026-05-20T12:00:00Z",
+    "created_at": "2025-05-20T12:00:00Z",
+    "updated_at": "2025-05-20T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -13977,8 +13977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-05-15T12:00:00Z",
-    "updated_at": "2026-05-15T12:00:00Z",
+    "created_at": "2025-05-15T12:00:00Z",
+    "updated_at": "2025-05-15T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Leady bieżące",
     "resignation_reason": null,
@@ -14002,8 +14002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Małopolskie",
     "resignation_reason": null,
@@ -14025,10 +14025,10 @@ export const importedLeadSeedRows = [
     "address": "33-100 za tarnowem",
     "voivodeship": "Małopolskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-23T12:00:00Z",
-    "updated_at": "2026-03-23T12:00:00Z",
+    "created_at": "2025-03-23T12:00:00Z",
+    "updated_at": "2025-03-23T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Małopolskie",
     "resignation_reason": null,
@@ -14052,8 +14052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-03T12:00:00Z",
-    "updated_at": "2026-03-03T12:00:00Z",
+    "created_at": "2025-03-03T12:00:00Z",
+    "updated_at": "2025-03-03T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14077,8 +14077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-03T12:00:00Z",
-    "updated_at": "2026-03-03T12:00:00Z",
+    "created_at": "2025-03-03T12:00:00Z",
+    "updated_at": "2025-03-03T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14102,8 +14102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14127,8 +14127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14152,8 +14152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14177,8 +14177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14202,8 +14202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14227,8 +14227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2024-10-01T00:00:00Z",
-    "updated_at": "2026-03-04T00:00:00Z",
+    "created_at": "2025-03-04T00:00:00Z",
+    "updated_at": "2025-10-01T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14247,13 +14247,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48985588310",
     "email_key": null,
-    "address": "38-232, odzywac sie pod koniec marca",
-    "voivodeship": null,
+    "address": "odzywac sie pod koniec marca",
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-04T00:00:00Z",
-    "updated_at": "2026-03-04T00:00:00Z",
+    "created_at": "2025-03-04T00:00:00Z",
+    "updated_at": "2025-03-04T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14272,13 +14272,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48915031100",
     "email_key": null,
-    "address": "Przeworsk, magazyn 20 kwp - ma oddzwaniac czy bierze bo nie wie czy mu wystarczy do instalacji 3kwp",
-    "voivodeship": null,
+    "address": "magazyn 20 kwp - ma oddzwaniac czy bierze bo nie wie czy mu wystarczy do instalacji 3kwp",
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14302,8 +14302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2024-10-14T00:00:00Z",
-    "updated_at": "2024-10-14T00:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-10-14T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14327,8 +14327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14352,8 +14352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-09-03T02:08:00Z",
-    "updated_at": "2026-09-03T02:08:00Z",
+    "created_at": "2025-09-03T02:08:00Z",
+    "updated_at": "2025-09-03T02:08:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14377,8 +14377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-09-03T12:20:00Z",
-    "updated_at": "2026-09-03T12:20:00Z",
+    "created_at": "2025-09-03T12:20:00Z",
+    "updated_at": "2025-09-03T12:20:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14397,13 +14397,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48784001033",
     "email_key": null,
-    "address": "37-124 cierpisz (lancut)",
-    "voivodeship": null,
+    "address": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14427,8 +14427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-24T12:00:00Z",
+    "updated_at": "2025-03-24T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14452,8 +14452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-24T12:00:00Z",
+    "updated_at": "2025-03-24T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14477,8 +14477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-24T12:00:00Z",
+    "updated_at": "2025-03-24T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14502,8 +14502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14527,8 +14527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14552,8 +14552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14577,8 +14577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14602,8 +14602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-05-03T22:14:00Z",
-    "updated_at": "2026-05-03T22:14:00Z",
+    "created_at": "2025-05-03T22:14:00Z",
+    "updated_at": "2025-05-03T22:14:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14627,8 +14627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-27T12:00:00Z",
+    "updated_at": "2025-03-27T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14652,8 +14652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14677,8 +14677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-23T12:00:00Z",
-    "updated_at": "2026-03-23T12:00:00Z",
+    "created_at": "2025-03-23T12:00:00Z",
+    "updated_at": "2025-03-23T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14697,13 +14697,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48884998418",
     "email_key": null,
-    "address": "37-200 przeworsk studzian 39",
+    "address": null,
     "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14727,8 +14727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-19T12:00:00Z",
-    "updated_at": "2026-03-19T12:00:00Z",
+    "created_at": "2025-03-19T12:00:00Z",
+    "updated_at": "2025-03-19T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14752,8 +14752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-22T12:00:00Z",
-    "updated_at": "2026-03-22T12:00:00Z",
+    "created_at": "2025-03-22T12:00:00Z",
+    "updated_at": "2025-03-22T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14777,8 +14777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14802,8 +14802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14827,8 +14827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-27T12:00:00Z",
-    "updated_at": "2026-03-27T12:00:00Z",
+    "created_at": "2025-03-27T12:00:00Z",
+    "updated_at": "2025-03-27T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14852,8 +14852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-21T12:00:00Z",
-    "updated_at": "2026-03-21T12:00:00Z",
+    "created_at": "2025-03-21T12:00:00Z",
+    "updated_at": "2025-03-21T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14877,8 +14877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-13T00:00:00Z",
-    "updated_at": "2026-03-13T00:00:00Z",
+    "created_at": "2025-03-13T00:00:00Z",
+    "updated_at": "2025-03-13T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14897,13 +14897,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48792214981",
     "email_key": null,
-    "address": "37-124",
+    "address": null,
     "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-04-11T12:00:00Z",
+    "updated_at": "2025-04-11T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14927,8 +14927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14952,8 +14952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -14977,8 +14977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-16T20:15:53Z",
+    "updated_at": "2025-03-16T20:15:53Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15002,8 +15002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-12T16:40:42Z",
+    "updated_at": "2025-03-12T16:40:42Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15027,8 +15027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-10T22:05:13Z",
+    "updated_at": "2025-03-12T12:27:53Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15047,13 +15047,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48602636984",
     "email_key": null,
-    "address": "Hedwizyn, stare_zasady_(przed_1_kwietnia_2022r)",
-    "voivodeship": null,
+    "address": "stare_zasady_(przed_1_kwietnia_2022r)",
+    "voivodeship": "Lubelskie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:08:44Z",
+    "updated_at": "2025-03-17T21:08:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15072,13 +15072,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48691918559",
     "email_key": null,
-    "address": "Lublin, nowe_zasady_(net-billing)",
-    "voivodeship": null,
+    "address": "nowe_zasady_(net-billing)",
+    "voivodeship": "Lubelskie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:10:44Z",
+    "updated_at": "2025-03-17T21:10:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15097,13 +15097,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48501289258",
     "email_key": null,
-    "address": "markuszów (gory 22)",
-    "voivodeship": null,
+    "address": null,
+    "voivodeship": "Lubelskie",
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-17T21:11:44Z",
+    "updated_at": "2025-03-17T21:11:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15127,8 +15127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15152,8 +15152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-06T00:00:00Z",
-    "updated_at": "2026-03-06T00:00:00Z",
+    "created_at": "2025-03-06T00:00:00Z",
+    "updated_at": "2025-03-06T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15177,8 +15177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-15T12:00:00Z",
-    "updated_at": "2026-03-15T12:00:00Z",
+    "created_at": "2025-03-15T12:00:00Z",
+    "updated_at": "2025-03-15T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15202,8 +15202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15227,8 +15227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15252,8 +15252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15277,8 +15277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15302,8 +15302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15327,8 +15327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-11T00:00:00Z",
-    "updated_at": "2026-03-11T00:00:00Z",
+    "created_at": "2025-03-11T00:00:00Z",
+    "updated_at": "2025-03-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15352,8 +15352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15377,8 +15377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15402,8 +15402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-24T12:00:00Z",
-    "updated_at": "2026-03-24T12:00:00Z",
+    "created_at": "2025-03-24T12:00:00Z",
+    "updated_at": "2025-03-24T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15427,8 +15427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15452,8 +15452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15477,8 +15477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / spotkania",
     "resignation_reason": null,
@@ -15498,12 +15498,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48721677023",
     "email_key": "email:tomek9920@wp.pl",
     "address": "Zagórz, Zagórz",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2024-08-08T00:00:00Z",
-    "updated_at": "2024-08-08T00:00:00Z",
+    "created_at": "2025-08-08T00:00:00Z",
+    "updated_at": "2025-08-08T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15523,12 +15523,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48665011189",
     "email_key": "email:petynia5@wp.pl",
     "address": "Manasterz, Manasterz",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Rezygnacja",
     "assigned_to": null,
-    "created_at": "2024-08-12T00:00:00Z",
-    "updated_at": "2024-08-12T00:00:00Z",
+    "created_at": "2025-08-12T00:00:00Z",
+    "updated_at": "2025-08-12T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15548,12 +15548,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48881031344",
     "email_key": "email:zygmunthofman16@gmail.com",
     "address": "Olszynka obok radymna, Olszynka",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2024-08-12T00:00:00Z",
-    "updated_at": "2024-08-12T00:00:00Z",
+    "created_at": "2025-08-12T00:00:00Z",
+    "updated_at": "2025-08-12T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15573,12 +15573,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48605884035",
     "email_key": "email:zbigniewpientnik@wp.pl",
     "address": "Rozwienica, Rozwienica",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2024-08-12T00:00:00Z",
-    "updated_at": "2024-08-12T00:00:00Z",
+    "created_at": "2025-08-12T00:00:00Z",
+    "updated_at": "2025-08-12T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15598,12 +15598,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48698776116",
     "email_key": "email:faraon271@wp.eu",
     "address": "KROŚNIEŃSKI, BRZOZOWSKI, STRZYŻOWSKI, JASIELSKI, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Błędny numer",
     "assigned_to": null,
-    "created_at": "2024-08-10T00:00:00Z",
-    "updated_at": "2024-08-10T00:00:00Z",
+    "created_at": "2025-08-10T00:00:00Z",
+    "updated_at": "2025-08-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15623,12 +15623,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48608527428",
     "email_key": "email:micalz@interia.pl",
     "address": "KROŚNIEŃSKI, BRZOZOWSKI, STRZYŻOWSKI, JASIELSKI, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-11T00:00:00Z",
-    "updated_at": "2024-08-11T00:00:00Z",
+    "created_at": "2025-08-11T00:00:00Z",
+    "updated_at": "2025-08-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15648,12 +15648,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48699585000",
     "email_key": "email:kkk39@poczta.fm",
     "address": "KROŚNIEŃSKI, BRZOZOWSKI, STRZYŻOWSKI, JASIELSKI, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Rezygnacja",
     "assigned_to": null,
-    "created_at": "2024-08-11T00:00:00Z",
-    "updated_at": "2024-08-11T00:00:00Z",
+    "created_at": "2025-08-11T00:00:00Z",
+    "updated_at": "2025-08-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15673,12 +15673,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48605725910",
     "email_key": "email:franciszekmichalkiewicz9@gmail.com",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-09T00:00:00Z",
-    "updated_at": "2024-08-09T00:00:00Z",
+    "created_at": "2025-08-09T00:00:00Z",
+    "updated_at": "2025-08-09T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15698,12 +15698,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48854847870",
     "email_key": "email:grzegorz.charzewski@o2.pl",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-10T00:00:00Z",
-    "updated_at": "2024-08-10T00:00:00Z",
+    "created_at": "2025-08-10T00:00:00Z",
+    "updated_at": "2025-08-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15723,12 +15723,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48987761160",
     "email_key": "email:faraon271@wp.eu",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Błędny numer",
     "assigned_to": null,
-    "created_at": "2024-08-07T00:00:00Z",
-    "updated_at": "2024-08-07T00:00:00Z",
+    "created_at": "2025-08-07T00:00:00Z",
+    "updated_at": "2025-08-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15748,12 +15748,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48859774120",
     "email_key": "email:balickimarian4@gmail.com",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-08T00:00:00Z",
-    "updated_at": "2024-08-08T00:00:00Z",
+    "created_at": "2025-08-08T00:00:00Z",
+    "updated_at": "2025-08-08T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15773,12 +15773,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48784885243",
     "email_key": "email:foks459@yahoo.com",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-07-31T00:00:00Z",
-    "updated_at": "2024-07-31T00:00:00Z",
+    "created_at": "2025-07-31T00:00:00Z",
+    "updated_at": "2025-07-31T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15798,12 +15798,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48803858640",
     "email_key": "email:k.andreasik92@gmail.com",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-07-23T00:00:00Z",
-    "updated_at": "2024-07-23T00:00:00Z",
+    "created_at": "2025-07-23T00:00:00Z",
+    "updated_at": "2025-07-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15823,12 +15823,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48672031490",
     "email_key": "email:gorczek0000@gmail.com",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Rezygnacja",
     "assigned_to": null,
-    "created_at": "2024-07-22T00:00:00Z",
-    "updated_at": "2024-07-22T00:00:00Z",
+    "created_at": "2025-07-22T00:00:00Z",
+    "updated_at": "2025-07-22T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15848,12 +15848,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48508115738",
     "email_key": "email:jozefczyk.g@interia.eu",
     "address": "chorkówka, chorkówka",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-16T00:00:00Z",
-    "updated_at": "2024-08-16T00:00:00Z",
+    "created_at": "2025-08-16T00:00:00Z",
+    "updated_at": "2025-08-16T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15873,12 +15873,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48575613642",
     "email_key": "email:jacekgierla120@gmail.com",
     "address": "Huzele 120A, Huzele 120A",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-19T00:00:00Z",
-    "updated_at": "2024-08-19T00:00:00Z",
+    "created_at": "2025-08-19T00:00:00Z",
+    "updated_at": "2025-08-19T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15898,12 +15898,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48913534770",
     "email_key": "email:jacek.gwka71@gmail.com",
     "address": "KROŚNIEŃSKI, BRZOZOWSKI, STRZYŻOWSKI, JASIELSKI, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-20T00:00:00Z",
-    "updated_at": "2024-08-20T00:00:00Z",
+    "created_at": "2025-08-20T00:00:00Z",
+    "updated_at": "2025-08-20T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15923,12 +15923,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48666457400",
     "email_key": "email:romanczubat@wp.pl",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-21T00:00:00Z",
-    "updated_at": "2024-08-21T00:00:00Z",
+    "created_at": "2025-08-21T00:00:00Z",
+    "updated_at": "2025-08-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15948,12 +15948,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48785223255",
     "email_key": "email:pezdawieslaw7@gmail.com",
     "address": "Mielec, Mielec",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-22T00:00:00Z",
-    "updated_at": "2024-08-22T00:00:00Z",
+    "created_at": "2025-08-22T00:00:00Z",
+    "updated_at": "2025-08-22T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15973,12 +15973,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48819439510",
     "email_key": "email:isia12@o2.pl",
     "address": "POWIAT KROŚNIEŃSKI, BRZOZOWSKI, STRZYŻOWSKI, JASIELSKI, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-24T00:00:00Z",
-    "updated_at": "2024-08-24T00:00:00Z",
+    "created_at": "2025-08-24T00:00:00Z",
+    "updated_at": "2025-08-24T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -15998,12 +15998,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48649627530",
     "email_key": "email:edgan57@gmail.com",
     "address": "POWIAT KROŚNIEŃSKI, BRZOZOWSKI, STRZYŻOWSKI, JASIELSKI, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-25T00:00:00Z",
-    "updated_at": "2024-08-25T00:00:00Z",
+    "created_at": "2025-08-25T00:00:00Z",
+    "updated_at": "2025-08-25T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16023,12 +16023,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48682825680",
     "email_key": "email:wrubak@o2.pl",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-28T00:00:00Z",
-    "updated_at": "2024-08-28T00:00:00Z",
+    "created_at": "2025-08-28T00:00:00Z",
+    "updated_at": "2025-08-28T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16048,12 +16048,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48941782080",
     "email_key": "email:aleksandradabrowka@wp.pl",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-29T00:00:00Z",
-    "updated_at": "2024-08-29T00:00:00Z",
+    "created_at": "2025-08-29T00:00:00Z",
+    "updated_at": "2025-08-29T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16073,12 +16073,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48609227866",
     "email_key": "email:wojtasb86@o2.pl",
     "address": "Gorliczyna, brak",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-29T00:00:00Z",
-    "updated_at": "2024-08-29T00:00:00Z",
+    "created_at": "2025-08-29T00:00:00Z",
+    "updated_at": "2025-08-29T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16098,12 +16098,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48507821956",
     "email_key": "email:f.tobiasz@gamil.com",
     "address": "POWIAT SANOCKI LESKI BIESZCZADZKI, brak",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-02T00:00:00Z",
-    "updated_at": "2024-09-02T00:00:00Z",
+    "created_at": "2025-09-02T00:00:00Z",
+    "updated_at": "2025-09-02T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16123,12 +16123,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48503863065",
     "email_key": "email:boguslaw52-13@o2.pl",
     "address": "POWIAT KROŚNIEŃSKI, BRZOZOWSKI, STRZYŻOWSKI, JASIELSKI, brak",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-02T00:00:00Z",
-    "updated_at": "2024-09-05T00:00:00Z",
+    "created_at": "2025-09-02T00:00:00Z",
+    "updated_at": "2025-09-05T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16148,12 +16148,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48692125960",
     "email_key": "email:piekosjanusz52@gmail.com",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-03T00:00:00Z",
-    "updated_at": "2024-09-03T00:00:00Z",
+    "created_at": "2025-09-03T00:00:00Z",
+    "updated_at": "2025-09-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16173,12 +16173,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48665394501",
     "email_key": "email:aleksander4211@gmail.com",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-04T00:00:00Z",
-    "updated_at": "2024-09-04T00:00:00Z",
+    "created_at": "2025-09-04T00:00:00Z",
+    "updated_at": "2025-09-04T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16198,12 +16198,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48570143988",
     "email_key": "email:dorotamajcher62@onet.pl",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-05T00:00:00Z",
-    "updated_at": "2024-09-05T00:00:00Z",
+    "created_at": "2025-09-05T00:00:00Z",
+    "updated_at": "2025-09-05T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16223,12 +16223,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48531689838",
     "email_key": "email:tobii1983@interia.pl",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-06T00:00:00Z",
-    "updated_at": "2024-09-06T00:00:00Z",
+    "created_at": "2025-09-06T00:00:00Z",
+    "updated_at": "2025-09-06T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16248,12 +16248,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48530673101",
     "email_key": "email:babmn1957@gmail.com",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-08T00:00:00Z",
-    "updated_at": "2024-09-08T00:00:00Z",
+    "created_at": "2025-09-08T00:00:00Z",
+    "updated_at": "2025-09-08T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16273,12 +16273,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48663194760",
     "email_key": "email:swiatekstanislaw051@gmail.com",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-08T00:00:00Z",
-    "updated_at": "2024-09-08T00:00:00Z",
+    "created_at": "2025-09-08T00:00:00Z",
+    "updated_at": "2025-09-08T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16298,12 +16298,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48500102226",
     "email_key": "email:pytkomaria71@gmail.com",
     "address": "BRAK, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-08T00:00:00Z",
-    "updated_at": "2024-09-08T00:00:00Z",
+    "created_at": "2025-09-08T00:00:00Z",
+    "updated_at": "2025-09-08T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16327,8 +16327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-10T00:00:00Z",
-    "updated_at": "2024-09-10T00:00:00Z",
+    "created_at": "2025-09-10T00:00:00Z",
+    "updated_at": "2025-09-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16352,8 +16352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-10T00:00:00Z",
-    "updated_at": "2024-09-10T00:00:00Z",
+    "created_at": "2025-09-10T00:00:00Z",
+    "updated_at": "2025-09-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16377,8 +16377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-13T00:00:00Z",
-    "updated_at": "2024-09-13T00:00:00Z",
+    "created_at": "2025-09-13T00:00:00Z",
+    "updated_at": "2025-09-13T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16402,8 +16402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-10T00:00:00Z",
-    "updated_at": "2024-09-10T00:00:00Z",
+    "created_at": "2025-09-10T00:00:00Z",
+    "updated_at": "2025-09-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16427,8 +16427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-10T00:00:00Z",
-    "updated_at": "2024-09-10T00:00:00Z",
+    "created_at": "2025-09-10T00:00:00Z",
+    "updated_at": "2025-09-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16452,8 +16452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-10T00:00:00Z",
-    "updated_at": "2024-09-10T00:00:00Z",
+    "created_at": "2025-09-10T00:00:00Z",
+    "updated_at": "2025-09-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16477,8 +16477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-10T00:00:00Z",
-    "updated_at": "2024-09-10T00:00:00Z",
+    "created_at": "2025-09-10T00:00:00Z",
+    "updated_at": "2025-09-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16502,8 +16502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-10T00:00:00Z",
-    "updated_at": "2024-09-10T00:00:00Z",
+    "created_at": "2025-09-10T00:00:00Z",
+    "updated_at": "2025-09-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16527,8 +16527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-11T00:00:00Z",
-    "updated_at": "2024-09-11T00:00:00Z",
+    "created_at": "2025-09-11T00:00:00Z",
+    "updated_at": "2025-09-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16552,8 +16552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-11T00:00:00Z",
-    "updated_at": "2024-09-11T00:00:00Z",
+    "created_at": "2025-09-11T00:00:00Z",
+    "updated_at": "2025-09-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16577,8 +16577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-16T00:00:00Z",
-    "updated_at": "2024-09-16T00:00:00Z",
+    "created_at": "2025-09-16T00:00:00Z",
+    "updated_at": "2025-09-16T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16602,8 +16602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-14T09:53:22Z",
-    "updated_at": "2024-09-21T00:00:00Z",
+    "created_at": "2025-09-14T09:53:22Z",
+    "updated_at": "2025-09-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16627,8 +16627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-14T10:41:08Z",
-    "updated_at": "2024-09-22T00:00:00Z",
+    "created_at": "2025-09-14T10:41:08Z",
+    "updated_at": "2025-09-22T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16652,8 +16652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-15T05:19:24Z",
-    "updated_at": "2024-09-22T00:00:00Z",
+    "created_at": "2025-09-15T05:19:24Z",
+    "updated_at": "2025-09-22T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16677,8 +16677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-15T14:53:52Z",
-    "updated_at": "2024-09-22T00:00:00Z",
+    "created_at": "2025-09-15T14:53:52Z",
+    "updated_at": "2025-09-22T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16702,8 +16702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-16T13:03:26Z",
-    "updated_at": "2024-09-23T00:00:00Z",
+    "created_at": "2025-09-16T13:03:26Z",
+    "updated_at": "2025-09-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16727,8 +16727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-17T04:56:02Z",
-    "updated_at": "2024-09-23T00:00:00Z",
+    "created_at": "2025-09-17T04:56:02Z",
+    "updated_at": "2025-09-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16752,8 +16752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-23T00:00:00Z",
-    "updated_at": "2024-09-23T00:00:00Z",
+    "created_at": "2025-09-23T00:00:00Z",
+    "updated_at": "2025-09-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16777,8 +16777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-27T00:00:00Z",
-    "updated_at": "2024-09-27T00:00:00Z",
+    "created_at": "2025-09-27T00:00:00Z",
+    "updated_at": "2025-09-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16802,8 +16802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-26T13:27:51Z",
-    "updated_at": "2024-09-26T13:27:51Z",
+    "created_at": "2025-09-26T13:27:51Z",
+    "updated_at": "2025-09-26T13:27:51Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16827,8 +16827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-27T11:56:03Z",
-    "updated_at": "2024-09-27T11:56:03Z",
+    "created_at": "2025-09-27T11:56:03Z",
+    "updated_at": "2025-09-27T11:56:03Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16852,8 +16852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-28T09:50:27Z",
-    "updated_at": "2024-09-28T09:50:27Z",
+    "created_at": "2025-09-28T09:50:27Z",
+    "updated_at": "2025-09-28T09:50:27Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16877,8 +16877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-29T08:47:09Z",
-    "updated_at": "2024-09-29T08:47:09Z",
+    "created_at": "2025-09-29T08:47:09Z",
+    "updated_at": "2025-09-29T08:47:09Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16902,8 +16902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-30T05:33:24Z",
-    "updated_at": "2024-12-14T00:00:00Z",
+    "created_at": "2025-09-30T05:33:24Z",
+    "updated_at": "2025-12-14T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16927,8 +16927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-02T00:00:00Z",
-    "updated_at": "2024-10-02T00:00:00Z",
+    "created_at": "2025-10-02T00:00:00Z",
+    "updated_at": "2025-10-02T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16952,8 +16952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-03T00:00:00Z",
-    "updated_at": "2024-10-03T00:00:00Z",
+    "created_at": "2025-10-03T00:00:00Z",
+    "updated_at": "2025-10-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -16977,8 +16977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-03T00:00:00Z",
-    "updated_at": "2024-10-03T00:00:00Z",
+    "created_at": "2025-10-03T00:00:00Z",
+    "updated_at": "2025-10-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17002,8 +17002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-03T00:00:00Z",
-    "updated_at": "2024-10-03T00:00:00Z",
+    "created_at": "2025-10-03T00:00:00Z",
+    "updated_at": "2025-10-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17027,8 +17027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-03T00:00:00Z",
-    "updated_at": "2024-10-03T00:00:00Z",
+    "created_at": "2025-10-03T00:00:00Z",
+    "updated_at": "2025-10-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17052,8 +17052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-03T00:00:00Z",
-    "updated_at": "2024-10-03T00:00:00Z",
+    "created_at": "2025-10-03T00:00:00Z",
+    "updated_at": "2025-10-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17077,8 +17077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-03T00:00:00Z",
-    "updated_at": "2024-10-03T00:00:00Z",
+    "created_at": "2025-10-03T00:00:00Z",
+    "updated_at": "2025-10-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17102,8 +17102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-03T00:00:00Z",
-    "updated_at": "2024-10-03T00:00:00Z",
+    "created_at": "2025-10-03T00:00:00Z",
+    "updated_at": "2025-10-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17127,8 +17127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-03T00:00:00Z",
-    "updated_at": "2024-10-03T00:00:00Z",
+    "created_at": "2025-10-03T00:00:00Z",
+    "updated_at": "2025-10-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17152,8 +17152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-05T00:00:00Z",
-    "updated_at": "2024-10-05T00:00:00Z",
+    "created_at": "2025-10-05T00:00:00Z",
+    "updated_at": "2025-10-05T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17177,8 +17177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-06T00:00:00Z",
-    "updated_at": "2024-10-06T00:00:00Z",
+    "created_at": "2025-10-06T00:00:00Z",
+    "updated_at": "2025-10-06T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17202,8 +17202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-07T00:00:00Z",
-    "updated_at": "2024-10-07T00:00:00Z",
+    "created_at": "2025-10-07T00:00:00Z",
+    "updated_at": "2025-10-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17227,8 +17227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-07T00:00:00Z",
-    "updated_at": "2024-10-07T00:00:00Z",
+    "created_at": "2025-10-07T00:00:00Z",
+    "updated_at": "2025-10-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17252,8 +17252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-07T00:00:00Z",
-    "updated_at": "2024-10-07T00:00:00Z",
+    "created_at": "2025-10-07T00:00:00Z",
+    "updated_at": "2025-10-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17277,8 +17277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-07T00:00:00Z",
-    "updated_at": "2024-10-07T00:00:00Z",
+    "created_at": "2025-10-07T00:00:00Z",
+    "updated_at": "2025-10-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17302,8 +17302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-07T00:00:00Z",
-    "updated_at": "2024-10-07T00:00:00Z",
+    "created_at": "2025-10-07T00:00:00Z",
+    "updated_at": "2025-10-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17327,8 +17327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-08T00:00:00Z",
-    "updated_at": "2024-10-08T00:00:00Z",
+    "created_at": "2025-10-08T00:00:00Z",
+    "updated_at": "2025-10-08T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17352,8 +17352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-08T00:00:00Z",
-    "updated_at": "2024-10-08T00:00:00Z",
+    "created_at": "2025-10-08T00:00:00Z",
+    "updated_at": "2025-10-08T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17377,8 +17377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-08T00:00:00Z",
-    "updated_at": "2024-10-08T00:00:00Z",
+    "created_at": "2025-10-08T00:00:00Z",
+    "updated_at": "2025-10-08T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17402,8 +17402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-08T00:00:00Z",
-    "updated_at": "2024-10-08T00:00:00Z",
+    "created_at": "2025-10-08T00:00:00Z",
+    "updated_at": "2025-10-08T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17427,8 +17427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-08T00:00:00Z",
-    "updated_at": "2024-10-08T00:00:00Z",
+    "created_at": "2025-10-08T00:00:00Z",
+    "updated_at": "2025-10-08T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17452,8 +17452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-07T00:00:00Z",
-    "updated_at": "2024-10-07T00:00:00Z",
+    "created_at": "2025-10-07T00:00:00Z",
+    "updated_at": "2025-10-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17477,8 +17477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-07T00:00:00Z",
-    "updated_at": "2024-10-07T00:00:00Z",
+    "created_at": "2025-10-07T00:00:00Z",
+    "updated_at": "2025-10-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17502,8 +17502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-07T00:00:00Z",
-    "updated_at": "2024-10-07T00:00:00Z",
+    "created_at": "2025-10-07T00:00:00Z",
+    "updated_at": "2025-10-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17527,8 +17527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-07T00:00:00Z",
-    "updated_at": "2024-10-07T00:00:00Z",
+    "created_at": "2025-10-07T00:00:00Z",
+    "updated_at": "2025-10-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17552,8 +17552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-07T00:00:00Z",
-    "updated_at": "2024-10-07T00:00:00Z",
+    "created_at": "2025-10-07T00:00:00Z",
+    "updated_at": "2025-10-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17577,8 +17577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-10T00:00:00Z",
-    "updated_at": "2024-10-10T00:00:00Z",
+    "created_at": "2025-10-10T00:00:00Z",
+    "updated_at": "2025-10-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17602,8 +17602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-10T00:00:00Z",
-    "updated_at": "2024-10-10T00:00:00Z",
+    "created_at": "2025-10-10T00:00:00Z",
+    "updated_at": "2025-10-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17627,8 +17627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-10T00:00:00Z",
-    "updated_at": "2024-10-10T00:00:00Z",
+    "created_at": "2025-10-10T00:00:00Z",
+    "updated_at": "2025-10-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17652,8 +17652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-10T00:00:00Z",
-    "updated_at": "2024-10-10T00:00:00Z",
+    "created_at": "2025-10-10T00:00:00Z",
+    "updated_at": "2025-10-10T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17677,8 +17677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-12T00:00:00Z",
-    "updated_at": "2024-10-12T00:00:00Z",
+    "created_at": "2025-10-12T00:00:00Z",
+    "updated_at": "2025-10-12T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17702,8 +17702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-12T00:00:00Z",
-    "updated_at": "2024-10-12T00:00:00Z",
+    "created_at": "2025-10-12T00:00:00Z",
+    "updated_at": "2025-10-12T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17727,8 +17727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-11T00:00:00Z",
-    "updated_at": "2024-10-11T00:00:00Z",
+    "created_at": "2025-10-11T00:00:00Z",
+    "updated_at": "2025-10-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17752,8 +17752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-14T00:00:00Z",
-    "updated_at": "2024-10-14T00:00:00Z",
+    "created_at": "2025-10-14T00:00:00Z",
+    "updated_at": "2025-10-14T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17777,8 +17777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-15T00:00:00Z",
-    "updated_at": "2024-10-15T00:00:00Z",
+    "created_at": "2025-10-15T00:00:00Z",
+    "updated_at": "2025-10-15T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17802,8 +17802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-21T00:00:00Z",
-    "updated_at": "2024-10-21T00:00:00Z",
+    "created_at": "2025-10-21T00:00:00Z",
+    "updated_at": "2025-10-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17827,8 +17827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-21T00:00:00Z",
-    "updated_at": "2024-10-21T00:00:00Z",
+    "created_at": "2025-10-21T00:00:00Z",
+    "updated_at": "2025-10-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17852,8 +17852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Rezygnacja",
     "assigned_to": null,
-    "created_at": "2024-10-21T00:00:00Z",
-    "updated_at": "2024-10-21T00:00:00Z",
+    "created_at": "2025-10-21T00:00:00Z",
+    "updated_at": "2025-10-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17877,8 +17877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-09T00:00:00Z",
-    "updated_at": "2024-10-21T00:00:00Z",
+    "created_at": "2025-10-09T00:00:00Z",
+    "updated_at": "2025-10-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17902,8 +17902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-21T00:00:00Z",
-    "updated_at": "2024-10-21T00:00:00Z",
+    "created_at": "2025-10-21T00:00:00Z",
+    "updated_at": "2025-10-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17927,8 +17927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-24T00:00:00Z",
-    "updated_at": "2024-10-24T00:00:00Z",
+    "created_at": "2025-10-24T00:00:00Z",
+    "updated_at": "2025-10-24T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17952,8 +17952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-24T00:00:00Z",
-    "updated_at": "2024-10-24T00:00:00Z",
+    "created_at": "2025-10-24T00:00:00Z",
+    "updated_at": "2025-10-24T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -17977,8 +17977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-28T00:00:00Z",
-    "updated_at": "2024-10-28T00:00:00Z",
+    "created_at": "2025-10-28T00:00:00Z",
+    "updated_at": "2025-10-28T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18002,8 +18002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-28T00:00:00Z",
-    "updated_at": "2024-10-28T00:00:00Z",
+    "created_at": "2025-10-28T00:00:00Z",
+    "updated_at": "2025-10-28T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18027,8 +18027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-28T00:00:00Z",
-    "updated_at": "2024-10-28T00:00:00Z",
+    "created_at": "2025-10-28T00:00:00Z",
+    "updated_at": "2025-10-28T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18052,8 +18052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-28T00:00:00Z",
-    "updated_at": "2024-10-28T00:00:00Z",
+    "created_at": "2025-10-28T00:00:00Z",
+    "updated_at": "2025-10-28T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18077,8 +18077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-28T00:00:00Z",
-    "updated_at": "2024-10-28T00:00:00Z",
+    "created_at": "2025-10-28T00:00:00Z",
+    "updated_at": "2025-10-28T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18102,8 +18102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-30T00:00:00Z",
-    "updated_at": "2024-10-30T00:00:00Z",
+    "created_at": "2025-10-30T00:00:00Z",
+    "updated_at": "2025-10-30T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18127,8 +18127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Rezygnacja",
     "assigned_to": null,
-    "created_at": "2024-11-04T00:00:00Z",
-    "updated_at": "2024-11-04T00:00:00Z",
+    "created_at": "2025-11-04T00:00:00Z",
+    "updated_at": "2025-11-04T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18152,8 +18152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Rezygnacja",
     "assigned_to": null,
-    "created_at": "2024-11-04T00:00:00Z",
-    "updated_at": "2024-11-04T00:00:00Z",
+    "created_at": "2025-11-04T00:00:00Z",
+    "updated_at": "2025-11-04T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18177,8 +18177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-04T00:00:00Z",
-    "updated_at": "2024-11-04T00:00:00Z",
+    "created_at": "2025-11-04T00:00:00Z",
+    "updated_at": "2025-11-04T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18202,8 +18202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-04T00:00:00Z",
-    "updated_at": "2024-11-04T00:00:00Z",
+    "created_at": "2025-11-04T00:00:00Z",
+    "updated_at": "2025-11-04T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18227,8 +18227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-06T00:00:00Z",
-    "updated_at": "2024-11-06T00:00:00Z",
+    "created_at": "2025-11-06T00:00:00Z",
+    "updated_at": "2025-11-06T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18252,8 +18252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-06T00:00:00Z",
-    "updated_at": "2024-11-06T00:00:00Z",
+    "created_at": "2025-11-06T00:00:00Z",
+    "updated_at": "2025-11-06T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18277,8 +18277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-06T00:00:00Z",
-    "updated_at": "2024-11-06T00:00:00Z",
+    "created_at": "2025-11-06T00:00:00Z",
+    "updated_at": "2025-11-06T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18302,8 +18302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-09T11:23:25Z",
-    "updated_at": "2024-11-09T11:23:25Z",
+    "created_at": "2025-11-09T11:23:25Z",
+    "updated_at": "2025-11-09T11:23:25Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18327,8 +18327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-09T18:01:53Z",
-    "updated_at": "2024-11-09T18:01:53Z",
+    "created_at": "2025-11-09T18:01:53Z",
+    "updated_at": "2025-11-09T18:01:53Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18352,8 +18352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-09T19:58:46Z",
-    "updated_at": "2024-11-09T19:58:46Z",
+    "created_at": "2025-11-09T19:58:46Z",
+    "updated_at": "2025-11-09T19:58:46Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18377,8 +18377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-11T18:44:23Z",
-    "updated_at": "2024-11-11T18:44:23Z",
+    "created_at": "2025-11-11T18:44:23Z",
+    "updated_at": "2025-11-11T18:44:23Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18402,8 +18402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-12T00:00:00Z",
-    "updated_at": "2024-11-12T00:00:00Z",
+    "created_at": "2025-11-12T00:00:00Z",
+    "updated_at": "2025-11-12T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18427,8 +18427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-12T00:00:00Z",
-    "updated_at": "2024-11-12T00:00:00Z",
+    "created_at": "2025-11-12T00:00:00Z",
+    "updated_at": "2025-11-12T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18452,8 +18452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-15T00:00:00Z",
-    "updated_at": "2024-11-15T00:00:00Z",
+    "created_at": "2025-11-15T00:00:00Z",
+    "updated_at": "2025-11-15T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18477,8 +18477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-15T00:00:00Z",
-    "updated_at": "2024-11-15T00:00:00Z",
+    "created_at": "2025-11-15T00:00:00Z",
+    "updated_at": "2025-11-15T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18502,8 +18502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-18T00:00:00Z",
-    "updated_at": "2024-11-18T00:00:00Z",
+    "created_at": "2025-11-18T00:00:00Z",
+    "updated_at": "2025-11-18T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18527,8 +18527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-19T00:00:00Z",
-    "updated_at": "2024-11-19T00:00:00Z",
+    "created_at": "2025-11-19T00:00:00Z",
+    "updated_at": "2025-11-19T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18552,8 +18552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Rezygnacja",
     "assigned_to": null,
-    "created_at": "2024-11-20T00:00:00Z",
-    "updated_at": "2024-11-20T00:00:00Z",
+    "created_at": "2025-11-20T00:00:00Z",
+    "updated_at": "2025-11-20T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18573,12 +18573,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48713047080",
     "email_key": null,
     "address": "161 38-608 Wetlina, leski",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-20T00:00:00Z",
-    "updated_at": "2024-11-20T00:00:00Z",
+    "created_at": "2025-11-20T00:00:00Z",
+    "updated_at": "2025-11-20T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18598,12 +18598,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48951765860",
     "email_key": null,
     "address": "ul. Ogrodowa 60 38-420 Korczyna, krośnieński",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-20T00:00:00Z",
-    "updated_at": "2024-11-20T00:00:00Z",
+    "created_at": "2025-11-20T00:00:00Z",
+    "updated_at": "2025-11-20T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18623,12 +18623,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48948780470",
     "email_key": null,
     "address": "leśna 12l 37-560 pruchnik, jarosławski",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-20T00:00:00Z",
-    "updated_at": "2024-11-20T00:00:00Z",
+    "created_at": "2025-11-20T00:00:00Z",
+    "updated_at": "2025-11-20T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18648,12 +18648,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48934227930",
     "email_key": null,
     "address": "alfredowka 1 39-460 nowa dęba, tarnobrzeski",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-20T00:00:00Z",
-    "updated_at": "2024-11-20T00:00:00Z",
+    "created_at": "2025-11-20T00:00:00Z",
+    "updated_at": "2025-11-20T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18677,8 +18677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-21T00:00:00Z",
-    "updated_at": "2024-11-21T00:00:00Z",
+    "created_at": "2025-11-21T00:00:00Z",
+    "updated_at": "2025-11-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18702,8 +18702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-21T00:00:00Z",
-    "updated_at": "2024-11-21T00:00:00Z",
+    "created_at": "2025-11-21T00:00:00Z",
+    "updated_at": "2025-11-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18727,8 +18727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-21T00:00:00Z",
-    "updated_at": "2024-11-21T00:00:00Z",
+    "created_at": "2025-11-21T00:00:00Z",
+    "updated_at": "2025-11-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18748,12 +18748,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48650447330",
     "email_key": null,
     "address": "błonie 24 38-524, sanocki",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-21T00:00:00Z",
-    "updated_at": "2024-11-21T00:00:00Z",
+    "created_at": "2025-11-21T00:00:00Z",
+    "updated_at": "2025-11-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18777,8 +18777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-24T00:00:00Z",
-    "updated_at": "2024-11-24T00:00:00Z",
+    "created_at": "2025-11-24T00:00:00Z",
+    "updated_at": "2025-11-24T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18802,8 +18802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-25T00:00:00Z",
-    "updated_at": "2024-12-11T00:00:00Z",
+    "created_at": "2025-11-25T00:00:00Z",
+    "updated_at": "2025-12-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18827,8 +18827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-25T00:00:00Z",
-    "updated_at": "2024-11-25T00:00:00Z",
+    "created_at": "2025-11-25T00:00:00Z",
+    "updated_at": "2025-11-25T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18852,8 +18852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-26T00:00:00Z",
-    "updated_at": "2024-11-26T00:00:00Z",
+    "created_at": "2025-11-26T00:00:00Z",
+    "updated_at": "2025-11-26T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18877,8 +18877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-26T00:00:00Z",
-    "updated_at": "2024-11-26T00:00:00Z",
+    "created_at": "2025-11-26T00:00:00Z",
+    "updated_at": "2025-11-26T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18902,8 +18902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-26T00:00:00Z",
-    "updated_at": "2024-11-26T00:00:00Z",
+    "created_at": "2025-11-26T00:00:00Z",
+    "updated_at": "2025-11-26T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18927,8 +18927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-27T00:00:00Z",
-    "updated_at": "2025-01-01T22:34:29Z",
+    "created_at": "2025-01-01T22:34:29Z",
+    "updated_at": "2025-11-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18952,8 +18952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-27T00:00:00Z",
-    "updated_at": "2024-11-27T00:00:00Z",
+    "created_at": "2025-11-27T00:00:00Z",
+    "updated_at": "2025-11-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -18977,8 +18977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-30T00:00:00Z",
-    "updated_at": "2024-11-30T00:00:00Z",
+    "created_at": "2025-11-30T00:00:00Z",
+    "updated_at": "2025-11-30T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19002,8 +19002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-30T00:00:00Z",
-    "updated_at": "2024-11-30T00:00:00Z",
+    "created_at": "2025-11-30T00:00:00Z",
+    "updated_at": "2025-11-30T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19027,8 +19027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-02T00:00:00Z",
-    "updated_at": "2024-12-02T00:00:00Z",
+    "created_at": "2025-12-02T00:00:00Z",
+    "updated_at": "2025-12-02T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19052,8 +19052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-03T00:00:00Z",
-    "updated_at": "2024-12-03T00:00:00Z",
+    "created_at": "2025-12-03T00:00:00Z",
+    "updated_at": "2025-12-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19077,8 +19077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-04T00:00:00Z",
-    "updated_at": "2024-12-04T00:00:00Z",
+    "created_at": "2025-12-04T00:00:00Z",
+    "updated_at": "2025-12-04T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19102,8 +19102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-06T00:00:00Z",
-    "updated_at": "2024-12-06T00:00:00Z",
+    "created_at": "2025-12-06T00:00:00Z",
+    "updated_at": "2025-12-06T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19127,8 +19127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-11T00:00:00Z",
-    "updated_at": "2024-12-11T00:00:00Z",
+    "created_at": "2025-12-11T00:00:00Z",
+    "updated_at": "2025-12-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19152,8 +19152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-11T00:00:00Z",
-    "updated_at": "2024-12-11T00:00:00Z",
+    "created_at": "2025-12-11T00:00:00Z",
+    "updated_at": "2025-12-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19177,8 +19177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-11T00:00:00Z",
-    "updated_at": "2024-12-11T00:00:00Z",
+    "created_at": "2025-12-11T00:00:00Z",
+    "updated_at": "2025-12-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19202,8 +19202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-11T00:00:00Z",
-    "updated_at": "2024-12-11T00:00:00Z",
+    "created_at": "2025-12-11T00:00:00Z",
+    "updated_at": "2025-12-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19227,8 +19227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-12T00:00:00Z",
-    "updated_at": "2024-12-12T00:00:00Z",
+    "created_at": "2025-12-12T00:00:00Z",
+    "updated_at": "2025-12-12T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19252,8 +19252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-12T00:00:00Z",
-    "updated_at": "2024-12-12T00:00:00Z",
+    "created_at": "2025-12-12T00:00:00Z",
+    "updated_at": "2025-12-12T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19273,12 +19273,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48839974440",
     "email_key": null,
     "address": "Grzegorz Batorski, 883997444.0",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19302,8 +19302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-14T00:00:00Z",
-    "updated_at": "2024-12-14T00:00:00Z",
+    "created_at": "2025-12-14T00:00:00Z",
+    "updated_at": "2025-12-14T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19327,8 +19327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-14T00:00:00Z",
-    "updated_at": "2024-12-14T00:00:00Z",
+    "created_at": "2025-12-14T00:00:00Z",
+    "updated_at": "2025-12-14T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19352,8 +19352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-14T00:00:00Z",
-    "updated_at": "2024-12-14T00:00:00Z",
+    "created_at": "2025-12-14T00:00:00Z",
+    "updated_at": "2025-12-14T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19377,8 +19377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-15T00:00:00Z",
-    "updated_at": "2024-12-15T00:00:00Z",
+    "created_at": "2025-12-15T00:00:00Z",
+    "updated_at": "2025-12-15T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19402,8 +19402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-15T00:00:00Z",
-    "updated_at": "2024-12-15T00:00:00Z",
+    "created_at": "2025-12-15T00:00:00Z",
+    "updated_at": "2025-12-15T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19427,8 +19427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-15T00:00:00Z",
-    "updated_at": "2024-12-15T00:00:00Z",
+    "created_at": "2025-12-15T00:00:00Z",
+    "updated_at": "2025-12-15T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19452,8 +19452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-15T00:00:00Z",
-    "updated_at": "2024-12-15T00:00:00Z",
+    "created_at": "2025-12-15T00:00:00Z",
+    "updated_at": "2025-12-15T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19477,8 +19477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-15T00:00:00Z",
-    "updated_at": "2024-12-15T00:00:00Z",
+    "created_at": "2025-12-15T00:00:00Z",
+    "updated_at": "2025-12-15T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19502,8 +19502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-15T00:00:00Z",
-    "updated_at": "2024-12-15T00:00:00Z",
+    "created_at": "2025-12-15T00:00:00Z",
+    "updated_at": "2025-12-15T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19527,8 +19527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-15T00:00:00Z",
-    "updated_at": "2024-12-15T00:00:00Z",
+    "created_at": "2025-12-15T00:00:00Z",
+    "updated_at": "2025-12-15T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19552,8 +19552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-15T00:00:00Z",
-    "updated_at": "2024-12-15T00:00:00Z",
+    "created_at": "2025-12-15T00:00:00Z",
+    "updated_at": "2025-12-15T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19577,8 +19577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-15T00:00:00Z",
-    "updated_at": "2024-12-15T00:00:00Z",
+    "created_at": "2025-12-15T00:00:00Z",
+    "updated_at": "2025-12-15T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19602,8 +19602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-16T00:00:00Z",
-    "updated_at": "2024-12-16T00:00:00Z",
+    "created_at": "2025-12-16T00:00:00Z",
+    "updated_at": "2025-12-16T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19627,8 +19627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-16T00:00:00Z",
-    "updated_at": "2024-12-16T00:00:00Z",
+    "created_at": "2025-12-16T00:00:00Z",
+    "updated_at": "2025-12-16T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19652,8 +19652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-16T00:00:00Z",
-    "updated_at": "2024-12-16T00:00:00Z",
+    "created_at": "2025-12-16T00:00:00Z",
+    "updated_at": "2025-12-16T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19677,8 +19677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-16T00:00:00Z",
-    "updated_at": "2024-12-16T00:00:00Z",
+    "created_at": "2025-12-16T00:00:00Z",
+    "updated_at": "2025-12-16T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19702,8 +19702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-17T00:00:00Z",
-    "updated_at": "2024-12-17T00:00:00Z",
+    "created_at": "2025-12-17T00:00:00Z",
+    "updated_at": "2025-12-17T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19727,8 +19727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-17T13:53:55Z",
-    "updated_at": "2024-12-17T13:53:55Z",
+    "created_at": "2025-12-17T13:53:55Z",
+    "updated_at": "2025-12-17T13:53:55Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19752,8 +19752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-17T16:10:19Z",
-    "updated_at": "2024-12-17T16:10:19Z",
+    "created_at": "2025-12-17T16:10:19Z",
+    "updated_at": "2025-12-17T16:10:19Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19777,8 +19777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-17T16:22:54Z",
-    "updated_at": "2024-12-17T16:22:54Z",
+    "created_at": "2025-12-17T16:22:54Z",
+    "updated_at": "2025-12-17T16:22:54Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19802,8 +19802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-17T16:57:09Z",
-    "updated_at": "2024-12-17T16:57:09Z",
+    "created_at": "2025-12-17T16:57:09Z",
+    "updated_at": "2025-12-17T16:57:09Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19827,8 +19827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-17T17:08:25Z",
-    "updated_at": "2024-12-17T17:08:25Z",
+    "created_at": "2025-12-17T17:08:25Z",
+    "updated_at": "2025-12-17T17:08:25Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19852,8 +19852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-18T06:25:45Z",
-    "updated_at": "2024-12-18T06:25:45Z",
+    "created_at": "2025-12-18T06:25:45Z",
+    "updated_at": "2025-12-18T06:25:45Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19877,8 +19877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-18T06:34:26Z",
-    "updated_at": "2024-12-18T06:34:26Z",
+    "created_at": "2025-12-18T06:34:26Z",
+    "updated_at": "2025-12-18T06:34:26Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19902,8 +19902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-18T06:34:26Z",
-    "updated_at": "2024-12-18T06:34:26Z",
+    "created_at": "2025-12-18T06:34:26Z",
+    "updated_at": "2025-12-18T06:34:26Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19927,8 +19927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-19T00:00:00Z",
-    "updated_at": "2024-12-19T00:00:00Z",
+    "created_at": "2025-12-19T00:00:00Z",
+    "updated_at": "2025-12-19T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19952,8 +19952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-19T00:00:00Z",
-    "updated_at": "2024-12-19T00:00:00Z",
+    "created_at": "2025-12-19T00:00:00Z",
+    "updated_at": "2025-12-19T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -19977,8 +19977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-19T00:00:00Z",
-    "updated_at": "2024-12-19T00:00:00Z",
+    "created_at": "2025-12-19T00:00:00Z",
+    "updated_at": "2025-12-19T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20002,8 +20002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-19T00:00:00Z",
-    "updated_at": "2024-12-19T00:00:00Z",
+    "created_at": "2025-12-19T00:00:00Z",
+    "updated_at": "2025-12-19T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20027,8 +20027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-19T00:00:00Z",
-    "updated_at": "2024-12-19T00:00:00Z",
+    "created_at": "2025-12-19T00:00:00Z",
+    "updated_at": "2025-12-19T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20052,8 +20052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-19T00:00:00Z",
-    "updated_at": "2024-12-19T00:00:00Z",
+    "created_at": "2025-12-19T00:00:00Z",
+    "updated_at": "2025-12-19T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20077,8 +20077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-20T00:00:00Z",
-    "updated_at": "2024-12-20T00:00:00Z",
+    "created_at": "2025-12-20T00:00:00Z",
+    "updated_at": "2025-12-20T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20102,8 +20102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-20T00:00:00Z",
-    "updated_at": "2024-12-20T00:00:00Z",
+    "created_at": "2025-12-20T00:00:00Z",
+    "updated_at": "2025-12-20T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20127,8 +20127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-20T00:00:00Z",
-    "updated_at": "2024-12-20T00:00:00Z",
+    "created_at": "2025-12-20T00:00:00Z",
+    "updated_at": "2025-12-20T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20152,8 +20152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-21T00:00:00Z",
-    "updated_at": "2024-12-21T00:00:00Z",
+    "created_at": "2025-12-21T00:00:00Z",
+    "updated_at": "2025-12-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20173,12 +20173,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48664906162",
     "email_key": "email:piotrfijolek@interia.pl",
     "address": "ZACHODNIOPOMORSKI",
-    "voivodeship": "Pomorskie",
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-21T00:00:00Z",
-    "updated_at": "2024-12-21T00:00:00Z",
+    "created_at": "2025-12-21T00:00:00Z",
+    "updated_at": "2025-12-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20202,8 +20202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-21T00:00:00Z",
-    "updated_at": "2024-12-21T00:00:00Z",
+    "created_at": "2025-12-21T00:00:00Z",
+    "updated_at": "2025-12-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20227,8 +20227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20252,8 +20252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20277,8 +20277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20302,8 +20302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20327,8 +20327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20352,8 +20352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20377,8 +20377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20402,8 +20402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20427,8 +20427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20452,8 +20452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2025-05-14T00:00:00Z",
+    "created_at": "2025-05-14T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20477,8 +20477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20502,8 +20502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20527,8 +20527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20552,8 +20552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20577,8 +20577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20602,8 +20602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20627,8 +20627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20652,8 +20652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2025-04-23T00:00:00Z",
+    "created_at": "2025-04-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20677,8 +20677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20702,8 +20702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20727,8 +20727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20752,8 +20752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20777,8 +20777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20802,8 +20802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20827,8 +20827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20852,8 +20852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20877,8 +20877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20902,8 +20902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20927,8 +20927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20952,8 +20952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -20977,8 +20977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21002,8 +21002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21027,8 +21027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21052,8 +21052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21077,8 +21077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21102,8 +21102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21127,8 +21127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21152,8 +21152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21177,8 +21177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21202,8 +21202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21227,8 +21227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21252,8 +21252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21277,8 +21277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T09:49:49Z",
-    "updated_at": "2024-12-27T09:49:49Z",
+    "created_at": "2025-12-27T09:49:49Z",
+    "updated_at": "2025-12-27T09:49:49Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21302,8 +21302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T10:13:24Z",
-    "updated_at": "2024-12-27T10:13:24Z",
+    "created_at": "2025-12-27T10:13:24Z",
+    "updated_at": "2025-12-27T10:13:24Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21327,8 +21327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T13:27:57Z",
-    "updated_at": "2024-12-27T13:27:57Z",
+    "created_at": "2025-12-27T13:27:57Z",
+    "updated_at": "2025-12-27T13:27:57Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21352,8 +21352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T14:24:23Z",
-    "updated_at": "2024-12-27T14:24:23Z",
+    "created_at": "2025-12-27T14:24:23Z",
+    "updated_at": "2025-12-27T14:24:23Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21377,8 +21377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T16:11:30Z",
-    "updated_at": "2024-12-27T16:11:30Z",
+    "created_at": "2025-12-27T16:11:30Z",
+    "updated_at": "2025-12-27T16:11:30Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21402,8 +21402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T19:19:57Z",
-    "updated_at": "2024-12-27T19:19:57Z",
+    "created_at": "2025-12-27T19:19:57Z",
+    "updated_at": "2025-12-27T19:19:57Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21427,8 +21427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-28T07:31:18Z",
-    "updated_at": "2024-12-28T07:31:18Z",
+    "created_at": "2025-12-28T07:31:18Z",
+    "updated_at": "2025-12-28T07:31:18Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21452,8 +21452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-28T09:05:05Z",
-    "updated_at": "2024-12-28T09:05:05Z",
+    "created_at": "2025-12-28T09:05:05Z",
+    "updated_at": "2025-12-28T09:05:05Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21477,8 +21477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-28T09:06:34Z",
-    "updated_at": "2024-12-28T09:06:34Z",
+    "created_at": "2025-12-28T09:06:34Z",
+    "updated_at": "2025-12-28T09:06:34Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21502,8 +21502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-28T10:48:24Z",
-    "updated_at": "2024-12-28T10:48:24Z",
+    "created_at": "2025-12-28T10:48:24Z",
+    "updated_at": "2025-12-28T10:48:24Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21527,8 +21527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-28T11:02:00Z",
-    "updated_at": "2024-12-28T11:02:00Z",
+    "created_at": "2025-12-28T11:02:00Z",
+    "updated_at": "2025-12-28T11:02:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21552,8 +21552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-28T13:28:18Z",
-    "updated_at": "2024-12-28T13:28:18Z",
+    "created_at": "2025-12-28T13:28:18Z",
+    "updated_at": "2025-12-28T13:28:18Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21577,8 +21577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Rezygnacja",
     "assigned_to": null,
-    "created_at": "2024-12-28T19:00:08Z",
-    "updated_at": "2024-12-28T19:00:08Z",
+    "created_at": "2025-12-28T19:00:08Z",
+    "updated_at": "2025-12-28T19:00:08Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21602,8 +21602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Rezygnacja",
     "assigned_to": null,
-    "created_at": "2024-12-28T20:15:01Z",
-    "updated_at": "2024-12-28T20:15:01Z",
+    "created_at": "2025-12-28T20:15:01Z",
+    "updated_at": "2025-12-28T20:15:01Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21627,8 +21627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-28T22:44:11Z",
-    "updated_at": "2024-12-28T22:44:11Z",
+    "created_at": "2025-12-28T22:44:11Z",
+    "updated_at": "2025-12-28T22:44:11Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21652,8 +21652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-29T07:45:22Z",
-    "updated_at": "2024-12-29T07:45:22Z",
+    "created_at": "2025-12-29T07:45:22Z",
+    "updated_at": "2025-12-29T07:45:22Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21677,8 +21677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-29T09:30:52Z",
-    "updated_at": "2024-12-29T09:30:52Z",
+    "created_at": "2025-12-29T09:30:52Z",
+    "updated_at": "2025-12-29T09:30:52Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21702,8 +21702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-29T10:37:11Z",
-    "updated_at": "2024-12-29T10:37:11Z",
+    "created_at": "2025-12-29T10:37:11Z",
+    "updated_at": "2025-12-29T10:37:11Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21727,8 +21727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-29T16:32:18Z",
-    "updated_at": "2024-12-29T16:32:18Z",
+    "created_at": "2025-12-29T16:32:18Z",
+    "updated_at": "2025-12-29T16:32:18Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21752,8 +21752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-29T17:02:18Z",
-    "updated_at": "2024-12-29T17:02:18Z",
+    "created_at": "2025-12-29T17:02:18Z",
+    "updated_at": "2025-12-29T17:02:18Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21777,8 +21777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-29T19:17:46Z",
-    "updated_at": "2024-12-29T19:17:46Z",
+    "created_at": "2025-12-29T19:17:46Z",
+    "updated_at": "2025-12-29T19:17:46Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21802,8 +21802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-29T20:29:02Z",
-    "updated_at": "2024-12-29T20:29:02Z",
+    "created_at": "2025-12-29T20:29:02Z",
+    "updated_at": "2025-12-29T20:29:02Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21827,8 +21827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-29T21:15:35Z",
-    "updated_at": "2024-12-29T21:15:35Z",
+    "created_at": "2025-12-29T21:15:35Z",
+    "updated_at": "2025-12-29T21:15:35Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21852,8 +21852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-30T06:54:10Z",
-    "updated_at": "2024-12-30T06:54:10Z",
+    "created_at": "2025-12-30T06:54:10Z",
+    "updated_at": "2025-12-30T06:54:10Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21877,8 +21877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-30T08:15:55Z",
-    "updated_at": "2024-12-30T08:15:55Z",
+    "created_at": "2025-12-30T08:15:55Z",
+    "updated_at": "2025-12-30T08:15:55Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21902,8 +21902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-30T12:12:39Z",
-    "updated_at": "2024-12-30T12:12:39Z",
+    "created_at": "2025-12-30T12:12:39Z",
+    "updated_at": "2025-12-30T12:12:39Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21927,8 +21927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-30T13:02:59Z",
-    "updated_at": "2024-12-30T13:02:59Z",
+    "created_at": "2025-12-30T13:02:59Z",
+    "updated_at": "2025-12-30T13:02:59Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21952,8 +21952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-30T14:00:27Z",
-    "updated_at": "2024-12-30T14:00:27Z",
+    "created_at": "2025-12-30T14:00:27Z",
+    "updated_at": "2025-12-30T14:00:27Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -21977,8 +21977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-30T15:15:32Z",
-    "updated_at": "2024-12-30T15:15:32Z",
+    "created_at": "2025-12-30T15:15:32Z",
+    "updated_at": "2025-12-30T15:15:32Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -22002,8 +22002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-30T15:57:32Z",
-    "updated_at": "2024-12-30T15:57:32Z",
+    "created_at": "2025-12-30T15:57:32Z",
+    "updated_at": "2025-12-30T15:57:32Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -22027,8 +22027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-30T19:08:22Z",
-    "updated_at": "2024-12-30T19:08:22Z",
+    "created_at": "2025-12-30T19:08:22Z",
+    "updated_at": "2025-12-30T19:08:22Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -22052,8 +22052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-30T20:30:30Z",
-    "updated_at": "2024-12-30T20:30:30Z",
+    "created_at": "2025-12-30T20:30:30Z",
+    "updated_at": "2025-12-30T20:30:30Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -22077,8 +22077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-30T20:42:39Z",
-    "updated_at": "2024-12-30T20:42:39Z",
+    "created_at": "2025-12-30T20:42:39Z",
+    "updated_at": "2025-12-30T20:42:39Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -22102,8 +22102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-30T22:41:20Z",
-    "updated_at": "2024-12-30T22:41:20Z",
+    "created_at": "2025-12-30T22:41:20Z",
+    "updated_at": "2025-12-30T22:41:20Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -22127,8 +22127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-31T08:55:31Z",
-    "updated_at": "2024-12-31T08:55:31Z",
+    "created_at": "2025-12-31T08:55:31Z",
+    "updated_at": "2025-12-31T08:55:31Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -22152,8 +22152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-31T11:39:37Z",
-    "updated_at": "2024-12-31T11:39:37Z",
+    "created_at": "2025-12-31T11:39:37Z",
+    "updated_at": "2025-12-31T11:39:37Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -22177,8 +22177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-31T12:12:38Z",
-    "updated_at": "2024-12-31T12:12:38Z",
+    "created_at": "2025-12-31T12:12:38Z",
+    "updated_at": "2025-12-31T12:12:38Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -22202,8 +22202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-31T14:27:33Z",
-    "updated_at": "2024-12-31T14:27:33Z",
+    "created_at": "2025-12-31T14:27:33Z",
+    "updated_at": "2025-12-31T14:27:33Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -22227,8 +22227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-31T16:17:39Z",
-    "updated_at": "2024-12-31T16:17:39Z",
+    "created_at": "2025-12-31T16:17:39Z",
+    "updated_at": "2025-12-31T16:17:39Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -22627,7 +22627,7 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2025-01-03T00:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
     "updated_at": "2025-01-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
@@ -23502,7 +23502,7 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2025-01-07T00:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
     "updated_at": "2025-01-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
@@ -23627,8 +23627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2025-04-23T00:00:00Z",
+    "created_at": "2025-01-09T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -25027,7 +25027,7 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2025-01-28T00:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
     "updated_at": "2025-01-28T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
@@ -26398,7 +26398,7 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48604957357",
     "email_key": "email:albert.szwaj@acdesignltd.com",
     "address": null,
-    "voivodeship": "Mazowieckie",
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
@@ -27848,7 +27848,7 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48693537517",
     "email_key": "email:darekj81@interia.eu",
     "address": null,
-    "voivodeship": "Wielkopolskie",
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
@@ -27923,7 +27923,7 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48784049993",
     "email_key": "email:artemor69@o2.pl",
     "address": null,
-    "voivodeship": "Śląskie",
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
@@ -28073,7 +28073,7 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48604373859",
     "email_key": "email:m.pawelec@yahoo.co.uk",
     "address": null,
-    "voivodeship": "Dolnośląskie",
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
@@ -28348,7 +28348,7 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48501139801",
     "email_key": "email:kociubinskimarek@gmail.com",
     "address": "z:97-213 piotrkow trybunalski",
-    "voivodeship": "Łódzkie",
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
@@ -28397,7 +28397,7 @@ export const importedLeadSeedRows = [
     "email": "dorotazdeb500@gmail.com",
     "phone_key": "phone:+48791892678",
     "email_key": "email:dorotazdeb500@gmail.com",
-    "address": "z:37-124 cierpisz (kraczkowa)",
+    "address": null,
     "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
@@ -28522,7 +28522,7 @@ export const importedLeadSeedRows = [
     "email": "baca777100@gmail.com",
     "phone_key": "phone:+48721499749",
     "email_key": "email:baca777100@gmail.com",
-    "address": "z:37-200 grzeska (przeworsk)",
+    "address": null,
     "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
@@ -28573,7 +28573,7 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48605599304",
     "email_key": "email:rol-ster@wp.pl",
     "address": "z:87-321 brodnica",
-    "voivodeship": "Kujawsko-pomorskie",
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
@@ -28827,8 +28827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-12T00:00:00Z",
-    "updated_at": "2024-11-12T00:00:00Z",
+    "created_at": "2025-11-12T00:00:00Z",
+    "updated_at": "2025-11-12T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -28852,8 +28852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-24T00:00:00Z",
-    "updated_at": "2024-09-24T00:00:00Z",
+    "created_at": "2025-09-24T00:00:00Z",
+    "updated_at": "2025-09-24T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -28873,12 +28873,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48887172010",
     "email_key": "email:rokar1@onet.pl",
     "address": "Rzeszów, BRAK",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-26T00:00:00Z",
-    "updated_at": "2024-08-26T00:00:00Z",
+    "created_at": "2025-08-26T00:00:00Z",
+    "updated_at": "2025-08-26T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -28898,12 +28898,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48722144443",
     "email_key": "email:tarnawskisylwester@gmail.com",
     "address": "Nowa Sarzyna, Nowa Sarzyna",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-08T00:00:00Z",
-    "updated_at": "2024-08-08T00:00:00Z",
+    "created_at": "2025-08-08T00:00:00Z",
+    "updated_at": "2025-08-08T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -28927,8 +28927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-17T00:00:00Z",
-    "updated_at": "2024-12-17T00:00:00Z",
+    "created_at": "2025-12-17T00:00:00Z",
+    "updated_at": "2025-12-17T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -29073,12 +29073,12 @@ export const importedLeadSeedRows = [
     "phone_key": "phone:+48509289370",
     "email_key": "email:jomaro@onet.eu",
     "address": "przemysl, przemysl",
-    "voivodeship": null,
+    "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-23T00:00:00Z",
-    "updated_at": "2024-08-23T00:00:00Z",
+    "created_at": "2025-08-23T00:00:00Z",
+    "updated_at": "2025-08-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -29102,8 +29102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-04T00:00:00Z",
-    "updated_at": "2024-11-04T00:00:00Z",
+    "created_at": "2025-11-04T00:00:00Z",
+    "updated_at": "2025-11-04T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -29127,8 +29127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-21T00:00:00Z",
-    "updated_at": "2024-10-21T00:00:00Z",
+    "created_at": "2025-10-21T00:00:00Z",
+    "updated_at": "2025-10-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Podkarpacie ",
     "resignation_reason": null,
@@ -29152,8 +29152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29177,8 +29177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29202,8 +29202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29227,8 +29227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29252,8 +29252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29277,8 +29277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29302,8 +29302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29327,8 +29327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29352,8 +29352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29377,8 +29377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29402,8 +29402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29427,8 +29427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29452,8 +29452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29477,8 +29477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29502,8 +29502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29527,8 +29527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29552,8 +29552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29577,8 +29577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29602,8 +29602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29627,8 +29627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29652,8 +29652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29677,8 +29677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29702,8 +29702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29727,8 +29727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29752,8 +29752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29777,8 +29777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29802,8 +29802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29827,8 +29827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29852,8 +29852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29877,8 +29877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29902,8 +29902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29927,8 +29927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29952,8 +29952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -29977,8 +29977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30002,8 +30002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30027,8 +30027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30052,8 +30052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30077,8 +30077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30102,8 +30102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30127,8 +30127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30152,8 +30152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30177,8 +30177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30202,8 +30202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30227,8 +30227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30252,8 +30252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30277,8 +30277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30297,13 +30297,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48691503110",
     "email_key": null,
-    "address": "Przeworsk",
+    "address": null,
     "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30327,8 +30327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30352,8 +30352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30377,8 +30377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30402,8 +30402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30427,8 +30427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30452,8 +30452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30477,8 +30477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30502,8 +30502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30527,8 +30527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30552,8 +30552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30577,8 +30577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30602,8 +30602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30627,8 +30627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30652,8 +30652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30677,8 +30677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30702,8 +30702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30722,13 +30722,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48600439622",
     "email_key": null,
-    "address": "Przeworsk",
+    "address": null,
     "voivodeship": "Podkarpackie",
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30752,8 +30752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30777,8 +30777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Styczen - Luty",
     "resignation_reason": null,
@@ -30802,8 +30802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-09T00:00:00Z",
-    "updated_at": "2024-08-09T00:00:00Z",
+    "created_at": "2025-08-09T00:00:00Z",
+    "updated_at": "2025-08-09T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -30827,8 +30827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-07T00:00:00Z",
-    "updated_at": "2024-08-07T00:00:00Z",
+    "created_at": "2025-08-07T00:00:00Z",
+    "updated_at": "2025-08-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -30852,8 +30852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-07T00:00:00Z",
-    "updated_at": "2024-08-07T00:00:00Z",
+    "created_at": "2025-08-07T00:00:00Z",
+    "updated_at": "2025-08-07T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -30877,8 +30877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-14T00:00:00Z",
-    "updated_at": "2024-08-14T00:00:00Z",
+    "created_at": "2025-08-14T00:00:00Z",
+    "updated_at": "2025-08-14T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -30902,8 +30902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-28T00:00:00Z",
-    "updated_at": "2024-08-28T00:00:00Z",
+    "created_at": "2025-08-28T00:00:00Z",
+    "updated_at": "2025-08-28T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -30927,8 +30927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-08-31T00:00:00Z",
-    "updated_at": "2024-08-31T00:00:00Z",
+    "created_at": "2025-08-31T00:00:00Z",
+    "updated_at": "2025-08-31T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -30952,8 +30952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-03T00:00:00Z",
-    "updated_at": "2024-09-03T00:00:00Z",
+    "created_at": "2025-09-03T00:00:00Z",
+    "updated_at": "2025-09-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -30977,8 +30977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-04T00:00:00Z",
-    "updated_at": "2024-09-04T00:00:00Z",
+    "created_at": "2025-09-04T00:00:00Z",
+    "updated_at": "2025-09-04T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31002,8 +31002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-05T00:00:00Z",
-    "updated_at": "2024-09-05T00:00:00Z",
+    "created_at": "2025-09-05T00:00:00Z",
+    "updated_at": "2025-09-05T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31027,8 +31027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-10T16:48:44Z",
-    "updated_at": "2024-09-10T16:48:44Z",
+    "created_at": "2025-09-10T16:48:44Z",
+    "updated_at": "2025-09-10T16:48:44Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31052,8 +31052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-13T20:02:58Z",
-    "updated_at": "2024-09-13T20:02:58Z",
+    "created_at": "2025-09-13T20:02:58Z",
+    "updated_at": "2025-09-13T20:02:58Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31077,8 +31077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-15T09:48:42Z",
-    "updated_at": "2024-09-15T09:48:42Z",
+    "created_at": "2025-09-15T09:48:42Z",
+    "updated_at": "2025-09-15T09:48:42Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31102,8 +31102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-23T09:32:06Z",
-    "updated_at": "2024-09-23T09:32:06Z",
+    "created_at": "2025-09-23T09:32:06Z",
+    "updated_at": "2025-09-23T09:32:06Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31127,8 +31127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-24T08:39:29Z",
-    "updated_at": "2024-09-24T08:39:29Z",
+    "created_at": "2025-09-24T08:39:29Z",
+    "updated_at": "2025-09-24T08:39:29Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31152,8 +31152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-09-27T16:03:03Z",
-    "updated_at": "2024-09-27T16:03:03Z",
+    "created_at": "2025-09-27T16:03:03Z",
+    "updated_at": "2025-09-27T16:03:03Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31177,8 +31177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-04T06:06:06Z",
-    "updated_at": "2025-01-07T00:00:00Z",
+    "created_at": "2025-01-07T00:00:00Z",
+    "updated_at": "2025-10-04T06:06:06Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31202,8 +31202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-14T00:00:00Z",
-    "updated_at": "2024-10-14T00:00:00Z",
+    "created_at": "2025-03-13T07:49:15Z",
+    "updated_at": "2025-10-14T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31227,8 +31227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-16T00:00:00Z",
-    "updated_at": "2024-10-16T00:00:00Z",
+    "created_at": "2025-10-16T00:00:00Z",
+    "updated_at": "2025-10-16T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31252,8 +31252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-10-21T00:00:00Z",
-    "updated_at": "2024-10-21T00:00:00Z",
+    "created_at": "2025-10-21T00:00:00Z",
+    "updated_at": "2025-10-21T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31277,8 +31277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-20T08:14:11Z",
-    "updated_at": "2024-11-20T08:14:11Z",
+    "created_at": "2025-11-20T08:14:11Z",
+    "updated_at": "2025-11-20T08:14:11Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31302,8 +31302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-20T09:45:02Z",
-    "updated_at": "2024-11-20T09:45:02Z",
+    "created_at": "2025-11-20T09:45:02Z",
+    "updated_at": "2025-11-20T09:45:02Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31327,8 +31327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-24T00:00:00Z",
-    "updated_at": "2024-11-24T00:00:00Z",
+    "created_at": "2025-11-24T00:00:00Z",
+    "updated_at": "2025-11-24T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31352,8 +31352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-24T00:00:00Z",
-    "updated_at": "2024-11-24T00:00:00Z",
+    "created_at": "2025-11-24T00:00:00Z",
+    "updated_at": "2025-11-24T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31377,8 +31377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2024-11-24T00:00:00Z",
-    "updated_at": "2024-11-24T00:00:00Z",
+    "created_at": "2025-11-24T00:00:00Z",
+    "updated_at": "2025-11-24T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31402,8 +31402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-26T00:00:00Z",
-    "updated_at": "2024-11-26T00:00:00Z",
+    "created_at": "2025-11-26T00:00:00Z",
+    "updated_at": "2025-11-26T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31427,8 +31427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-26T00:00:00Z",
-    "updated_at": "2024-11-26T00:00:00Z",
+    "created_at": "2025-11-26T00:00:00Z",
+    "updated_at": "2025-11-26T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31452,8 +31452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-30T00:00:00Z",
-    "updated_at": "2024-11-30T00:00:00Z",
+    "created_at": "2025-11-30T00:00:00Z",
+    "updated_at": "2025-11-30T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31477,8 +31477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-30T00:00:00Z",
-    "updated_at": "2024-11-30T00:00:00Z",
+    "created_at": "2025-11-30T00:00:00Z",
+    "updated_at": "2025-11-30T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31502,8 +31502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-11-30T00:00:00Z",
-    "updated_at": "2024-11-30T00:00:00Z",
+    "created_at": "2025-11-30T00:00:00Z",
+    "updated_at": "2025-11-30T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31527,8 +31527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2024-12-02T00:00:00Z",
-    "updated_at": "2024-12-02T00:00:00Z",
+    "created_at": "2025-12-02T00:00:00Z",
+    "updated_at": "2025-12-02T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31552,8 +31552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-02T00:00:00Z",
-    "updated_at": "2024-12-02T00:00:00Z",
+    "created_at": "2025-12-02T00:00:00Z",
+    "updated_at": "2025-12-02T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31577,8 +31577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-02T00:00:00Z",
-    "updated_at": "2024-12-02T00:00:00Z",
+    "created_at": "2025-12-02T00:00:00Z",
+    "updated_at": "2025-12-02T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31602,8 +31602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-03T00:00:00Z",
-    "updated_at": "2024-12-03T00:00:00Z",
+    "created_at": "2025-12-03T00:00:00Z",
+    "updated_at": "2025-12-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31627,8 +31627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-03T00:00:00Z",
-    "updated_at": "2024-12-03T00:00:00Z",
+    "created_at": "2025-12-03T00:00:00Z",
+    "updated_at": "2025-12-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31652,8 +31652,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-03T00:00:00Z",
-    "updated_at": "2024-12-03T00:00:00Z",
+    "created_at": "2025-12-03T00:00:00Z",
+    "updated_at": "2025-12-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31677,8 +31677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Rezygnacja",
     "assigned_to": null,
-    "created_at": "2024-12-03T00:00:00Z",
-    "updated_at": "2024-12-03T00:00:00Z",
+    "created_at": "2025-12-03T00:00:00Z",
+    "updated_at": "2025-12-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31702,8 +31702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-03T00:00:00Z",
-    "updated_at": "2024-12-03T00:00:00Z",
+    "created_at": "2025-12-03T00:00:00Z",
+    "updated_at": "2025-12-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31727,8 +31727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-03T00:00:00Z",
-    "updated_at": "2024-12-03T00:00:00Z",
+    "created_at": "2025-12-03T00:00:00Z",
+    "updated_at": "2025-12-03T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31752,8 +31752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-08T00:00:00Z",
-    "updated_at": "2024-12-08T00:00:00Z",
+    "created_at": "2025-12-08T00:00:00Z",
+    "updated_at": "2025-12-08T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31777,8 +31777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-08T00:00:00Z",
-    "updated_at": "2024-12-08T00:00:00Z",
+    "created_at": "2025-12-08T00:00:00Z",
+    "updated_at": "2025-12-08T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31802,8 +31802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-11T00:00:00Z",
-    "updated_at": "2024-12-11T00:00:00Z",
+    "created_at": "2025-12-11T00:00:00Z",
+    "updated_at": "2025-12-11T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31827,8 +31827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31852,8 +31852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31877,8 +31877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31902,8 +31902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-23T00:00:00Z",
-    "updated_at": "2024-12-23T00:00:00Z",
+    "created_at": "2025-12-23T00:00:00Z",
+    "updated_at": "2025-12-23T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31927,8 +31927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31952,8 +31952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -31977,8 +31977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -32002,8 +32002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -32027,8 +32027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -32052,8 +32052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2024-12-27T00:00:00Z",
-    "updated_at": "2024-12-27T00:00:00Z",
+    "created_at": "2025-12-27T00:00:00Z",
+    "updated_at": "2025-12-27T00:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34052,8 +34052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-15T09:25:43Z",
+    "updated_at": "2025-03-15T09:25:43Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34077,8 +34077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-12T20:37:41Z",
+    "updated_at": "2025-03-12T20:37:41Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34100,10 +34100,10 @@ export const importedLeadSeedRows = [
     "address": "Ogledow",
     "voivodeship": "Świętokrzyskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-24T05:37:41Z",
-    "updated_at": "2026-02-24T05:37:41Z",
+    "created_at": "2025-02-24T05:37:41Z",
+    "updated_at": "2025-02-24T05:37:41Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34127,8 +34127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-10T21:01:21Z",
+    "updated_at": "2025-03-10T21:01:21Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34152,8 +34152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-11T04:23:26Z",
+    "updated_at": "2025-03-11T04:23:26Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34177,8 +34177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-11T08:30:37Z",
+    "updated_at": "2025-03-11T08:30:37Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34202,8 +34202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-07T19:17:16Z",
+    "updated_at": "2025-03-11T04:23:26Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34227,8 +34227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-10T21:01:21Z",
+    "updated_at": "2025-03-11T08:30:37Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34252,8 +34252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-12T12:44:13Z",
+    "updated_at": "2025-03-12T12:44:13Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34277,8 +34277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-15T10:43:47Z",
+    "updated_at": "2025-03-15T10:43:47Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34302,8 +34302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-03-16T17:49:26Z",
+    "updated_at": "2025-03-16T17:49:26Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34325,10 +34325,10 @@ export const importedLeadSeedRows = [
     "address": null,
     "voivodeship": "Świętokrzyskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-19T17:56:21Z",
-    "updated_at": "2026-02-19T17:56:21Z",
+    "created_at": "2025-02-19T17:56:21Z",
+    "updated_at": "2025-02-19T17:56:21Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34350,10 +34350,10 @@ export const importedLeadSeedRows = [
     "address": "Modliszewice",
     "voivodeship": "Świętokrzyskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-19T22:37:22Z",
-    "updated_at": "2026-02-19T22:37:22Z",
+    "created_at": "2025-02-19T22:37:22Z",
+    "updated_at": "2025-02-19T22:37:22Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34377,8 +34377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-02-20T07:45:16Z",
-    "updated_at": "2026-02-20T07:45:16Z",
+    "created_at": "2025-02-20T07:45:16Z",
+    "updated_at": "2025-02-20T07:45:16Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34400,10 +34400,10 @@ export const importedLeadSeedRows = [
     "address": "Łagów",
     "voivodeship": "Świętokrzyskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-25T06:05:10Z",
-    "updated_at": "2026-02-25T06:05:10Z",
+    "created_at": "2025-02-25T06:05:10Z",
+    "updated_at": "2025-02-25T06:05:10Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34425,10 +34425,10 @@ export const importedLeadSeedRows = [
     "address": "Przyłogi ( gmina Smyków 26-212).",
     "voivodeship": "Świętokrzyskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-25T11:05:49Z",
-    "updated_at": "2026-02-25T11:05:49Z",
+    "created_at": "2025-02-25T11:05:49Z",
+    "updated_at": "2025-02-25T11:05:49Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34447,13 +34447,13 @@ export const importedLeadSeedRows = [
     "email": null,
     "phone_key": "phone:+48721034678",
     "email_key": null,
-    "address": "Włoszczowa",
+    "address": null,
     "voivodeship": "Świętokrzyskie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-02-26T17:11:01Z",
-    "updated_at": "2026-02-26T17:11:01Z",
+    "created_at": "2025-02-26T17:11:01Z",
+    "updated_at": "2025-02-26T17:11:01Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34477,8 +34477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nowy",
     "assigned_to": null,
-    "created_at": "2026-06-03T22:09:00Z",
-    "updated_at": "2026-06-03T22:09:00Z",
+    "created_at": "2025-06-03T22:09:00Z",
+    "updated_at": "2025-06-03T22:09:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34502,8 +34502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / Świętokrzyskie",
     "resignation_reason": null,
@@ -34525,10 +34525,10 @@ export const importedLeadSeedRows = [
     "address": "36-130",
     "voivodeship": "Podkarpackie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34550,10 +34550,10 @@ export const importedLeadSeedRows = [
     "address": "37-710",
     "voivodeship": "Podkarpackie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-26T12:00:00Z",
-    "updated_at": "2026-03-26T12:00:00Z",
+    "created_at": "2025-03-26T12:00:00Z",
+    "updated_at": "2025-03-26T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34575,10 +34575,10 @@ export const importedLeadSeedRows = [
     "address": "37-410",
     "voivodeship": "Podkarpackie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34600,10 +34600,10 @@ export const importedLeadSeedRows = [
     "address": "37-400",
     "voivodeship": "Podkarpackie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34625,10 +34625,10 @@ export const importedLeadSeedRows = [
     "address": "38-430",
     "voivodeship": "Podkarpackie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34650,10 +34650,10 @@ export const importedLeadSeedRows = [
     "address": "36-002",
     "voivodeship": "Podkarpackie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-28T12:00:00Z",
-    "updated_at": "2026-03-28T12:00:00Z",
+    "created_at": "2025-03-28T12:00:00Z",
+    "updated_at": "2025-03-28T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34677,8 +34677,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34702,8 +34702,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34727,8 +34727,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34752,8 +34752,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-03-23T12:00:00Z",
-    "updated_at": "2026-03-23T12:00:00Z",
+    "created_at": "2025-03-23T12:00:00Z",
+    "updated_at": "2025-03-23T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34777,8 +34777,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-03-23T12:00:00Z",
-    "updated_at": "2026-03-23T12:00:00Z",
+    "created_at": "2025-03-23T12:00:00Z",
+    "updated_at": "2025-03-23T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34802,8 +34802,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-03-26T12:00:00Z",
-    "updated_at": "2026-03-26T12:00:00Z",
+    "created_at": "2025-03-26T12:00:00Z",
+    "updated_at": "2025-03-26T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34827,8 +34827,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34852,8 +34852,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34877,8 +34877,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34902,8 +34902,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34927,8 +34927,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34952,8 +34952,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -34977,8 +34977,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Rezygnacja",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35002,8 +35002,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35027,8 +35027,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35052,8 +35052,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35077,8 +35077,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35102,8 +35102,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35127,8 +35127,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35152,8 +35152,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35177,8 +35177,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35202,8 +35202,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35227,8 +35227,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35252,8 +35252,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35277,8 +35277,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35302,8 +35302,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35327,8 +35327,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35352,8 +35352,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35377,8 +35377,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35402,8 +35402,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35427,8 +35427,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35452,8 +35452,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35477,8 +35477,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35502,8 +35502,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35527,8 +35527,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35552,8 +35552,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-06-05T12:00:00Z",
-    "updated_at": "2026-06-05T12:00:00Z",
+    "created_at": "2025-01-01T12:00:00Z",
+    "updated_at": "2025-01-01T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35577,8 +35577,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-22T12:00:00Z",
-    "updated_at": "2026-03-22T12:00:00Z",
+    "created_at": "2025-03-22T12:00:00Z",
+    "updated_at": "2025-03-22T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35602,8 +35602,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Spotkanie",
     "assigned_to": null,
-    "created_at": "2026-03-22T12:00:00Z",
-    "updated_at": "2026-03-22T12:00:00Z",
+    "created_at": "2025-03-22T12:00:00Z",
+    "updated_at": "2025-03-22T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35627,8 +35627,8 @@ export const importedLeadSeedRows = [
     "county": null,
     "status": "Nie odebrał",
     "assigned_to": null,
-    "created_at": "2026-03-23T12:00:00Z",
-    "updated_at": "2026-03-23T12:00:00Z",
+    "created_at": "2025-03-23T12:00:00Z",
+    "updated_at": "2025-03-23T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -35650,10 +35650,10 @@ export const importedLeadSeedRows = [
     "address": "37-600 Lubaczów",
     "voivodeship": "Podkarpackie",
     "county": null,
-    "status": "Nowy",
+    "status": "Zimna baza",
     "assigned_to": null,
-    "created_at": "2026-03-26T12:00:00Z",
-    "updated_at": "2026-03-26T12:00:00Z",
+    "created_at": "2025-03-26T12:00:00Z",
+    "updated_at": "2025-03-26T12:00:00Z",
     "last_opened_at": null,
     "source": "Re energy leady.xlsx / deszczówka",
     "resignation_reason": null,
@@ -36185,7 +36185,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #211"
     },
-    "created_at": "2025-01-28T00:00:00Z"
+    "created_at": "2026-04-28T05:06:25Z"
   },
   {
     "id": "imported-lead-phone-48601424342-comment-2",
@@ -36198,7 +36198,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #453"
     },
-    "created_at": "2025-01-28T00:00:00Z"
+    "created_at": "2026-04-28T05:06:25Z"
   },
   {
     "id": "imported-lead-phone-48726660947-comment-1",
@@ -36653,7 +36653,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #177"
     },
-    "created_at": "2025-05-14T00:00:00Z"
+    "created_at": "2026-05-02T12:49:19Z"
   },
   {
     "id": "imported-lead-phone-48508117580-comment-2",
@@ -36666,7 +36666,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #613"
     },
-    "created_at": "2025-05-14T00:00:00Z"
+    "created_at": "2026-05-02T12:49:19Z"
   },
   {
     "id": "imported-lead-phone-48667152233-comment-1",
@@ -36809,7 +36809,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #96"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2026-04-30T20:38:31Z"
   },
   {
     "id": "imported-lead-phone-48570282930-comment-2",
@@ -36822,7 +36822,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #291"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2026-04-30T20:38:31Z"
   },
   {
     "id": "imported-lead-phone-48570282930-comment-3",
@@ -36835,7 +36835,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #561"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2026-04-30T20:38:31Z"
   },
   {
     "id": "imported-lead-phone-48515345697-comment-1",
@@ -36861,7 +36861,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #20"
     },
-    "created_at": "2025-03-21T00:00:00Z"
+    "created_at": "2026-05-02T12:49:35Z"
   },
   {
     "id": "imported-lead-phone-48531171405-comment-2",
@@ -36874,7 +36874,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #143"
     },
-    "created_at": "2025-03-21T00:00:00Z"
+    "created_at": "2026-05-02T12:49:35Z"
   },
   {
     "id": "imported-lead-phone-48735774546-comment-1",
@@ -37615,7 +37615,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #226"
     },
-    "created_at": "2024-09-14T07:21:13Z"
+    "created_at": "2026-05-14T15:15:55Z"
   },
   {
     "id": "imported-lead-phone-48721161983-comment-2",
@@ -37628,7 +37628,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #67"
     },
-    "created_at": "2024-09-14T07:21:13Z"
+    "created_at": "2026-05-14T15:15:55Z"
   },
   {
     "id": "imported-lead-phone-48721161983-comment-3",
@@ -37641,7 +37641,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #74"
     },
-    "created_at": "2024-09-14T07:21:13Z"
+    "created_at": "2026-05-14T15:15:55Z"
   },
   {
     "id": "imported-lead-phone-48735448211-comment-1",
@@ -38122,7 +38122,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #110"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2026-06-03T15:54:30Z"
   },
   {
     "id": "imported-lead-phone-48530900367-comment-2",
@@ -38135,7 +38135,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #273"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2026-06-03T15:54:30Z"
   },
   {
     "id": "imported-lead-phone-48530900367-comment-3",
@@ -38148,7 +38148,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #628"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2026-06-03T15:54:30Z"
   },
   {
     "id": "imported-lead-phone-48530900367-comment-4",
@@ -38161,7 +38161,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #55"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2026-06-03T15:54:30Z"
   },
   {
     "id": "imported-lead-phone-48665855042-comment-1",
@@ -38642,7 +38642,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #49"
     },
-    "created_at": "2026-03-26T12:00:00Z"
+    "created_at": "2026-04-20T05:28:20Z"
   },
   {
     "id": "imported-lead-phone-48500596539-comment-2",
@@ -38655,7 +38655,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #73"
     },
-    "created_at": "2026-03-26T12:00:00Z"
+    "created_at": "2026-04-20T05:28:20Z"
   },
   {
     "id": "imported-lead-phone-48664578987-comment-1",
@@ -38824,7 +38824,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #232"
     },
-    "created_at": "2025-05-14T00:00:00Z"
+    "created_at": "2026-05-24T21:45:13Z"
   },
   {
     "id": "imported-lead-phone-48692272223-comment-2",
@@ -38837,7 +38837,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #600"
     },
-    "created_at": "2025-05-14T00:00:00Z"
+    "created_at": "2026-05-24T21:45:13Z"
   },
   {
     "id": "imported-lead-phone-48506998047-comment-1",
@@ -38928,7 +38928,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #200"
     },
-    "created_at": "2024-12-12T00:00:00Z"
+    "created_at": "2026-06-03T16:01:52Z"
   },
   {
     "id": "imported-lead-phone-48600667570-comment-1",
@@ -39045,7 +39045,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #67"
     },
-    "created_at": "2025-01-03T00:00:00Z"
+    "created_at": "2026-04-25T11:31:24Z"
   },
   {
     "id": "imported-lead-phone-48820487070-comment-1",
@@ -39058,7 +39058,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #2"
     },
-    "created_at": "2026-01-30T10:39:49Z"
+    "created_at": "2025-01-30T10:39:49Z"
   },
   {
     "id": "imported-lead-phone-48820487070-comment-2",
@@ -39071,7 +39071,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #47"
     },
-    "created_at": "2026-01-30T10:39:49Z"
+    "created_at": "2025-01-30T10:39:49Z"
   },
   {
     "id": "imported-lead-phone-48635424100-comment-1",
@@ -39084,7 +39084,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #3"
     },
-    "created_at": "2026-02-01T08:50:36Z"
+    "created_at": "2025-02-01T08:50:36Z"
   },
   {
     "id": "imported-lead-phone-48849352550-comment-1",
@@ -39097,7 +39097,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #6"
     },
-    "created_at": "2026-02-03T08:31:53Z"
+    "created_at": "2025-02-03T08:31:53Z"
   },
   {
     "id": "imported-lead-phone-48506049896-comment-1",
@@ -39110,7 +39110,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #12"
     },
-    "created_at": "2026-02-14T15:52:15Z"
+    "created_at": "2025-02-14T15:52:15Z"
   },
   {
     "id": "imported-lead-phone-48603975501-comment-1",
@@ -39123,7 +39123,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #13"
     },
-    "created_at": "2026-02-14T15:52:15Z"
+    "created_at": "2025-02-14T15:52:15Z"
   },
   {
     "id": "imported-lead-phone-48694104033-comment-1",
@@ -39136,7 +39136,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #14"
     },
-    "created_at": "2026-02-14T15:52:15Z"
+    "created_at": "2025-02-14T15:52:15Z"
   },
   {
     "id": "imported-lead-phone-48500149055-comment-1",
@@ -39149,7 +39149,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #15"
     },
-    "created_at": "2026-02-14T15:52:15Z"
+    "created_at": "2025-02-14T15:52:15Z"
   },
   {
     "id": "imported-lead-phone-48506753181-comment-1",
@@ -39162,7 +39162,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #16"
     },
-    "created_at": "2026-02-14T15:52:15Z"
+    "created_at": "2025-02-14T15:52:15Z"
   },
   {
     "id": "imported-lead-phone-48535194265-comment-1",
@@ -39175,7 +39175,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #17"
     },
-    "created_at": "2026-02-14T15:52:15Z"
+    "created_at": "2025-02-14T15:52:15Z"
   },
   {
     "id": "imported-lead-phone-48535037091-comment-1",
@@ -39188,7 +39188,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #18"
     },
-    "created_at": "2026-02-14T15:52:15Z"
+    "created_at": "2025-02-14T15:52:15Z"
   },
   {
     "id": "imported-lead-phone-48535353506-comment-1",
@@ -39201,7 +39201,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #19"
     },
-    "created_at": "2026-02-14T15:52:15Z"
+    "created_at": "2025-02-14T15:52:15Z"
   },
   {
     "id": "imported-lead-phone-48605903990-comment-1",
@@ -39214,7 +39214,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #20"
     },
-    "created_at": "2026-02-14T15:52:15Z"
+    "created_at": "2025-02-14T15:52:15Z"
   },
   {
     "id": "imported-lead-phone-48601095784-comment-1",
@@ -39227,7 +39227,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #21"
     },
-    "created_at": "2026-02-24T18:27:25Z"
+    "created_at": "2025-02-24T18:27:25Z"
   },
   {
     "id": "imported-lead-phone-48507322637-comment-1",
@@ -39240,7 +39240,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #22"
     },
-    "created_at": "2026-02-27T20:32:59Z"
+    "created_at": "2025-02-27T20:32:59Z"
   },
   {
     "id": "imported-lead-phone-48664745207-comment-1",
@@ -39253,7 +39253,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #23"
     },
-    "created_at": "2026-03-01T16:54:29Z"
+    "created_at": "2025-03-01T16:54:29Z"
   },
   {
     "id": "imported-lead-phone-48771075255-comment-1",
@@ -39266,7 +39266,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #24"
     },
-    "created_at": "2026-03-02T20:54:26Z"
+    "created_at": "2025-03-02T20:54:26Z"
   },
   {
     "id": "imported-lead-phone-48783070223-comment-1",
@@ -39279,7 +39279,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #25"
     },
-    "created_at": "2026-03-03T17:41:32Z"
+    "created_at": "2025-03-03T17:41:32Z"
   },
   {
     "id": "imported-lead-phone-48501790208-comment-1",
@@ -39292,7 +39292,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #26"
     },
-    "created_at": "2026-02-24T18:34:25Z"
+    "created_at": "2025-02-24T18:34:25Z"
   },
   {
     "id": "imported-lead-phone-48509331758-comment-1",
@@ -39305,7 +39305,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #27"
     },
-    "created_at": "2026-02-24T18:35:25Z"
+    "created_at": "2025-02-24T18:35:25Z"
   },
   {
     "id": "imported-lead-phone-48509331758-comment-2",
@@ -39318,7 +39318,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #124"
     },
-    "created_at": "2026-02-24T18:35:25Z"
+    "created_at": "2025-02-24T18:35:25Z"
   },
   {
     "id": "imported-lead-phone-48507109787-comment-1",
@@ -39331,7 +39331,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #28"
     },
-    "created_at": "2026-03-04T18:25:45Z"
+    "created_at": "2025-03-04T18:25:45Z"
   },
   {
     "id": "imported-lead-phone-48502629390-comment-1",
@@ -39344,7 +39344,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #29"
     },
-    "created_at": "2026-03-05T10:37:33Z"
+    "created_at": "2025-03-05T10:37:33Z"
   },
   {
     "id": "imported-lead-phone-48502629390-comment-2",
@@ -39357,7 +39357,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #115"
     },
-    "created_at": "2026-03-05T10:37:33Z"
+    "created_at": "2025-03-05T10:37:33Z"
   },
   {
     "id": "imported-lead-phone-48834908030-comment-1",
@@ -39370,7 +39370,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #33"
     },
-    "created_at": "2026-02-03T04:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48771212090-comment-1",
@@ -39383,7 +39383,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #34"
     },
-    "created_at": "2026-02-03T01:25:00Z"
+    "created_at": "2025-02-03T01:25:00Z"
   },
   {
     "id": "imported-lead-phone-48956279890-comment-1",
@@ -39396,7 +39396,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #46"
     },
-    "created_at": "2026-07-03T00:40:00Z"
+    "created_at": "2025-07-03T00:40:00Z"
   },
   {
     "id": "imported-lead-phone-48635748380-comment-1",
@@ -39409,7 +39409,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #49"
     },
-    "created_at": "2026-03-10T00:00:00Z"
+    "created_at": "2025-03-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48972085430-comment-1",
@@ -39422,7 +39422,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #53"
     },
-    "created_at": "2026-03-16T00:00:00Z"
+    "created_at": "2025-03-16T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48964445100-comment-1",
@@ -39435,7 +39435,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #54"
     },
-    "created_at": "2026-03-16T00:00:00Z"
+    "created_at": "2025-03-16T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48919582630-comment-1",
@@ -39448,7 +39448,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #55"
     },
-    "created_at": "2026-03-16T00:00:00Z"
+    "created_at": "2025-03-16T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48901630290-comment-1",
@@ -39461,7 +39461,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #57"
     },
-    "created_at": "2026-03-18T00:00:00Z"
+    "created_at": "2025-03-18T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48721390353-comment-1",
@@ -39474,7 +39474,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #63"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:04:44Z"
   },
   {
     "id": "imported-lead-phone-48514252633-comment-1",
@@ -39487,7 +39487,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #64"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:05:44Z"
   },
   {
     "id": "imported-lead-phone-48600766709-comment-1",
@@ -39500,7 +39500,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #65"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:06:44Z"
   },
   {
     "id": "imported-lead-phone-48505053898-comment-1",
@@ -39513,7 +39513,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #66"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:07:44Z"
   },
   {
     "id": "imported-lead-phone-48519561254-comment-1",
@@ -39526,7 +39526,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #68"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:09:44Z"
   },
   {
     "id": "imported-lead-phone-48518077130-comment-1",
@@ -39539,7 +39539,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #71"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:12:44Z"
   },
   {
     "id": "imported-lead-phone-48517542336-comment-1",
@@ -39552,7 +39552,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #72"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:13:44Z"
   },
   {
     "id": "imported-lead-phone-48512149374-comment-1",
@@ -39565,7 +39565,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #73"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:14:44Z"
   },
   {
     "id": "imported-lead-phone-48603792005-comment-1",
@@ -39578,7 +39578,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #74"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:15:44Z"
   },
   {
     "id": "imported-lead-phone-48507085898-comment-1",
@@ -39591,7 +39591,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #75"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:16:44Z"
   },
   {
     "id": "imported-lead-phone-48608518928-comment-1",
@@ -39604,7 +39604,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #76"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:17:44Z"
   },
   {
     "id": "imported-lead-phone-48664958588-comment-1",
@@ -39617,7 +39617,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #78"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-30T20:01:37Z"
   },
   {
     "id": "imported-lead-phone-48792488312-comment-1",
@@ -39630,7 +39630,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #79"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-31T06:34:57Z"
   },
   {
     "id": "imported-lead-phone-48501201729-comment-1",
@@ -39643,7 +39643,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #83"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-04-06T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48579197183-comment-1",
@@ -39656,7 +39656,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #84"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-04-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48693617240-comment-1",
@@ -39669,7 +39669,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #85"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-04-02T18:34:23Z"
   },
   {
     "id": "imported-lead-phone-48796661272-comment-1",
@@ -39682,7 +39682,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #86"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-04-04T14:20:18Z"
   },
   {
     "id": "imported-lead-phone-48691123023-comment-1",
@@ -39695,7 +39695,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #87"
     },
-    "created_at": "2026-03-22T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48691123023-comment-2",
@@ -39708,7 +39708,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #94"
     },
-    "created_at": "2026-03-22T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48691123023-comment-3",
@@ -39721,7 +39721,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #119"
     },
-    "created_at": "2026-03-22T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48691123023-comment-4",
@@ -39734,7 +39734,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #133"
     },
-    "created_at": "2026-03-22T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48797512723-comment-1",
@@ -39747,7 +39747,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #88"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-04-03T19:50:59Z"
   },
   {
     "id": "imported-lead-phone-48729973103-comment-1",
@@ -39760,7 +39760,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #90"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48729973103-comment-2",
@@ -39773,7 +39773,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #133"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48785570755-comment-1",
@@ -39786,7 +39786,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #91"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48785570755-comment-2",
@@ -39799,7 +39799,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #135"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48726601026-comment-1",
@@ -39812,7 +39812,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #92"
     },
-    "created_at": "2026-03-18T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48726601026-comment-2",
@@ -39825,7 +39825,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #132"
     },
-    "created_at": "2026-03-18T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48519185773-comment-1",
@@ -39838,7 +39838,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #93"
     },
-    "created_at": "2026-03-22T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48519185773-comment-2",
@@ -39851,7 +39851,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #136"
     },
-    "created_at": "2026-03-22T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48887685410-comment-1",
@@ -39864,7 +39864,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #95"
     },
-    "created_at": "2026-03-26T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48887685410-comment-2",
@@ -39877,7 +39877,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #166"
     },
-    "created_at": "2026-03-26T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48509904495-comment-1",
@@ -39890,7 +39890,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #96"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48509904495-comment-2",
@@ -39903,7 +39903,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #167"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48511448225-comment-1",
@@ -39916,7 +39916,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #97"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48511448225-comment-2",
@@ -39929,7 +39929,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #69"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48795180708-comment-1",
@@ -39942,7 +39942,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #98"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48795180708-comment-2",
@@ -39955,7 +39955,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #129"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48795180708-comment-3",
@@ -39968,7 +39968,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #134"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602477405-comment-1",
@@ -39981,7 +39981,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #100"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602477405-comment-2",
@@ -39994,7 +39994,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #131"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48698580583-comment-1",
@@ -40007,7 +40007,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #101"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48698580583-comment-2",
@@ -40020,7 +40020,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #135"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48500100433-comment-1",
@@ -40033,7 +40033,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #103"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48500100433-comment-2",
@@ -40046,7 +40046,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #131"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48500100433-comment-3",
@@ -40059,7 +40059,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #134"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604137680-comment-1",
@@ -40072,7 +40072,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #104"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604137680-comment-2",
@@ -40085,7 +40085,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #136"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601334840-comment-1",
@@ -40098,7 +40098,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #105"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601334840-comment-2",
@@ -40111,7 +40111,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #81"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48501564817-comment-1",
@@ -40124,7 +40124,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #116"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-04-05T09:59:56Z"
   },
   {
     "id": "imported-lead-phone-48609400035-comment-1",
@@ -40137,7 +40137,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #117"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-04-05T10:22:14Z"
   },
   {
     "id": "imported-lead-phone-48722266853-comment-1",
@@ -40150,7 +40150,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #118"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-04-07T01:00:16Z"
   },
   {
     "id": "imported-lead-phone-48693295332-comment-1",
@@ -40163,7 +40163,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #120"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-04-07T10:06:31Z"
   },
   {
     "id": "imported-lead-phone-48798678277-comment-1",
@@ -40176,7 +40176,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #126"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-10T08:57:15Z"
   },
   {
     "id": "imported-lead-phone-48954121630-comment-1",
@@ -40189,7 +40189,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #127"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-10T09:00:15Z"
   },
   {
     "id": "imported-lead-phone-48508630551-comment-1",
@@ -40202,7 +40202,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #137"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600166426-comment-1",
@@ -40215,7 +40215,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #138"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48574477389-comment-1",
@@ -40228,7 +40228,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #139"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-12-10T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48535514376-comment-1",
@@ -40241,7 +40241,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #140"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48883440083-comment-1",
@@ -40254,7 +40254,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #141"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48796656658-comment-1",
@@ -40267,7 +40267,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #142"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48727737542-comment-1",
@@ -40280,7 +40280,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / LUBELSKIE",
       "row": "LUBELSKIE #158"
     },
-    "created_at": "2026-05-23T12:00:00Z"
+    "created_at": "2025-05-23T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48502066080-comment-1",
@@ -40293,7 +40293,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #1"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48886549992-comment-1",
@@ -40306,7 +40306,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #2"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48603347449-comment-1",
@@ -40319,7 +40319,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #3"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608524870-comment-1",
@@ -40332,7 +40332,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #4"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48733945550-comment-1",
@@ -40345,7 +40345,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #5"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602188499-comment-1",
@@ -40358,7 +40358,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #6"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600612386-comment-1",
@@ -40371,7 +40371,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #7"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48605151885-comment-1",
@@ -40384,7 +40384,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #8"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48662289880-comment-1",
@@ -40397,7 +40397,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #9"
     },
-    "created_at": "2026-03-03T12:00:00Z"
+    "created_at": "2025-03-03T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48668811727-comment-1",
@@ -40410,7 +40410,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #10"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48726557881-comment-1",
@@ -40423,7 +40423,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #11"
     },
-    "created_at": "2024-10-04T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48726557881-comment-2",
@@ -40436,7 +40436,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #100"
     },
-    "created_at": "2024-10-04T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608116319-comment-1",
@@ -40449,7 +40449,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #12"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48769667004-comment-1",
@@ -40462,7 +40462,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #13"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602303965-comment-1",
@@ -40475,7 +40475,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #14"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48883988630-comment-1",
@@ -40488,7 +40488,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #15"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48501924740-comment-1",
@@ -40501,7 +40501,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #16"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48691809704-comment-1",
@@ -40514,7 +40514,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #17"
     },
-    "created_at": "2026-03-21T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48691809704-comment-2",
@@ -40527,7 +40527,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #43"
     },
-    "created_at": "2026-03-21T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48665596294-comment-1",
@@ -40540,7 +40540,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #18"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48737861795-comment-1",
@@ -40553,7 +40553,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #19"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48796463614-comment-1",
@@ -40566,7 +40566,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #20"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48805278800-comment-1",
@@ -40579,7 +40579,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #26"
     },
-    "created_at": "2026-03-05T00:00:00Z"
+    "created_at": "2025-03-05T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48876555330-comment-1",
@@ -40592,7 +40592,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #31"
     },
-    "created_at": "2026-06-03T20:05:00Z"
+    "created_at": "2025-06-03T20:05:00Z"
   },
   {
     "id": "imported-lead-phone-48907788490-comment-1",
@@ -40605,7 +40605,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #32"
     },
-    "created_at": "2026-06-03T14:40:00Z"
+    "created_at": "2025-06-03T14:40:00Z"
   },
   {
     "id": "imported-lead-phone-48986142380-comment-1",
@@ -40618,7 +40618,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #37"
     },
-    "created_at": "2026-03-10T00:00:00Z"
+    "created_at": "2025-03-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48933547330-comment-1",
@@ -40631,7 +40631,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #38"
     },
-    "created_at": "2026-03-10T00:00:00Z"
+    "created_at": "2025-03-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48776184054-comment-1",
@@ -40644,7 +40644,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #39"
     },
-    "created_at": "2026-03-10T00:00:00Z"
+    "created_at": "2025-03-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48606497175-comment-1",
@@ -40657,7 +40657,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #40"
     },
-    "created_at": "2026-03-10T00:00:00Z"
+    "created_at": "2025-03-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48720762818-comment-1",
@@ -40670,7 +40670,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #41"
     },
-    "created_at": "2026-03-10T00:00:00Z"
+    "created_at": "2025-03-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602420181-comment-1",
@@ -40683,7 +40683,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #42"
     },
-    "created_at": "2026-03-10T00:00:00Z"
+    "created_at": "2025-03-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48728005058-comment-1",
@@ -40696,7 +40696,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #43"
     },
-    "created_at": "2026-03-11T00:00:00Z"
+    "created_at": "2025-03-11T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48690634739-comment-1",
@@ -40709,7 +40709,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #44"
     },
-    "created_at": "2026-03-11T00:00:00Z"
+    "created_at": "2025-03-11T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48969040170-comment-1",
@@ -40722,7 +40722,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #45"
     },
-    "created_at": "2026-03-13T00:00:00Z"
+    "created_at": "2025-03-13T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48636931060-comment-1",
@@ -40735,7 +40735,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #46"
     },
-    "created_at": "2024-11-19T00:00:00Z"
+    "created_at": "2025-03-13T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48636931060-comment-2",
@@ -40748,7 +40748,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #164"
     },
-    "created_at": "2024-11-19T00:00:00Z"
+    "created_at": "2025-03-13T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48673449820-comment-1",
@@ -40761,7 +40761,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #47"
     },
-    "created_at": "2026-03-14T12:00:00Z"
+    "created_at": "2025-03-14T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48537218705-comment-1",
@@ -40774,7 +40774,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #48"
     },
-    "created_at": "2026-03-17T12:00:00Z"
+    "created_at": "2025-03-17T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48889217325-comment-1",
@@ -40787,7 +40787,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #49"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48797232268-comment-1",
@@ -40800,7 +40800,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #50"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48668798444-comment-1",
@@ -40813,7 +40813,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #51"
     },
-    "created_at": "2026-03-21T12:00:00Z"
+    "created_at": "2025-03-21T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48573458370-comment-1",
@@ -40826,7 +40826,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #52"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48669509991-comment-1",
@@ -40839,7 +40839,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #53"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48726410578-comment-1",
@@ -40852,7 +40852,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #54"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48664689734-comment-1",
@@ -40865,7 +40865,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #55"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48576603153-comment-1",
@@ -40878,7 +40878,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #56"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48663594329-comment-1",
@@ -40891,7 +40891,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #57"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48787400210-comment-1",
@@ -40904,7 +40904,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #58"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48791155235-comment-1",
@@ -40917,7 +40917,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #59"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48791155235-comment-2",
@@ -40930,7 +40930,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #35"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48536856385-comment-1",
@@ -40943,7 +40943,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #60"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48505527210-comment-1",
@@ -40956,7 +40956,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #62"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48724627210-comment-1",
@@ -40969,7 +40969,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #63"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48739230333-comment-1",
@@ -40982,7 +40982,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #64"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48888888880-comment-1",
@@ -40995,7 +40995,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #65"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48790712615-comment-1",
@@ -41008,7 +41008,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #66"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48725985902-comment-1",
@@ -41021,7 +41021,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #67"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48792801440-comment-1",
@@ -41034,7 +41034,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #68"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48668813673-comment-1",
@@ -41047,7 +41047,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #69"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-10T22:05:13Z"
   },
   {
     "id": "imported-lead-phone-48781134429-comment-1",
@@ -41060,7 +41060,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #70"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-12T12:27:53Z"
   },
   {
     "id": "imported-lead-phone-48723989525-comment-1",
@@ -41073,7 +41073,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #71"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-12T12:44:13Z"
   },
   {
     "id": "imported-lead-phone-48600755722-comment-1",
@@ -41086,7 +41086,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #72"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-12T16:40:42Z"
   },
   {
     "id": "imported-lead-phone-48511151116-comment-1",
@@ -41099,7 +41099,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #73"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-14T07:59:48Z"
   },
   {
     "id": "imported-lead-phone-48693559638-comment-1",
@@ -41112,7 +41112,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #74"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-14T10:17:13Z"
   },
   {
     "id": "imported-lead-phone-48609412516-comment-1",
@@ -41125,7 +41125,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #75"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-16T05:15:36Z"
   },
   {
     "id": "imported-lead-phone-48502590991-comment-1",
@@ -41138,7 +41138,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #76"
     },
-    "created_at": "2026-02-23T16:55:16Z"
+    "created_at": "2025-02-23T16:55:16Z"
   },
   {
     "id": "imported-lead-phone-48504923302-comment-1",
@@ -41151,7 +41151,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #77"
     },
-    "created_at": "2026-02-24T20:43:18Z"
+    "created_at": "2025-02-24T20:43:18Z"
   },
   {
     "id": "imported-lead-phone-48882082167-comment-1",
@@ -41164,7 +41164,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #78"
     },
-    "created_at": "2026-02-25T18:55:34Z"
+    "created_at": "2025-02-25T18:55:34Z"
   },
   {
     "id": "imported-lead-phone-48570784308-comment-1",
@@ -41177,7 +41177,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #79"
     },
-    "created_at": "2026-03-16T12:00:00Z"
+    "created_at": "2025-03-16T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48797705134-comment-1",
@@ -41190,7 +41190,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #80"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48509257660-comment-1",
@@ -41229,7 +41229,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #82"
     },
-    "created_at": "2026-03-22T12:00:00Z"
+    "created_at": "2025-03-22T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48691690847-comment-1",
@@ -41242,7 +41242,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #83"
     },
-    "created_at": "2026-03-23T12:00:00Z"
+    "created_at": "2025-03-23T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48781931917-comment-1",
@@ -41255,7 +41255,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #84"
     },
-    "created_at": "2026-03-27T12:00:00Z"
+    "created_at": "2025-03-27T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48605176975-comment-1",
@@ -41268,7 +41268,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #85"
     },
-    "created_at": "2026-03-27T12:00:00Z"
+    "created_at": "2025-03-27T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48506875632-comment-1",
@@ -41281,7 +41281,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #86"
     },
-    "created_at": "2026-03-27T12:00:00Z"
+    "created_at": "2025-03-27T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48782870229-comment-1",
@@ -41294,7 +41294,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #87"
     },
-    "created_at": "2026-03-26T12:00:00Z"
+    "created_at": "2025-03-26T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48660128275-comment-1",
@@ -41307,7 +41307,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #88"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-03-27T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48660128275-comment-2",
@@ -41320,7 +41320,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #253"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-03-27T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604151015-comment-1",
@@ -41333,7 +41333,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #89"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48605630079-comment-1",
@@ -41346,7 +41346,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #90"
     },
-    "created_at": "2026-03-27T12:00:00Z"
+    "created_at": "2025-03-27T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48512521599-comment-1",
@@ -41359,7 +41359,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #91"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602248450-comment-1",
@@ -41372,7 +41372,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #92"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48692631809-comment-1",
@@ -41385,7 +41385,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #93"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48575522317-comment-1",
@@ -41398,7 +41398,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #94"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604539731-comment-1",
@@ -41411,7 +41411,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #95"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48508293733-comment-1",
@@ -41424,7 +41424,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #96"
     },
-    "created_at": "2026-03-17T12:00:00Z"
+    "created_at": "2025-03-17T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48882682574-comment-1",
@@ -41437,7 +41437,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #97"
     },
-    "created_at": "2026-03-19T12:00:00Z"
+    "created_at": "2025-03-19T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608324799-comment-1",
@@ -41476,7 +41476,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #99"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48690243311-comment-1",
@@ -41489,7 +41489,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #100"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48726306543-comment-1",
@@ -41502,7 +41502,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #101"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48726306543-comment-2",
@@ -41515,7 +41515,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #103"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48793987580-comment-1",
@@ -41528,7 +41528,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #102"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48664199044-comment-1",
@@ -41541,7 +41541,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #104"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48781288335-comment-1",
@@ -41554,7 +41554,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #105"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48695448283-comment-1",
@@ -41567,7 +41567,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #106"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48516267667-comment-1",
@@ -41580,7 +41580,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #107"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601082088-comment-1",
@@ -41593,7 +41593,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #108"
     },
-    "created_at": "2024-11-04T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601082088-comment-2",
@@ -41606,7 +41606,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #148"
     },
-    "created_at": "2024-11-04T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608075905-comment-1",
@@ -41619,7 +41619,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #109"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48691621487-comment-1",
@@ -41632,7 +41632,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #110"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48886757220-comment-1",
@@ -41645,7 +41645,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #111"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48607115507-comment-1",
@@ -41658,7 +41658,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #112"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48607625495-comment-1",
@@ -41671,7 +41671,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #113"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608440796-comment-1",
@@ -41684,7 +41684,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #114"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48662415451-comment-1",
@@ -41697,7 +41697,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #124"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48733284087-comment-1",
@@ -41710,7 +41710,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #125"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48792359572-comment-1",
@@ -41723,7 +41723,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #126"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48791647082-comment-1",
@@ -41736,7 +41736,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #127"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48519732341-comment-1",
@@ -41749,7 +41749,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #128"
     },
-    "created_at": "2026-08-03T12:42:00Z"
+    "created_at": "2025-08-03T12:42:00Z"
   },
   {
     "id": "imported-lead-phone-48665931500-comment-1",
@@ -41762,7 +41762,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #129"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48796067926-comment-1",
@@ -41775,7 +41775,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #130"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48886626913-comment-1",
@@ -41788,7 +41788,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #132"
     },
-    "created_at": "2026-03-26T12:00:00Z"
+    "created_at": "2025-03-26T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48696314462-comment-1",
@@ -41801,7 +41801,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #137"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48785934973-comment-1",
@@ -41814,7 +41814,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #138"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48668262047-comment-1",
@@ -41827,7 +41827,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #139"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48782138238-comment-1",
@@ -41840,7 +41840,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #140"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48669044818-comment-1",
@@ -41853,7 +41853,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #141"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48694533369-comment-1",
@@ -41866,7 +41866,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #143"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48512300643-comment-1",
@@ -41879,7 +41879,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #144"
     },
-    "created_at": "2025-05-14T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48512300643-comment-2",
@@ -41892,7 +41892,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #591"
     },
-    "created_at": "2025-05-14T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48512300643-comment-3",
@@ -41905,7 +41905,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #18"
     },
-    "created_at": "2025-05-14T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48697988448-comment-1",
@@ -41918,7 +41918,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #145"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48731091079-comment-1",
@@ -41931,7 +41931,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #146"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48606743421-comment-1",
@@ -41944,7 +41944,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #147"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48607197246-comment-1",
@@ -41957,7 +41957,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #148"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48735950752-comment-1",
@@ -41970,7 +41970,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #149"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48537124002-comment-1",
@@ -41983,7 +41983,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #150"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48513401640-comment-1",
@@ -41996,7 +41996,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #151"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48505017203-comment-1",
@@ -42009,7 +42009,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #152"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48886302563-comment-1",
@@ -42022,7 +42022,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #153"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48698372341-comment-1",
@@ -42035,7 +42035,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #157"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48534030405-comment-1",
@@ -42048,7 +42048,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #160"
     },
-    "created_at": "2026-03-22T12:00:00Z"
+    "created_at": "2025-03-22T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48511536231-comment-1",
@@ -42061,7 +42061,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #168"
     },
-    "created_at": "2026-03-24T12:00:00Z"
+    "created_at": "2025-03-24T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48889761371-comment-1",
@@ -42074,7 +42074,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #169"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48732999710-comment-1",
@@ -42087,7 +42087,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #187"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48690622912-comment-1",
@@ -42100,7 +42100,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #188"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48735814777-comment-1",
@@ -42113,7 +42113,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #189"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604190025-comment-1",
@@ -42126,7 +42126,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #200"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48609781180-comment-1",
@@ -42139,7 +42139,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #204"
     },
-    "created_at": "2026-03-19T12:00:00Z"
+    "created_at": "2025-03-19T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48607835774-comment-1",
@@ -42152,7 +42152,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #205"
     },
-    "created_at": "2026-03-25T12:00:00Z"
+    "created_at": "2025-03-25T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48517284377-comment-1",
@@ -42165,7 +42165,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #206"
     },
-    "created_at": "2026-08-03T12:42:00Z"
+    "created_at": "2025-08-03T12:42:00Z"
   },
   {
     "id": "imported-lead-phone-48793457007-comment-1",
@@ -42178,7 +42178,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #207"
     },
-    "created_at": "2026-03-23T12:00:00Z"
+    "created_at": "2025-03-23T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48721037118-comment-1",
@@ -42191,7 +42191,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #208"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48721037118-comment-2",
@@ -42204,7 +42204,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #248"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48729199032-comment-1",
@@ -42217,7 +42217,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #209"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48726421276-comment-1",
@@ -42230,7 +42230,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #210"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48694722732-comment-1",
@@ -42243,7 +42243,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #223"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48664788584-comment-1",
@@ -42256,7 +42256,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #224"
     },
-    "created_at": "2026-04-01T00:00:00Z"
+    "created_at": "2025-04-01T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48784465402-comment-1",
@@ -42269,7 +42269,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #225"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48669463378-comment-1",
@@ -42282,7 +42282,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #238"
     },
-    "created_at": "2026-05-23T12:00:00Z"
+    "created_at": "2025-05-23T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48502502870-comment-1",
@@ -42295,7 +42295,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #239"
     },
-    "created_at": "2026-05-21T12:00:00Z"
+    "created_at": "2025-05-21T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48784753581-comment-1",
@@ -42308,7 +42308,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #240"
     },
-    "created_at": "2026-05-21T12:00:00Z"
+    "created_at": "2025-05-21T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48534310377-comment-1",
@@ -42321,7 +42321,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #246"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48698084650-comment-1",
@@ -42334,7 +42334,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #247"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48502234270-comment-1",
@@ -42347,7 +42347,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #249"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48721228097-comment-1",
@@ -42360,7 +42360,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Nie umówione",
       "row": "Nie umówione #250"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48605749204-comment-1",
@@ -42373,7 +42373,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #11"
     },
-    "created_at": "2026-03-07T12:00:00Z"
+    "created_at": "2025-03-07T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48977586280-comment-1",
@@ -42386,7 +42386,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #15"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48960637940-comment-1",
@@ -42399,7 +42399,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #16"
     },
-    "created_at": "2024-11-12T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48960637940-comment-2",
@@ -42412,7 +42412,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #618"
     },
-    "created_at": "2024-11-12T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48532543741-comment-1",
@@ -42425,7 +42425,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #17"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48662021999-comment-1",
@@ -42438,7 +42438,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #19"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48693393693-comment-1",
@@ -42451,7 +42451,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #21"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48503564271-comment-1",
@@ -42464,7 +42464,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #22"
     },
-    "created_at": "2026-03-23T12:00:00Z"
+    "created_at": "2025-03-23T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48735096478-comment-1",
@@ -42477,7 +42477,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #23"
     },
-    "created_at": "2024-12-31T10:01:09Z"
+    "created_at": "2025-03-23T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48735096478-comment-2",
@@ -42490,7 +42490,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #329"
     },
-    "created_at": "2024-12-31T10:01:09Z"
+    "created_at": "2025-03-23T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48697202613-comment-1",
@@ -42503,7 +42503,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #24"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48572166890-comment-1",
@@ -42516,7 +42516,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #25"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48500147441-comment-1",
@@ -42529,7 +42529,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #26"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48504857048-comment-1",
@@ -42542,7 +42542,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #27"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-05-26T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48535222439-comment-1",
@@ -42555,7 +42555,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #28"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48697272141-comment-1",
@@ -42568,7 +42568,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #29"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48791596758-comment-1",
@@ -42581,7 +42581,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #31"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48501149612-comment-1",
@@ -42594,7 +42594,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #32"
     },
-    "created_at": "2024-12-28T21:32:25Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48501149612-comment-2",
@@ -42607,7 +42607,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #307"
     },
-    "created_at": "2024-12-28T21:32:25Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48603429917-comment-1",
@@ -42620,7 +42620,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #33"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601821629-comment-1",
@@ -42633,7 +42633,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #34"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48723678709-comment-1",
@@ -42646,7 +42646,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #36"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48693740159-comment-1",
@@ -42659,7 +42659,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #37"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600075757-comment-1",
@@ -42672,7 +42672,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #38"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48532593093-comment-1",
@@ -42685,7 +42685,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #39"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48795683296-comment-1",
@@ -42698,7 +42698,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #40"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48881057405-comment-1",
@@ -42711,7 +42711,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #41"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48881392489-comment-1",
@@ -42724,7 +42724,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #42"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48880038775-comment-1",
@@ -42737,7 +42737,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #43"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48787461475-comment-1",
@@ -42750,7 +42750,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #44"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-06-15T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48607651188-comment-1",
@@ -42763,7 +42763,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #45"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48662330193-comment-1",
@@ -42776,7 +42776,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #46"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48884755866-comment-1",
@@ -42789,7 +42789,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #47"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48503464136-comment-1",
@@ -42802,7 +42802,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #48"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48500422727-comment-1",
@@ -42815,7 +42815,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #49"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-05-27T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48669197025-comment-1",
@@ -42828,7 +42828,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #50"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48576720409-comment-1",
@@ -42841,7 +42841,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #65"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48577776912-comment-1",
@@ -42854,7 +42854,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #75"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48692655710-comment-1",
@@ -42867,7 +42867,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #104"
     },
-    "created_at": "2026-05-22T12:00:00Z"
+    "created_at": "2025-05-22T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48691205807-comment-1",
@@ -42880,7 +42880,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #105"
     },
-    "created_at": "2026-05-20T12:00:00Z"
+    "created_at": "2025-05-20T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604947159-comment-1",
@@ -42893,7 +42893,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #106"
     },
-    "created_at": "2026-05-20T12:00:00Z"
+    "created_at": "2025-05-20T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48509168935-comment-1",
@@ -42906,7 +42906,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Leady bieżące",
       "row": "Leady bieżące #107"
     },
-    "created_at": "2026-05-15T12:00:00Z"
+    "created_at": "2025-05-15T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48665407570-comment-1",
@@ -42919,7 +42919,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Małopolskie",
       "row": "Małopolskie #2"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602131959-comment-1",
@@ -42932,7 +42932,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Małopolskie",
       "row": "Małopolskie #3"
     },
-    "created_at": "2026-03-23T12:00:00Z"
+    "created_at": "2025-03-23T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601653009-comment-1",
@@ -42945,7 +42945,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #8"
     },
-    "created_at": "2026-03-03T12:00:00Z"
+    "created_at": "2025-03-03T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48693544603-comment-1",
@@ -42958,7 +42958,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #9"
     },
-    "created_at": "2026-03-03T12:00:00Z"
+    "created_at": "2025-03-03T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48668968323-comment-1",
@@ -42971,7 +42971,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #10"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48795877274-comment-1",
@@ -42984,7 +42984,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #11"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48606965444-comment-1",
@@ -42997,7 +42997,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #12"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48788152121-comment-1",
@@ -43010,7 +43010,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #13"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48788152121-comment-2",
@@ -43023,7 +43023,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #76"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48699714907-comment-1",
@@ -43036,7 +43036,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #14"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48628015530-comment-1",
@@ -43049,7 +43049,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #16"
     },
-    "created_at": "2024-10-01T00:00:00Z"
+    "created_at": "2025-03-04T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48628015530-comment-2",
@@ -43062,7 +43062,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #88"
     },
-    "created_at": "2024-10-01T00:00:00Z"
+    "created_at": "2025-03-04T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48985588310-comment-1",
@@ -43075,7 +43075,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #17"
     },
-    "created_at": "2026-03-04T00:00:00Z"
+    "created_at": "2025-03-04T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604980901-comment-1",
@@ -43088,7 +43088,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #125"
     },
-    "created_at": "2024-10-14T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48722120049-comment-1",
@@ -43101,7 +43101,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #22"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48722120049-comment-2",
@@ -43114,7 +43114,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #73"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48905444160-comment-1",
@@ -43127,7 +43127,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #25"
     },
-    "created_at": "2026-09-03T02:08:00Z"
+    "created_at": "2025-09-03T02:08:00Z"
   },
   {
     "id": "imported-lead-phone-48932545680-comment-1",
@@ -43140,7 +43140,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #26"
     },
-    "created_at": "2026-09-03T12:20:00Z"
+    "created_at": "2025-09-03T12:20:00Z"
   },
   {
     "id": "imported-lead-phone-48784001033-comment-1",
@@ -43153,7 +43153,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #31"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48669688410-comment-1",
@@ -43166,7 +43166,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #32"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-24T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48504303864-comment-1",
@@ -43179,7 +43179,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #33"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-24T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48530625859-comment-1",
@@ -43192,7 +43192,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #34"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-24T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48505189897-comment-1",
@@ -43205,7 +43205,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #35"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48570018560-comment-1",
@@ -43218,7 +43218,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #36"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48515135167-comment-1",
@@ -43231,7 +43231,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #37"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604244410-comment-1",
@@ -43244,7 +43244,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #38"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48887647110-comment-1",
@@ -43257,7 +43257,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #39"
     },
-    "created_at": "2026-05-03T22:14:00Z"
+    "created_at": "2025-05-03T22:14:00Z"
   },
   {
     "id": "imported-lead-phone-48787831139-comment-1",
@@ -43270,7 +43270,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #42"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-27T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604833186-comment-1",
@@ -43283,7 +43283,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #44"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48723676581-comment-1",
@@ -43296,7 +43296,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #45"
     },
-    "created_at": "2026-03-23T12:00:00Z"
+    "created_at": "2025-03-23T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48884998418-comment-1",
@@ -43309,7 +43309,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #46"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48603048070-comment-1",
@@ -43322,7 +43322,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #47"
     },
-    "created_at": "2026-03-19T12:00:00Z"
+    "created_at": "2025-03-19T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48501329628-comment-1",
@@ -43335,7 +43335,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #48"
     },
-    "created_at": "2026-03-22T12:00:00Z"
+    "created_at": "2025-03-22T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48603664523-comment-1",
@@ -43348,7 +43348,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #51"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48888762646-comment-1",
@@ -43361,7 +43361,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #52"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48781632726-comment-1",
@@ -43374,7 +43374,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #53"
     },
-    "created_at": "2026-03-27T12:00:00Z"
+    "created_at": "2025-03-27T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48731611418-comment-1",
@@ -43387,7 +43387,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #54"
     },
-    "created_at": "2026-03-21T12:00:00Z"
+    "created_at": "2025-03-21T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48729592240-comment-1",
@@ -43400,7 +43400,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #55"
     },
-    "created_at": "2026-03-13T00:00:00Z"
+    "created_at": "2025-03-13T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48792214981-comment-1",
@@ -43413,7 +43413,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #56"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-04-11T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48501130674-comment-1",
@@ -43426,7 +43426,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #57"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48888845691-comment-1",
@@ -43439,7 +43439,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #58"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48607082476-comment-1",
@@ -43452,7 +43452,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #59"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-16T20:15:53Z"
   },
   {
     "id": "imported-lead-phone-48607082476-comment-2",
@@ -43465,7 +43465,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #157"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-16T20:15:53Z"
   },
   {
     "id": "imported-lead-phone-48607082476-comment-3",
@@ -43478,7 +43478,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #186"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-16T20:15:53Z"
   },
   {
     "id": "imported-lead-phone-48512058305-comment-1",
@@ -43491,7 +43491,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #60"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-12T16:40:42Z"
   },
   {
     "id": "imported-lead-phone-48512058305-comment-2",
@@ -43504,7 +43504,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #161"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-12T16:40:42Z"
   },
   {
     "id": "imported-lead-phone-48606965067-comment-1",
@@ -43517,7 +43517,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #61"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-10T22:05:13Z"
   },
   {
     "id": "imported-lead-phone-48606965067-comment-2",
@@ -43530,7 +43530,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #172"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-10T22:05:13Z"
   },
   {
     "id": "imported-lead-phone-48606965067-comment-3",
@@ -43543,7 +43543,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #175"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-10T22:05:13Z"
   },
   {
     "id": "imported-lead-phone-48602636984-comment-1",
@@ -43556,7 +43556,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #62"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:08:44Z"
   },
   {
     "id": "imported-lead-phone-48691918559-comment-1",
@@ -43569,7 +43569,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #63"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:10:44Z"
   },
   {
     "id": "imported-lead-phone-48501289258-comment-1",
@@ -43582,7 +43582,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #64"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-17T21:11:44Z"
   },
   {
     "id": "imported-lead-phone-48733530033-comment-1",
@@ -43595,7 +43595,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #65"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48966612720-comment-1",
@@ -43608,7 +43608,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #66"
     },
-    "created_at": "2026-03-06T00:00:00Z"
+    "created_at": "2025-03-06T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48868587170-comment-1",
@@ -43621,7 +43621,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #67"
     },
-    "created_at": "2026-03-15T12:00:00Z"
+    "created_at": "2025-03-15T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602756520-comment-1",
@@ -43634,7 +43634,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #68"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48880273090-comment-1",
@@ -43647,7 +43647,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #70"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48501835985-comment-1",
@@ -43660,7 +43660,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #76"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602827134-comment-1",
@@ -43673,7 +43673,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #77"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48502507802-comment-1",
@@ -43686,7 +43686,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #78"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48576974817-comment-1",
@@ -43699,7 +43699,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #80"
     },
-    "created_at": "2026-03-11T00:00:00Z"
+    "created_at": "2025-03-11T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48880820671-comment-1",
@@ -43712,7 +43712,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #82"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48733412304-comment-1",
@@ -43725,7 +43725,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #88"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48667726451-comment-1",
@@ -43738,7 +43738,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #89"
     },
-    "created_at": "2026-03-24T12:00:00Z"
+    "created_at": "2025-03-24T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48507570208-comment-1",
@@ -43751,7 +43751,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #107"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48507221984-comment-1",
@@ -43764,7 +43764,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #108"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48515195444-comment-1",
@@ -43777,7 +43777,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / spotkania",
       "row": "spotkania #109"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48721677023-comment-1",
@@ -43790,7 +43790,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #1"
     },
-    "created_at": "2024-08-08T00:00:00Z"
+    "created_at": "2025-08-08T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48665011189-comment-1",
@@ -43803,7 +43803,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #2"
     },
-    "created_at": "2024-08-12T00:00:00Z"
+    "created_at": "2025-08-12T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48881031344-comment-1",
@@ -43816,7 +43816,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #3"
     },
-    "created_at": "2024-08-12T00:00:00Z"
+    "created_at": "2025-08-12T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48605884035-comment-1",
@@ -43829,7 +43829,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #4"
     },
-    "created_at": "2024-08-12T00:00:00Z"
+    "created_at": "2025-08-12T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48698776116-comment-1",
@@ -43842,7 +43842,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #5"
     },
-    "created_at": "2024-08-10T00:00:00Z"
+    "created_at": "2025-08-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608527428-comment-1",
@@ -43855,7 +43855,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #6"
     },
-    "created_at": "2024-08-11T00:00:00Z"
+    "created_at": "2025-08-11T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48699585000-comment-1",
@@ -43868,7 +43868,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #7"
     },
-    "created_at": "2024-08-11T00:00:00Z"
+    "created_at": "2025-08-11T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48605725910-comment-1",
@@ -43881,7 +43881,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #9"
     },
-    "created_at": "2024-08-09T00:00:00Z"
+    "created_at": "2025-08-09T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48854847870-comment-1",
@@ -43894,7 +43894,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #11"
     },
-    "created_at": "2024-08-10T00:00:00Z"
+    "created_at": "2025-08-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48987761160-comment-1",
@@ -43907,7 +43907,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #13"
     },
-    "created_at": "2024-08-07T00:00:00Z"
+    "created_at": "2025-08-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48859774120-comment-1",
@@ -43920,7 +43920,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #14"
     },
-    "created_at": "2024-08-08T00:00:00Z"
+    "created_at": "2025-08-08T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48784885243-comment-1",
@@ -43933,7 +43933,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #16"
     },
-    "created_at": "2024-07-31T00:00:00Z"
+    "created_at": "2025-07-31T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48803858640-comment-1",
@@ -43946,7 +43946,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #23"
     },
-    "created_at": "2024-07-23T00:00:00Z"
+    "created_at": "2025-07-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48672031490-comment-1",
@@ -43959,7 +43959,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #25"
     },
-    "created_at": "2024-07-22T00:00:00Z"
+    "created_at": "2025-07-22T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48508115738-comment-1",
@@ -43972,7 +43972,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #26"
     },
-    "created_at": "2024-08-16T00:00:00Z"
+    "created_at": "2025-08-16T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48575613642-comment-1",
@@ -43985,7 +43985,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #28"
     },
-    "created_at": "2024-08-19T00:00:00Z"
+    "created_at": "2025-08-19T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48913534770-comment-1",
@@ -43998,7 +43998,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #29"
     },
-    "created_at": "2024-08-20T00:00:00Z"
+    "created_at": "2025-08-20T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48666457400-comment-1",
@@ -44011,7 +44011,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #31"
     },
-    "created_at": "2024-08-21T00:00:00Z"
+    "created_at": "2025-08-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48785223255-comment-1",
@@ -44024,7 +44024,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #32"
     },
-    "created_at": "2024-08-22T00:00:00Z"
+    "created_at": "2025-08-22T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48819439510-comment-1",
@@ -44037,7 +44037,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #34"
     },
-    "created_at": "2024-08-24T00:00:00Z"
+    "created_at": "2025-08-24T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48649627530-comment-1",
@@ -44050,7 +44050,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #35"
     },
-    "created_at": "2024-08-25T00:00:00Z"
+    "created_at": "2025-08-25T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48682825680-comment-1",
@@ -44063,7 +44063,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #38"
     },
-    "created_at": "2024-08-28T00:00:00Z"
+    "created_at": "2025-08-28T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48941782080-comment-1",
@@ -44076,7 +44076,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #39"
     },
-    "created_at": "2024-08-29T00:00:00Z"
+    "created_at": "2025-08-29T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48609227866-comment-1",
@@ -44089,7 +44089,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #40"
     },
-    "created_at": "2024-08-29T00:00:00Z"
+    "created_at": "2025-08-29T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48507821956-comment-1",
@@ -44102,7 +44102,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #42"
     },
-    "created_at": "2024-09-02T00:00:00Z"
+    "created_at": "2025-09-02T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48503863065-comment-1",
@@ -44115,7 +44115,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #43"
     },
-    "created_at": "2024-09-02T00:00:00Z"
+    "created_at": "2025-09-02T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48503863065-comment-2",
@@ -44128,7 +44128,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #46"
     },
-    "created_at": "2024-09-02T00:00:00Z"
+    "created_at": "2025-09-02T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48692125960-comment-1",
@@ -44141,7 +44141,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #44"
     },
-    "created_at": "2024-09-03T00:00:00Z"
+    "created_at": "2025-09-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48665394501-comment-1",
@@ -44154,7 +44154,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #45"
     },
-    "created_at": "2024-09-04T00:00:00Z"
+    "created_at": "2025-09-04T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48570143988-comment-1",
@@ -44167,7 +44167,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #47"
     },
-    "created_at": "2024-09-05T00:00:00Z"
+    "created_at": "2025-09-05T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48531689838-comment-1",
@@ -44180,7 +44180,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #48"
     },
-    "created_at": "2024-09-06T00:00:00Z"
+    "created_at": "2025-09-06T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48530673101-comment-1",
@@ -44193,7 +44193,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #49"
     },
-    "created_at": "2024-09-08T00:00:00Z"
+    "created_at": "2025-09-08T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48663194760-comment-1",
@@ -44206,7 +44206,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #50"
     },
-    "created_at": "2024-09-08T00:00:00Z"
+    "created_at": "2025-09-08T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48500102226-comment-1",
@@ -44219,7 +44219,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #51"
     },
-    "created_at": "2024-09-08T00:00:00Z"
+    "created_at": "2025-09-08T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48782358375-comment-1",
@@ -44232,7 +44232,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #53"
     },
-    "created_at": "2024-09-10T00:00:00Z"
+    "created_at": "2025-09-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48781994144-comment-1",
@@ -44245,7 +44245,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #54"
     },
-    "created_at": "2024-09-10T00:00:00Z"
+    "created_at": "2025-09-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48693309025-comment-1",
@@ -44258,7 +44258,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #56"
     },
-    "created_at": "2024-09-13T00:00:00Z"
+    "created_at": "2025-09-13T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48663371928-comment-1",
@@ -44271,7 +44271,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #57"
     },
-    "created_at": "2024-09-10T00:00:00Z"
+    "created_at": "2025-09-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48502685891-comment-1",
@@ -44284,7 +44284,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #58"
     },
-    "created_at": "2024-09-10T00:00:00Z"
+    "created_at": "2025-09-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48514797560-comment-1",
@@ -44297,7 +44297,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #59"
     },
-    "created_at": "2024-09-10T00:00:00Z"
+    "created_at": "2025-09-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48603476159-comment-1",
@@ -44310,7 +44310,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #60"
     },
-    "created_at": "2024-09-10T00:00:00Z"
+    "created_at": "2025-09-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48726059116-comment-1",
@@ -44323,7 +44323,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #61"
     },
-    "created_at": "2024-09-10T00:00:00Z"
+    "created_at": "2025-09-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48665145128-comment-1",
@@ -44336,7 +44336,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #62"
     },
-    "created_at": "2024-09-11T00:00:00Z"
+    "created_at": "2025-09-11T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48607587717-comment-1",
@@ -44349,7 +44349,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #63"
     },
-    "created_at": "2024-09-11T00:00:00Z"
+    "created_at": "2025-09-11T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48950508690-comment-1",
@@ -44362,7 +44362,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #64"
     },
-    "created_at": "2024-09-16T00:00:00Z"
+    "created_at": "2025-09-16T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48536266747-comment-1",
@@ -44375,7 +44375,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #68"
     },
-    "created_at": "2024-09-14T09:53:22Z"
+    "created_at": "2025-09-14T09:53:22Z"
   },
   {
     "id": "imported-lead-phone-48536266747-comment-2",
@@ -44388,7 +44388,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #75"
     },
-    "created_at": "2024-09-14T09:53:22Z"
+    "created_at": "2025-09-14T09:53:22Z"
   },
   {
     "id": "imported-lead-phone-48728330727-comment-1",
@@ -44401,7 +44401,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #69"
     },
-    "created_at": "2024-09-14T10:41:08Z"
+    "created_at": "2025-09-14T10:41:08Z"
   },
   {
     "id": "imported-lead-phone-48728330727-comment-2",
@@ -44414,7 +44414,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #76"
     },
-    "created_at": "2024-09-14T10:41:08Z"
+    "created_at": "2025-09-14T10:41:08Z"
   },
   {
     "id": "imported-lead-phone-48538112454-comment-1",
@@ -44427,7 +44427,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #70"
     },
-    "created_at": "2024-09-15T05:19:24Z"
+    "created_at": "2025-09-15T05:19:24Z"
   },
   {
     "id": "imported-lead-phone-48538112454-comment-2",
@@ -44440,7 +44440,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #77"
     },
-    "created_at": "2024-09-15T05:19:24Z"
+    "created_at": "2025-09-15T05:19:24Z"
   },
   {
     "id": "imported-lead-phone-48517546670-comment-1",
@@ -44453,7 +44453,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #71"
     },
-    "created_at": "2024-09-15T14:53:52Z"
+    "created_at": "2025-09-15T14:53:52Z"
   },
   {
     "id": "imported-lead-phone-48517546670-comment-2",
@@ -44466,7 +44466,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #78"
     },
-    "created_at": "2024-09-15T14:53:52Z"
+    "created_at": "2025-09-15T14:53:52Z"
   },
   {
     "id": "imported-lead-phone-48602311615-comment-1",
@@ -44479,7 +44479,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #72"
     },
-    "created_at": "2024-09-16T13:03:26Z"
+    "created_at": "2025-09-16T13:03:26Z"
   },
   {
     "id": "imported-lead-phone-48602311615-comment-2",
@@ -44492,7 +44492,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #79"
     },
-    "created_at": "2024-09-16T13:03:26Z"
+    "created_at": "2025-09-16T13:03:26Z"
   },
   {
     "id": "imported-lead-phone-48668103966-comment-1",
@@ -44505,7 +44505,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #73"
     },
-    "created_at": "2024-09-17T04:56:02Z"
+    "created_at": "2025-09-17T04:56:02Z"
   },
   {
     "id": "imported-lead-phone-48668103966-comment-2",
@@ -44518,7 +44518,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #80"
     },
-    "created_at": "2024-09-17T04:56:02Z"
+    "created_at": "2025-09-17T04:56:02Z"
   },
   {
     "id": "imported-lead-phone-48985457510-comment-1",
@@ -44531,7 +44531,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #81"
     },
-    "created_at": "2024-09-23T00:00:00Z"
+    "created_at": "2025-09-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48931628730-comment-1",
@@ -44544,7 +44544,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #83"
     },
-    "created_at": "2024-09-27T00:00:00Z"
+    "created_at": "2025-09-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48530597161-comment-1",
@@ -44557,7 +44557,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #84"
     },
-    "created_at": "2024-09-26T13:27:51Z"
+    "created_at": "2025-09-26T13:27:51Z"
   },
   {
     "id": "imported-lead-phone-48606571895-comment-1",
@@ -44570,7 +44570,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #85"
     },
-    "created_at": "2024-09-27T11:56:03Z"
+    "created_at": "2025-09-27T11:56:03Z"
   },
   {
     "id": "imported-lead-phone-48576671735-comment-1",
@@ -44583,7 +44583,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #86"
     },
-    "created_at": "2024-09-28T09:50:27Z"
+    "created_at": "2025-09-28T09:50:27Z"
   },
   {
     "id": "imported-lead-phone-48512829435-comment-1",
@@ -44596,7 +44596,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #87"
     },
-    "created_at": "2024-09-29T08:47:09Z"
+    "created_at": "2025-09-29T08:47:09Z"
   },
   {
     "id": "imported-lead-phone-48601544944-comment-1",
@@ -44609,7 +44609,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #89"
     },
-    "created_at": "2024-09-30T05:33:24Z"
+    "created_at": "2025-09-30T05:33:24Z"
   },
   {
     "id": "imported-lead-phone-48601544944-comment-2",
@@ -44622,7 +44622,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #208"
     },
-    "created_at": "2024-09-30T05:33:24Z"
+    "created_at": "2025-09-30T05:33:24Z"
   },
   {
     "id": "imported-lead-phone-48622712490-comment-1",
@@ -44635,7 +44635,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #90"
     },
-    "created_at": "2024-10-02T00:00:00Z"
+    "created_at": "2025-10-02T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48907017600-comment-1",
@@ -44648,7 +44648,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #91"
     },
-    "created_at": "2024-10-03T00:00:00Z"
+    "created_at": "2025-10-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48728379061-comment-1",
@@ -44661,7 +44661,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #93"
     },
-    "created_at": "2024-10-03T00:00:00Z"
+    "created_at": "2025-10-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48790250519-comment-1",
@@ -44674,7 +44674,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #94"
     },
-    "created_at": "2024-10-03T00:00:00Z"
+    "created_at": "2025-10-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48697849966-comment-1",
@@ -44687,7 +44687,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #95"
     },
-    "created_at": "2024-10-03T00:00:00Z"
+    "created_at": "2025-10-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48693031700-comment-1",
@@ -44700,7 +44700,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #96"
     },
-    "created_at": "2024-10-03T00:00:00Z"
+    "created_at": "2025-10-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48514183937-comment-1",
@@ -44713,7 +44713,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #97"
     },
-    "created_at": "2024-10-03T00:00:00Z"
+    "created_at": "2025-10-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48888524615-comment-1",
@@ -44726,7 +44726,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #98"
     },
-    "created_at": "2024-10-03T00:00:00Z"
+    "created_at": "2025-10-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48696711548-comment-1",
@@ -44739,7 +44739,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #99"
     },
-    "created_at": "2024-10-03T00:00:00Z"
+    "created_at": "2025-10-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48512929278-comment-1",
@@ -44752,7 +44752,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #101"
     },
-    "created_at": "2024-10-05T00:00:00Z"
+    "created_at": "2025-10-05T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48510756366-comment-1",
@@ -44765,7 +44765,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #102"
     },
-    "created_at": "2024-10-06T00:00:00Z"
+    "created_at": "2025-10-06T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48669365461-comment-1",
@@ -44778,7 +44778,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #103"
     },
-    "created_at": "2024-10-07T00:00:00Z"
+    "created_at": "2025-10-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48698920051-comment-1",
@@ -44791,7 +44791,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #104"
     },
-    "created_at": "2024-10-07T00:00:00Z"
+    "created_at": "2025-10-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48609329842-comment-1",
@@ -44804,7 +44804,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #105"
     },
-    "created_at": "2024-10-07T00:00:00Z"
+    "created_at": "2025-10-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48693422777-comment-1",
@@ -44817,7 +44817,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #106"
     },
-    "created_at": "2024-10-07T00:00:00Z"
+    "created_at": "2025-10-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48790667669-comment-1",
@@ -44830,7 +44830,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #107"
     },
-    "created_at": "2024-10-07T00:00:00Z"
+    "created_at": "2025-10-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48501568422-comment-1",
@@ -44843,7 +44843,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #108"
     },
-    "created_at": "2024-10-08T00:00:00Z"
+    "created_at": "2025-10-08T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48510248411-comment-1",
@@ -44856,7 +44856,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #109"
     },
-    "created_at": "2024-10-08T00:00:00Z"
+    "created_at": "2025-10-08T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48574200878-comment-1",
@@ -44869,7 +44869,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #110"
     },
-    "created_at": "2024-10-08T00:00:00Z"
+    "created_at": "2025-10-08T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48694368883-comment-1",
@@ -44882,7 +44882,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #111"
     },
-    "created_at": "2024-10-08T00:00:00Z"
+    "created_at": "2025-10-08T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48664484220-comment-1",
@@ -44895,7 +44895,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #112"
     },
-    "created_at": "2024-10-08T00:00:00Z"
+    "created_at": "2025-10-08T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48921930760-comment-1",
@@ -44908,7 +44908,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #113"
     },
-    "created_at": "2024-10-07T00:00:00Z"
+    "created_at": "2025-10-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48837698580-comment-1",
@@ -44921,7 +44921,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #114"
     },
-    "created_at": "2024-10-07T00:00:00Z"
+    "created_at": "2025-10-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48777990540-comment-1",
@@ -44934,7 +44934,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #115"
     },
-    "created_at": "2024-10-07T00:00:00Z"
+    "created_at": "2025-10-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48633719280-comment-1",
@@ -44947,7 +44947,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #116"
     },
-    "created_at": "2024-10-07T00:00:00Z"
+    "created_at": "2025-10-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48979713490-comment-1",
@@ -44960,7 +44960,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #117"
     },
-    "created_at": "2024-10-07T00:00:00Z"
+    "created_at": "2025-10-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48665875337-comment-1",
@@ -44973,7 +44973,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #119"
     },
-    "created_at": "2024-10-10T00:00:00Z"
+    "created_at": "2025-10-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48513404315-comment-1",
@@ -44986,7 +44986,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #120"
     },
-    "created_at": "2024-10-10T00:00:00Z"
+    "created_at": "2025-10-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608294189-comment-1",
@@ -44999,7 +44999,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #121"
     },
-    "created_at": "2024-10-10T00:00:00Z"
+    "created_at": "2025-10-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48574901234-comment-1",
@@ -45012,7 +45012,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #122"
     },
-    "created_at": "2024-10-10T00:00:00Z"
+    "created_at": "2025-10-10T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48572659658-comment-1",
@@ -45025,7 +45025,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #123"
     },
-    "created_at": "2024-10-12T00:00:00Z"
+    "created_at": "2025-10-12T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604550299-comment-1",
@@ -45038,7 +45038,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #124"
     },
-    "created_at": "2024-10-12T00:00:00Z"
+    "created_at": "2025-10-12T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48851692280-comment-1",
@@ -45051,7 +45051,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #126"
     },
-    "created_at": "2024-10-11T00:00:00Z"
+    "created_at": "2025-10-11T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48949172410-comment-1",
@@ -45064,7 +45064,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #127"
     },
-    "created_at": "2024-10-14T00:00:00Z"
+    "created_at": "2025-10-14T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604674288-comment-1",
@@ -45077,7 +45077,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #128"
     },
-    "created_at": "2024-10-15T00:00:00Z"
+    "created_at": "2025-10-15T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48695578901-comment-1",
@@ -45090,7 +45090,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #129"
     },
-    "created_at": "2024-10-21T00:00:00Z"
+    "created_at": "2025-10-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48698932620-comment-1",
@@ -45103,7 +45103,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #130"
     },
-    "created_at": "2024-10-21T00:00:00Z"
+    "created_at": "2025-10-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48698048148-comment-1",
@@ -45116,7 +45116,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #131"
     },
-    "created_at": "2024-10-21T00:00:00Z"
+    "created_at": "2025-10-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601676628-comment-1",
@@ -45129,7 +45129,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #132"
     },
-    "created_at": "2024-10-09T00:00:00Z"
+    "created_at": "2025-10-09T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601676628-comment-2",
@@ -45142,7 +45142,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #21"
     },
-    "created_at": "2024-10-09T00:00:00Z"
+    "created_at": "2025-10-09T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48886721550-comment-1",
@@ -45155,7 +45155,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #134"
     },
-    "created_at": "2024-10-21T00:00:00Z"
+    "created_at": "2025-10-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608471690-comment-1",
@@ -45168,7 +45168,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #136"
     },
-    "created_at": "2024-10-24T00:00:00Z"
+    "created_at": "2025-10-24T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48531286142-comment-1",
@@ -45181,7 +45181,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #137"
     },
-    "created_at": "2024-10-24T00:00:00Z"
+    "created_at": "2025-10-24T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48872357660-comment-1",
@@ -45194,7 +45194,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #138"
     },
-    "created_at": "2024-10-28T00:00:00Z"
+    "created_at": "2025-10-28T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48797752798-comment-1",
@@ -45207,7 +45207,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #139"
     },
-    "created_at": "2024-10-28T00:00:00Z"
+    "created_at": "2025-10-28T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48607989177-comment-1",
@@ -45220,7 +45220,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #140"
     },
-    "created_at": "2024-10-28T00:00:00Z"
+    "created_at": "2025-10-28T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48794590663-comment-1",
@@ -45233,7 +45233,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #141"
     },
-    "created_at": "2024-10-28T00:00:00Z"
+    "created_at": "2025-10-28T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48889317902-comment-1",
@@ -45246,7 +45246,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #142"
     },
-    "created_at": "2024-10-28T00:00:00Z"
+    "created_at": "2025-10-28T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48810232880-comment-1",
@@ -45259,7 +45259,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #143"
     },
-    "created_at": "2024-10-30T00:00:00Z"
+    "created_at": "2025-10-30T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48820248210-comment-1",
@@ -45272,7 +45272,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #144"
     },
-    "created_at": "2024-11-04T00:00:00Z"
+    "created_at": "2025-11-04T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48855983410-comment-1",
@@ -45285,7 +45285,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #145"
     },
-    "created_at": "2024-11-04T00:00:00Z"
+    "created_at": "2025-11-04T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48974624730-comment-1",
@@ -45298,7 +45298,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #146"
     },
-    "created_at": "2024-11-04T00:00:00Z"
+    "created_at": "2025-11-04T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48794727303-comment-1",
@@ -45311,7 +45311,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #149"
     },
-    "created_at": "2024-11-04T00:00:00Z"
+    "created_at": "2025-11-04T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48577017377-comment-1",
@@ -45324,7 +45324,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #150"
     },
-    "created_at": "2024-11-06T00:00:00Z"
+    "created_at": "2025-11-06T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48511771963-comment-1",
@@ -45337,7 +45337,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #151"
     },
-    "created_at": "2024-11-06T00:00:00Z"
+    "created_at": "2025-11-06T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600040191-comment-1",
@@ -45350,7 +45350,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #152"
     },
-    "created_at": "2024-11-06T00:00:00Z"
+    "created_at": "2025-11-06T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48663693106-comment-1",
@@ -45363,7 +45363,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #153"
     },
-    "created_at": "2024-11-09T11:23:25Z"
+    "created_at": "2025-11-09T11:23:25Z"
   },
   {
     "id": "imported-lead-phone-48692407729-comment-1",
@@ -45376,7 +45376,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #154"
     },
-    "created_at": "2024-11-09T18:01:53Z"
+    "created_at": "2025-11-09T18:01:53Z"
   },
   {
     "id": "imported-lead-phone-48518353510-comment-1",
@@ -45389,7 +45389,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #155"
     },
-    "created_at": "2024-11-09T19:58:46Z"
+    "created_at": "2025-11-09T19:58:46Z"
   },
   {
     "id": "imported-lead-phone-48728762655-comment-1",
@@ -45402,7 +45402,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #156"
     },
-    "created_at": "2024-11-11T18:44:23Z"
+    "created_at": "2025-11-11T18:44:23Z"
   },
   {
     "id": "imported-lead-phone-48572189390-comment-1",
@@ -45415,7 +45415,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #157"
     },
-    "created_at": "2024-11-12T00:00:00Z"
+    "created_at": "2025-11-12T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48605288607-comment-1",
@@ -45428,7 +45428,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #158"
     },
-    "created_at": "2024-11-12T00:00:00Z"
+    "created_at": "2025-11-12T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600626669-comment-1",
@@ -45441,7 +45441,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #160"
     },
-    "created_at": "2024-11-15T00:00:00Z"
+    "created_at": "2025-11-15T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48782968228-comment-1",
@@ -45454,7 +45454,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #161"
     },
-    "created_at": "2024-11-15T00:00:00Z"
+    "created_at": "2025-11-15T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48698098623-comment-1",
@@ -45467,7 +45467,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #162"
     },
-    "created_at": "2024-11-18T00:00:00Z"
+    "created_at": "2025-11-18T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48694752440-comment-1",
@@ -45480,7 +45480,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #163"
     },
-    "created_at": "2024-11-19T00:00:00Z"
+    "created_at": "2025-11-19T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48887310394-comment-1",
@@ -45493,7 +45493,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #165"
     },
-    "created_at": "2024-11-20T00:00:00Z"
+    "created_at": "2025-11-20T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48713047080-comment-1",
@@ -45506,7 +45506,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #166"
     },
-    "created_at": "2024-11-20T00:00:00Z"
+    "created_at": "2025-11-20T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48951765860-comment-1",
@@ -45519,7 +45519,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #167"
     },
-    "created_at": "2024-11-20T00:00:00Z"
+    "created_at": "2025-11-20T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48948780470-comment-1",
@@ -45532,7 +45532,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #168"
     },
-    "created_at": "2024-11-20T00:00:00Z"
+    "created_at": "2025-11-20T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48934227930-comment-1",
@@ -45545,7 +45545,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #169"
     },
-    "created_at": "2024-11-20T00:00:00Z"
+    "created_at": "2025-11-20T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48798569345-comment-1",
@@ -45558,7 +45558,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #171"
     },
-    "created_at": "2024-11-21T00:00:00Z"
+    "created_at": "2025-11-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48697993929-comment-1",
@@ -45571,7 +45571,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #172"
     },
-    "created_at": "2024-11-21T00:00:00Z"
+    "created_at": "2025-11-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48696202734-comment-1",
@@ -45584,7 +45584,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #173"
     },
-    "created_at": "2024-11-21T00:00:00Z"
+    "created_at": "2025-11-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48650447330-comment-1",
@@ -45597,7 +45597,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #175"
     },
-    "created_at": "2024-11-21T00:00:00Z"
+    "created_at": "2025-11-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48663667655-comment-1",
@@ -45610,7 +45610,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #176"
     },
-    "created_at": "2024-11-24T00:00:00Z"
+    "created_at": "2025-11-24T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601835509-comment-1",
@@ -45623,7 +45623,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #178"
     },
-    "created_at": "2024-11-25T00:00:00Z"
+    "created_at": "2025-11-25T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601835509-comment-2",
@@ -45636,7 +45636,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #194"
     },
-    "created_at": "2024-11-25T00:00:00Z"
+    "created_at": "2025-11-25T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48527773210-comment-1",
@@ -45649,7 +45649,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #179"
     },
-    "created_at": "2024-11-25T00:00:00Z"
+    "created_at": "2025-11-25T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604261340-comment-1",
@@ -45662,7 +45662,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #181"
     },
-    "created_at": "2024-11-26T00:00:00Z"
+    "created_at": "2025-11-26T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48516002711-comment-1",
@@ -45675,7 +45675,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #182"
     },
-    "created_at": "2024-11-26T00:00:00Z"
+    "created_at": "2025-11-26T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48696013363-comment-1",
@@ -45688,7 +45688,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #183"
     },
-    "created_at": "2024-11-26T00:00:00Z"
+    "created_at": "2025-11-26T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602129143-comment-1",
@@ -45701,7 +45701,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #184"
     },
-    "created_at": "2024-11-27T00:00:00Z"
+    "created_at": "2025-01-01T22:34:29Z"
   },
   {
     "id": "imported-lead-phone-48602129143-comment-2",
@@ -45714,7 +45714,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #343"
     },
-    "created_at": "2024-11-27T00:00:00Z"
+    "created_at": "2025-01-01T22:34:29Z"
   },
   {
     "id": "imported-lead-phone-48537522473-comment-1",
@@ -45727,7 +45727,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #185"
     },
-    "created_at": "2024-11-27T00:00:00Z"
+    "created_at": "2025-11-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48694213557-comment-1",
@@ -45740,7 +45740,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #186"
     },
-    "created_at": "2024-11-30T00:00:00Z"
+    "created_at": "2025-11-30T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48669230361-comment-1",
@@ -45753,7 +45753,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #187"
     },
-    "created_at": "2024-11-30T00:00:00Z"
+    "created_at": "2025-11-30T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48605371994-comment-1",
@@ -45766,7 +45766,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #189"
     },
-    "created_at": "2024-12-02T00:00:00Z"
+    "created_at": "2025-12-02T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48785716988-comment-1",
@@ -45779,7 +45779,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #190"
     },
-    "created_at": "2024-12-03T00:00:00Z"
+    "created_at": "2025-12-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48698086136-comment-1",
@@ -45792,7 +45792,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #191"
     },
-    "created_at": "2024-12-04T00:00:00Z"
+    "created_at": "2025-12-04T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48953658520-comment-1",
@@ -45805,7 +45805,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #192"
     },
-    "created_at": "2024-12-06T00:00:00Z"
+    "created_at": "2025-12-06T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48721212330-comment-1",
@@ -45818,7 +45818,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #195"
     },
-    "created_at": "2024-12-11T00:00:00Z"
+    "created_at": "2025-12-11T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48976614190-comment-1",
@@ -45831,7 +45831,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #196"
     },
-    "created_at": "2024-12-11T00:00:00Z"
+    "created_at": "2025-12-11T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48973311070-comment-1",
@@ -45844,7 +45844,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #197"
     },
-    "created_at": "2024-12-11T00:00:00Z"
+    "created_at": "2025-12-11T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48919755870-comment-1",
@@ -45857,7 +45857,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #199"
     },
-    "created_at": "2024-12-11T00:00:00Z"
+    "created_at": "2025-12-11T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48693528220-comment-1",
@@ -45870,7 +45870,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #201"
     },
-    "created_at": "2024-12-12T00:00:00Z"
+    "created_at": "2025-12-12T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48889216849-comment-1",
@@ -45883,7 +45883,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #202"
     },
-    "created_at": "2024-12-12T00:00:00Z"
+    "created_at": "2025-12-12T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48839974440-comment-1",
@@ -45896,7 +45896,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #204"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602153140-comment-1",
@@ -45909,7 +45909,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #205"
     },
-    "created_at": "2024-12-14T00:00:00Z"
+    "created_at": "2025-12-14T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602571262-comment-1",
@@ -45922,7 +45922,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #206"
     },
-    "created_at": "2024-12-14T00:00:00Z"
+    "created_at": "2025-12-14T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602607718-comment-1",
@@ -45935,7 +45935,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #207"
     },
-    "created_at": "2024-12-14T00:00:00Z"
+    "created_at": "2025-12-14T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48699704755-comment-1",
@@ -45948,7 +45948,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #209"
     },
-    "created_at": "2024-12-15T00:00:00Z"
+    "created_at": "2025-12-15T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48663317358-comment-1",
@@ -45961,7 +45961,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #210"
     },
-    "created_at": "2024-12-15T00:00:00Z"
+    "created_at": "2025-12-15T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48795058851-comment-1",
@@ -45974,7 +45974,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #211"
     },
-    "created_at": "2024-12-15T00:00:00Z"
+    "created_at": "2025-12-15T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48886361725-comment-1",
@@ -45987,7 +45987,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #212"
     },
-    "created_at": "2024-12-15T00:00:00Z"
+    "created_at": "2025-12-15T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48533405115-comment-1",
@@ -46000,7 +46000,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #213"
     },
-    "created_at": "2024-12-15T00:00:00Z"
+    "created_at": "2025-12-15T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600506529-comment-1",
@@ -46013,7 +46013,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #214"
     },
-    "created_at": "2024-12-15T00:00:00Z"
+    "created_at": "2025-12-15T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48792658474-comment-1",
@@ -46026,7 +46026,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #215"
     },
-    "created_at": "2024-12-15T00:00:00Z"
+    "created_at": "2025-12-15T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48795683297-comment-1",
@@ -46039,7 +46039,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #216"
     },
-    "created_at": "2024-12-15T00:00:00Z"
+    "created_at": "2025-12-15T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48501294881-comment-1",
@@ -46052,7 +46052,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #217"
     },
-    "created_at": "2024-12-15T00:00:00Z"
+    "created_at": "2025-12-15T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48874526930-comment-1",
@@ -46065,7 +46065,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #220"
     },
-    "created_at": "2024-12-16T00:00:00Z"
+    "created_at": "2025-12-16T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48697086144-comment-1",
@@ -46078,7 +46078,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #221"
     },
-    "created_at": "2024-12-16T00:00:00Z"
+    "created_at": "2025-12-16T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48788147931-comment-1",
@@ -46091,7 +46091,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #222"
     },
-    "created_at": "2024-12-16T00:00:00Z"
+    "created_at": "2025-12-16T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48667057793-comment-1",
@@ -46104,7 +46104,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #223"
     },
-    "created_at": "2024-12-16T00:00:00Z"
+    "created_at": "2025-12-16T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48783968207-comment-1",
@@ -46117,7 +46117,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #224"
     },
-    "created_at": "2024-12-17T00:00:00Z"
+    "created_at": "2025-12-17T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48732770630-comment-1",
@@ -46130,7 +46130,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #226"
     },
-    "created_at": "2024-12-17T13:53:55Z"
+    "created_at": "2025-12-17T13:53:55Z"
   },
   {
     "id": "imported-lead-phone-48504770486-comment-1",
@@ -46143,7 +46143,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #227"
     },
-    "created_at": "2024-12-17T16:10:19Z"
+    "created_at": "2025-12-17T16:10:19Z"
   },
   {
     "id": "imported-lead-phone-48793713100-comment-1",
@@ -46156,7 +46156,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #228"
     },
-    "created_at": "2024-12-17T16:22:54Z"
+    "created_at": "2025-12-17T16:22:54Z"
   },
   {
     "id": "imported-lead-phone-48605603397-comment-1",
@@ -46169,7 +46169,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #229"
     },
-    "created_at": "2024-12-17T16:57:09Z"
+    "created_at": "2025-12-17T16:57:09Z"
   },
   {
     "id": "imported-lead-phone-48668823116-comment-1",
@@ -46182,7 +46182,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #230"
     },
-    "created_at": "2024-12-17T17:08:25Z"
+    "created_at": "2025-12-17T17:08:25Z"
   },
   {
     "id": "imported-lead-phone-48606711212-comment-1",
@@ -46195,7 +46195,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #231"
     },
-    "created_at": "2024-12-18T06:25:45Z"
+    "created_at": "2025-12-18T06:25:45Z"
   },
   {
     "id": "imported-lead-phone-48781138182-comment-1",
@@ -46208,7 +46208,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #232"
     },
-    "created_at": "2024-12-18T06:34:26Z"
+    "created_at": "2025-12-18T06:34:26Z"
   },
   {
     "id": "imported-lead-phone-48605106764-comment-1",
@@ -46221,7 +46221,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #233"
     },
-    "created_at": "2024-12-18T06:34:26Z"
+    "created_at": "2025-12-18T06:34:26Z"
   },
   {
     "id": "imported-lead-phone-48605965769-comment-1",
@@ -46234,7 +46234,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #234"
     },
-    "created_at": "2024-12-19T00:00:00Z"
+    "created_at": "2025-12-19T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48510017466-comment-1",
@@ -46247,7 +46247,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #235"
     },
-    "created_at": "2024-12-19T00:00:00Z"
+    "created_at": "2025-12-19T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48515783597-comment-1",
@@ -46260,7 +46260,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #236"
     },
-    "created_at": "2024-12-19T00:00:00Z"
+    "created_at": "2025-12-19T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48535544191-comment-1",
@@ -46273,7 +46273,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #237"
     },
-    "created_at": "2024-12-19T00:00:00Z"
+    "created_at": "2025-12-19T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48691663385-comment-1",
@@ -46286,7 +46286,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #238"
     },
-    "created_at": "2024-12-19T00:00:00Z"
+    "created_at": "2025-12-19T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48555588885-comment-1",
@@ -46299,7 +46299,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #239"
     },
-    "created_at": "2024-12-19T00:00:00Z"
+    "created_at": "2025-12-19T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48721486352-comment-1",
@@ -46312,7 +46312,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #240"
     },
-    "created_at": "2024-12-20T00:00:00Z"
+    "created_at": "2025-12-20T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48695929466-comment-1",
@@ -46325,7 +46325,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #241"
     },
-    "created_at": "2024-12-20T00:00:00Z"
+    "created_at": "2025-12-20T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48530814514-comment-1",
@@ -46338,7 +46338,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #242"
     },
-    "created_at": "2024-12-20T00:00:00Z"
+    "created_at": "2025-12-20T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48881461379-comment-1",
@@ -46351,7 +46351,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #244"
     },
-    "created_at": "2024-12-21T00:00:00Z"
+    "created_at": "2025-12-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48664906162-comment-1",
@@ -46364,7 +46364,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #245"
     },
-    "created_at": "2024-12-21T00:00:00Z"
+    "created_at": "2025-12-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48883544256-comment-1",
@@ -46377,7 +46377,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #246"
     },
-    "created_at": "2024-12-21T00:00:00Z"
+    "created_at": "2025-12-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48724263574-comment-1",
@@ -46390,7 +46390,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #247"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48693778445-comment-1",
@@ -46403,7 +46403,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #248"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48536555422-comment-1",
@@ -46416,7 +46416,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #249"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604202586-comment-1",
@@ -46429,7 +46429,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #250"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48501072263-comment-1",
@@ -46442,7 +46442,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #251"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604642120-comment-1",
@@ -46455,7 +46455,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #252"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48692799411-comment-1",
@@ -46468,7 +46468,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #254"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602485908-comment-1",
@@ -46481,7 +46481,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #255"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604429096-comment-1",
@@ -46494,7 +46494,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #256"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48696098887-comment-1",
@@ -46507,7 +46507,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #257"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-05-14T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48696098887-comment-2",
@@ -46520,7 +46520,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #601"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-05-14T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608521381-comment-1",
@@ -46533,7 +46533,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #258"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602753691-comment-1",
@@ -46546,7 +46546,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #259"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601521126-comment-1",
@@ -46559,7 +46559,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #260"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48534364746-comment-1",
@@ -46572,7 +46572,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #261"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48728495260-comment-1",
@@ -46585,7 +46585,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #262"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48606689813-comment-1",
@@ -46598,7 +46598,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #263"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48667799977-comment-1",
@@ -46611,7 +46611,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #264"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48698656472-comment-1",
@@ -46624,7 +46624,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #265"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-04-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48698656472-comment-2",
@@ -46637,7 +46637,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #554"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-04-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48666654052-comment-1",
@@ -46650,7 +46650,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #266"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48517412400-comment-1",
@@ -46663,7 +46663,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #267"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48660402734-comment-1",
@@ -46676,7 +46676,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #268"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48731400333-comment-1",
@@ -46689,7 +46689,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #269"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48784121865-comment-1",
@@ -46702,7 +46702,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #270"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48512389660-comment-1",
@@ -46715,7 +46715,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #271"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601461239-comment-1",
@@ -46728,7 +46728,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #272"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48730377433-comment-1",
@@ -46741,7 +46741,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #274"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48663520986-comment-1",
@@ -46754,7 +46754,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #275"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48509484362-comment-1",
@@ -46767,7 +46767,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #276"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48696141474-comment-1",
@@ -46780,7 +46780,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #277"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48789166171-comment-1",
@@ -46793,7 +46793,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #278"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48516183193-comment-1",
@@ -46806,7 +46806,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #279"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48793449355-comment-1",
@@ -46819,7 +46819,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #280"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48668480130-comment-1",
@@ -46832,7 +46832,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #281"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48506046840-comment-1",
@@ -46845,7 +46845,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #282"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601403385-comment-1",
@@ -46858,7 +46858,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #283"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48796331527-comment-1",
@@ -46871,7 +46871,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #284"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608229940-comment-1",
@@ -46884,7 +46884,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #286"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48694590975-comment-1",
@@ -46897,7 +46897,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #287"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48501927170-comment-1",
@@ -46910,7 +46910,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #288"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48534500711-comment-1",
@@ -46923,7 +46923,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #289"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48601857201-comment-1",
@@ -46936,7 +46936,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #290"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48606734711-comment-1",
@@ -46949,7 +46949,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #292"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48887466684-comment-1",
@@ -46962,7 +46962,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #293"
     },
-    "created_at": "2024-12-27T09:49:49Z"
+    "created_at": "2025-12-27T09:49:49Z"
   },
   {
     "id": "imported-lead-phone-48538827993-comment-1",
@@ -46975,7 +46975,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #294"
     },
-    "created_at": "2024-12-27T10:13:24Z"
+    "created_at": "2025-12-27T10:13:24Z"
   },
   {
     "id": "imported-lead-phone-48602606627-comment-1",
@@ -46988,7 +46988,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #295"
     },
-    "created_at": "2024-12-27T13:27:57Z"
+    "created_at": "2025-12-27T13:27:57Z"
   },
   {
     "id": "imported-lead-phone-48796538712-comment-1",
@@ -47001,7 +47001,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #296"
     },
-    "created_at": "2024-12-27T14:24:23Z"
+    "created_at": "2025-12-27T14:24:23Z"
   },
   {
     "id": "imported-lead-phone-48508346144-comment-1",
@@ -47014,7 +47014,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #297"
     },
-    "created_at": "2024-12-27T16:11:30Z"
+    "created_at": "2025-12-27T16:11:30Z"
   },
   {
     "id": "imported-lead-phone-48602704904-comment-1",
@@ -47027,7 +47027,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #298"
     },
-    "created_at": "2024-12-27T19:19:57Z"
+    "created_at": "2025-12-27T19:19:57Z"
   },
   {
     "id": "imported-lead-phone-48503400360-comment-1",
@@ -47040,7 +47040,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #299"
     },
-    "created_at": "2024-12-28T07:31:18Z"
+    "created_at": "2025-12-28T07:31:18Z"
   },
   {
     "id": "imported-lead-phone-48606991050-comment-1",
@@ -47053,7 +47053,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #300"
     },
-    "created_at": "2024-12-28T09:05:05Z"
+    "created_at": "2025-12-28T09:05:05Z"
   },
   {
     "id": "imported-lead-phone-48697631107-comment-1",
@@ -47066,7 +47066,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #301"
     },
-    "created_at": "2024-12-28T09:06:34Z"
+    "created_at": "2025-12-28T09:06:34Z"
   },
   {
     "id": "imported-lead-phone-48605999966-comment-1",
@@ -47079,7 +47079,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #302"
     },
-    "created_at": "2024-12-28T10:48:24Z"
+    "created_at": "2025-12-28T10:48:24Z"
   },
   {
     "id": "imported-lead-phone-48600343140-comment-1",
@@ -47092,7 +47092,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #303"
     },
-    "created_at": "2024-12-28T11:02:00Z"
+    "created_at": "2025-12-28T11:02:00Z"
   },
   {
     "id": "imported-lead-phone-48726020804-comment-1",
@@ -47105,7 +47105,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #304"
     },
-    "created_at": "2024-12-28T13:28:18Z"
+    "created_at": "2025-12-28T13:28:18Z"
   },
   {
     "id": "imported-lead-phone-48509276352-comment-1",
@@ -47118,7 +47118,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #305"
     },
-    "created_at": "2024-12-28T19:00:08Z"
+    "created_at": "2025-12-28T19:00:08Z"
   },
   {
     "id": "imported-lead-phone-48667320115-comment-1",
@@ -47131,7 +47131,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #306"
     },
-    "created_at": "2024-12-28T20:15:01Z"
+    "created_at": "2025-12-28T20:15:01Z"
   },
   {
     "id": "imported-lead-phone-48501492126-comment-1",
@@ -47144,7 +47144,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #308"
     },
-    "created_at": "2024-12-28T22:44:11Z"
+    "created_at": "2025-12-28T22:44:11Z"
   },
   {
     "id": "imported-lead-phone-48693609912-comment-1",
@@ -47157,7 +47157,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #309"
     },
-    "created_at": "2024-12-29T07:45:22Z"
+    "created_at": "2025-12-29T07:45:22Z"
   },
   {
     "id": "imported-lead-phone-48888610098-comment-1",
@@ -47170,7 +47170,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #310"
     },
-    "created_at": "2024-12-29T09:30:52Z"
+    "created_at": "2025-12-29T09:30:52Z"
   },
   {
     "id": "imported-lead-phone-48602763932-comment-1",
@@ -47183,7 +47183,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #311"
     },
-    "created_at": "2024-12-29T10:37:11Z"
+    "created_at": "2025-12-29T10:37:11Z"
   },
   {
     "id": "imported-lead-phone-48515236300-comment-1",
@@ -47196,7 +47196,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #312"
     },
-    "created_at": "2024-12-29T16:32:18Z"
+    "created_at": "2025-12-29T16:32:18Z"
   },
   {
     "id": "imported-lead-phone-48600855687-comment-1",
@@ -47209,7 +47209,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #313"
     },
-    "created_at": "2024-12-29T17:02:18Z"
+    "created_at": "2025-12-29T17:02:18Z"
   },
   {
     "id": "imported-lead-phone-48600959444-comment-1",
@@ -47222,7 +47222,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #314"
     },
-    "created_at": "2024-12-29T19:17:46Z"
+    "created_at": "2025-12-29T19:17:46Z"
   },
   {
     "id": "imported-lead-phone-48517024526-comment-1",
@@ -47235,7 +47235,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #315"
     },
-    "created_at": "2024-12-29T20:29:02Z"
+    "created_at": "2025-12-29T20:29:02Z"
   },
   {
     "id": "imported-lead-phone-48501605941-comment-1",
@@ -47248,7 +47248,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #316"
     },
-    "created_at": "2024-12-29T21:15:35Z"
+    "created_at": "2025-12-29T21:15:35Z"
   },
   {
     "id": "imported-lead-phone-48667577400-comment-1",
@@ -47261,7 +47261,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #317"
     },
-    "created_at": "2024-12-30T06:54:10Z"
+    "created_at": "2025-12-30T06:54:10Z"
   },
   {
     "id": "imported-lead-phone-48880017624-comment-1",
@@ -47274,7 +47274,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #318"
     },
-    "created_at": "2024-12-30T08:15:55Z"
+    "created_at": "2025-12-30T08:15:55Z"
   },
   {
     "id": "imported-lead-phone-48795493125-comment-1",
@@ -47287,7 +47287,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #319"
     },
-    "created_at": "2024-12-30T12:12:39Z"
+    "created_at": "2025-12-30T12:12:39Z"
   },
   {
     "id": "imported-lead-phone-48502154593-comment-1",
@@ -47300,7 +47300,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #320"
     },
-    "created_at": "2024-12-30T13:02:59Z"
+    "created_at": "2025-12-30T13:02:59Z"
   },
   {
     "id": "imported-lead-phone-48602656050-comment-1",
@@ -47313,7 +47313,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #321"
     },
-    "created_at": "2024-12-30T14:00:27Z"
+    "created_at": "2025-12-30T14:00:27Z"
   },
   {
     "id": "imported-lead-phone-48792234149-comment-1",
@@ -47326,7 +47326,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #322"
     },
-    "created_at": "2024-12-30T15:15:32Z"
+    "created_at": "2025-12-30T15:15:32Z"
   },
   {
     "id": "imported-lead-phone-48500788371-comment-1",
@@ -47339,7 +47339,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #323"
     },
-    "created_at": "2024-12-30T15:57:32Z"
+    "created_at": "2025-12-30T15:57:32Z"
   },
   {
     "id": "imported-lead-phone-48666261261-comment-1",
@@ -47352,7 +47352,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #324"
     },
-    "created_at": "2024-12-30T19:08:22Z"
+    "created_at": "2025-12-30T19:08:22Z"
   },
   {
     "id": "imported-lead-phone-48516676530-comment-1",
@@ -47365,7 +47365,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #325"
     },
-    "created_at": "2024-12-30T20:30:30Z"
+    "created_at": "2025-12-30T20:30:30Z"
   },
   {
     "id": "imported-lead-phone-48501101169-comment-1",
@@ -47378,7 +47378,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #326"
     },
-    "created_at": "2024-12-30T20:42:39Z"
+    "created_at": "2025-12-30T20:42:39Z"
   },
   {
     "id": "imported-lead-phone-48668298335-comment-1",
@@ -47391,7 +47391,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #327"
     },
-    "created_at": "2024-12-30T22:41:20Z"
+    "created_at": "2025-12-30T22:41:20Z"
   },
   {
     "id": "imported-lead-phone-48661600517-comment-1",
@@ -47404,7 +47404,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #328"
     },
-    "created_at": "2024-12-31T08:55:31Z"
+    "created_at": "2025-12-31T08:55:31Z"
   },
   {
     "id": "imported-lead-phone-48501147816-comment-1",
@@ -47417,7 +47417,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #330"
     },
-    "created_at": "2024-12-31T11:39:37Z"
+    "created_at": "2025-12-31T11:39:37Z"
   },
   {
     "id": "imported-lead-phone-48533033158-comment-1",
@@ -47430,7 +47430,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #331"
     },
-    "created_at": "2024-12-31T12:12:38Z"
+    "created_at": "2025-12-31T12:12:38Z"
   },
   {
     "id": "imported-lead-phone-48603103223-comment-1",
@@ -47443,7 +47443,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #332"
     },
-    "created_at": "2024-12-31T14:27:33Z"
+    "created_at": "2025-12-31T14:27:33Z"
   },
   {
     "id": "imported-lead-phone-48795854438-comment-1",
@@ -47456,7 +47456,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #333"
     },
-    "created_at": "2024-12-31T16:17:39Z"
+    "created_at": "2025-12-31T16:17:39Z"
   },
   {
     "id": "imported-lead-phone-48508534695-comment-1",
@@ -47664,7 +47664,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #351"
     },
-    "created_at": "2025-01-03T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48606400385-comment-2",
@@ -47677,7 +47677,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #40"
     },
-    "created_at": "2025-01-03T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48537725446-comment-1",
@@ -48145,7 +48145,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #386"
     },
-    "created_at": "2025-01-07T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48697462473-comment-2",
@@ -48158,7 +48158,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #25"
     },
-    "created_at": "2025-01-07T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48663680808-comment-1",
@@ -48223,7 +48223,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #391"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-01-09T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48609354883-comment-2",
@@ -48236,7 +48236,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #548"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-01-09T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48609354883-comment-3",
@@ -48249,7 +48249,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #52"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-01-09T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48731750253-comment-1",
@@ -48977,7 +48977,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #448"
     },
-    "created_at": "2025-01-28T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48501431086-comment-2",
@@ -48990,7 +48990,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #14"
     },
-    "created_at": "2025-01-28T00:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608072070-comment-1",
@@ -51031,7 +51031,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #617"
     },
-    "created_at": "2024-11-12T00:00:00Z"
+    "created_at": "2025-11-12T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48871720100-comment-1",
@@ -51044,7 +51044,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #619"
     },
-    "created_at": "2024-09-24T00:00:00Z"
+    "created_at": "2025-09-24T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48887172010-comment-1",
@@ -51057,7 +51057,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #620"
     },
-    "created_at": "2024-08-26T00:00:00Z"
+    "created_at": "2025-08-26T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48722144443-comment-1",
@@ -51070,7 +51070,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #621"
     },
-    "created_at": "2024-08-08T00:00:00Z"
+    "created_at": "2025-08-08T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48616117650-comment-1",
@@ -51083,7 +51083,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #622"
     },
-    "created_at": "2024-12-17T00:00:00Z"
+    "created_at": "2025-12-17T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600378302-comment-1",
@@ -51161,7 +51161,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #630"
     },
-    "created_at": "2024-08-23T00:00:00Z"
+    "created_at": "2025-08-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48915984440-comment-1",
@@ -51174,7 +51174,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #631"
     },
-    "created_at": "2024-11-04T00:00:00Z"
+    "created_at": "2025-11-04T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48773460840-comment-1",
@@ -51187,7 +51187,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Podkarpacie ",
       "row": "Podkarpacie  #632"
     },
-    "created_at": "2024-10-21T00:00:00Z"
+    "created_at": "2025-10-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608045262-comment-1",
@@ -51200,7 +51200,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #1"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48666502292-comment-1",
@@ -51213,7 +51213,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #2"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48690984708-comment-1",
@@ -51226,7 +51226,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #3"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48509389679-comment-1",
@@ -51239,7 +51239,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #4"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48664211335-comment-1",
@@ -51252,7 +51252,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #5"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48793955914-comment-1",
@@ -51265,7 +51265,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #6"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48607587024-comment-1",
@@ -51278,7 +51278,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #7"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48783046448-comment-1",
@@ -51291,7 +51291,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #8"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48508090956-comment-1",
@@ -51304,7 +51304,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #9"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48517273799-comment-1",
@@ -51317,7 +51317,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #10"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48665061750-comment-1",
@@ -51330,7 +51330,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #11"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48531523202-comment-1",
@@ -51343,7 +51343,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #12"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48606714691-comment-1",
@@ -51356,7 +51356,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #13"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48500118575-comment-1",
@@ -51369,7 +51369,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #14"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48694522905-comment-1",
@@ -51382,7 +51382,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #15"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48723221203-comment-1",
@@ -51395,7 +51395,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #16"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48721777601-comment-1",
@@ -51408,7 +51408,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #17"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48697821532-comment-1",
@@ -51421,7 +51421,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #22"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48530131539-comment-1",
@@ -51434,7 +51434,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #23"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48667488882-comment-1",
@@ -51447,7 +51447,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #24"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48519698664-comment-1",
@@ -51460,7 +51460,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #26"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48502430315-comment-1",
@@ -51473,7 +51473,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #27"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48761245560-comment-1",
@@ -51486,7 +51486,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #28"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48728194044-comment-1",
@@ -51499,7 +51499,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #29"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48512270185-comment-1",
@@ -51512,7 +51512,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #30"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48534993268-comment-1",
@@ -51525,7 +51525,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #31"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48724023964-comment-1",
@@ -51538,7 +51538,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #32"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608797976-comment-1",
@@ -51551,7 +51551,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #33"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48501739350-comment-1",
@@ -51564,7 +51564,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #34"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48518044227-comment-1",
@@ -51577,7 +51577,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #35"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48881348187-comment-1",
@@ -51590,7 +51590,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #36"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48669992365-comment-1",
@@ -51603,7 +51603,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #37"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48793573192-comment-1",
@@ -51616,7 +51616,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #38"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48731518202-comment-1",
@@ -51629,7 +51629,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #39"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48508153502-comment-1",
@@ -51642,7 +51642,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #40"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48606815720-comment-1",
@@ -51655,7 +51655,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #41"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602510924-comment-1",
@@ -51668,7 +51668,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #43"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48883797737-comment-1",
@@ -51681,7 +51681,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #44"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48791770520-comment-1",
@@ -51694,7 +51694,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #45"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48723806305-comment-1",
@@ -51707,7 +51707,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #46"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608576854-comment-1",
@@ -51720,7 +51720,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #47"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48606765866-comment-1",
@@ -51733,7 +51733,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #48"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48605198899-comment-1",
@@ -51746,7 +51746,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #49"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48500076751-comment-1",
@@ -51759,7 +51759,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #50"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48506852060-comment-1",
@@ -51772,7 +51772,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #51"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48789295820-comment-1",
@@ -51785,7 +51785,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #52"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48691503110-comment-1",
@@ -51798,7 +51798,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #53"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602197902-comment-1",
@@ -51811,7 +51811,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #54"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48609359306-comment-1",
@@ -51824,7 +51824,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #56"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48607599559-comment-1",
@@ -51837,7 +51837,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #57"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48782537162-comment-1",
@@ -51850,7 +51850,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #58"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602627701-comment-1",
@@ -51863,7 +51863,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #59"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48603461726-comment-1",
@@ -51876,7 +51876,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #60"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48795260001-comment-1",
@@ -51889,7 +51889,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #61"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48502529200-comment-1",
@@ -51902,7 +51902,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #62"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48691989030-comment-1",
@@ -51915,7 +51915,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #63"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48667191773-comment-1",
@@ -51928,7 +51928,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #64"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48666860707-comment-1",
@@ -51941,7 +51941,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #66"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48606828119-comment-1",
@@ -51954,7 +51954,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #67"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48792580107-comment-1",
@@ -51967,7 +51967,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #68"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48609731225-comment-1",
@@ -51980,7 +51980,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #69"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48792343813-comment-1",
@@ -51993,7 +51993,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #70"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48887550959-comment-1",
@@ -52006,7 +52006,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #71"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600439622-comment-1",
@@ -52019,7 +52019,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #72"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600728736-comment-1",
@@ -52032,7 +52032,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #74"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48781329434-comment-1",
@@ -52045,7 +52045,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Styczen - Luty",
       "row": "Styczen - Luty #75"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48874116990-comment-1",
@@ -52058,7 +52058,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #1"
     },
-    "created_at": "2024-08-09T00:00:00Z"
+    "created_at": "2025-08-09T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48695328246-comment-1",
@@ -52071,7 +52071,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #3"
     },
-    "created_at": "2024-08-07T00:00:00Z"
+    "created_at": "2025-08-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48508527401-comment-1",
@@ -52084,7 +52084,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #4"
     },
-    "created_at": "2024-08-07T00:00:00Z"
+    "created_at": "2025-08-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600288127-comment-1",
@@ -52097,7 +52097,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #5"
     },
-    "created_at": "2024-08-14T00:00:00Z"
+    "created_at": "2025-08-14T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48810583630-comment-1",
@@ -52110,7 +52110,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #9"
     },
-    "created_at": "2024-08-28T00:00:00Z"
+    "created_at": "2025-08-28T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48952058670-comment-1",
@@ -52123,7 +52123,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #10"
     },
-    "created_at": "2024-08-31T00:00:00Z"
+    "created_at": "2025-08-31T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48888812886-comment-1",
@@ -52136,7 +52136,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #11"
     },
-    "created_at": "2024-09-03T00:00:00Z"
+    "created_at": "2025-09-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48512932264-comment-1",
@@ -52149,7 +52149,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #12"
     },
-    "created_at": "2024-09-04T00:00:00Z"
+    "created_at": "2025-09-04T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48505145444-comment-1",
@@ -52162,7 +52162,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #13"
     },
-    "created_at": "2024-09-05T00:00:00Z"
+    "created_at": "2025-09-05T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48887652973-comment-1",
@@ -52175,7 +52175,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #14"
     },
-    "created_at": "2024-09-10T16:48:44Z"
+    "created_at": "2025-09-10T16:48:44Z"
   },
   {
     "id": "imported-lead-phone-48664085536-comment-1",
@@ -52188,7 +52188,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #15"
     },
-    "created_at": "2024-09-13T20:02:58Z"
+    "created_at": "2025-09-13T20:02:58Z"
   },
   {
     "id": "imported-lead-phone-48500349028-comment-1",
@@ -52201,7 +52201,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #16"
     },
-    "created_at": "2024-09-15T09:48:42Z"
+    "created_at": "2025-09-15T09:48:42Z"
   },
   {
     "id": "imported-lead-phone-48697615896-comment-1",
@@ -52214,7 +52214,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #17"
     },
-    "created_at": "2024-09-23T09:32:06Z"
+    "created_at": "2025-09-23T09:32:06Z"
   },
   {
     "id": "imported-lead-phone-48505854578-comment-1",
@@ -52227,7 +52227,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #18"
     },
-    "created_at": "2024-09-24T08:39:29Z"
+    "created_at": "2025-09-24T08:39:29Z"
   },
   {
     "id": "imported-lead-phone-48505015255-comment-1",
@@ -52240,7 +52240,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #19"
     },
-    "created_at": "2024-09-27T16:03:03Z"
+    "created_at": "2025-09-27T16:03:03Z"
   },
   {
     "id": "imported-lead-phone-48690832788-comment-1",
@@ -52253,7 +52253,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #20"
     },
-    "created_at": "2024-10-04T06:06:06Z"
+    "created_at": "2025-01-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48690832788-comment-2",
@@ -52266,7 +52266,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #83"
     },
-    "created_at": "2024-10-04T06:06:06Z"
+    "created_at": "2025-01-07T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48518838164-comment-1",
@@ -52279,7 +52279,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #22"
     },
-    "created_at": "2024-10-14T00:00:00Z"
+    "created_at": "2025-03-13T07:49:15Z"
   },
   {
     "id": "imported-lead-phone-48518838164-comment-2",
@@ -52292,7 +52292,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #179"
     },
-    "created_at": "2024-10-14T00:00:00Z"
+    "created_at": "2025-03-13T07:49:15Z"
   },
   {
     "id": "imported-lead-phone-48532634698-comment-1",
@@ -52305,7 +52305,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #23"
     },
-    "created_at": "2024-10-16T00:00:00Z"
+    "created_at": "2025-10-16T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600439118-comment-1",
@@ -52318,7 +52318,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #24"
     },
-    "created_at": "2024-10-21T00:00:00Z"
+    "created_at": "2025-10-21T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48669149907-comment-1",
@@ -52331,7 +52331,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #25"
     },
-    "created_at": "2024-11-20T08:14:11Z"
+    "created_at": "2025-11-20T08:14:11Z"
   },
   {
     "id": "imported-lead-phone-48501716891-comment-1",
@@ -52344,7 +52344,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #26"
     },
-    "created_at": "2024-11-20T09:45:02Z"
+    "created_at": "2025-11-20T09:45:02Z"
   },
   {
     "id": "imported-lead-phone-48728918222-comment-1",
@@ -52357,7 +52357,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #27"
     },
-    "created_at": "2024-11-24T00:00:00Z"
+    "created_at": "2025-11-24T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608353889-comment-1",
@@ -52370,7 +52370,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #28"
     },
-    "created_at": "2024-11-24T00:00:00Z"
+    "created_at": "2025-11-24T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48666132533-comment-1",
@@ -52383,7 +52383,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #29"
     },
-    "created_at": "2024-11-24T00:00:00Z"
+    "created_at": "2025-11-24T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48514823533-comment-1",
@@ -52396,7 +52396,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #30"
     },
-    "created_at": "2024-11-26T00:00:00Z"
+    "created_at": "2025-11-26T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48781048319-comment-1",
@@ -52409,7 +52409,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #31"
     },
-    "created_at": "2024-11-26T00:00:00Z"
+    "created_at": "2025-11-26T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48536516421-comment-1",
@@ -52422,7 +52422,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #32"
     },
-    "created_at": "2024-11-30T00:00:00Z"
+    "created_at": "2025-11-30T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48732259817-comment-1",
@@ -52435,7 +52435,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #33"
     },
-    "created_at": "2024-11-30T00:00:00Z"
+    "created_at": "2025-11-30T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602121756-comment-1",
@@ -52448,7 +52448,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #34"
     },
-    "created_at": "2024-11-30T00:00:00Z"
+    "created_at": "2025-11-30T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48976187610-comment-1",
@@ -52461,7 +52461,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #36"
     },
-    "created_at": "2024-12-02T00:00:00Z"
+    "created_at": "2025-12-02T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48961839950-comment-1",
@@ -52474,7 +52474,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #38"
     },
-    "created_at": "2024-12-02T00:00:00Z"
+    "created_at": "2025-12-02T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48508595114-comment-1",
@@ -52487,7 +52487,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #39"
     },
-    "created_at": "2024-12-02T00:00:00Z"
+    "created_at": "2025-12-02T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48990102350-comment-1",
@@ -52500,7 +52500,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #40"
     },
-    "created_at": "2024-12-03T00:00:00Z"
+    "created_at": "2025-12-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48886064120-comment-1",
@@ -52513,7 +52513,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #41"
     },
-    "created_at": "2024-12-03T00:00:00Z"
+    "created_at": "2025-12-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48932313550-comment-1",
@@ -52526,7 +52526,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #42"
     },
-    "created_at": "2024-12-03T00:00:00Z"
+    "created_at": "2025-12-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48604892920-comment-1",
@@ -52539,7 +52539,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #43"
     },
-    "created_at": "2024-12-03T00:00:00Z"
+    "created_at": "2025-12-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48943300140-comment-1",
@@ -52552,7 +52552,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #44"
     },
-    "created_at": "2024-12-03T00:00:00Z"
+    "created_at": "2025-12-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48602267721-comment-1",
@@ -52565,7 +52565,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #46"
     },
-    "created_at": "2024-12-03T00:00:00Z"
+    "created_at": "2025-12-03T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48783871321-comment-1",
@@ -52578,7 +52578,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #47"
     },
-    "created_at": "2024-12-08T00:00:00Z"
+    "created_at": "2025-12-08T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48721831065-comment-1",
@@ -52591,7 +52591,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #48"
     },
-    "created_at": "2024-12-08T00:00:00Z"
+    "created_at": "2025-12-08T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48500193988-comment-1",
@@ -52604,7 +52604,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #49"
     },
-    "created_at": "2024-12-11T00:00:00Z"
+    "created_at": "2025-12-11T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48899761100-comment-1",
@@ -52617,7 +52617,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #50"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48603038009-comment-1",
@@ -52630,7 +52630,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #53"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48725895756-comment-1",
@@ -52643,7 +52643,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #54"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48512130748-comment-1",
@@ -52656,7 +52656,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #55"
     },
-    "created_at": "2024-12-23T00:00:00Z"
+    "created_at": "2025-12-23T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48603633168-comment-1",
@@ -52669,7 +52669,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #56"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48798774390-comment-1",
@@ -52682,7 +52682,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #57"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48530100292-comment-1",
@@ -52695,7 +52695,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #58"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48505931101-comment-1",
@@ -52708,7 +52708,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #59"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48664623823-comment-1",
@@ -52721,7 +52721,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #60"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48880156450-comment-1",
@@ -52734,7 +52734,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #61"
     },
-    "created_at": "2024-12-27T00:00:00Z"
+    "created_at": "2025-12-27T00:00:00Z"
   },
   {
     "id": "imported-lead-phone-48692531733-comment-1",
@@ -53774,7 +53774,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #158"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-15T09:25:43Z"
   },
   {
     "id": "imported-lead-phone-48694434516-comment-2",
@@ -53787,7 +53787,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #182"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-15T09:25:43Z"
   },
   {
     "id": "imported-lead-phone-48889479215-comment-1",
@@ -53800,7 +53800,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #159"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-12T20:37:41Z"
   },
   {
     "id": "imported-lead-phone-48889479215-comment-2",
@@ -53813,7 +53813,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #178"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-12T20:37:41Z"
   },
   {
     "id": "imported-lead-phone-48665180731-comment-1",
@@ -53826,7 +53826,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #160"
     },
-    "created_at": "2026-02-24T05:37:41Z"
+    "created_at": "2025-02-24T05:37:41Z"
   },
   {
     "id": "imported-lead-phone-48665180731-comment-2",
@@ -53839,7 +53839,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #191"
     },
-    "created_at": "2026-02-24T05:37:41Z"
+    "created_at": "2025-02-24T05:37:41Z"
   },
   {
     "id": "imported-lead-phone-48780161715-comment-1",
@@ -53852,7 +53852,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #163"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-10T21:01:21Z"
   },
   {
     "id": "imported-lead-phone-48691922427-comment-1",
@@ -53865,7 +53865,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #165"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-11T04:23:26Z"
   },
   {
     "id": "imported-lead-phone-48663912218-comment-1",
@@ -53878,7 +53878,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #166"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-11T08:30:37Z"
   },
   {
     "id": "imported-lead-phone-48600850097-comment-1",
@@ -53891,7 +53891,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #170"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-07T19:17:16Z"
   },
   {
     "id": "imported-lead-phone-48600850097-comment-2",
@@ -53904,7 +53904,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #173"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-07T19:17:16Z"
   },
   {
     "id": "imported-lead-phone-48601936366-comment-1",
@@ -53917,7 +53917,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #171"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-10T21:01:21Z"
   },
   {
     "id": "imported-lead-phone-48601936366-comment-2",
@@ -53930,7 +53930,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #174"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-10T21:01:21Z"
   },
   {
     "id": "imported-lead-phone-48517929025-comment-1",
@@ -53943,7 +53943,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #176"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-12T12:44:13Z"
   },
   {
     "id": "imported-lead-phone-48509083868-comment-1",
@@ -53956,7 +53956,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #183"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-15T10:43:47Z"
   },
   {
     "id": "imported-lead-phone-48608370472-comment-1",
@@ -53969,7 +53969,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #185"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-03-16T17:49:26Z"
   },
   {
     "id": "imported-lead-phone-48698191947-comment-1",
@@ -53982,7 +53982,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #187"
     },
-    "created_at": "2026-02-19T17:56:21Z"
+    "created_at": "2025-02-19T17:56:21Z"
   },
   {
     "id": "imported-lead-phone-48579072915-comment-1",
@@ -53995,7 +53995,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #188"
     },
-    "created_at": "2026-02-19T22:37:22Z"
+    "created_at": "2025-02-19T22:37:22Z"
   },
   {
     "id": "imported-lead-phone-48698901944-comment-1",
@@ -54008,7 +54008,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #189"
     },
-    "created_at": "2026-02-20T07:45:16Z"
+    "created_at": "2025-02-20T07:45:16Z"
   },
   {
     "id": "imported-lead-phone-48535466411-comment-1",
@@ -54021,7 +54021,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #193"
     },
-    "created_at": "2026-02-25T06:05:10Z"
+    "created_at": "2025-02-25T06:05:10Z"
   },
   {
     "id": "imported-lead-phone-48533471342-comment-1",
@@ -54034,7 +54034,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #194"
     },
-    "created_at": "2026-02-25T11:05:49Z"
+    "created_at": "2025-02-25T11:05:49Z"
   },
   {
     "id": "imported-lead-phone-48721034678-comment-1",
@@ -54047,7 +54047,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #196"
     },
-    "created_at": "2026-02-26T17:11:01Z"
+    "created_at": "2025-02-26T17:11:01Z"
   },
   {
     "id": "imported-lead-phone-48866670150-comment-1",
@@ -54060,7 +54060,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #198"
     },
-    "created_at": "2026-06-03T22:09:00Z"
+    "created_at": "2025-06-03T22:09:00Z"
   },
   {
     "id": "imported-lead-phone-48693566866-comment-1",
@@ -54073,7 +54073,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / Świętokrzyskie",
       "row": "Świętokrzyskie #204"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48606538614-comment-1",
@@ -54086,7 +54086,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #1"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48730593059-comment-1",
@@ -54099,7 +54099,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #2"
     },
-    "created_at": "2026-03-26T12:00:00Z"
+    "created_at": "2025-03-26T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48697427676-comment-1",
@@ -54112,7 +54112,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #3"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600394673-comment-1",
@@ -54125,7 +54125,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #4"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48798376535-comment-1",
@@ -54138,7 +54138,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #5"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48608496778-comment-1",
@@ -54151,7 +54151,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #6"
     },
-    "created_at": "2026-03-28T12:00:00Z"
+    "created_at": "2025-03-28T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48690904158-comment-1",
@@ -54164,7 +54164,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #7"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48668273551-comment-1",
@@ -54177,7 +54177,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #8"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48883938884-comment-1",
@@ -54190,7 +54190,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #9"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48881425881-comment-1",
@@ -54203,7 +54203,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #10"
     },
-    "created_at": "2026-03-23T12:00:00Z"
+    "created_at": "2025-03-23T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48503570923-comment-1",
@@ -54216,7 +54216,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #11"
     },
-    "created_at": "2026-03-23T12:00:00Z"
+    "created_at": "2025-03-23T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48531227899-comment-1",
@@ -54229,7 +54229,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #12"
     },
-    "created_at": "2026-03-26T12:00:00Z"
+    "created_at": "2025-03-26T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48723372256-comment-1",
@@ -54242,7 +54242,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #13"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600586640-comment-1",
@@ -54255,7 +54255,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #15"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48509080993-comment-1",
@@ -54268,7 +54268,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #16"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48605099663-comment-1",
@@ -54281,7 +54281,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #17"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48691542002-comment-1",
@@ -54294,7 +54294,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #18"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48880527880-comment-1",
@@ -54307,7 +54307,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #19"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48794155145-comment-1",
@@ -54320,7 +54320,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #20"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48530329302-comment-1",
@@ -54333,7 +54333,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #21"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48730921394-comment-1",
@@ -54346,7 +54346,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #22"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48505974452-comment-1",
@@ -54359,7 +54359,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #23"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48793916196-comment-1",
@@ -54372,7 +54372,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #24"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48789329664-comment-1",
@@ -54385,7 +54385,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #25"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600600869-comment-1",
@@ -54398,7 +54398,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #26"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48784945288-comment-1",
@@ -54411,7 +54411,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #27"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48663817575-comment-1",
@@ -54424,7 +54424,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #28"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48661044376-comment-1",
@@ -54437,7 +54437,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #29"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48785756471-comment-1",
@@ -54450,7 +54450,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #30"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48515318862-comment-1",
@@ -54463,7 +54463,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #31"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48507664660-comment-1",
@@ -54476,7 +54476,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #32"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48514537005-comment-1",
@@ -54489,7 +54489,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #33"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48515958636-comment-1",
@@ -54502,7 +54502,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #34"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48606309011-comment-1",
@@ -54515,7 +54515,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #35"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48723246754-comment-1",
@@ -54528,7 +54528,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #36"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48693648197-comment-1",
@@ -54541,7 +54541,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #37"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48600623707-comment-1",
@@ -54554,7 +54554,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #39"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48696621055-comment-1",
@@ -54567,7 +54567,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #41"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48607544323-comment-1",
@@ -54580,7 +54580,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #42"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48502179091-comment-1",
@@ -54593,7 +54593,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #43"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48534703307-comment-1",
@@ -54606,7 +54606,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #44"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48532743660-comment-1",
@@ -54619,7 +54619,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #45"
     },
-    "created_at": "2026-06-05T12:00:00Z"
+    "created_at": "2025-01-01T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48697443586-comment-1",
@@ -54632,7 +54632,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #46"
     },
-    "created_at": "2026-03-22T12:00:00Z"
+    "created_at": "2025-03-22T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48798736130-comment-1",
@@ -54645,7 +54645,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #47"
     },
-    "created_at": "2026-03-22T12:00:00Z"
+    "created_at": "2025-03-22T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48726368661-comment-1",
@@ -54658,7 +54658,7 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #48"
     },
-    "created_at": "2026-03-23T12:00:00Z"
+    "created_at": "2025-03-23T12:00:00Z"
   },
   {
     "id": "imported-lead-phone-48794711618-comment-1",
@@ -54671,6 +54671,6 @@ export const importedLeadHistorySeedRows = [
       "source": "Re energy leady.xlsx / deszczówka",
       "row": "deszczówka #49"
     },
-    "created_at": "2026-03-26T12:00:00Z"
+    "created_at": "2025-03-26T12:00:00Z"
   }
 ] satisfies LeadHistory[];

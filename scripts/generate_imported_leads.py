@@ -17,7 +17,13 @@ DEFAULT_FILES = [
     Path("/Users/kacperbernecki/Downloads/Re energy leady.xlsx"),
 ]
 OUTPUT_FILE = PROJECT_ROOT / "lib" / "imported-leads.ts"
-FALLBACK_CREATED_AT = "2026-06-05T12:00:00Z"
+LEADS_ALL_YEAR = 2026
+RE_ENERGY_YEAR = 2025
+FALLBACK_CREATED_AT = f"{LEADS_ALL_YEAR}-01-01T12:00:00Z"
+FALLBACK_CREATED_AT_BY_YEAR = {
+    LEADS_ALL_YEAR: f"{LEADS_ALL_YEAR}-01-01T12:00:00Z",
+    RE_ENERGY_YEAR: f"{RE_ENERGY_YEAR}-01-01T12:00:00Z",
+}
 
 VOIVODESHIPS = {
     "dolnośląskie",
@@ -38,6 +44,26 @@ VOIVODESHIPS = {
     "zachodniopomorskie",
 }
 
+VOIVODESHIP_ALIASES = {
+    "podkarpacie": "Podkarpackie",
+    "mazowsze": "Mazowieckie",
+    "busko": "Świętokrzyskie",
+    "grzymala": "Świętokrzyskie",
+    "marchocice": "Świętokrzyskie",
+    "polaniec": "Świętokrzyskie",
+    "sandomierz": "Świętokrzyskie",
+    "skarzysko": "Świętokrzyskie",
+    "stojewsko": "Świętokrzyskie",
+    "wloszczowa": "Świętokrzyskie",
+    "cierpisz": "Podkarpackie",
+    "przeworsk": "Podkarpackie",
+    "38-232": "Podkarpackie",
+    "37-124": "Podkarpackie",
+    "hedwizyn": "Lubelskie",
+    "lublin": "Lubelskie",
+    "markuszow": "Lubelskie",
+}
+
 
 @dataclass
 class ImportRow:
@@ -54,6 +80,7 @@ class ImportRow:
     status: str
     comment: str | None
     row_label: str
+    source_group: str
 
 
 @dataclass
@@ -70,6 +97,7 @@ class LeadAggregate:
     voivodeship: str | None
     postal_code: str | None
     source: str
+    source_group: str
     status: str
     comments: list[tuple[str, str, str]] = field(default_factory=list)
     seen_comments: set[str] = field(default_factory=set)
@@ -117,13 +145,62 @@ def email_key(value: Any) -> tuple[str | None, str | None]:
     return email, f"email:{email}"
 
 
-def parse_date(value: Any) -> str | None:
+def normalize_year(year: str, force_year: int | None = None) -> int:
+    if force_year:
+        return force_year
+    if len(year) == 2:
+        return 2000 + int(year)
+    return int(year)
+
+
+def replace_year(value: datetime, force_year: int | None) -> datetime:
+    if not force_year:
+        return value
+    try:
+        return value.replace(year=force_year)
+    except ValueError:
+        return value.replace(year=force_year, day=28)
+
+
+def iso_datetime(value: datetime, force_year: int | None = None) -> str:
+    value = replace_year(value, force_year)
+    if value.tzinfo:
+        return value.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+    return value.isoformat(timespec="seconds") + "Z"
+
+
+def parse_numeric_date(value_text: str, force_year: int | None = None) -> str | None:
+    match = re.match(r"^(\d{1,2})([./])(\d{1,2})(?:[./](\d{2,4}))?(?=$|\s|[,;:)])", value_text)
+    if not match:
+        return None
+
+    first = int(match.group(1))
+    separator = match.group(2)
+    second = int(match.group(3))
+    year_text = match.group(4)
+    if not year_text and not force_year:
+        return None
+
+    year = normalize_year(year_text or str(force_year), force_year)
+
+    if separator == "/" and second > 12:
+        day = second
+        month = first
+    else:
+        day = first
+        month = second
+
+    try:
+        return datetime(year, month, day, 12).isoformat(timespec="seconds") + "Z"
+    except ValueError:
+        return None
+
+
+def parse_date(value: Any, force_year: int | None = None) -> str | None:
     if isinstance(value, datetime):
-        if value.tzinfo:
-            return value.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
-        return value.isoformat(timespec="seconds") + "Z"
+        return iso_datetime(value, force_year)
     if isinstance(value, date):
-        return datetime.combine(value, time(hour=12)).isoformat(timespec="seconds") + "Z"
+        return iso_datetime(datetime.combine(value, time(hour=12)), force_year)
 
     value_text = clean_text(value, 80)
     if not value_text:
@@ -132,28 +209,23 @@ def parse_date(value: Any) -> str | None:
     if re.match(r"^\d{4}-\d{2}-\d{2}([T\s]|$)", value_text):
         try:
             parsed = datetime.fromisoformat(value_text.replace("Z", "+00:00"))
-            if parsed.tzinfo:
-                return parsed.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
-            return parsed.isoformat(timespec="seconds") + "Z"
+            return iso_datetime(parsed, force_year)
         except ValueError:
             pass
 
+    numeric = parse_numeric_date(value_text, force_year)
+    if numeric:
+        return numeric
+
     patterns = (
-        "%d.%m.%Y",
-        "%d.%m.%y",
         "%Y-%m-%d",
         "%Y-%m-%d %H:%M:%S",
-        "%d/%m/%Y",
-        "%d/%m/%y",
-        "%m/%d/%Y",
-        "%m/%d/%y",
-        "%m/%d/%Y %I:%M%p",
-        "%m/%d/%y %I:%M%p",
     )
     for candidate in dict.fromkeys([value_text, value_text[:10]]):
         for pattern in patterns:
             try:
-                return datetime.combine(datetime.strptime(candidate, pattern).date(), time(hour=12)).isoformat(timespec="seconds") + "Z"
+                parsed = datetime.strptime(candidate, pattern)
+                return iso_datetime(parsed, force_year)
             except ValueError:
                 pass
     return None
@@ -202,21 +274,32 @@ def name_from_row(row: tuple[Any, ...], phone_index: int) -> str:
     return ""
 
 
-def comment_date_from_text(value: Any) -> str | None:
+def comment_date_from_text(value: Any, force_year: int | None = None) -> str | None:
     value_text = clean_text(value, 300)
     if not value_text:
         return None
     for pattern in (
+        r"\b\d{4}-\d{2}-\d{2}(?:[T\s]\d{2}:\d{2}(?::\d{2})?(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?)?\b",
         r"\b\d{1,2}\.\d{1,2}\.\d{4}\b",
         r"\b\d{1,2}\.\d{1,2}\.\d{2}\b",
+        r"\b\d{1,2}\.\d{1,2}\b",
         r"\b\d{1,2}/\d{1,2}/\d{4}\b",
         r"\b\d{1,2}/\d{1,2}/\d{2}\b",
+        r"\b\d{1,2}/\d{1,2}(?![A-Za-zĄĆĘŁŃÓŚŻŹąćęłńóśżź])\b",
     ):
         match = re.search(pattern, value_text)
         if match:
-            parsed = parse_date(match.group(0))
+            parsed = parse_date(match.group(0), force_year)
             if parsed:
                 return parsed
+    return None
+
+
+def row_date_from_cells(row: tuple[Any, ...], force_year: int | None = None) -> str | None:
+    for value in row:
+        parsed = parse_date(value, force_year)
+        if parsed:
+            return parsed
     return None
 
 
@@ -228,6 +311,10 @@ def postal_code_from(*values: Any) -> str | None:
 
 def voivodeship_from(*values: Any) -> str | None:
     joined = " ".join(clean_text(value, 120).lower() for value in values)
+    normalized_joined = normalize_key(joined)
+    for alias, voivodeship in VOIVODESHIP_ALIASES.items():
+        if alias in normalized_joined:
+            return voivodeship
     for item in VOIVODESHIPS:
         if item in joined:
             return item.capitalize()
@@ -332,7 +419,10 @@ def rows_from_meta_workbook(path: Path) -> list[ImportRow]:
                 continue
 
             name = normalized_name(get(row, "full_name", "name", "imie i nazwisko")) or f"Klient {phone or email}"
-            created_at = parse_date(get(row, "created_time", "created_at", "data"))
+            created_at = (
+                parse_date(get(row, "created_time", "created_at", "data"), LEADS_ALL_YEAR)
+                or FALLBACK_CREATED_AT_BY_YEAR[LEADS_ALL_YEAR]
+            )
             row_source = clean_text(get(row, "form_name", "campaign_name", "adset_name"), 160) or source
             status_text = clean_text(get(row, "lead_status", "status"), 80)
             comment = build_comment(source, f"wiersz {row_number}", get(row, "comment", "komentarz", "uwagi"))
@@ -355,6 +445,7 @@ def rows_from_meta_workbook(path: Path) -> list[ImportRow]:
                     status=map_status(status_text, comment, source, created_at),
                     comment=comment,
                     row_label=f"{sheet.title} #{row_number}",
+                    source_group="leady_wszystkie_2026",
                 )
             )
 
@@ -380,7 +471,7 @@ def rows_from_re_energy(path: Path) -> list[ImportRow]:
 
             phone_index, phone, phone_key = phone_info
             email, key = first_email(row)
-            created_at = parse_date(row[0] if row else None)
+            created_at = parse_date(row[0] if row else None, RE_ENERGY_YEAR)
             name = name_from_row(row, phone_index)
             if not name:
                 name = f"Klient {phone}"
@@ -399,7 +490,11 @@ def rows_from_re_energy(path: Path) -> list[ImportRow]:
                 product = right[1] if len(right) > 1 else product
                 comment_cell = right[2] if len(right) > 2 else comment_cell
             if not created_at:
-                created_at = comment_date_from_text(comment_cell)
+                created_at = comment_date_from_text(comment_cell, RE_ENERGY_YEAR)
+            if not created_at:
+                created_at = row_date_from_cells(row, RE_ENERGY_YEAR)
+            if not created_at:
+                created_at = FALLBACK_CREATED_AT_BY_YEAR[RE_ENERGY_YEAR]
 
             comment = build_comment(source, f"wiersz {row_number}", product, comment_cell)
             status_hint = "Spotkanie" if "spotkania" in sheet_key else clean_text(row[1] if len(row) > 1 else "", 80)
@@ -419,6 +514,7 @@ def rows_from_re_energy(path: Path) -> list[ImportRow]:
                     status=map_status(status_hint, comment, source, created_at),
                     comment=comment,
                     row_label=f"{sheet.title} #{row_number}",
+                    source_group="re_energy_2025",
                 )
             )
 
@@ -451,7 +547,7 @@ def rows_from_calendar_sheet(file_name: str, sheet: Any) -> list[ImportRow]:
                     phone_key=normalized[1],
                     email=None,
                     email_key=None,
-                    created_at=None,
+                    created_at=FALLBACK_CREATED_AT_BY_YEAR[RE_ENERGY_YEAR],
                     address=address,
                     voivodeship=voivodeship_from(address),
                     postal_code=postal_code_from(address),
@@ -459,6 +555,7 @@ def rows_from_calendar_sheet(file_name: str, sheet: Any) -> list[ImportRow]:
                     status="Spotkanie",
                     comment=comment,
                     row_label=f"{sheet.title} #{row_number}",
+                    source_group="re_energy_2025",
                 )
             )
     return output
@@ -500,6 +597,7 @@ def aggregate(rows: list[ImportRow]) -> tuple[list[LeadAggregate], int]:
                 voivodeship=row.voivodeship,
                 postal_code=row.postal_code,
                 source=row.source,
+                source_group=row.source_group,
                 status=row.status,
             )
         else:
@@ -510,7 +608,7 @@ def aggregate(rows: list[ImportRow]) -> tuple[list[LeadAggregate], int]:
             lead.address = lead.address or row.address
             lead.voivodeship = lead.voivodeship or row.voivodeship
             lead.postal_code = lead.postal_code or row.postal_code
-            if row.created_at:
+            if row.created_at and row.source_group == lead.source_group:
                 if lead.created_at == FALLBACK_CREATED_AT or row.created_at < lead.created_at:
                     lead.created_at = row.created_at
                 if lead.updated_at == FALLBACK_CREATED_AT:

@@ -75,7 +75,9 @@ html[data-theme="berry"] {
 body {
   margin: 0;
   min-width: 320px;
-  background: linear-gradient(180deg, rgb(248 250 252), rgb(var(--canvas)) 320px);
+  background:
+    linear-gradient(180deg, rgb(250 252 255), rgb(var(--canvas)) 360px),
+    rgb(var(--canvas));
   color: rgb(var(--ink));
   font-feature-settings: "cv02", "cv03", "cv04";
   text-rendering: optimizeLegibility;
@@ -141,7 +143,7 @@ textarea:focus-visible {
 
 @layer components {
   .field {
-    @apply min-h-11 w-full border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition placeholder:text-[#99a3b4] hover:border-[#c7d1df] focus:border-sky focus:ring-2 focus:ring-sky/15 disabled:cursor-not-allowed disabled:bg-[#f3f6fa] disabled:text-muted;
+    @apply min-h-11 w-full border border-line bg-white px-3 py-2 text-sm font-semibold text-ink outline-none transition placeholder:font-medium placeholder:text-[#99a3b4] hover:border-[#c7d1df] focus:border-sky focus:ring-2 focus:ring-sky/15 disabled:cursor-not-allowed disabled:bg-[#f3f6fa] disabled:text-muted;
   }
 
   .label {
@@ -169,7 +171,7 @@ textarea:focus-visible {
   }
 
   .app-card {
-    @apply rounded-lg border border-line bg-white p-5 shadow-sm;
+    @apply rounded-lg border border-line bg-white p-5 shadow-[0_10px_28px_rgba(18,24,37,0.055)];
   }
 
   .app-muted-panel {
@@ -193,7 +195,7 @@ textarea:focus-visible {
   }
 
   .app-table td {
-    @apply px-4 py-3 align-top;
+    @apply px-4 py-3 align-top leading-6;
   }
 
   .app-table tbody {
@@ -201,7 +203,13 @@ textarea:focus-visible {
   }
 
   .app-table tbody tr {
-    @apply transition hover:bg-[#fbfcfe];
+    @apply transition hover:bg-[#f6f9fd];
+  }
+
+  .app-table a,
+  .app-table .font-semibold,
+  .app-table .font-bold {
+    @apply tracking-normal;
   }
 
   .section-title {

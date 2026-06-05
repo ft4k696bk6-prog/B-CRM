@@ -2,8 +2,12 @@ export function formatDateTime(value?: string | null) {
   if (!value) return "—";
 
   return new Intl.DateTimeFormat("pl-PL", {
-    dateStyle: "short",
-    timeStyle: "short"
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Warsaw"
   }).format(new Date(value));
 }
 
@@ -11,7 +15,10 @@ export function formatDate(value?: string | null) {
   if (!value) return "—";
 
   return new Intl.DateTimeFormat("pl-PL", {
-    dateStyle: "medium"
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "Europe/Warsaw"
   }).format(new Date(value));
 }
 

@@ -172,7 +172,7 @@ export function LeadTable({
                   {lead.meeting_at ? <div>{formatDateTime(lead.meeting_at)}</div> : null}
                   {!lead.callback_at && !lead.meeting_at ? "—" : null}
                 </td>
-                <td className="px-4 py-3 align-top text-muted">
+                <td className="px-4 py-3 align-top font-semibold tabular-nums text-muted">
                   {formatDateTime(lead.created_at)}
                 </td>
                 <td className="px-4 py-3 align-top">
@@ -233,7 +233,7 @@ export function LeadTable({
               <div className="grid gap-1 rounded-lg border border-line bg-[#f8fafc] p-3 text-xs font-semibold text-muted">
                 <div>{labels.region}: {lead.voivodeship || "—"} / {lead.county || "—"}</div>
                 <div>{labels.dates}: {lead.callback_at || lead.meeting_at ? [lead.callback_at, lead.meeting_at].filter(Boolean).map(formatDateTime).join(" · ") : "—"}</div>
-                <div>{labels.created}: {formatDateTime(lead.created_at)}</div>
+                <div className="tabular-nums">{labels.created}: {formatDateTime(lead.created_at)}</div>
               </div>
             </div>
 
