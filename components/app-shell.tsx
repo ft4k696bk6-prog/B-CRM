@@ -170,6 +170,8 @@ export function AppShell({ profile, children }: AppShellProps) {
   }
 
   function renderNavigation(closeOnClick = false) {
+    const isMobileMenu = closeOnClick;
+
     return (
       <nav className="grid gap-4">
         {navigationGroups.map((group) => {
@@ -178,7 +180,7 @@ export function AppShell({ profile, children }: AppShellProps) {
 
           return (
             <div key={group.key} className="grid gap-1">
-              <div className="px-2 text-[11px] font-black uppercase tracking-wide text-muted">
+              <div className={`px-2 text-[11px] font-black uppercase tracking-wide ${isMobileMenu ? "text-[#667085]" : "text-muted"}`}>
                 {t(group.labelKey)}
               </div>
               {groupLinks.map((link) => {
@@ -194,7 +196,9 @@ export function AppShell({ profile, children }: AppShellProps) {
                     className={`relative flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-bold transition ${
                       active
                         ? "bg-ink text-white shadow-[0_12px_22px_rgba(18,24,37,0.16)]"
-                        : "text-muted hover:bg-[#eef3f8] hover:text-ink"
+                        : isMobileMenu
+                          ? "text-[#344054] hover:bg-[#f2f4f7] hover:text-[#101722]"
+                          : "text-muted hover:bg-[#eef3f8] hover:text-ink"
                     }`}
                   >
                     {active ? (
@@ -268,14 +272,17 @@ export function AppShell({ profile, children }: AppShellProps) {
       </header>
 
       {mobileOpen ? (
-        <div className="fixed inset-0 z-40 lg:hidden">
+        <div className="fixed inset-0 z-[80] lg:hidden">
           <button
             type="button"
-            className="absolute inset-0 bg-[#101722]/55 backdrop-blur-sm"
+            className="absolute inset-0 bg-[#101722]/45"
             aria-label="Zamknij menu"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="relative flex h-full w-[min(88vw,340px)] flex-col border-r border-line bg-white/96 p-3 shadow-soft backdrop-blur-xl">
+          <aside
+            className="relative z-10 flex h-full w-[min(88vw,340px)] flex-col border-r border-[#d0d5dd] bg-white p-3 text-[#101722] shadow-soft"
+            style={{ background: "#ffffff", color: "#101722", opacity: 1, backdropFilter: "none" }}
+          >
             <div className="mb-3 flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <BrandMark size="sm" />
@@ -283,14 +290,14 @@ export function AppShell({ profile, children }: AppShellProps) {
                   <div className="flex items-center gap-2 text-sm font-black text-ink">
                     B-CRM
                   </div>
-                  <div className="text-xs text-muted">{roleLabel}</div>
+                  <div className="text-xs font-semibold text-[#667085]">{roleLabel}</div>
                 </div>
               </div>
               <button type="button" onClick={() => setMobileOpen(false)} className="btn-icon" aria-label="Zamknij menu">
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
-            <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-muted">
+            <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-[#667085]">
               <PanelLeft className="h-4 w-4" aria-hidden="true" />
               {t("menu")}
             </div>
