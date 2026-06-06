@@ -160,20 +160,19 @@ textarea:focus-visible {
 }
 
 .mobile-menu-panel {
-  background-color: #101722 !important;
-  background-image:
-    linear-gradient(180deg, #101722 0%, #131d2e 52%, #0b1220 100%),
-    radial-gradient(circle at 18px 18px, rgba(240, 199, 101, 0.16), transparent 180px);
-  border-color: rgba(255, 255, 255, 0.14);
-  color: #f8fafc;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border-color: #d0d5dd;
+  color: #101722;
   opacity: 1;
-  box-shadow: 28px 0 70px rgb(2 6 23 / 0.42);
+  box-shadow: 28px 0 70px rgb(15 23 42 / 0.22);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
 
 .mobile-menu-panel .text-muted {
-  color: rgba(248, 250, 252, 0.62) !important;
+  color: #667085 !important;
 }
 
 .mobile-menu-panel a,
@@ -184,18 +183,18 @@ textarea:focus-visible {
 }
 
 .mobile-menu-panel [aria-label="Language"] {
-  border-color: rgba(255, 255, 255, 0.14) !important;
-  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: #d0d5dd !important;
+  background-color: #ffffff !important;
   box-shadow: none;
 }
 
 .mobile-menu-panel [aria-label="Language"] button:not(.bg-ink) {
-  color: rgba(248, 250, 252, 0.72) !important;
+  color: #667085 !important;
 }
 
 .mobile-menu-panel [aria-label="Language"] .bg-ink {
-  background-color: #f0c765 !important;
-  color: #101722 !important;
+  background-color: #101722 !important;
+  color: #ffffff !important;
 }
 
 .mobile-menu-close {
@@ -206,10 +205,10 @@ textarea:focus-visible {
   align-items: center;
   justify-content: center;
   border-radius: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #d0d5dd;
+  background: #ffffff;
   color: #101722;
-  box-shadow: 0 14px 32px rgb(2 6 23 / 0.28);
+  box-shadow: 0 10px 24px rgb(15 23 42 / 0.14);
   transition: transform 160ms ease, background-color 160ms ease;
 }
 

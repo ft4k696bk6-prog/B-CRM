@@ -265,7 +265,7 @@ export function AppShell({ profile, children }: AppShellProps) {
 
           return (
             <div key={group.key} className="grid gap-1">
-              <div className={`px-2 text-[11px] font-black uppercase tracking-wide ${isMobileMenu ? "text-white/60" : "text-muted"}`}>
+              <div className={`px-2 text-[11px] font-black uppercase tracking-wide ${isMobileMenu ? "text-[#667085]" : "text-muted"}`}>
                 {t(group.labelKey)}
               </div>
               {groupLinks.map((link) => {
@@ -281,10 +281,10 @@ export function AppShell({ profile, children }: AppShellProps) {
                     className={`flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-bold transition ${
                       active
                         ? isMobileMenu
-                          ? "bg-[#f0c765] text-[#101722] shadow-sm ring-1 ring-white/20"
+                          ? "bg-[#101722] text-white shadow-sm"
                           : "bg-ink text-white shadow-sm ring-1 ring-sky/20"
                         : isMobileMenu
-                          ? "text-white/82 hover:bg-white/10 hover:text-white"
+                          ? "text-[#344054] hover:bg-[#f2f4f7] hover:text-[#101722]"
                           : "text-muted hover:bg-sky/10 hover:text-ink"
                     }`}
                   >
@@ -382,12 +382,15 @@ export function AppShell({ profile, children }: AppShellProps) {
             aria-label="Zamknij menu"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="mobile-menu-panel fixed inset-y-0 left-0 z-10 flex h-dvh w-[min(88vw,340px)] flex-col border-r p-3 text-white">
+          <aside
+            className="mobile-menu-panel fixed inset-y-0 left-0 z-10 flex h-dvh w-[min(88vw,340px)] flex-col border-r p-3 text-[#101722]"
+            style={{ background: "#ffffff", color: "#101722", opacity: 1 }}
+          >
             <div className="mb-3 flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <BrandMark size="sm" />
                 <div>
-                  <div className="flex items-center gap-2 text-sm font-black text-white">
+                  <div className="flex items-center gap-2 text-sm font-black text-[#101722]">
                     B-CRM
                     {isDemoProfile ? (
                       <span className="rounded-md border border-sky/20 bg-sky/10 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide text-sky">
@@ -395,7 +398,7 @@ export function AppShell({ profile, children }: AppShellProps) {
                       </span>
                     ) : null}
                   </div>
-                  <div className="text-xs font-semibold text-white/62">{roleLabel}</div>
+                  <div className="text-xs font-semibold text-[#667085]">{roleLabel}</div>
                 </div>
               </div>
               <button type="button" onClick={() => setMobileOpen(false)} className="mobile-menu-close" aria-label="Zamknij menu">
@@ -405,7 +408,7 @@ export function AppShell({ profile, children }: AppShellProps) {
             <div className="mb-3 md:hidden">
               <LanguageSwitcher />
             </div>
-            <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-white/62">
+            <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-[#667085]">
               <PanelLeft className="h-4 w-4" aria-hidden="true" />
               {t("menu")}
             </div>
