@@ -14,13 +14,15 @@
   --sky: 48 103 176;
   --warn: 188 98 27;
   --danger: 181 58 67;
+  --wash: 48 103 176;
+  --wash-2: 190 144 37;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 html[data-theme="premium"] {
-  --canvas: 242 243 247;
-  --panel: 255 255 255;
+  --canvas: 239 242 248;
+  --panel: 252 253 255;
   --ink: 22 28 42;
   --muted: 92 100 116;
   --line: 220 225 234;
@@ -29,11 +31,13 @@ html[data-theme="premium"] {
   --sky: 46 107 184;
   --warn: 198 103 19;
   --danger: 177 58 66;
+  --wash: 46 107 184;
+  --wash-2: 190 144 37;
 }
 
 html[data-theme="forest"] {
-  --canvas: 243 248 246;
-  --panel: 255 255 255;
+  --canvas: 239 248 244;
+  --panel: 250 255 252;
   --ink: 22 42 38;
   --muted: 90 112 107;
   --line: 214 228 223;
@@ -42,11 +46,13 @@ html[data-theme="forest"] {
   --sky: 53 120 144;
   --warn: 185 107 22;
   --danger: 177 70 70;
+  --wash: 42 133 97;
+  --wash-2: 53 120 144;
 }
 
 html[data-theme="graphite"] {
-  --canvas: 240 242 246;
-  --panel: 252 253 255;
+  --canvas: 237 240 246;
+  --panel: 249 251 255;
   --ink: 24 31 45;
   --muted: 89 98 116;
   --line: 213 220 231;
@@ -55,11 +61,13 @@ html[data-theme="graphite"] {
   --sky: 61 99 178;
   --warn: 191 105 33;
   --danger: 185 73 79;
+  --wash: 61 99 178;
+  --wash-2: 52 129 122;
 }
 
 html[data-theme="berry"] {
-  --canvas: 249 244 247;
-  --panel: 255 255 255;
+  --canvas: 250 241 247;
+  --panel: 255 251 254;
   --ink: 48 32 50;
   --muted: 116 90 110;
   --line: 230 217 227;
@@ -68,6 +76,8 @@ html[data-theme="berry"] {
   --sky: 134 93 150;
   --warn: 201 112 59;
   --danger: 186 79 93;
+  --wash: 134 93 150;
+  --wash-2: 224 154 87;
 }
 
 * {
@@ -79,7 +89,8 @@ body {
   min-width: 320px;
   position: relative;
   background:
-    linear-gradient(180deg, rgb(252 253 255), rgb(var(--canvas)) 420px),
+    linear-gradient(135deg, rgb(var(--wash) / 0.12), transparent 38%),
+    linear-gradient(180deg, rgb(var(--panel)), rgb(var(--canvas)) 420px),
     rgb(var(--canvas));
   color: rgb(var(--ink));
   font-feature-settings: "cv02", "cv03", "cv04";
@@ -93,8 +104,8 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgb(30 41 59 / 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(30 41 59 / 0.035) 1px, transparent 1px);
+    linear-gradient(rgb(var(--wash) / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--wash-2) / 0.045) 1px, transparent 1px);
   background-size: 42px 42px;
   mask-image: linear-gradient(180deg, black, transparent 72%);
 }
@@ -209,7 +220,7 @@ textarea:focus-visible {
   }
 
   .app-card {
-    @apply rounded-lg border border-line bg-white/95 p-5 shadow-[0_18px_44px_rgba(18,24,37,0.07)];
+    @apply rounded-lg border border-line bg-panel/95 p-5 shadow-[0_18px_44px_rgba(18,24,37,0.07)];
   }
 
   .app-muted-panel {

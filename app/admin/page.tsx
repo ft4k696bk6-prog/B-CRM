@@ -68,11 +68,23 @@ const sortOptions: Array<SortOption & { label: string }> = [
   { label: "Status", column: "status", direction: "asc" }
 ];
 
+function useDebouncedValue<T>(value: T, delay = 250) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setDebounced(value), delay);
+    return () => window.clearTimeout(timeout);
+  }, [value, delay]);
+
+  return debounced;
+}
+
 export default function AdminDashboardPage() {
   const { loading, profile } = useAuth(["owner", "admin", "kierownik", "finance", "viewer"]);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [assignees, setAssignees] = useState<Profile[]>([]);
   const [filters, setFilters] = useState<AdminLeadFilters>(initialFilters);
+  const debouncedFilters = useDebouncedValue(filters);
   const [sort, setSort] = useState<SortOption>(sortOptions[0]);
   const [leadPage, setLeadPage] = useState(1);
   const [leadPageSize, setLeadPageSize] = useState(DEFAULT_LEAD_PAGE_SIZE);
@@ -222,28 +234,28 @@ export default function AdminDashboardPage() {
       .eq("crm_environment", profile.crm_environment)
       .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false });
 
-    if (filters.createdFrom) query = query.gte("created_at", startOfDay(filters.createdFrom));
-    if (filters.createdTo) query = query.lte("created_at", endOfDay(filters.createdTo));
-    if (filters.updatedFrom) query = query.gte("updated_at", startOfDay(filters.updatedFrom));
-    if (filters.updatedTo) query = query.lte("updated_at", endOfDay(filters.updatedTo));
-    if (filters.openedFrom) query = query.gte("last_opened_at", startOfDay(filters.openedFrom));
-    if (filters.openedTo) query = query.lte("last_opened_at", endOfDay(filters.openedTo));
-    if (filters.postalCode) query = query.ilike("postal_code", `%${filters.postalCode}%`);
-    if (filters.voivodeship) query = query.ilike("voivodeship", `%${filters.voivodeship}%`);
-    if (filters.county) query = query.ilike("county", `%${filters.county}%`);
-    if (filters.status) query = query.eq("status", filters.status as LeadStatus);
+    if (debouncedFilters.createdFrom) query = query.gte("created_at", startOfDay(debouncedFilters.createdFrom));
+    if (debouncedFilters.createdTo) query = query.lte("created_at", endOfDay(debouncedFilters.createdTo));
+    if (debouncedFilters.updatedFrom) query = query.gte("updated_at", startOfDay(debouncedFilters.updatedFrom));
+    if (debouncedFilters.updatedTo) query = query.lte("updated_at", endOfDay(debouncedFilters.updatedTo));
+    if (debouncedFilters.openedFrom) query = query.gte("last_opened_at", startOfDay(debouncedFilters.openedFrom));
+    if (debouncedFilters.openedTo) query = query.lte("last_opened_at", endOfDay(debouncedFilters.openedTo));
+    if (debouncedFilters.postalCode) query = query.ilike("postal_code", `%${debouncedFilters.postalCode}%`);
+    if (debouncedFilters.voivodeship) query = query.ilike("voivodeship", `%${debouncedFilters.voivodeship}%`);
+    if (debouncedFilters.county) query = query.ilike("county", `%${debouncedFilters.county}%`);
+    if (debouncedFilters.status) query = query.eq("status", debouncedFilters.status as LeadStatus);
 
-    if (isManager && !filters.assignedTo) {
+    if (isManager && !debouncedFilters.assignedTo) {
       query = applyManagerScope(query);
     }
 
-    if (filters.assignedTo === "__unassigned") {
+    if (debouncedFilters.assignedTo === "__unassigned") {
       query = query.is("assigned_to", null).neq("status", "Zwrot");
-    } else if (filters.assignedTo === "__returned") {
+    } else if (debouncedFilters.assignedTo === "__returned") {
       query = query.eq("status", "Zwrot");
       if (isManager) query = applyManagerScope(query);
-    } else if (filters.assignedTo) {
-      query = query.eq("assigned_to", filters.assignedTo);
+    } else if (debouncedFilters.assignedTo) {
+      query = query.eq("assigned_to", debouncedFilters.assignedTo);
     }
 
     const { data, error: leadsError, count } = await query.range(from, to);
@@ -279,7 +291,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     setLeadPage(1);
-  }, [filters, sort, leadPageSize, profile?.id, profile?.crm_environment]);
+  }, [debouncedFilters, sort, leadPageSize, profile?.id, profile?.crm_environment]);
 
   useEffect(() => {
     if (!profile) return;
@@ -289,7 +301,7 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     if (!profile) return;
     loadLeads();
-  }, [filters, profile?.id, profile?.crm_environment, sort, assignees, leadPage, leadPageSize]);
+  }, [debouncedFilters, profile?.id, profile?.crm_environment, sort, assignees, leadPage, leadPageSize]);
 
   const selectedCount = selectedIds.length;
 
