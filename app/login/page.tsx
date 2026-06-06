@@ -16,10 +16,9 @@ import { BrandMark } from "@/components/brand-mark";
 import { useLanguage } from "@/components/language-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Alert } from "@/components/ui";
+import { demoModeEnabled } from "@/lib/demo-mode";
 import { homePathForRole, normalizeRole } from "@/lib/roles";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-
-const demoModeEnabled = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
 const demoOptions = [
   {
@@ -86,6 +85,10 @@ function getDemoAccount(key: string) {
 
 function resolveCredentials(identifier: string, typedPassword: string) {
   const normalizedIdentifier = identifier.trim().toLowerCase();
+  if (!demoModeEnabled) {
+    return { email: normalizedIdentifier, password: typedPassword };
+  }
+
   const demoAccount = getDemoAccount(normalizedIdentifier);
 
   if (!demoAccount) {
@@ -214,45 +217,47 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-5 border-t border-line pt-5">
-            <button
-              type="button"
-              onClick={() => setShowDemoMenu((value) => !value)}
-              disabled={loading || !isSupabaseConfigured}
-              className="btn-secondary w-full"
-            >
-              <Sparkles className="h-4 w-4" aria-hidden="true" />
-              {showDemoMenu ? t("hideDemo") : t("showDemo")}
-            </button>
+          {demoModeEnabled ? (
+            <div className="mt-5 border-t border-line pt-5">
+              <button
+                type="button"
+                onClick={() => setShowDemoMenu((value) => !value)}
+                disabled={loading || !isSupabaseConfigured}
+                className="btn-secondary w-full"
+              >
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                {showDemoMenu ? t("hideDemo") : t("showDemo")}
+              </button>
 
-          {showDemoMenu ? (
-            <div className="mt-3 grid gap-2 sm:grid-cols-2">
-              {demoOptions.map((option) => {
-                const Icon = option.icon;
+              {showDemoMenu ? (
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                  {demoOptions.map((option) => {
+                    const Icon = option.icon;
 
-                return (
-                  <button
-                    key={option.key}
-                    type="button"
-                    disabled={loading || !isSupabaseConfigured}
-                    onClick={() => onDemoLogin(option.key)}
-                    className="flex min-h-[74px] items-center gap-3 rounded-md border border-line bg-[#f9fbfd] px-3 py-3 text-left transition hover:-translate-y-px hover:border-ink hover:bg-white hover:shadow-sm disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    <span className="flex h-9 w-9 flex-none items-center justify-center rounded-md bg-white text-ink shadow-sm">
-                      <Icon className="h-4 w-4" aria-hidden="true" />
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block text-sm font-bold text-ink">
-                        {language === "pl" ? option.labelPl : option.labelEn}
-                      </span>
-                      <span className="block truncate text-xs text-muted">{t(option.descriptionKey)}</span>
-                    </span>
-                  </button>
-                );
-              })}
+                    return (
+                      <button
+                        key={option.key}
+                        type="button"
+                        disabled={loading || !isSupabaseConfigured}
+                        onClick={() => onDemoLogin(option.key)}
+                        className="flex min-h-[74px] items-center gap-3 rounded-md border border-line bg-[#f9fbfd] px-3 py-3 text-left transition hover:-translate-y-px hover:border-ink hover:bg-white hover:shadow-sm disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        <span className="flex h-9 w-9 flex-none items-center justify-center rounded-md bg-white text-ink shadow-sm">
+                          <Icon className="h-4 w-4" aria-hidden="true" />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block text-sm font-bold text-ink">
+                            {language === "pl" ? option.labelPl : option.labelEn}
+                          </span>
+                          <span className="block truncate text-xs text-muted">{t(option.descriptionKey)}</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : null}
             </div>
           ) : null}
-          </div>
         </div>
       </section>
     </main>

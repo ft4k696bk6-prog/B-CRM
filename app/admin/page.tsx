@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Ban,
   CalendarDays,
@@ -57,11 +57,23 @@ const sortOptions: Array<SortOption & { label: string }> = [
   { label: "Status", column: "status", direction: "asc" }
 ];
 
+function useDebouncedValue<T>(value: T, delayMs: number) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setDebounced(value), delayMs);
+    return () => clearTimeout(timeout);
+  }, [value, delayMs]);
+
+  return debounced;
+}
+
 export default function AdminDashboardPage() {
   const { loading, profile } = useAuth(["owner", "admin", "menadzer", "finance", "viewer"]);
   const { language } = useLanguage();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [salespeople, setSalespeople] = useState<Profile[]>([]);
+  const [salespeopleLoaded, setSalespeopleLoaded] = useState(false);
   const [filters, setFilters] = useState<AdminLeadFilters>(initialFilters);
   const [sort, setSort] = useState<SortOption>(sortOptions[0]);
   const [showFilters, setShowFilters] = useState(false);
@@ -82,66 +94,76 @@ export default function AdminDashboardPage() {
   });
 
   const isManager = isManagerRole(profile?.role);
+  const profileId = profile?.id;
+  const crmEnvironment = profile?.crm_environment;
   const canAssignLeads = canManageLeads(profile?.role);
   const canExportCurrentView = hasPermission(profile?.role, "data:export");
   const isEnglish = language === "en";
+  const debouncedFilters = useDebouncedValue(filters, 250);
+  const salespersonScopeKey = isManager ? salespeople.map((person) => person.id).join(",") : "";
+  const salespeopleReady = !isManager || salespeopleLoaded;
 
-  async function loadSalespeople() {
-    if (!profile) return;
+  const loadSalespeople = useCallback(async () => {
+    if (!crmEnvironment) return;
+
+    setSalespeopleLoaded(false);
 
     let query = supabase
       .from("profiles")
       .select("*")
       .in("role", ["handlowiec", "sales"])
-      .eq("crm_environment", profile.crm_environment)
+      .eq("crm_environment", crmEnvironment)
       .order("full_name", { ascending: true });
 
-    if (isManager && profile) query = query.eq("manager_id", profile.id);
+    if (isManager && profileId) query = query.eq("manager_id", profileId);
 
     const { data } = await query;
 
     setSalespeople((data || []) as Profile[]);
-  }
+    setSalespeopleLoaded(true);
+  }, [crmEnvironment, isManager, profileId]);
 
-  function applyManagerScope<T extends { in: (column: string, values: string[]) => T; or: (filters: string) => T }>(query: T) {
-    if (!isManager) return query;
-
-    const teamIds = salespeople.map((person) => person.id);
-
-    if (teamIds.length === 0) {
-      return query.or("assigned_to.is.null");
-    }
-
-    return query.or(`assigned_to.in.(${teamIds.join(",")}),assigned_to.is.null`);
-  }
-
-  async function loadStats() {
-    if (!profile) return;
+  const loadStats = useCallback(async () => {
+    if (!crmEnvironment) return;
 
     let query = supabase
       .from("leads")
       .select("id,status,assigned_to,meeting_at,callback_at")
-      .eq("crm_environment", profile.crm_environment);
+      .eq("crm_environment", crmEnvironment);
 
-    query = applyManagerScope(query);
+    if (isManager) {
+      query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null` : "assigned_to.is.null");
+    }
 
     const { data } = await query;
 
-    const rows = (data || []) as Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at" | "callback_at">[];
-    setStats({
-      all: rows.length,
-      unassigned: rows.filter((lead) => !lead.assigned_to && lead.status !== "Zwrot").length,
-      assigned: rows.filter((lead) => Boolean(lead.assigned_to)).length,
-      callbacks: rows.filter((lead) => lead.status === "Call back").length,
-      meetings: rows.filter((lead) => lead.status === "Spotkanie" || lead.meeting_at).length,
-      contracts: rows.filter((lead) => lead.status === "Umowa").length,
-      resignations: rows.filter((lead) => lead.status === "Rezygnacja").length,
-      noNextAction: rows.filter(needsNextAction).length
-    });
-  }
+    const nextStats = {
+      all: 0,
+      unassigned: 0,
+      assigned: 0,
+      callbacks: 0,
+      meetings: 0,
+      contracts: 0,
+      resignations: 0,
+      noNextAction: 0
+    };
 
-  async function loadLeads() {
-    if (!profile) return;
+    for (const lead of (data || []) as Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at" | "callback_at">[]) {
+      nextStats.all += 1;
+      if (!lead.assigned_to && lead.status !== "Zwrot") nextStats.unassigned += 1;
+      if (lead.assigned_to) nextStats.assigned += 1;
+      if (lead.status === "Call back") nextStats.callbacks += 1;
+      if (lead.status === "Spotkanie" || lead.meeting_at) nextStats.meetings += 1;
+      if (lead.status === "Umowa") nextStats.contracts += 1;
+      if (lead.status === "Rezygnacja") nextStats.resignations += 1;
+      if (needsNextAction(lead)) nextStats.noNextAction += 1;
+    }
+
+    setStats(nextStats);
+  }, [crmEnvironment, isManager, salespersonScopeKey]);
+
+  const loadLeads = useCallback(async () => {
+    if (!crmEnvironment) return;
 
     setBusy(true);
     setError("");
@@ -151,32 +173,34 @@ export default function AdminDashboardPage() {
       .select(
         "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)"
       )
-      .eq("crm_environment", profile.crm_environment)
+      .eq("crm_environment", crmEnvironment)
       .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false })
       .limit(1000);
 
-    if (filters.createdFrom) query = query.gte("created_at", startOfDay(filters.createdFrom));
-    if (filters.createdTo) query = query.lte("created_at", endOfDay(filters.createdTo));
-    if (filters.updatedFrom) query = query.gte("updated_at", startOfDay(filters.updatedFrom));
-    if (filters.updatedTo) query = query.lte("updated_at", endOfDay(filters.updatedTo));
-    if (filters.openedFrom) query = query.gte("last_opened_at", startOfDay(filters.openedFrom));
-    if (filters.openedTo) query = query.lte("last_opened_at", endOfDay(filters.openedTo));
-    if (filters.postalCode) query = query.ilike("postal_code", `%${filters.postalCode}%`);
-    if (filters.voivodeship) query = query.ilike("voivodeship", `%${filters.voivodeship}%`);
-    if (filters.county) query = query.ilike("county", `%${filters.county}%`);
-    if (filters.status) query = query.eq("status", filters.status as LeadStatus);
+    if (debouncedFilters.createdFrom) query = query.gte("created_at", startOfDay(debouncedFilters.createdFrom));
+    if (debouncedFilters.createdTo) query = query.lte("created_at", endOfDay(debouncedFilters.createdTo));
+    if (debouncedFilters.updatedFrom) query = query.gte("updated_at", startOfDay(debouncedFilters.updatedFrom));
+    if (debouncedFilters.updatedTo) query = query.lte("updated_at", endOfDay(debouncedFilters.updatedTo));
+    if (debouncedFilters.openedFrom) query = query.gte("last_opened_at", startOfDay(debouncedFilters.openedFrom));
+    if (debouncedFilters.openedTo) query = query.lte("last_opened_at", endOfDay(debouncedFilters.openedTo));
+    if (debouncedFilters.postalCode) query = query.ilike("postal_code", `%${debouncedFilters.postalCode}%`);
+    if (debouncedFilters.voivodeship) query = query.ilike("voivodeship", `%${debouncedFilters.voivodeship}%`);
+    if (debouncedFilters.county) query = query.ilike("county", `%${debouncedFilters.county}%`);
+    if (debouncedFilters.status) query = query.eq("status", debouncedFilters.status as LeadStatus);
 
-    if (isManager && !filters.assignedTo) {
-      query = applyManagerScope(query);
+    if (isManager && !debouncedFilters.assignedTo) {
+      query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null` : "assigned_to.is.null");
     }
 
-    if (filters.assignedTo === "__unassigned") {
+    if (debouncedFilters.assignedTo === "__unassigned") {
       query = query.is("assigned_to", null).neq("status", "Zwrot");
-    } else if (filters.assignedTo === "__returned") {
+    } else if (debouncedFilters.assignedTo === "__returned") {
       query = query.eq("status", "Zwrot");
-      if (isManager) query = applyManagerScope(query);
-    } else if (filters.assignedTo) {
-      query = query.eq("assigned_to", filters.assignedTo);
+      if (isManager) {
+        query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null` : "assigned_to.is.null");
+      }
+    } else if (debouncedFilters.assignedTo) {
+      query = query.eq("assigned_to", debouncedFilters.assignedTo);
     }
 
     const { data, error: leadsError } = await query;
@@ -189,18 +213,21 @@ export default function AdminDashboardPage() {
     }
 
     setBusy(false);
-  }
+  }, [crmEnvironment, debouncedFilters, isManager, salespersonScopeKey, sort]);
 
   useEffect(() => {
-    if (!profile) return;
     loadSalespeople();
-  }, [profile?.id, profile?.crm_environment]);
+  }, [loadSalespeople]);
 
   useEffect(() => {
-    if (!profile) return;
+    if (!salespeopleReady) return;
     loadStats();
+  }, [loadStats, salespeopleReady]);
+
+  useEffect(() => {
+    if (!salespeopleReady) return;
     loadLeads();
-  }, [filters, profile?.id, profile?.crm_environment, sort, salespeople]);
+  }, [loadLeads, salespeopleReady]);
 
   const selectedCount = selectedIds.length;
 
@@ -210,25 +237,33 @@ export default function AdminDashboardPage() {
   );
 
   const teamPerformance = useMemo(
-    () =>
-      salespeople
-        .map((person) => {
-          const assigned = leads.filter((lead) => lead.assigned_to === person.id);
-          return {
-            person,
-            leads: assigned.length,
-            meetings: assigned.filter((lead) => lead.status === "Spotkanie" || lead.meeting_at).length,
-            contracts: assigned.filter((lead) => lead.status === "Umowa").length,
-            overdueCallbacks: assigned.filter(
-              (lead) =>
-                lead.status === "Call back" &&
-                lead.callback_at &&
-                new Date(lead.callback_at).getTime() < Date.now()
-            ).length,
-            noNextAction: assigned.filter(needsNextAction).length
-          };
-        })
-        .sort((a, b) => b.contracts - a.contracts || b.meetings - a.meetings || b.leads - a.leads),
+    () => {
+      const now = Date.now();
+      const totals = new Map(
+        salespeople.map((person) => [
+          person.id,
+          { leads: 0, meetings: 0, contracts: 0, overdueCallbacks: 0, noNextAction: 0 }
+        ])
+      );
+
+      for (const lead of leads) {
+        if (!lead.assigned_to) continue;
+        const row = totals.get(lead.assigned_to);
+        if (!row) continue;
+
+        row.leads += 1;
+        if (lead.status === "Spotkanie" || lead.meeting_at) row.meetings += 1;
+        if (lead.status === "Umowa") row.contracts += 1;
+        if (lead.status === "Call back" && lead.callback_at && new Date(lead.callback_at).getTime() < now) {
+          row.overdueCallbacks += 1;
+        }
+        if (needsNextAction(lead)) row.noNextAction += 1;
+      }
+
+      return salespeople
+        .map((person) => ({ person, ...totals.get(person.id)! }))
+        .sort((a, b) => b.contracts - a.contracts || b.meetings - a.meetings || b.leads - a.leads);
+    },
     [leads, salespeople]
   );
 

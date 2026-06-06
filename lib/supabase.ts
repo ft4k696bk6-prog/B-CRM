@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { demoModeEnabled } from "@/lib/demo-mode";
 
 type AnyRecord = Record<string, unknown>;
 type QueryResult = { data: unknown; error: null | { message: string } };
@@ -37,7 +38,7 @@ function isRealSupabaseKey(value?: string) {
 
 const hasRealSupabase = isRealSupabaseUrl(supabaseUrl) && isRealSupabaseKey(supabaseAnonKey);
 
-export const isDemoSupabaseFallback = !hasRealSupabase;
+export const isDemoSupabaseFallback = demoModeEnabled && !hasRealSupabase;
 export const isSupabaseConfigured = hasRealSupabase || isDemoSupabaseFallback;
 
 const demoProfiles: DemoProfile[] = [
@@ -131,6 +132,8 @@ function profileToSession(profile: DemoProfile) {
 }
 
 function readDemoSession() {
+  if (!isDemoSupabaseFallback) return null;
+
   const storage = getSessionStorage();
   const raw = storage?.getItem("bcrm-demo-session");
   if (!raw) return null;
@@ -329,6 +332,10 @@ function createDemoSupabaseClient() {
         return { data: { session: readDemoSession() }, error: null };
       },
       async signInWithPassword({ email, password }: { email: string; password: string }) {
+        if (!isDemoSupabaseFallback) {
+          return { data: { user: null, session: null }, error: { message: "Supabase is not configured" } };
+        }
+
         const normalizedEmail = email.trim().toLowerCase();
         const profile = demoProfiles.find((item) => item.email === normalizedEmail);
         if (!profile || demoPasswords[normalizedEmail] !== password) {

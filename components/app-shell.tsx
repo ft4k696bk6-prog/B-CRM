@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
@@ -26,10 +27,10 @@ import {
   type LucideIcon
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
-import { DemoTour } from "@/components/demo-tour";
 import { useLanguage } from "@/components/language-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Alert, ConfirmDialog } from "@/components/ui";
+import { demoModeEnabled } from "@/lib/demo-mode";
 import { hasAnyPermission } from "@/lib/permissions";
 import type { Permission } from "@/lib/permissions";
 import { homePathForRole, isSalesRole, isSystemAdminRole, ROLE_LABELS } from "@/lib/roles";
@@ -187,6 +188,11 @@ const roleLabelsEn: Record<Profile["role"], string> = {
   monter: "Installer"
 };
 
+const DemoTour = dynamic(() => import("@/components/demo-tour").then((mod) => mod.DemoTour), {
+  ssr: false,
+  loading: () => null
+});
+
 export function AppShell({ profile, children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -197,7 +203,8 @@ export function AppShell({ profile, children }: AppShellProps) {
   const [shellNotice, setShellNotice] = useState<{ tone: "success" | "danger"; message: string } | null>(null);
   const homeHref = homePathForRole(profile.role);
   const roleLabel = language === "en" ? roleLabelsEn[profile.role] : ROLE_LABELS[profile.role];
-  const canRunDemoTour = isDemoScope(profile.crm_environment) && isSystemAdminRole(profile.role);
+  const isDemoProfile = demoModeEnabled && isDemoScope(profile.crm_environment);
+  const canRunDemoTour = isDemoProfile && isSystemAdminRole(profile.role);
   const links = navigationLinks.filter((link) => {
     if (link.salesOnly && !isSalesRole(profile.role)) return false;
     if (link.hideWhenAnyPermission && hasAnyPermission(profile.role, link.hideWhenAnyPermission)) return false;
@@ -248,6 +255,8 @@ export function AppShell({ profile, children }: AppShellProps) {
   }
 
   function renderNavigation(closeOnClick = false) {
+    const isMobileMenu = closeOnClick;
+
     return (
       <nav className="grid gap-4">
         {navigationGroups.map((group) => {
@@ -256,7 +265,7 @@ export function AppShell({ profile, children }: AppShellProps) {
 
           return (
             <div key={group.key} className="grid gap-1">
-              <div className="px-2 text-[11px] font-black uppercase tracking-wide text-muted">
+              <div className={`px-2 text-[11px] font-black uppercase tracking-wide ${isMobileMenu ? "text-white/60" : "text-muted"}`}>
                 {t(group.labelKey)}
               </div>
               {groupLinks.map((link) => {
@@ -271,8 +280,12 @@ export function AppShell({ profile, children }: AppShellProps) {
                     onClick={() => closeOnClick && setMobileOpen(false)}
                     className={`flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-bold transition ${
                       active
-                        ? "bg-ink text-white shadow-sm"
-                        : "text-muted hover:bg-[#eef3f8] hover:text-ink"
+                        ? isMobileMenu
+                          ? "bg-[#f0c765] text-[#101722] shadow-sm ring-1 ring-white/20"
+                          : "bg-ink text-white shadow-sm ring-1 ring-sky/20"
+                        : isMobileMenu
+                          ? "text-white/82 hover:bg-white/10 hover:text-white"
+                          : "text-muted hover:bg-sky/10 hover:text-ink"
                     }`}
                   >
                     <Icon className="h-4 w-4" aria-hidden="true" />
@@ -289,7 +302,7 @@ export function AppShell({ profile, children }: AppShellProps) {
 
   return (
     <div className="min-h-screen text-ink">
-      <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-line bg-panel/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
           <div className="flex min-w-0 items-center gap-2">
             <button
@@ -305,7 +318,7 @@ export function AppShell({ profile, children }: AppShellProps) {
               <span>
                 <span className="flex items-center gap-2 text-sm font-bold leading-4">
                   B-CRM
-                  {isDemoScope(profile.crm_environment) ? (
+                  {isDemoProfile ? (
                     <span className="rounded-md border border-sky/20 bg-sky/10 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide text-sky">
                       Demo
                     </span>
@@ -362,37 +375,37 @@ export function AppShell({ profile, children }: AppShellProps) {
       </header>
 
       {mobileOpen ? (
-        <div className="fixed inset-0 z-40 lg:hidden">
+        <div className="fixed inset-0 isolate z-[80] lg:hidden">
           <button
             type="button"
-            className="absolute inset-0 bg-[#101722]/55 backdrop-blur-sm"
+            className="absolute inset-0 z-0 bg-ink/45 backdrop-blur-sm"
             aria-label="Zamknij menu"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="relative flex h-full w-[min(88vw,340px)] flex-col border-r border-line bg-white p-3 shadow-soft">
+          <aside className="mobile-menu-panel fixed inset-y-0 left-0 z-10 flex h-dvh w-[min(88vw,340px)] flex-col border-r p-3 text-white">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <BrandMark size="sm" />
                 <div>
-                  <div className="flex items-center gap-2 text-sm font-black text-ink">
+                  <div className="flex items-center gap-2 text-sm font-black text-white">
                     B-CRM
-                    {isDemoScope(profile.crm_environment) ? (
+                    {isDemoProfile ? (
                       <span className="rounded-md border border-sky/20 bg-sky/10 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide text-sky">
                         Demo
                       </span>
                     ) : null}
                   </div>
-                  <div className="text-xs text-muted">{roleLabel}</div>
+                  <div className="text-xs font-semibold text-white/62">{roleLabel}</div>
                 </div>
               </div>
-              <button type="button" onClick={() => setMobileOpen(false)} className="btn-icon" aria-label="Zamknij menu">
+              <button type="button" onClick={() => setMobileOpen(false)} className="mobile-menu-close" aria-label="Zamknij menu">
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
             <div className="mb-3 md:hidden">
               <LanguageSwitcher />
             </div>
-            <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-muted">
+            <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-white/62">
               <PanelLeft className="h-4 w-4" aria-hidden="true" />
               {t("menu")}
             </div>
@@ -402,7 +415,7 @@ export function AppShell({ profile, children }: AppShellProps) {
       ) : null}
 
       <div className="app-layout mx-auto grid max-w-7xl gap-5 px-4 py-5 lg:grid-cols-[230px_1fr]">
-        <aside className="app-sidebar hidden rounded-lg border border-line bg-white p-2 shadow-sm lg:sticky lg:top-20 lg:block lg:h-fit">
+        <aside className="app-sidebar hidden rounded-lg border border-line bg-panel p-2 shadow-sm lg:sticky lg:top-20 lg:block lg:h-fit">
           <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-muted">
             <PanelLeft className="h-4 w-4" aria-hidden="true" />
             {t("menu")}
