@@ -37,15 +37,19 @@ type FileSyncResult = LeadIngestResult & {
   sourceRows: number;
 };
 
-function enabled() {
-  return process.env.GOOGLE_DRIVE_LEAD_SYNC_ENABLED === "true";
-}
-
 function csvList(value: string | undefined) {
   return (value || "")
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function envFlag(value: string | undefined) {
+  const normalized = value?.trim().toLowerCase();
+  if (!normalized) return "unset";
+  if (["1", "true", "yes", "on"].includes(normalized)) return "enabled";
+  if (["0", "false", "no", "off"].includes(normalized)) return "disabled";
+  return "invalid";
 }
 
 function base64Url(input: string | Buffer) {
@@ -56,21 +60,60 @@ function base64Url(input: string | Buffer) {
     .replace(/=+$/g, "");
 }
 
-function serviceAccountConfig(): GoogleServiceAccount | null {
+function readServiceAccountConfig(): { account: GoogleServiceAccount | null; error?: string } {
   const json = process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON;
   if (json) {
-    const parsed = JSON.parse(json) as Partial<GoogleServiceAccount>;
-    if (parsed.client_email && parsed.private_key) {
-      return {
-        client_email: parsed.client_email,
-        private_key: parsed.private_key.replace(/\\n/g, "\n")
-      };
+    try {
+      const parsed = JSON.parse(json) as Partial<GoogleServiceAccount>;
+      if (parsed.client_email && parsed.private_key) {
+        return {
+          account: {
+            client_email: parsed.client_email,
+            private_key: parsed.private_key.replace(/\\n/g, "\n")
+          }
+        };
+      }
+      return { account: null, error: "GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON nie zawiera client_email/private_key." };
+    } catch {
+      return { account: null, error: "GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON nie jest poprawnym JSON." };
     }
   }
 
   const clientEmail = process.env.GOOGLE_DRIVE_CLIENT_EMAIL;
   const privateKey = process.env.GOOGLE_DRIVE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-  return clientEmail && privateKey ? { client_email: clientEmail, private_key: privateKey } : null;
+  return { account: clientEmail && privateKey ? { client_email: clientEmail, private_key: privateKey } : null };
+}
+
+function serviceAccountConfig(): GoogleServiceAccount | null {
+  const config = readServiceAccountConfig();
+  if (config.error) throw new Error(config.error);
+  return config.account;
+}
+
+export function googleDriveLeadSyncStatus() {
+  const flag = envFlag(process.env.GOOGLE_DRIVE_LEAD_SYNC_ENABLED);
+  const serviceAccount = readServiceAccountConfig();
+  const fileIds = csvList(process.env.GOOGLE_DRIVE_LEAD_FILE_IDS);
+  const hasFolder = Boolean(process.env.GOOGLE_DRIVE_LEAD_FOLDER_ID?.trim());
+  const hasTargets = fileIds.length > 0 || hasFolder;
+  const missing: string[] = [];
+
+  if (serviceAccount.error) missing.push("GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON");
+  if (!serviceAccount.account) missing.push("GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON albo GOOGLE_DRIVE_CLIENT_EMAIL/GOOGLE_DRIVE_PRIVATE_KEY");
+  if (!hasTargets) missing.push("GOOGLE_DRIVE_LEAD_FILE_IDS albo GOOGLE_DRIVE_LEAD_FOLDER_ID");
+
+  return {
+    enabled: flag === "enabled" || (flag === "unset" && Boolean(serviceAccount.account) && hasTargets),
+    flag,
+    configured: {
+      serviceAccount: Boolean(serviceAccount.account),
+      leadTargets: hasTargets,
+      fileIds: fileIds.length,
+      folder: hasFolder
+    },
+    missing,
+    error: serviceAccount.error
+  };
 }
 
 async function googleAccessToken() {
@@ -305,8 +348,10 @@ async function rowsFromDriveFile(accessToken: string, file: DriveFile) {
 }
 
 export async function syncGoogleDriveLeadFiles(input: SyncInput) {
-  if (!enabled()) {
-    return { enabled: false, files: [], totals: { imported: 0, skippedExisting: 0, skippedInFile: 0, failed: 0 } };
+  const status = googleDriveLeadSyncStatus();
+
+  if (!status.enabled) {
+    return { enabled: false, syncStatus: status, files: [], totals: { imported: 0, skippedExisting: 0, skippedInFile: 0, failed: 0 } };
   }
 
   const accessToken = await googleAccessToken();
@@ -335,6 +380,7 @@ export async function syncGoogleDriveLeadFiles(input: SyncInput) {
 
   return {
     enabled: true,
+    syncStatus: status,
     files: results,
     totals: results.reduce(
       (acc, result) => ({

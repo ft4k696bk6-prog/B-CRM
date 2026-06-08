@@ -1,8 +1,13 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
     {
       "path": "/api/integrations/google-drive/leads",
       "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/integrations/meta/leads/sync",
+      "schedule": "15 5 * * *"
     }
   ]
 }
