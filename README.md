@@ -80,6 +80,14 @@ SUPABASE_SERVICE_ROLE_KEY=
 NEXT_PUBLIC_DEMO_MODE=false
 NEXT_PUBLIC_APP_URL=
 
+CRON_SECRET=
+GOOGLE_SHEETS_IMPORT_SECRET=
+GOOGLE_SHEETS_LEADS_SPREADSHEET_ID=
+GOOGLE_SHEETS_LEADS_SHEET_NAMES=
+GOOGLE_SHEETS_LEADS_CRM_ENVIRONMENT=production
+GOOGLE_SERVICE_ACCOUNT_EMAIL=
+GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=
+
 TWILIO_ACCOUNT_SID=
 TWILIO_AUTH_TOKEN=
 TWILIO_CALLER_ID=
@@ -91,6 +99,8 @@ OPENAI_SUMMARY_MODEL=gpt-4.1-mini
 
 `SUPABASE_SERVICE_ROLE_KEY` must stay server-side only. If a real service role key is ever committed, rotate it in Supabase immediately.
 Twilio variables enable real click-to-call. Without them, demo accounts use a safe simulated call flow. `OPENAI_API_KEY` enables transcription and AI summaries for recorded calls.
+
+Google Sheets lead import runs through `/api/integrations/google-sheets/leads`. Protect manual calls with `GOOGLE_SHEETS_IMPORT_SECRET`; Vercel Cron can use `CRON_SECRET`. The default spreadsheet ID and tab names match the Meta lead sheet, but they can be overridden with `GOOGLE_SHEETS_LEADS_SPREADSHEET_ID` and `GOOGLE_SHEETS_LEADS_SHEET_NAMES`. For private sheets, create a Google service account, set `GOOGLE_SERVICE_ACCOUNT_EMAIL` and `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`, then share the spreadsheet with that service account email as Viewer.
 
 ## Database
 
