@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/integrations/google-sheets/leads",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 6 * * *"
     }
   ]
 }
