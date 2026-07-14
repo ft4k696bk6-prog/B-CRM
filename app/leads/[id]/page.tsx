@@ -156,18 +156,24 @@ export default function LeadDetailsPage() {
   async function loadSalespeople() {
     if (!profile) return;
 
-    let query = supabase
+    const query = supabase
       .from("profiles")
       .select("*")
-      .in("role", ["handlowiec", "sales"])
+      .in("role", ["handlowiec", "sales", "menadzer"])
       .eq("crm_environment", profile.crm_environment)
       .order("full_name", { ascending: true });
 
-    if (isManager && profile) query = query.eq("manager_id", profile.id);
-
     const { data } = await query;
+    const assignablePeople =
+      isManager
+        ? ((data || []) as Profile[]).filter((person) => person.id === profile.id || person.manager_id === profile.id)
+        : ((data || []) as Profile[]);
+    const peopleWithManager =
+      isManager && !assignablePeople.some((person) => person.id === profile.id)
+        ? [...assignablePeople, profile].sort((a, b) => a.full_name.localeCompare(b.full_name, "pl"))
+        : assignablePeople;
 
-    setSalespeople((data || []) as Profile[]);
+    setSalespeople(peopleWithManager);
   }
 
   useEffect(() => {
@@ -364,22 +370,27 @@ export default function LeadDetailsPage() {
 
   async function assignLead(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!lead || !profile || !canManage) return;
+    if (!lead || !profile || !session?.access_token || !canManage) return;
 
     setBusy(true);
     setError("");
 
-    const { error: assignError } = await supabase
-      .from("leads")
-      .update({
-        assigned_to: selectedAssignee || null,
-        status: selectedAssignee ? "Przypisany" : "Nowy"
+    const response = await fetch("/api/leads/assign", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify({
+        leadIds: [lead.id],
+        assignedTo: selectedAssignee || null
       })
-      .eq("id", lead.id)
-      .eq("crm_environment", profile.crm_environment);
+    });
 
-    if (assignError) {
-      setError(assignError.message);
+    const result = (await response.json().catch(() => ({}))) as { error?: string };
+
+    if (!response.ok) {
+      setError(result.error || "Nie udało się zapisać przypisania.");
     } else {
       await refresh();
     }

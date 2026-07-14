@@ -69,7 +69,7 @@ function useDebouncedValue<T>(value: T, delayMs: number) {
 }
 
 export default function AdminDashboardPage() {
-  const { loading, profile } = useAuth(["owner", "admin", "menadzer", "finance", "viewer"]);
+  const { loading, profile, session } = useAuth(["owner", "admin", "menadzer", "finance", "viewer"]);
   const { language } = useLanguage();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [salespeople, setSalespeople] = useState<Profile[]>([]);
@@ -108,20 +108,26 @@ export default function AdminDashboardPage() {
 
     setSalespeopleLoaded(false);
 
-    let query = supabase
+    const query = supabase
       .from("profiles")
       .select("*")
-      .in("role", ["handlowiec", "sales"])
+      .in("role", ["handlowiec", "sales", "menadzer"])
       .eq("crm_environment", crmEnvironment)
       .order("full_name", { ascending: true });
 
-    if (isManager && profileId) query = query.eq("manager_id", profileId);
-
     const { data } = await query;
+    const assignablePeople =
+      isManager && profileId
+        ? ((data || []) as Profile[]).filter((person) => person.id === profileId || person.manager_id === profileId)
+        : ((data || []) as Profile[]);
+    const peopleWithManager =
+      isManager && profile && !assignablePeople.some((person) => person.id === profile.id)
+        ? [...assignablePeople, profile].sort((a, b) => a.full_name.localeCompare(b.full_name, "pl"))
+        : assignablePeople;
 
-    setSalespeople((data || []) as Profile[]);
+    setSalespeople(peopleWithManager);
     setSalespeopleLoaded(true);
-  }, [crmEnvironment, isManager, profileId]);
+  }, [crmEnvironment, isManager, profile, profileId]);
 
   const loadStats = useCallback(async () => {
     if (!crmEnvironment) return;
@@ -323,22 +329,27 @@ export default function AdminDashboardPage() {
   }
 
   async function assignSelected() {
-    if (!profile || !selectedSalesperson || selectedIds.length === 0) return;
+    if (!profile || !session?.access_token || !selectedSalesperson || selectedIds.length === 0) return;
 
     setBusy(true);
     setError("");
 
-    const { error: assignError } = await supabase
-      .from("leads")
-      .update({
-        assigned_to: selectedSalesperson,
-        status: "Przypisany"
+    const response = await fetch("/api/leads/assign", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify({
+        leadIds: selectedIds,
+        assignedTo: selectedSalesperson
       })
-      .eq("crm_environment", profile.crm_environment)
-      .in("id", selectedIds);
+    });
 
-    if (assignError) {
-      setError(assignError.message);
+    const result = (await response.json().catch(() => ({}))) as { error?: string };
+
+    if (!response.ok) {
+      setError(result.error || "Nie udało się przypisać leadów.");
     } else {
       setSelectedIds([]);
       setSelectedSalesperson("");
