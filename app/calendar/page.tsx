@@ -317,6 +317,7 @@ export default function CalendarPage() {
     if (!profile) return [];
 
     const ownerIds = owners.map((owner) => owner.id);
+    const includeAllLeadOwners = !selectedUserId && isSystemWide(profile.role);
     const includeUnassigned = !selectedUserId && (isSystemWide(profile.role) || profile.role === "menadzer");
     if (ownerIds.length === 0 && !includeUnassigned) return [];
 
@@ -339,14 +340,14 @@ export default function CalendarPage() {
       .lt("callback_at", startOfNextMonthIso(month))
       .order("callback_at", { ascending: true });
 
-    if (ownerIds.length > 0 && includeUnassigned) {
+    if (!includeAllLeadOwners && ownerIds.length > 0 && includeUnassigned) {
       const ownerFilter = ownerIds.join(",");
       meetingsQuery = meetingsQuery.or(`assigned_to.in.(${ownerFilter}),assigned_to.is.null`);
       callbacksQuery = callbacksQuery.or(`assigned_to.in.(${ownerFilter}),assigned_to.is.null`);
-    } else if (ownerIds.length > 0) {
+    } else if (!includeAllLeadOwners && ownerIds.length > 0) {
       meetingsQuery = meetingsQuery.in("assigned_to", ownerIds);
       callbacksQuery = callbacksQuery.in("assigned_to", ownerIds);
-    } else {
+    } else if (!includeAllLeadOwners) {
       meetingsQuery = meetingsQuery.is("assigned_to", null);
       callbacksQuery = callbacksQuery.is("assigned_to", null);
     }
