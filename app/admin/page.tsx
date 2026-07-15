@@ -132,16 +132,33 @@ export default function AdminDashboardPage() {
   const loadStats = useCallback(async () => {
     if (!crmEnvironment) return;
 
-    let query = supabase
-      .from("leads")
-      .select("id,status,assigned_to,meeting_at,callback_at")
-      .eq("crm_environment", crmEnvironment);
+    const statRows: Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at" | "callback_at">[] = [];
+    const pageSize = 1000;
+    let from = 0;
 
-    if (isManager) {
-      query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null` : "assigned_to.is.null");
+    while (true) {
+      let query = supabase
+        .from("leads")
+        .select("id,status,assigned_to,meeting_at,callback_at")
+        .eq("crm_environment", crmEnvironment)
+        .range(from, from + pageSize - 1);
+
+      if (isManager) {
+        query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null` : "assigned_to.is.null");
+      }
+
+      const { data, error: statsError } = await query;
+
+      if (statsError) {
+        setError(statsError.message);
+        break;
+      }
+
+      statRows.push(...((data || []) as Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at" | "callback_at">[]));
+
+      if (!data || data.length < pageSize) break;
+      from += pageSize;
     }
-
-    const { data } = await query;
 
     const nextStats = {
       all: 0,
@@ -154,7 +171,7 @@ export default function AdminDashboardPage() {
       noNextAction: 0
     };
 
-    for (const lead of (data || []) as Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at" | "callback_at">[]) {
+    for (const lead of statRows) {
       nextStats.all += 1;
       if (!lead.assigned_to && lead.status !== "Zwrot") nextStats.unassigned += 1;
       if (lead.assigned_to) nextStats.assigned += 1;
