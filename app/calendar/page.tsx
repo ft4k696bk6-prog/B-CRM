@@ -159,7 +159,7 @@ function visibleProfilesFor(profile: Profile, users: Profile[], kind: CalendarKi
 
   if (profile.role === "menadzer") {
     if (kind === "handlowiec") {
-      return normalizedUsers.filter((user) => user.role === "handlowiec" && user.manager_id === profile.id);
+      return normalizedUsers.filter((user) => user.id === profile.id || (user.role === "handlowiec" && user.manager_id === profile.id));
     }
     if (kind === "menadzer") return normalizedUsers.filter((user) => user.id === profile.id);
     if (kind === "internal") {
@@ -317,28 +317,39 @@ export default function CalendarPage() {
     if (!profile) return [];
 
     const ownerIds = owners.map((owner) => owner.id);
-    if (ownerIds.length === 0) return [];
+    const includeUnassigned = !selectedUserId && (isSystemWide(profile.role) || profile.role === "menadzer");
+    if (ownerIds.length === 0 && !includeUnassigned) return [];
 
     const select = "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)";
-    const meetingsQuery = supabase
+    let meetingsQuery = supabase
       .from("leads")
       .select(select)
       .eq("crm_environment", profile.crm_environment)
       .not("meeting_at", "is", null)
       .gte("meeting_at", startOfMonthIso(month))
       .lt("meeting_at", startOfNextMonthIso(month))
-      .in("assigned_to", ownerIds)
       .order("meeting_at", { ascending: true });
 
-    const callbacksQuery = supabase
+    let callbacksQuery = supabase
       .from("leads")
       .select(select)
       .eq("crm_environment", profile.crm_environment)
       .not("callback_at", "is", null)
       .gte("callback_at", startOfMonthIso(month))
       .lt("callback_at", startOfNextMonthIso(month))
-      .in("assigned_to", ownerIds)
       .order("callback_at", { ascending: true });
+
+    if (ownerIds.length > 0 && includeUnassigned) {
+      const ownerFilter = ownerIds.join(",");
+      meetingsQuery = meetingsQuery.or(`assigned_to.in.(${ownerFilter}),assigned_to.is.null`);
+      callbacksQuery = callbacksQuery.or(`assigned_to.in.(${ownerFilter}),assigned_to.is.null`);
+    } else if (ownerIds.length > 0) {
+      meetingsQuery = meetingsQuery.in("assigned_to", ownerIds);
+      callbacksQuery = callbacksQuery.in("assigned_to", ownerIds);
+    } else {
+      meetingsQuery = meetingsQuery.is("assigned_to", null);
+      callbacksQuery = callbacksQuery.is("assigned_to", null);
+    }
 
     const [meetingsResult, callbacksResult] = await Promise.all([meetingsQuery, callbacksQuery]);
 
@@ -381,8 +392,9 @@ export default function CalendarPage() {
 
     try {
       const owners = selectedOwners;
-      const roleEvents = calendarKind === "handlowiec" ? await loadSalesLeadEvents(owners) : [];
-      const internalEvents = calendarKind === "handlowiec" ? [] : await loadInternalEvents(owners);
+      const shouldLoadLeadEvents = calendarKind === "handlowiec" || calendarKind === "menadzer";
+      const roleEvents = shouldLoadLeadEvents ? await loadSalesLeadEvents(owners) : [];
+      const internalEvents = shouldLoadLeadEvents ? [] : await loadInternalEvents(owners);
       setEvents([...roleEvents, ...internalEvents].sort((a, b) => a.at.localeCompare(b.at)));
     } catch (calendarError) {
       setError(calendarError instanceof Error ? calendarError.message : "Błąd kalendarza.");
