@@ -273,7 +273,7 @@ export function AppShell({ profile, children }: AppShellProps) {
                 const active = pathname === link.href;
 
                 return (
-                  <Link
+                  <a
                     key={`${link.href}-${link.labelKey}`}
                     href={link.href}
                     data-tour-id={link.tourId}
@@ -290,7 +290,7 @@ export function AppShell({ profile, children }: AppShellProps) {
                   >
                     <Icon className="h-4 w-4" aria-hidden="true" />
                     {t(link.labelKey)}
-                  </Link>
+                  </a>
                 );
               })}
             </div>
