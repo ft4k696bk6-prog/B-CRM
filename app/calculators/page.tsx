@@ -74,8 +74,6 @@ const calculatorCopy = {
     storageBrand: "Marka magazynu",
     storageProduct: "Magazyn energii",
     inverterPower: "Moc falownika",
-    noInverterQuick: "Bez falownika",
-    withInverterQuick: "Z falownikiem 8 kW",
     extras: "Dodatki",
     groundMount: "Montaż gruntowy",
     triangles: "Ekierki",
@@ -131,8 +129,6 @@ const calculatorCopy = {
     storageBrand: "Storage brand",
     storageProduct: "Energy storage",
     inverterPower: "Inverter power",
-    noInverterQuick: "No inverter",
-    withInverterQuick: "With 8 kW inverter",
     extras: "Add-ons",
     groundMount: "Ground mount",
     triangles: "Roof triangles",
@@ -489,39 +485,10 @@ export default function CalculatorsPage() {
                         <select className="field" value={inverterKw} onChange={(event) => setInverterKw(Number(event.target.value))}>
                           {INVERTER_NET_PRICES.map((item) => (
                             <option key={item.kw} value={item.kw}>
-                              {item.kw === NO_INVERTER_KW ? `${NO_INVERTER_LABEL} — niższa cena` : `${item.kw} kW`}
+                              {item.kw === NO_INVERTER_KW ? NO_INVERTER_LABEL : `${item.kw} kW`}
                             </option>
                           ))}
                         </select>
-                        <div className="mt-2 grid grid-cols-2 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setInverterKw(NO_INVERTER_KW)}
-                            className={`rounded-md border px-3 py-2 text-xs font-black transition ${
-                              inverterKw === NO_INVERTER_KW
-                                ? "border-leaf bg-leaf text-white"
-                                : "border-line bg-white text-ink hover:border-leaf"
-                            }`}
-                          >
-                            {copy.noInverterQuick}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setInverterKw(DEFAULT_STORAGE_INVERTER_KW)}
-                            className={`rounded-md border px-3 py-2 text-xs font-black transition ${
-                              inverterKw !== NO_INVERTER_KW
-                                ? "border-ink bg-ink text-white"
-                                : "border-line bg-white text-ink hover:border-ink"
-                            }`}
-                          >
-                            {copy.withInverterQuick}
-                          </button>
-                        </div>
-                        {inverterKw === NO_INVERTER_KW ? (
-                          <p className="mt-2 rounded-md border border-leaf/20 bg-leaf/10 p-2 text-xs font-bold text-leaf">
-                            Cena samodzielnego magazynu nie zawiera wtedy kosztu falownika.
-                          </p>
-                        ) : null}
                       </label>
                     </div>
                   ) : null}
