@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { Paintbrush2, PhoneCall, Save, Settings } from "lucide-react";
+import { FileText, Paintbrush2, Save, Settings } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { useTheme } from "@/components/theme-provider";
@@ -114,15 +114,15 @@ export default function SettingsPage() {
 
         <form onSubmit={saveBusinessPhone} className="app-card max-w-2xl">
           <SectionHeader
-            icon={PhoneCall}
-            title="Dzwonienie z CRM"
-            description="Ten numer odbierze połączenie jako pierwszy, zanim CRM połączy klienta."
+            icon={FileText}
+            title="Numer do ofert"
+            description="Ten numer może być używany wyłącznie jako kontakt handlowca na ofertach i dokumentach."
             tone="sky"
             className="mb-4"
           />
 
           <label>
-            <span className="label">Mój numer służbowy</span>
+            <span className="label">Numer handlowca do ofert</span>
             <input
               className="field"
               value={businessPhone}
@@ -139,13 +139,13 @@ export default function SettingsPage() {
 
           {phoneSaved ? (
             <Alert tone="success" className="mt-4">
-              Zapisano numer do połączeń CRM.
+              Zapisano numer do ofert.
             </Alert>
           ) : null}
 
           <button type="submit" className="btn-primary mt-4">
             <Save className="h-4 w-4" aria-hidden="true" />
-            Zapisz numer
+            Zapisz numer do ofert
           </button>
         </form>
 

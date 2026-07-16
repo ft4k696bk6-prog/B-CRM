@@ -9,7 +9,6 @@ import {
   FileSignature,
   MapPin,
   MessageSquarePlus,
-  PhoneCall,
   RotateCcw,
   Save,
   UserCheck
@@ -21,7 +20,6 @@ import { RegionFields } from "@/components/region-fields";
 import { StatusBadge } from "@/components/status-badge";
 import { ActivityLog } from "@/components/activity-log";
 import { FileList } from "@/components/file-list";
-import { LeadCallPanel } from "@/components/lead-call-panel";
 import { ReminderList } from "@/components/reminder-list";
 import { Alert, EmptyState, SectionHeader } from "@/components/ui";
 import { ACTION_LABELS, LEAD_STATUSES, STATUS_LABELS, STATUS_TILE_TONES } from "@/lib/constants";
@@ -88,13 +86,11 @@ export default function LeadDetailsPage() {
   const [county, setCounty] = useState("");
   const [comment, setComment] = useState("");
   const [selectedAssignee, setSelectedAssignee] = useState("");
-  const [businessPhone, setBusinessPhone] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
   const canManage = canManageLeads(profile?.role);
   const canEditLead = hasAnyPermission(profile?.role, ["leads:edit:own", "leads:edit:team", "leads:edit:all"]);
-  const canManageCalls = hasAnyPermission(profile?.role, ["calls:manage"]);
   const isManager = isManagerRole(profile?.role);
   const backHref = homePathForRole(profile?.role);
 
@@ -180,7 +176,6 @@ export default function LeadDetailsPage() {
 
   useEffect(() => {
     if (!profile) return;
-    setBusinessPhone(profile.business_phone || "");
     loadLead();
     loadHistory();
     if (canManageLeads(profile.role)) loadSalespeople();
@@ -446,14 +441,6 @@ export default function LeadDetailsPage() {
                     <span>{lead.source || "bez źródła"}</span>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => document.getElementById("lead-call-section")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                  className="btn-primary"
-                >
-                  <PhoneCall className="h-4 w-4" aria-hidden="true" />
-                  Zadzwoń
-                </button>
               </div>
 
               {lead.status === "Umowa" ? (
@@ -521,18 +508,6 @@ export default function LeadDetailsPage() {
                 </div>
               </dl>
             </section>
-
-            {session?.access_token ? (
-              <div id="lead-call-section">
-                <LeadCallPanel
-                  lead={lead}
-                  profile={{ ...profile, business_phone: businessPhone || profile.business_phone }}
-                  token={session.access_token}
-                  canManageCalls={canManageCalls}
-                  onBusinessPhoneSaved={setBusinessPhone}
-                />
-              </div>
-            ) : null}
 
             <section className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
               <form onSubmit={saveStatus} className="app-card">

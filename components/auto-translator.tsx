@@ -155,7 +155,6 @@ const dictionary: Record<string, string> = {
   "brak kodu": "no code",
   "Nieprzypisany": "Unassigned",
   "Brak leadów w tym widoku.": "No leads in this view.",
-  "Zadzwoń": "Call",
   "Umowa": "Contract",
   "Brak numeru umowy": "No contract number",
   "Ostatnie otwarcie": "Last opened",
