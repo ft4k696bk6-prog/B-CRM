@@ -316,6 +316,11 @@ class DemoQuery {
   }
 
   private matchesOr(row: AnyRecord, expression: string) {
+    const ilikeMatches = [...expression.matchAll(/([a-z_]+)\.ilike\.%([^,%]+)%/g)];
+    if (ilikeMatches.length > 0) {
+      return ilikeMatches.some((match) => String(row[match[1]] || "").toLowerCase().includes(match[2].toLowerCase()));
+    }
+
     if (expression.includes("assigned_to.is.null") && row.assigned_to === null) return true;
     const assignedMatch = expression.match(/assigned_to\.in\.\(([^)]+)\)/);
     if (assignedMatch && assignedMatch[1].split(",").includes(String(row.assigned_to))) return true;

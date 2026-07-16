@@ -79,6 +79,7 @@ export default function LeadDetailsPage() {
   const [meetingAt, setMeetingAt] = useState("");
   const [meetingAddress, setMeetingAddress] = useState("");
   const [meetingNote, setMeetingNote] = useState("");
+  const [soldScope, setSoldScope] = useState("");
   const [contractNumber, setContractNumber] = useState("");
   const [resignationReason, setResignationReason] = useState("");
   const [postalCode, setPostalCode] = useState("");
@@ -123,6 +124,7 @@ export default function LeadDetailsPage() {
     setMeetingAt(toDatetimeLocalValue(nextLead.meeting_at));
     setMeetingAddress(nextLead.meeting_address || nextLead.address || "");
     setMeetingNote(nextLead.meeting_note || "");
+    setSoldScope("");
     setContractNumber(nextLead.contract_number || "");
     setResignationReason(nextLead.resignation_reason || "");
     setPostalCode(nextLead.postal_code || "");
@@ -230,7 +232,10 @@ export default function LeadDetailsPage() {
         setBusy(false);
         return;
       }
-      patch.meeting_note = meetingNote.trim();
+      patch.meeting_note = [
+        meetingNote.trim(),
+        soldScope.trim() ? `Sprzedano / zakres oferty: ${soldScope.trim()}` : ""
+      ].filter(Boolean).join("\n\n");
     }
 
     if (status === "Rezygnacja") {
@@ -261,6 +266,12 @@ export default function LeadDetailsPage() {
       }
 
       patch.contract_number = contractNumber.trim();
+      if (soldScope.trim()) {
+        patch.meeting_note = [
+          meetingNote.trim(),
+          `Sprzedano / zakres oferty: ${soldScope.trim()}`
+        ].filter(Boolean).join("\n\n");
+      }
       if (isSalesRole(profile.role)) {
         patch.assigned_to = profile.id;
       }
@@ -619,16 +630,30 @@ export default function LeadDetailsPage() {
                     </label>
                   ) : null}
 
-                  {status === "Po spotkaniu" ? (
-                    <label className="sm:col-span-2">
-                      <span className="label">Notatka po spotkaniu</span>
-                      <textarea
-                        className="field min-h-28"
-                        value={meetingNote}
-                        onChange={(event) => setMeetingNote(event.target.value)}
-                        placeholder="Co ustalono, jaki kolejny krok, uwagi klienta"
-                      />
-                    </label>
+                  {status === "Po spotkaniu" || status === "Umowa" ? (
+                    <>
+                      <label className="sm:col-span-2">
+                        <span className="label">Notatka po spotkaniu</span>
+                        <textarea
+                          className="field min-h-28"
+                          value={meetingNote}
+                          onChange={(event) => setMeetingNote(event.target.value)}
+                          placeholder="Co ustalono, jaki kolejny krok, uwagi klienta"
+                        />
+                      </label>
+                      <label className="sm:col-span-2">
+                        <span className="label">Co sprzedano / zakres oferty</span>
+                        <textarea
+                          className="field min-h-24"
+                          value={soldScope}
+                          onChange={(event) => setSoldScope(event.target.value)}
+                          placeholder="np. magazyn 10,24 kWh, falownik 8 kW, backup, bojler, cena brutto"
+                        />
+                      </label>
+                      <div className="sm:col-span-2 rounded-md border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
+                        Umowę PDF i zdjęcia dodaj niżej w sekcji plików leada. Po zapisaniu statusu Umowa klient trafi do zakładki Umowy i proces.
+                      </div>
+                    </>
                   ) : null}
 
                   {status === "Umowa" ? (

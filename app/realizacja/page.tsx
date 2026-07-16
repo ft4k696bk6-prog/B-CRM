@@ -486,6 +486,30 @@ function currentWorkflowStage(workflow: WorkflowMap, copy: RealizationCopy) {
   return copy.roles[step.ownerRole];
 }
 
+function operationalStageLabel(workflow: WorkflowMap, language: AppLanguage) {
+  if (workflow.installer === "done") return language === "en" ? "Settled / installed" : "Rozliczone / zamontowane";
+  if (workflow.installer === "active") return language === "en" ? "Install" : "Do montażu";
+  if (workflow.logistics === "active") return language === "en" ? "Order equipment" : "Zamówić sprzęt";
+  if (workflow.accounting === "active") return language === "en" ? "Accounting" : "Do rozliczenia";
+  if (workflow.manager === "active") return language === "en" ? "Signed — review" : "Podpisane — do sprawdzenia";
+  return language === "en" ? "Signed" : "Podpisane";
+}
+
+function matchesProcessSearch(client: ProcessClient, search: string) {
+  const value = search.trim().toLowerCase();
+  if (!value) return true;
+  return [client.fullName, client.phone, client.contractNumber, client.ownerName, client.source]
+    .filter(Boolean)
+    .some((item) => String(item).toLowerCase().includes(value));
+}
+
+function isProcessWithinDates(client: ProcessClient, from: string, to: string) {
+  const timestamp = client.updatedAt ? new Date(client.updatedAt).getTime() : 0;
+  if (from && timestamp < new Date(`${from}T00:00:00`).getTime()) return false;
+  if (to && timestamp > new Date(`${to}T23:59:59`).getTime()) return false;
+  return true;
+}
+
 function normalizeWorkflowState(workflow: Partial<Record<WorkflowKey, WorkflowStatus>>): WorkflowMap {
   const next: WorkflowMap = { ...initialWorkflow, ...workflow };
   const firstOpenStep = workflowSteps.find((item) => next[item.key] !== "done");
@@ -719,6 +743,10 @@ export default function RealizacjaPage() {
   const [workflowByProcess, setWorkflowByProcess] = useState<Record<string, WorkflowMap>>({});
   const [documentMessage, setDocumentMessage] = useState("");
   const [showProcessList, setShowProcessList] = useState(false);
+  const [processSearch, setProcessSearch] = useState("");
+  const [processUpdatedFrom, setProcessUpdatedFrom] = useState("");
+  const [processUpdatedTo, setProcessUpdatedTo] = useState("");
+  const [processStageFilter, setProcessStageFilter] = useState("");
   const [showContractData, setShowContractData] = useState(false);
   const contractInputRef = useRef<HTMLInputElement | null>(null);
   const processClients = useMemo<ProcessClient[]>(() => {
@@ -726,7 +754,18 @@ export default function RealizacjaPage() {
     if (clients.length > 0) return clients;
     return profile && isDemoScope(profile.crm_environment) ? [demoProcessClient()] : [];
   }, [processLeads, profile]);
-  const selectedProcess = processClients.find((client) => client.id === selectedProcessId) || processClients[0] || demoProcessClient();
+  const visibleProcessClients = useMemo(() => {
+    return processClients.filter((client) => {
+      const workflow = workflowForProcess(client, workflowByProcess);
+      const stage = operationalStageLabel(workflow, language);
+      return (
+        matchesProcessSearch(client, processSearch) &&
+        isProcessWithinDates(client, processUpdatedFrom, processUpdatedTo) &&
+        (!processStageFilter || stage === processStageFilter)
+      );
+    });
+  }, [language, processClients, processSearch, processStageFilter, processUpdatedFrom, processUpdatedTo, workflowByProcess]);
+  const selectedProcess = visibleProcessClients.find((client) => client.id === selectedProcessId) || visibleProcessClients[0] || processClients[0] || demoProcessClient();
   const hasProcessClients = processClients.length > 0;
   const selectedWorkflow = workflowForProcess(selectedProcess, workflowByProcess);
   const completion = hasProcessClients ? workflowCompletion(selectedWorkflow) : 0;
@@ -757,7 +796,7 @@ export default function RealizacjaPage() {
       .eq("crm_environment", profile.crm_environment)
       .or("status.eq.Umowa,contract_number.not.is.null")
       .order("updated_at", { ascending: false })
-      .limit(50);
+      .limit(250);
 
     if (profile.role === "handlowiec") {
       query = query.eq("assigned_to", profile.id);
@@ -881,7 +920,7 @@ export default function RealizacjaPage() {
                 <div>
                   <h2 className="text-base font-bold text-ink">{copy.processListTitle}</h2>
                   <p className="mt-1 text-sm text-muted">
-                    {processClients.length} {language === "en" ? "clients in process" : "klientów w procesie"}
+                    {visibleProcessClients.length} / {processClients.length} {language === "en" ? "clients in process" : "klientów w procesie"}
                   </p>
                 </div>
               </div>
@@ -895,6 +934,37 @@ export default function RealizacjaPage() {
                   : language === "en" ? "Show list" : "Pokaż listę"}
               </button>
             </div>
+
+            {showProcessList ? (
+              <div className="mb-4 grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_160px_160px_220px]">
+                <label className="md:col-span-2 xl:col-span-1">
+                  <span className="label">Szukaj klienta</span>
+                  <input
+                    className="field"
+                    value={processSearch}
+                    onChange={(event) => setProcessSearch(event.target.value)}
+                    placeholder="Imię i nazwisko, telefon, umowa albo opiekun"
+                  />
+                </label>
+                <label>
+                  <span className="label">Aktualizacja od</span>
+                  <input className="field" type="date" value={processUpdatedFrom} onChange={(event) => setProcessUpdatedFrom(event.target.value)} />
+                </label>
+                <label>
+                  <span className="label">Aktualizacja do</span>
+                  <input className="field" type="date" value={processUpdatedTo} onChange={(event) => setProcessUpdatedTo(event.target.value)} />
+                </label>
+                <label>
+                  <span className="label">Etap</span>
+                  <select className="field" value={processStageFilter} onChange={(event) => setProcessStageFilter(event.target.value)}>
+                    <option value="">Wszystkie etapy</option>
+                    {[...new Set(processClients.map((client) => operationalStageLabel(workflowForProcess(client, workflowByProcess), language)))].map((stage) => (
+                      <option key={stage} value={stage}>{stage}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            ) : null}
 
             {showProcessList && processLoading ? (
               <div className="mb-3 rounded-md border border-line bg-[#f8fafc] p-3 text-sm font-semibold text-muted">
@@ -910,9 +980,10 @@ export default function RealizacjaPage() {
 
             {showProcessList ? (
             <div className="grid gap-3">
-              {processClients.map((client) => {
+              {visibleProcessClients.map((client) => {
                 const workflow = workflowForProcess(client, workflowByProcess);
                 const progress = workflowCompletion(workflow);
+                const stage = operationalStageLabel(workflow, language);
                 const isSelected = selectedProcess.id === client.id;
 
                 return (
@@ -944,14 +1015,14 @@ export default function RealizacjaPage() {
                     </span>
                     <span className="grid gap-2 text-right">
                       <span className="rounded-md border border-sky/20 bg-sky/10 px-3 py-1 text-xs font-bold text-sky">
-                        {processStatusLabel(workflow, copy)}
+                        {stage}
                       </span>
                       <span className="text-xs font-bold text-ink">{progress}%</span>
                     </span>
                   </button>
                 );
               })}
-              {!processLoading && processClients.length === 0 ? (
+              {!processLoading && visibleProcessClients.length === 0 ? (
                 <EmptyState
                   title={language === "en" ? "No clients in process" : "Brak klientów w procesie"}
                   description={

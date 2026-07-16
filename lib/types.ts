@@ -82,6 +82,7 @@ export type LeadHistory = {
 };
 
 export type AdminLeadFilters = {
+  search: string;
   createdFrom: string;
   createdTo: string;
   updatedFrom: string;

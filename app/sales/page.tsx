@@ -31,6 +31,7 @@ export default function SalesDashboardPage() {
   const { loading, profile } = useAuth("handlowiec");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "">("");
+  const [search, setSearch] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -48,6 +49,10 @@ export default function SalesDashboardPage() {
       .order("updated_at", { ascending: false })
       .limit(1000);
 
+    if (search.trim()) {
+      const cleanSearch = search.trim().replace(/[,%]/g, " ");
+      query = query.or(`full_name.ilike.%${cleanSearch}%,phone.ilike.%${cleanSearch}%,address.ilike.%${cleanSearch}%,meeting_address.ilike.%${cleanSearch}%`);
+    }
     if (statusFilter) query = query.eq("status", statusFilter);
 
     const { data, error: leadsError } = await query;
@@ -64,7 +69,7 @@ export default function SalesDashboardPage() {
   useEffect(() => {
     if (!profile) return;
     loadLeads();
-  }, [profile?.id, profile?.crm_environment, statusFilter]);
+  }, [profile?.id, profile?.crm_environment, statusFilter, search]);
 
   useEffect(() => {
     function refreshLeads() {
@@ -73,7 +78,7 @@ export default function SalesDashboardPage() {
 
     window.addEventListener("leads:changed", refreshLeads);
     return () => window.removeEventListener("leads:changed", refreshLeads);
-  }, [profile?.id, profile?.crm_environment, statusFilter]);
+  }, [profile?.id, profile?.crm_environment, statusFilter, search]);
 
   const overdueCallbacks = useMemo(
     () =>
@@ -223,7 +228,16 @@ export default function SalesDashboardPage() {
         ) : null}
 
         <section className="app-card">
-          <div className="max-w-xs">
+          <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_260px]">
+            <label>
+              <span className="label">Szukaj klienta</span>
+              <input
+                className="field"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Imię i nazwisko, telefon albo adres"
+              />
+            </label>
             <label>
               <span className="label">Szybki filtr statusu</span>
               <select

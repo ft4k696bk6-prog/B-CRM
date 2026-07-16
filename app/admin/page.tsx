@@ -34,6 +34,7 @@ import type { AdminLeadFilters, Lead, LeadStatus, Profile, SortOption } from "@/
 import { useAuth } from "@/lib/use-auth";
 
 const initialFilters: AdminLeadFilters = {
+  search: "",
   createdFrom: "",
   createdTo: "",
   updatedFrom: "",
@@ -200,6 +201,10 @@ export default function AdminDashboardPage() {
       .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false })
       .limit(1000);
 
+    if (debouncedFilters.search.trim()) {
+      const search = debouncedFilters.search.trim().replace(/[,%]/g, " ");
+      query = query.or(`full_name.ilike.%${search}%,phone.ilike.%${search}%,address.ilike.%${search}%,meeting_address.ilike.%${search}%`);
+    }
     if (debouncedFilters.createdFrom) query = query.gte("created_at", startOfDay(debouncedFilters.createdFrom));
     if (debouncedFilters.createdTo) query = query.lte("created_at", endOfDay(debouncedFilters.createdTo));
     if (debouncedFilters.updatedFrom) query = query.gte("updated_at", startOfDay(debouncedFilters.updatedFrom));
@@ -640,6 +645,15 @@ export default function AdminDashboardPage() {
 
           {showFilters ? (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <label className="md:col-span-2 xl:col-span-4">
+              <span className="label">Szukaj klienta</span>
+              <input
+                className="field"
+                value={filters.search}
+                onChange={(event) => updateFilter("search", event.target.value)}
+                placeholder="Imię i nazwisko, telefon albo adres"
+              />
+            </label>
             <label>
               <span className="label">Dodane od</span>
               <input
