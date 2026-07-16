@@ -19,6 +19,7 @@ type UpdateUserBody = {
   role?: UserRole;
   managerId?: string | null;
   businessPhone?: string | null;
+  password?: string | null;
 };
 
 type DeleteUserBody = {
@@ -370,6 +371,7 @@ export async function PATCH(request: Request) {
     const role = USER_ROLES.includes(body.role as UserRole) ? (body.role as UserRole) : null;
     const managerId = normalizedManagerId(body.managerId, role || "handlowiec");
     const businessPhoneProvided = Object.prototype.hasOwnProperty.call(body, "businessPhone");
+    const password = body.password?.trim();
     const businessPhone =
       !businessPhoneProvided || body.businessPhone === null || body.businessPhone === ""
         ? null
@@ -377,6 +379,17 @@ export async function PATCH(request: Request) {
 
     if (!id || !role) {
       return NextResponse.json({ error: "Brak użytkownika lub roli." }, { status: 400 });
+    }
+
+    if (password && password.length < 8) {
+      return NextResponse.json({ error: "Nowe hasło musi mieć minimum 8 znaków." }, { status: 400 });
+    }
+
+    if (password && auth.requesterIsDemo) {
+      return NextResponse.json(
+        { error: "Konto demo nie może resetować haseł prawdziwych użytkowników." },
+        { status: 403 }
+      );
     }
 
     if (body.businessPhone && !businessPhone) {
@@ -448,17 +461,27 @@ export async function PATCH(request: Request) {
         .eq("crm_environment", targetScope);
     }
 
-    await auth.supabaseAdmin.auth.admin.updateUserById(id, {
+    const { error: authUpdateError } = await auth.supabaseAdmin.auth.admin.updateUserById(id, {
+      ...(password ? { password } : {}),
       app_metadata: { ...(targetAuth.user?.app_metadata || {}), role, crm_environment: targetScope },
       user_metadata: { ...(targetAuth.user?.user_metadata || {}), role: storedRole, crm_environment: targetScope }
     });
+
+    if (authUpdateError) {
+      return NextResponse.json({ error: authUpdateError.message }, { status: 400 });
+    }
 
     await auth.supabaseAdmin.from("audit_events").insert({
       actor_id: auth.user.id,
       event_type: "user.role_updated",
       entity_type: "profile",
       entity_id: id,
-      metadata: { role, managerId, ...(businessPhoneProvided ? { businessPhone } : {}) },
+      metadata: {
+        role,
+        managerId,
+        ...(businessPhoneProvided ? { businessPhone } : {}),
+        ...(password ? { passwordReset: true } : {})
+      },
       crm_environment: auth.requesterScope
     });
 

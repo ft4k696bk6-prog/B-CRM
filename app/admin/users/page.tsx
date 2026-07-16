@@ -4,6 +4,7 @@ import { FormEvent, ReactNode, useEffect, useState } from "react";
 import {
   ChevronDown,
   GitBranch,
+  KeyRound,
   Plus,
   RefreshCw,
   Save,
@@ -198,6 +199,7 @@ export default function UsersPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneDrafts, setPhoneDrafts] = useState<Record<string, string>>({});
+  const [passwordDrafts, setPasswordDrafts] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -226,6 +228,7 @@ export default function UsersPage() {
     setPhoneDrafts(
       Object.fromEntries(nextUsers.map((user) => [user.id, user.business_phone || ""]))
     );
+    setPasswordDrafts(Object.fromEntries(nextUsers.map((user) => [user.id, ""])));
   }
 
   useEffect(() => {
@@ -274,7 +277,13 @@ export default function UsersPage() {
     setBusy(false);
   }
 
-  async function updateUser(userId: string, role: UserRole, managerId?: string | null, businessPhone?: string) {
+  async function updateUser(
+    userId: string,
+    role: UserRole,
+    managerId?: string | null,
+    businessPhone?: string,
+    password?: string
+  ) {
     if (!session) return;
 
     setBusy(true);
@@ -291,7 +300,8 @@ export default function UsersPage() {
         id: userId,
         role,
         managerId: role === "handlowiec" ? managerId || null : null,
-        ...(businessPhone !== undefined ? { businessPhone } : {})
+        ...(businessPhone !== undefined ? { businessPhone } : {}),
+        ...(password ? { password } : {})
       })
     });
     const body = await response.json();
@@ -299,11 +309,32 @@ export default function UsersPage() {
     if (!response.ok) {
       setError(body.error || "Nie udało się zmienić roli.");
     } else {
-      setSuccess("Zapisano użytkownika.");
+      setSuccess(password ? "Zmieniono hasło użytkownika." : "Zapisano użytkownika.");
+      if (password) {
+        setPasswordDrafts((current) => ({ ...current, [userId]: "" }));
+      }
       await loadUsers();
     }
 
     setBusy(false);
+  }
+
+  async function resetUserPassword(person: Profile) {
+    const password = passwordDrafts[person.id]?.trim();
+
+    if (!password || password.length < 8) {
+      setError("Wpisz nowe hasło użytkownika - minimum 8 znaków.");
+      setSuccess("");
+      return;
+    }
+
+    await updateUser(
+      person.id,
+      person.role,
+      person.manager_id,
+      phoneDrafts[person.id] ?? person.business_phone ?? "",
+      password
+    );
   }
 
   async function deleteUser() {
@@ -552,6 +583,7 @@ export default function UsersPage() {
                 <th className="px-4 py-3">Imię i nazwisko</th>
                 <th className="px-4 py-3">E-mail</th>
                 <th className="px-4 py-3">Telefon CRM</th>
+                <th className="px-4 py-3">Nowe hasło</th>
                 <th className="px-4 py-3">Rola</th>
                 <th className="px-4 py-3">Menadżer</th>
                 <th className="px-4 py-3">Utworzony</th>
@@ -574,6 +606,31 @@ export default function UsersPage() {
                       placeholder="+48 600 000 000"
                       disabled={busy}
                     />
+                  </td>
+
+                  <td className="px-4 py-3 text-muted">
+                    <div className="flex min-w-56 items-center gap-2">
+                      <input
+                        className="field min-w-40"
+                        type="password"
+                        value={passwordDrafts[person.id] || ""}
+                        onChange={(event) =>
+                          setPasswordDrafts((current) => ({ ...current, [person.id]: event.target.value }))
+                        }
+                        placeholder="Min. 8 znaków"
+                        autoComplete="new-password"
+                        disabled={busy}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => resetUserPassword(person)}
+                        disabled={busy || !passwordDrafts[person.id]}
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-sky/20 bg-sky/10 px-3 text-xs font-bold text-sky transition hover:border-sky/40 hover:bg-sky/15 disabled:cursor-not-allowed disabled:opacity-55"
+                      >
+                        <KeyRound className="h-3.5 w-3.5" aria-hidden="true" />
+                        Zmień
+                      </button>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-muted">
                     <select
@@ -659,6 +716,32 @@ export default function UsersPage() {
                       placeholder="+48 600 000 000"
                       disabled={busy}
                     />
+                  </label>
+
+                  <label>
+                    <span className="label">Nowe hasło</span>
+                    <div className="flex gap-2">
+                      <input
+                        className="field"
+                        type="password"
+                        value={passwordDrafts[person.id] || ""}
+                        onChange={(event) =>
+                          setPasswordDrafts((current) => ({ ...current, [person.id]: event.target.value }))
+                        }
+                        placeholder="Min. 8 znaków"
+                        autoComplete="new-password"
+                        disabled={busy}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => resetUserPassword(person)}
+                        disabled={busy || !passwordDrafts[person.id]}
+                        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-sky/20 bg-sky/10 px-3 text-xs font-bold text-sky transition hover:border-sky/40 hover:bg-sky/15 disabled:cursor-not-allowed disabled:opacity-55"
+                      >
+                        <KeyRound className="h-3.5 w-3.5" aria-hidden="true" />
+                        Zmień
+                      </button>
+                    </div>
                   </label>
                   <label>
                     <span className="label">Rola</span>

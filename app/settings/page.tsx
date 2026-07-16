@@ -1,13 +1,14 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { FileText, Paintbrush2, Save, Settings } from "lucide-react";
+import { FileText, KeyRound, Paintbrush2, Save, Settings } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { useTheme } from "@/components/theme-provider";
 import { Alert, PageHeader, SectionHeader } from "@/components/ui";
 import { usePricingSettings } from "@/lib/pricing-settings";
 import { themePacks } from "@/lib/theme";
+import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/use-auth";
 
 export default function SettingsPage() {
@@ -20,6 +21,11 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
   const [phoneSaved, setPhoneSaved] = useState(false);
   const [phoneError, setPhoneError] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
+  const [passwordSaved, setPasswordSaved] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     setAdminMargin(settings.adminMargin);
@@ -40,6 +46,48 @@ export default function SettingsPage() {
     });
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2500);
+  }
+
+
+  async function changePassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!session?.user.email) return;
+
+    setPasswordError("");
+    setPasswordSaved(false);
+
+    if (newPassword.length < 8) {
+      setPasswordError("Nowe hasło musi mieć minimum 8 znaków.");
+      return;
+    }
+
+    if (newPassword !== repeatPassword) {
+      setPasswordError("Nowe hasła nie są takie same.");
+      return;
+    }
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: session.user.email,
+      password: currentPassword
+    });
+
+    if (signInError) {
+      setPasswordError("Aktualne hasło jest niepoprawne.");
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+    if (error) {
+      setPasswordError(error.message || "Nie udało się zmienić hasła.");
+      return;
+    }
+
+    setCurrentPassword("");
+    setNewPassword("");
+    setRepeatPassword("");
+    setPasswordSaved(true);
+    window.setTimeout(() => setPasswordSaved(false), 2500);
   }
 
   async function saveBusinessPhone(event: FormEvent<HTMLFormElement>) {
@@ -146,6 +194,71 @@ export default function SettingsPage() {
           <button type="submit" className="btn-primary mt-4">
             <Save className="h-4 w-4" aria-hidden="true" />
             Zapisz numer do ofert
+          </button>
+        </form>
+
+        <form onSubmit={changePassword} className="app-card max-w-2xl">
+          <SectionHeader
+            icon={KeyRound}
+            title="Zmiana hasła"
+            description="Handlowiec i każdy użytkownik może sam ustawić nowe hasło po podaniu obecnego hasła."
+            tone="leaf"
+            className="mb-4"
+          />
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <label>
+              <span className="label">Obecne hasło</span>
+              <input
+                className="field"
+                type="password"
+                value={currentPassword}
+                onChange={(event) => setCurrentPassword(event.target.value)}
+                autoComplete="current-password"
+                required
+              />
+            </label>
+            <label>
+              <span className="label">Nowe hasło</span>
+              <input
+                className="field"
+                type="password"
+                value={newPassword}
+                onChange={(event) => setNewPassword(event.target.value)}
+                autoComplete="new-password"
+                minLength={8}
+                required
+              />
+            </label>
+            <label>
+              <span className="label">Powtórz nowe hasło</span>
+              <input
+                className="field"
+                type="password"
+                value={repeatPassword}
+                onChange={(event) => setRepeatPassword(event.target.value)}
+                autoComplete="new-password"
+                minLength={8}
+                required
+              />
+            </label>
+          </div>
+
+          {passwordError ? (
+            <Alert tone="danger" className="mt-4">
+              {passwordError}
+            </Alert>
+          ) : null}
+
+          {passwordSaved ? (
+            <Alert tone="success" className="mt-4">
+              Zmieniono hasło.
+            </Alert>
+          ) : null}
+
+          <button type="submit" className="btn-primary mt-4">
+            <KeyRound className="h-4 w-4" aria-hidden="true" />
+            Zmień hasło
           </button>
         </form>
 
