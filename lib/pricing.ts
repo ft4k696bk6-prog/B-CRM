@@ -107,6 +107,7 @@ export const STORAGE_NET_PRICES = [
 ];
 
 export const INVERTER_NET_PRICES = [
+  { kw: 0, label: "Bez falownika", net: 0 },
   { kw: 5, label: "Deye hybrydowy niskonapięciowy 5 kW", net: 6500 },
   { kw: 8, label: "Deye hybrydowy niskonapięciowy 8 kW", net: 6700 },
   { kw: 10, label: "Deye hybrydowy niskonapięciowy 10 kW", net: 6900 },
@@ -126,10 +127,10 @@ export const EXTRA_NET_PRICES = {
 };
 
 export function recommendedInverter(kwp: number) {
-  if (kwp <= 5) return INVERTER_NET_PRICES[0];
-  if (kwp <= 8) return INVERTER_NET_PRICES[1];
-  if (kwp <= 10) return INVERTER_NET_PRICES[2];
-  return INVERTER_NET_PRICES[3];
+  if (kwp <= 5) return INVERTER_NET_PRICES[1];
+  if (kwp <= 8) return INVERTER_NET_PRICES[2];
+  if (kwp <= 10) return INVERTER_NET_PRICES[3];
+  return INVERTER_NET_PRICES[4];
 }
 
 export function getPriceRowByPanelCount(panelCount: number) {

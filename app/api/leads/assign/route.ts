@@ -60,7 +60,7 @@ export async function POST(request: Request) {
 
     const { data: leads, error: leadsError } = await supabaseAdmin
       .from("leads")
-      .select("id,assigned_to,crm_environment")
+      .select("id,assigned_to,crm_environment,status")
       .eq("crm_environment", profile.crm_environment)
       .in("id", leadIds);
 
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: leadsError.message }, { status: 400 });
     }
 
-    const foundLeads = (leads || []) as Pick<Lead, "id" | "assigned_to" | "crm_environment">[];
+    const foundLeads = (leads || []) as Pick<Lead, "id" | "assigned_to" | "crm_environment" | "status">[];
     if (foundLeads.length !== leadIds.length) {
       return NextResponse.json({ error: "Część leadów nie istnieje albo jest poza tym CRM." }, { status: 404 });
     }
@@ -83,11 +83,21 @@ export async function POST(request: Request) {
       }
     }
 
+    const lockedContractLead = foundLeads.find(
+      (lead) => lead.status === "Umowa" && lead.assigned_to && lead.assigned_to !== assignedTo
+    );
+
+    if (lockedContractLead) {
+      return NextResponse.json(
+        { error: "Lead ze statusem Umowa jest przypisany na stałe do handlowca i nie może zostać przeniesiony." },
+        { status: 409 }
+      );
+    }
+
     const { error: updateError } = await supabaseAdmin
       .from("leads")
       .update({
-        assigned_to: assignedTo,
-        status: assignedTo ? "Przypisany" : "Nowy"
+        assigned_to: assignedTo
       })
       .eq("crm_environment", profile.crm_environment)
       .in("id", leadIds);

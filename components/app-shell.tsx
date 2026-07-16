@@ -6,21 +6,17 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import {
   BarChart3,
-  Banknote,
   Calculator,
   CalendarDays,
   FileUp,
   FolderKanban,
-  Hammer,
   Landmark,
   LogOut,
   Menu,
   MousePointerClick,
   PanelLeft,
-  ReceiptText,
   RotateCcw,
   Settings,
-  Truck,
   UserPlus,
   Warehouse,
   X,
@@ -50,12 +46,7 @@ type NavigationLink = {
     | "navTeamDashboard"
     | "navMyLeads"
     | "navOperations"
-    | "navSales"
-    | "navFinance"
-    | "navAccounting"
     | "navEquipment"
-    | "navLogistics"
-    | "navInstallation"
     | "navNewLead"
     | "navCalendar"
     | "navCalculators"
@@ -114,44 +105,12 @@ const navigationLinks: NavigationLink[] = [
     tourId: "tour-nav-process"
   },
   {
-    href: "/finance",
-    labelKey: "navFinance",
-    groupKey: "operations",
-    icon: Banknote,
-    allowedRoles: ["owner", "admin", "finance"],
-    tourId: "tour-nav-finance"
-  },
-  {
-    href: "/accounting",
-    labelKey: "navAccounting",
-    groupKey: "operations",
-    icon: ReceiptText,
-    allowedRoles: ["owner", "admin", "ksiegowosc"],
-    tourId: "tour-nav-accounting"
-  },
-  {
     href: "/equipment",
     labelKey: "navEquipment",
     groupKey: "operations",
     icon: Warehouse,
     allowedRoles: ["owner", "admin", "logistyk"],
     tourId: "tour-nav-equipment"
-  },
-  {
-    href: "/logistics",
-    labelKey: "navLogistics",
-    groupKey: "operations",
-    icon: Truck,
-    allowedRoles: ["owner", "admin", "logistyk"],
-    tourId: "tour-nav-logistics"
-  },
-  {
-    href: "/installation",
-    labelKey: "navInstallation",
-    groupKey: "operations",
-    icon: Hammer,
-    allowedRoles: ["owner", "admin", "monter"],
-    tourId: "tour-nav-installation"
   },
   { href: "/calendar", labelKey: "navCalendar", groupKey: "company", icon: CalendarDays, permissions: ["calendar:view"] },
   { href: "/calculators", labelKey: "navCalculators", groupKey: "company", icon: Calculator, permissions: ["offers:calculate"], tourId: "tour-nav-calculators" },

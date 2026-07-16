@@ -22,6 +22,7 @@ describe("pricing table", () => {
     ]);
 
     expect(INVERTER_NET_PRICES).toEqual([
+      { kw: 0, label: "Bez falownika", net: 0 },
       { kw: 5, label: "Deye hybrydowy niskonapięciowy 5 kW", net: 6500 },
       { kw: 8, label: "Deye hybrydowy niskonapięciowy 8 kW", net: 6700 },
       { kw: 10, label: "Deye hybrydowy niskonapięciowy 10 kW", net: 6900 },

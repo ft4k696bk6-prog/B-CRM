@@ -261,6 +261,9 @@ export default function LeadDetailsPage() {
       }
 
       patch.contract_number = contractNumber.trim();
+      if (isSalesRole(profile.role)) {
+        patch.assigned_to = profile.id;
+      }
     }
 
     if (status === "Zwrot") {

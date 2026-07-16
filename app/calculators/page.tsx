@@ -29,6 +29,10 @@ import { useAuth } from "@/lib/use-auth";
 type VatRate = 8 | 23;
 type CalculatorTab = "offer" | "profitability";
 
+const NO_INVERTER_LABEL = "Bez falownika";
+const NO_INVERTER_KW = 0;
+const DEFAULT_STORAGE_INVERTER_KW = 8;
+
 const COMPANY_NIP = "9462741793";
 const packageChoices = PACKAGE_OPTIONS.filter((item) => item.id !== "pv-only");
 const minPanelCount = PRICE_ROWS[0].panelCount;
@@ -63,13 +67,15 @@ const calculatorCopy = {
     pvStorage: "PV + magazyn",
     pvStorageSub: "Instalacja z magazynem",
     storageOnly: "Sam magazyn",
-    storageOnlySub: "Magazyn + falownik",
+    storageOnlySub: "Magazyn z falownikiem lub bez",
     panels: "Liczba modułów JA Solar 500 W",
     panelsHint: (count: number, kwp: string) => `${count} modułów daje ${kwp} kWp.`,
     storagePower: "Moc magazynu",
     storageBrand: "Marka magazynu",
     storageProduct: "Magazyn energii",
     inverterPower: "Moc falownika",
+    noInverterQuick: "Bez falownika",
+    withInverterQuick: "Z falownikiem 8 kW",
     extras: "Dodatki",
     groundMount: "Montaż gruntowy",
     triangles: "Ekierki",
@@ -118,13 +124,15 @@ const calculatorCopy = {
     pvStorage: "PV + storage",
     pvStorageSub: "Installation with storage",
     storageOnly: "Storage only",
-    storageOnlySub: "Storage + inverter",
+    storageOnlySub: "Storage with or without inverter",
     panels: "JA Solar 500 W module count",
     panelsHint: (count: number, kwp: string) => `${count} modules produce ${kwp} kWp.`,
     storagePower: "Storage capacity",
     storageBrand: "Storage brand",
     storageProduct: "Energy storage",
     inverterPower: "Inverter power",
+    noInverterQuick: "No inverter",
+    withInverterQuick: "With 8 kW inverter",
     extras: "Add-ons",
     groundMount: "Ground mount",
     triangles: "Roof triangles",
@@ -204,7 +212,7 @@ export default function CalculatorsPage() {
     PACKAGE_OPTIONS.find((item) => item.id === selectedPackage) || packageChoices[1];
   const [storageBrand, setStorageBrand] = useState("Kon-TEC");
   const [storageProductId, setStorageProductId] = useState("kon-tec-10");
-  const [inverterKw, setInverterKw] = useState(8);
+  const [inverterKw, setInverterKw] = useState(DEFAULT_STORAGE_INVERTER_KW);
   const [groundMount, setGroundMount] = useState(false);
   const [triangles, setTriangles] = useState(false);
   const [boiler, setBoiler] = useState<BoilerCapacity>("none");
@@ -221,7 +229,7 @@ export default function CalculatorsPage() {
   const storageProduct = STORAGE_NET_PRICES.find((item) => item.id === storageProductId) || STORAGE_NET_PRICES[1];
   const inverter =
     offerMode === "storage"
-      ? INVERTER_NET_PRICES.find((item) => item.kw === inverterKw) || INVERTER_NET_PRICES[1]
+      ? INVERTER_NET_PRICES.find((item) => item.kw === inverterKw) || INVERTER_NET_PRICES[2]
       : recommendedInverter(row.kwp);
   const currentStorageKwh =
     offerMode === "pv-storage" ? selectedPackageInfo.storageKwh : offerMode === "storage" ? storageProduct.kwh : 0;
@@ -410,7 +418,15 @@ export default function CalculatorsPage() {
                     <div className="grid gap-2 sm:grid-cols-3">
                       <OfferModeButton active={offerMode === "pv"} title={copy.pvOnly} subtitle={copy.pvOnlySub} onClick={() => setOfferMode("pv")} />
                       <OfferModeButton active={offerMode === "pv-storage"} title={copy.pvStorage} subtitle={copy.pvStorageSub} onClick={() => setOfferMode("pv-storage")} />
-                      <OfferModeButton active={offerMode === "storage"} title={copy.storageOnly} subtitle={copy.storageOnlySub} onClick={() => setOfferMode("storage")} />
+                      <OfferModeButton
+                        active={offerMode === "storage"}
+                        title={copy.storageOnly}
+                        subtitle={copy.storageOnlySub}
+                        onClick={() => {
+                          setOfferMode("storage");
+                          setInverterKw(NO_INVERTER_KW);
+                        }}
+                      />
                     </div>
                   </div>
 
@@ -471,8 +487,41 @@ export default function CalculatorsPage() {
                       <label>
                         <span className="label">{copy.inverterPower}</span>
                         <select className="field" value={inverterKw} onChange={(event) => setInverterKw(Number(event.target.value))}>
-                          {INVERTER_NET_PRICES.map((item) => <option key={item.kw} value={item.kw}>{item.kw} kW</option>)}
+                          {INVERTER_NET_PRICES.map((item) => (
+                            <option key={item.kw} value={item.kw}>
+                              {item.kw === NO_INVERTER_KW ? `${NO_INVERTER_LABEL} — niższa cena` : `${item.kw} kW`}
+                            </option>
+                          ))}
                         </select>
+                        <div className="mt-2 grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setInverterKw(NO_INVERTER_KW)}
+                            className={`rounded-md border px-3 py-2 text-xs font-black transition ${
+                              inverterKw === NO_INVERTER_KW
+                                ? "border-leaf bg-leaf text-white"
+                                : "border-line bg-white text-ink hover:border-leaf"
+                            }`}
+                          >
+                            {copy.noInverterQuick}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setInverterKw(DEFAULT_STORAGE_INVERTER_KW)}
+                            className={`rounded-md border px-3 py-2 text-xs font-black transition ${
+                              inverterKw !== NO_INVERTER_KW
+                                ? "border-ink bg-ink text-white"
+                                : "border-line bg-white text-ink hover:border-ink"
+                            }`}
+                          >
+                            {copy.withInverterQuick}
+                          </button>
+                        </div>
+                        {inverterKw === NO_INVERTER_KW ? (
+                          <p className="mt-2 rounded-md border border-leaf/20 bg-leaf/10 p-2 text-xs font-bold text-leaf">
+                            Cena samodzielnego magazynu nie zawiera wtedy kosztu falownika.
+                          </p>
+                        ) : null}
                       </label>
                     </div>
                   ) : null}
@@ -734,7 +783,9 @@ function OfferDocument({
           {mode !== "storage" ? (
             <OfferProduct image="/products/ja-solar-panel.webp" title="JA Solar" subtitle={`${row.panelCount} modułów`} />
           ) : null}
-          <OfferProduct image="/products/deye-inverter.webp" title="Deye" subtitle="Falownik hybrydowy LV" />
+          {inverterLabel !== NO_INVERTER_LABEL ? (
+            <OfferProduct image="/products/deye-inverter.webp" title="Deye" subtitle="Falownik hybrydowy LV" />
+          ) : null}
           {mode !== "pv" ? <OfferProduct image={storageImageSrc || "/products/kon-tec-storage.webp"} title={storageLabel} subtitle="Magazyn energii" /> : null}
           {boilerLabel ? <OfferProduct image={boilerImageSrc || "/products/boiler-vertical.png"} title="Bojler" subtitle={boilerLabel} /> : null}
           {rainwaterLabel ? <OfferProduct image="/products/rainwater-system.png" title="Deszczówka" subtitle="System 2000L" /> : null}
