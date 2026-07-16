@@ -1,0 +1,24 @@
+name: Vercel Alias
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_url:
+        description: Vercel deployment URL to alias
+        required: true
+        type: string
+      alias:
+        description: Alias domain to point at the deployment
+        required: true
+        type: string
+
+jobs:
+  alias:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Vercel alias
+        run: npx vercel alias set "$DEPLOYMENT_URL" "$ALIAS" --token "$VERCEL_TOKEN"
+        env:
+          DEPLOYMENT_URL: ${{ inputs.deployment_url }}
+          ALIAS: ${{ inputs.alias }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
