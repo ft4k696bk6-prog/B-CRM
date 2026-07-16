@@ -71,15 +71,6 @@ type NavigationLink = {
   tourId?: string;
 };
 
-const bulkReturnStatuses = [
-  "Nowy",
-  "Przypisany",
-  "Nie odebrał",
-  "Błędny numer",
-  "Do weryfikacji",
-  "Po spotkaniu"
-];
-
 const navigationLinks: NavigationLink[] = [
   {
     href: "/admin",
@@ -229,25 +220,38 @@ export function AppShell({ profile, children }: AppShellProps) {
     setReturningLeads(true);
     setShellNotice(null);
 
-    const { data, error } = await supabase
-      .from("leads")
-      .update({ status: "Zwrot", assigned_to: null })
-      .eq("assigned_to", profile.id)
-      .eq("crm_environment", profile.crm_environment)
-      .in("status", bulkReturnStatuses)
-      .select("id");
+    const {
+      data: { session }
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      setReturningLeads(false);
+      setShellNotice({ tone: "danger", message: language === "en" ? "Session expired." : "Sesja wygasła." });
+      return;
+    }
+
+    const response = await fetch("/api/leads/return", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify({ ownOpen: true })
+    });
+
+    const result = (await response.json().catch(() => ({}))) as { error?: string; updated?: number };
 
     setReturningLeads(false);
 
-    if (error) {
-      setShellNotice({ tone: "danger", message: error.message });
+    if (!response.ok) {
+      setShellNotice({ tone: "danger", message: result.error || (language === "en" ? "Could not return leads." : "Nie udało się zwrócić leadów.") });
       return;
     }
 
     setReturnConfirmOpen(false);
     setShellNotice({
       tone: "success",
-      message: language === "en" ? `Returned leads: ${data?.length || 0}` : `Zwrócono leady: ${data?.length || 0}`
+      message: language === "en" ? `Returned leads: ${result.updated || 0}` : `Zwrócono leady: ${result.updated || 0}`
     });
     window.dispatchEvent(new Event("leads:changed"));
     router.replace(homePathForRole(profile.role));

@@ -264,7 +264,8 @@ export default function LeadDetailsPage() {
     }
 
     if (status === "Zwrot") {
-      patch.assigned_to = null;
+      await returnLead();
+      return;
     }
 
     const { error: updateError } = await supabase
@@ -276,11 +277,6 @@ export default function LeadDetailsPage() {
     if (updateError) {
       setError(updateError.message);
       setBusy(false);
-      return;
-    }
-
-    if (status === "Zwrot" && isSalesRole(profile?.role)) {
-      router.replace("/sales");
       return;
     }
 
@@ -340,22 +336,24 @@ export default function LeadDetailsPage() {
   }
 
   async function returnLead() {
-    if (!lead || !profile) return;
+    if (!lead || !profile || !session?.access_token) return;
 
     setBusy(true);
     setError("");
 
-    const { error: returnError } = await supabase
-      .from("leads")
-      .update({
-        status: "Zwrot",
-        assigned_to: null
-      })
-      .eq("id", lead.id)
-      .eq("crm_environment", profile.crm_environment);
+    const response = await fetch("/api/leads/return", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify({ leadIds: [lead.id] })
+    });
 
-    if (returnError) {
-      setError(returnError.message);
+    const result = (await response.json().catch(() => ({}))) as { error?: string };
+
+    if (!response.ok) {
+      setError(result.error || "Nie udało się zwrócić leada.");
       setBusy(false);
       return;
     }
