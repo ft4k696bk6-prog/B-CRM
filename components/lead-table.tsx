@@ -110,8 +110,8 @@ export function LeadTable({
         </div>
       ) : null}
 
-      <div className="hidden overflow-x-auto md:block">
-        <table className="app-table min-w-[960px]">
+      <div className="hidden md:block">
+        <table className="app-table w-full table-fixed">
           <thead>
             <tr>
               {selectable ? (
@@ -125,14 +125,14 @@ export function LeadTable({
                   />
                 </th>
               ) : null}
-              <th className="px-4 py-3">{labels.lead}</th>
-              <th className="px-4 py-3">{labels.phone}</th>
-              <th className="px-4 py-3">{labels.region}</th>
-              <th className="px-4 py-3">{labels.status}</th>
-              {showAssignee ? <th className="px-4 py-3">{labels.salesperson}</th> : null}
-              <th className="px-4 py-3">{labels.dates}</th>
-              <th className="px-4 py-3">{labels.created}</th>
-              <th className="w-12 px-4 py-3" />
+              <th className="w-[22%] px-3 py-3">{labels.lead}</th>
+              <th className="w-[15%] px-3 py-3">{labels.phone}</th>
+              <th className="w-[14%] px-3 py-3">{labels.region}</th>
+              <th className="w-[13%] px-3 py-3">{labels.status}</th>
+              {showAssignee ? <th className="w-[14%] px-3 py-3">{labels.salesperson}</th> : null}
+              <th className="w-[15%] px-3 py-3">{labels.dates}</th>
+              <th className="w-[12%] px-3 py-3">{labels.created}</th>
+              <th className="w-12 px-3 py-3" />
             </tr>
           </thead>
           <tbody>
@@ -149,9 +149,11 @@ export function LeadTable({
                     />
                   </td>
                 ) : null}
-                <td className="px-4 py-3 align-top">
+                <td className="px-3 py-3 align-top break-words">
                   <Link
                     href={`/leads/${lead.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="font-semibold text-ink hover:text-sky"
                   >
                     {lead.full_name}
@@ -160,28 +162,28 @@ export function LeadTable({
                     {formatSource(lead.source, language)} · {lead.postal_code || labels.noCode}
                   </div>
                 </td>
-                <td className="px-4 py-3 align-top">
+                <td className="px-3 py-3 align-top break-words">
                   <a
                     href={`tel:${phoneHref(lead.phone)}`}
-                    className="inline-flex min-w-[154px] items-center gap-2 whitespace-nowrap font-semibold text-ink hover:text-sky"
+                    className="inline-flex items-center gap-2 break-all font-semibold text-ink hover:text-sky"
                   >
                     <Phone className="h-4 w-4 text-muted" aria-hidden="true" />
                     {formatPhone(lead.phone)}
                   </a>
                 </td>
-                <td className="px-4 py-3 align-top text-muted">
+                <td className="px-3 py-3 align-top text-muted break-words">
                   <div>{lead.voivodeship || "—"}</div>
                   <div className="text-xs">{lead.county || "—"}</div>
                 </td>
-                <td className="px-4 py-3 align-top">
+                <td className="px-3 py-3 align-top break-words">
                   <StatusBadge status={lead.status} />
                 </td>
                 {showAssignee ? (
-                  <td className="px-4 py-3 align-top text-muted">
+                  <td className="px-3 py-3 align-top text-muted break-words">
                     {lead.assigned_profile?.full_name || labels.unassigned}
                   </td>
                 ) : null}
-                <td className="px-4 py-3 align-top text-muted">
+                <td className="px-3 py-3 align-top text-muted break-words">
                   {lead.callback_at ? (
                     <div className="mb-1 flex items-center gap-2">
                       <CalendarClock className="h-4 w-4" aria-hidden="true" />
@@ -191,12 +193,14 @@ export function LeadTable({
                   {lead.meeting_at ? <div>{formatDateTime(lead.meeting_at)}</div> : null}
                   {!lead.callback_at && !lead.meeting_at ? "—" : null}
                 </td>
-                <td className="px-4 py-3 align-top text-muted">
+                <td className="px-3 py-3 align-top text-muted break-words">
                   {formatDateTime(lead.created_at)}
                 </td>
-                <td className="px-4 py-3 align-top">
+                <td className="px-3 py-3 align-top break-words">
                   <Link
                     href={`/leads/${lead.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-line text-muted transition hover:border-ink hover:text-ink"
                     title={labels.openLeadCard}
                   >
@@ -214,7 +218,7 @@ export function LeadTable({
           <article key={lead.id} className="rounded-lg border border-line bg-white p-4 shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <Link href={`/leads/${lead.id}`} className="text-base font-black text-ink hover:text-sky">
+                <Link href={`/leads/${lead.id}`} target="_blank" rel="noopener noreferrer" className="text-base font-black text-ink hover:text-sky">
                   {lead.full_name}
                 </Link>
                 <div className="mt-1 text-xs font-semibold text-muted">
@@ -256,7 +260,7 @@ export function LeadTable({
               </div>
             </div>
 
-            <Link href={`/leads/${lead.id}`} className="btn-secondary mt-4 w-full">
+            <Link href={`/leads/${lead.id}`} target="_blank" rel="noopener noreferrer" className="btn-secondary mt-4 w-full">
               <ExternalLink className="h-4 w-4" aria-hidden="true" />
               {labels.openCard}
             </Link>
