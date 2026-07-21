@@ -1,20 +1,12 @@
 import { NextResponse } from "next/server";
 import { requireApiProfile } from "@/lib/server-auth";
+import { canBulkReturnLead, postgrestInValues, RETURN_PROTECTED_STATUSES } from "@/lib/admin-leads";
 import type { Lead, Profile } from "@/lib/types";
 
 type ReturnLeadBody = {
   leadIds?: unknown;
   ownOpen?: unknown;
 };
-
-const bulkReturnStatuses = [
-  "Nowy",
-  "Przypisany",
-  "Nie odebrał",
-  "Błędny numer",
-  "Do weryfikacji",
-  "Po spotkaniu"
-];
 
 function cleanUuidList(value: unknown) {
   if (!Array.isArray(value)) return [];
@@ -37,7 +29,9 @@ export async function POST(request: Request) {
         .select("id")
         .eq("crm_environment", profile.crm_environment)
         .eq("assigned_to", profile.id)
-        .in("status", bulkReturnStatuses);
+        .not("status", "in", postgrestInValues(RETURN_PROTECTED_STATUSES))
+        .is("callback_at", null)
+        .is("meeting_at", null);
 
       if (error) return NextResponse.json({ error: error.message }, { status: 400 });
       leadIds = ((data || []) as Pick<Lead, "id">[]).map((lead) => lead.id);
@@ -53,7 +47,7 @@ export async function POST(request: Request) {
 
     const { data: leads, error: leadsError } = await supabaseAdmin
       .from("leads")
-      .select("id,assigned_to,crm_environment")
+      .select("id,assigned_to,crm_environment,status,callback_at,meeting_at")
       .eq("crm_environment", profile.crm_environment)
       .in("id", leadIds);
 
@@ -61,7 +55,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: leadsError.message }, { status: 400 });
     }
 
-    const foundLeads = (leads || []) as Pick<Lead, "id" | "assigned_to" | "crm_environment">[];
+    const foundLeads = (leads || []) as Pick<
+      Lead,
+      "id" | "assigned_to" | "crm_environment" | "status" | "callback_at" | "meeting_at"
+    >[];
     if (foundLeads.length !== leadIds.length) {
       return NextResponse.json({ error: "Część leadów nie istnieje albo jest poza tym CRM." }, { status: 404 });
     }
@@ -90,6 +87,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Nie masz uprawnień do zwrotu tych leadów." }, { status: 403 });
     }
 
+    const returnableIds = foundLeads.filter(canBulkReturnLead).map((lead) => lead.id);
+    if (returnableIds.length === 0) {
+      return NextResponse.json({ updated: 0 });
+    }
+
     const { error: updateError } = await supabaseAdmin
       .from("leads")
       .update({
@@ -97,13 +99,13 @@ export async function POST(request: Request) {
         assigned_to: null
       })
       .eq("crm_environment", profile.crm_environment)
-      .in("id", leadIds);
+      .in("id", returnableIds);
 
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 400 });
     }
 
-    return NextResponse.json({ updated: leadIds.length });
+    return NextResponse.json({ updated: returnableIds.length });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Nieznany błąd." },

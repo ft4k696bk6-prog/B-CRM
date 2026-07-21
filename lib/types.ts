@@ -85,10 +85,6 @@ export type AdminLeadFilters = {
   search: string;
   createdFrom: string;
   createdTo: string;
-  updatedFrom: string;
-  updatedTo: string;
-  openedFrom: string;
-  openedTo: string;
   postalCode: string;
   voivodeship: string;
   county: string;

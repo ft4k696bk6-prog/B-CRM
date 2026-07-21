@@ -25,7 +25,15 @@ import { RegionFields } from "@/components/region-fields";
 import { StatTile } from "@/components/stat-tile";
 import { Alert, PageHeader, SectionHeader } from "@/components/ui";
 import { useLanguage } from "@/components/language-provider";
-import { endOfDay, escapeCsv, needsNextAction, startOfDay } from "@/lib/admin-leads";
+import {
+  ASSIGNMENT_BATCH_SIZES,
+  endOfDay,
+  escapeCsv,
+  FOCUSED_LEAD_STATUSES,
+  needsNextAction,
+  postgrestInValues,
+  startOfDay
+} from "@/lib/admin-leads";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { hasPermission } from "@/lib/permissions";
 import { canManageLeads, isManagerRole } from "@/lib/roles";
@@ -37,15 +45,11 @@ const initialFilters: AdminLeadFilters = {
   search: "",
   createdFrom: "",
   createdTo: "",
-  updatedFrom: "",
-  updatedTo: "",
-  openedFrom: "",
-  openedTo: "",
   postalCode: "",
   voivodeship: "",
   county: "",
   status: "",
-  assignedTo: ""
+  assignedTo: "__unassigned"
 };
 
 const sortOptions: Array<SortOption & { label: string }> = [
@@ -81,6 +85,7 @@ export default function AdminDashboardPage() {
   const [showTeamResults, setShowTeamResults] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedSalesperson, setSelectedSalesperson] = useState("");
+  const [assignmentBatchSize, setAssignmentBatchSize] = useState<number>(25);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [stats, setStats] = useState({
@@ -192,53 +197,66 @@ export default function AdminDashboardPage() {
     setBusy(true);
     setError("");
 
-    let query = supabase
-      .from("leads")
-      .select(
-        "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)"
-      )
-      .eq("crm_environment", crmEnvironment)
-      .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false })
-      .limit(1000);
+    const pageSize = 1000;
+    const allLeads: Lead[] = [];
+    let from = 0;
 
-    if (debouncedFilters.search.trim()) {
-      const search = debouncedFilters.search.trim().replace(/[,%]/g, " ");
-      query = query.or(`full_name.ilike.%${search}%,phone.ilike.%${search}%,address.ilike.%${search}%,meeting_address.ilike.%${search}%`);
-    }
-    if (debouncedFilters.createdFrom) query = query.gte("created_at", startOfDay(debouncedFilters.createdFrom));
-    if (debouncedFilters.createdTo) query = query.lte("created_at", endOfDay(debouncedFilters.createdTo));
-    if (debouncedFilters.updatedFrom) query = query.gte("updated_at", startOfDay(debouncedFilters.updatedFrom));
-    if (debouncedFilters.updatedTo) query = query.lte("updated_at", endOfDay(debouncedFilters.updatedTo));
-    if (debouncedFilters.openedFrom) query = query.gte("last_opened_at", startOfDay(debouncedFilters.openedFrom));
-    if (debouncedFilters.openedTo) query = query.lte("last_opened_at", endOfDay(debouncedFilters.openedTo));
-    if (debouncedFilters.postalCode) query = query.ilike("postal_code", `%${debouncedFilters.postalCode}%`);
-    if (debouncedFilters.voivodeship) query = query.ilike("voivodeship", `%${debouncedFilters.voivodeship}%`);
-    if (debouncedFilters.county) query = query.ilike("county", `%${debouncedFilters.county}%`);
-    if (debouncedFilters.status) query = query.eq("status", debouncedFilters.status as LeadStatus);
+    while (true) {
+      let query = supabase
+        .from("leads")
+        .select(
+          "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)"
+        )
+        .eq("crm_environment", crmEnvironment)
+        .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false })
+        .order("id", { ascending: true })
+        .range(from, from + pageSize - 1);
 
-    if (isManager && !debouncedFilters.assignedTo) {
-      query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null` : "assigned_to.is.null");
-    }
+      if (debouncedFilters.search.trim()) {
+        const search = debouncedFilters.search.trim().replace(/[,%]/g, " ");
+        query = query.or(`full_name.ilike.%${search}%,phone.ilike.%${search}%,address.ilike.%${search}%,meeting_address.ilike.%${search}%`);
+      }
+      if (debouncedFilters.createdFrom) query = query.gte("created_at", startOfDay(debouncedFilters.createdFrom));
+      if (debouncedFilters.createdTo) query = query.lte("created_at", endOfDay(debouncedFilters.createdTo));
+      if (debouncedFilters.postalCode) query = query.ilike("postal_code", `%${debouncedFilters.postalCode}%`);
+      if (debouncedFilters.voivodeship) query = query.ilike("voivodeship", `%${debouncedFilters.voivodeship}%`);
+      if (debouncedFilters.county) query = query.ilike("county", `%${debouncedFilters.county}%`);
+      if (debouncedFilters.status) query = query.eq("status", debouncedFilters.status as LeadStatus);
+      else if (debouncedFilters.assignedTo !== "__returned") {
+        query = query.not("status", "in", postgrestInValues(FOCUSED_LEAD_STATUSES));
+      }
 
-    if (debouncedFilters.assignedTo === "__unassigned") {
-      query = query.is("assigned_to", null).neq("status", "Zwrot");
-    } else if (debouncedFilters.assignedTo === "__returned") {
-      query = query.eq("status", "Zwrot");
-      if (isManager) {
+      if (isManager && !debouncedFilters.assignedTo) {
         query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null` : "assigned_to.is.null");
       }
-    } else if (debouncedFilters.assignedTo) {
-      query = query.eq("assigned_to", debouncedFilters.assignedTo);
+
+      if (debouncedFilters.assignedTo === "__unassigned") {
+        query = query.is("assigned_to", null).neq("status", "Zwrot");
+      } else if (debouncedFilters.assignedTo === "__returned") {
+        query = query.eq("status", "Zwrot");
+        if (isManager) {
+          query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null` : "assigned_to.is.null");
+        }
+      } else if (debouncedFilters.assignedTo) {
+        query = query.eq("assigned_to", debouncedFilters.assignedTo);
+      }
+
+      const { data, error: leadsError } = await query;
+
+      if (leadsError) {
+        setError(leadsError.message);
+        setBusy(false);
+        return;
+      }
+
+      const page = (data || []) as Lead[];
+      allLeads.push(...page);
+      if (page.length < pageSize) break;
+      from += pageSize;
     }
 
-    const { data, error: leadsError } = await query;
-
-    if (leadsError) {
-      setError(leadsError.message);
-    } else {
-      setLeads((data || []) as Lead[]);
-      setSelectedIds([]);
-    }
+    setLeads(allLeads);
+    setSelectedIds([]);
 
     setBusy(false);
   }, [crmEnvironment, debouncedFilters, isManager, salespersonScopeKey, sort]);
@@ -258,6 +276,9 @@ export default function AdminDashboardPage() {
   }, [loadLeads, salespeopleReady]);
 
   const selectedCount = selectedIds.length;
+  const assignmentCandidateCount = leads.filter(
+    (lead) => !lead.assigned_to && lead.status !== "Zwrot"
+  ).length;
 
   const activeFilterCount = useMemo(
     () => Object.values(filters).filter(Boolean).length,
@@ -351,7 +372,12 @@ export default function AdminDashboardPage() {
   }
 
   async function assignSelected() {
-    if (!profile || !session?.access_token || !selectedSalesperson || selectedIds.length === 0) return;
+    if (!profile || !session?.access_token || !selectedSalesperson) return;
+
+    const leadIds = selectedIds.length > 0
+      ? selectedIds
+      : leads.filter((lead) => !lead.assigned_to && lead.status !== "Zwrot").slice(0, assignmentBatchSize).map((lead) => lead.id);
+    if (leadIds.length === 0) return;
 
     setBusy(true);
     setError("");
@@ -363,7 +389,7 @@ export default function AdminDashboardPage() {
         Authorization: `Bearer ${session.access_token}`
       },
       body: JSON.stringify({
-        leadIds: selectedIds,
+        leadIds,
         assignedTo: selectedSalesperson
       })
     });
@@ -673,42 +699,6 @@ export default function AdminDashboardPage() {
               />
             </label>
             <label>
-              <span className="label">Modyfikacja od</span>
-              <input
-                className="field"
-                type="date"
-                value={filters.updatedFrom}
-                onChange={(event) => updateFilter("updatedFrom", event.target.value)}
-              />
-            </label>
-            <label>
-              <span className="label">Modyfikacja do</span>
-              <input
-                className="field"
-                type="date"
-                value={filters.updatedTo}
-                onChange={(event) => updateFilter("updatedTo", event.target.value)}
-              />
-            </label>
-            <label>
-              <span className="label">Otwarcie od</span>
-              <input
-                className="field"
-                type="date"
-                value={filters.openedFrom}
-                onChange={(event) => updateFilter("openedFrom", event.target.value)}
-              />
-            </label>
-            <label>
-              <span className="label">Otwarcie do</span>
-              <input
-                className="field"
-                type="date"
-                value={filters.openedTo}
-                onChange={(event) => updateFilter("openedTo", event.target.value)}
-              />
-            </label>
-            <label>
               <span className="label">Kod pocztowy</span>
               <input
                 className="field"
@@ -789,7 +779,7 @@ export default function AdminDashboardPage() {
                 {isEnglish ? "Selected leads" : "Zaznaczone leady"}: {selectedCount}
               </p>
             </div>
-            <div className="grid gap-2 sm:grid-cols-[260px_auto]">
+            <div className="grid gap-2 sm:grid-cols-[260px_150px_auto]">
               <select
                 className="field"
                 value={selectedSalesperson}
@@ -802,14 +792,24 @@ export default function AdminDashboardPage() {
                   </option>
                 ))}
               </select>
+              <select
+                className="field"
+                value={assignmentBatchSize}
+                onChange={(event) => setAssignmentBatchSize(Number(event.target.value))}
+                aria-label="Liczba leadów do przypisania"
+              >
+                {ASSIGNMENT_BATCH_SIZES.map((size) => (
+                  <option key={size} value={size}>{size} leadów</option>
+                ))}
+              </select>
               <button
                 type="button"
                 onClick={assignSelected}
-                disabled={busy || !selectedSalesperson || selectedIds.length === 0}
+                disabled={busy || !selectedSalesperson || (selectedIds.length === 0 && assignmentCandidateCount === 0)}
                 className="btn-primary"
               >
                 <UserCheck className="h-4 w-4" aria-hidden="true" />
-                Przypisz
+                {selectedIds.length > 0 ? `Przypisz (${selectedIds.length})` : `Przypisz ${Math.min(assignmentBatchSize, assignmentCandidateCount)}`}
               </button>
             </div>
           </div>
