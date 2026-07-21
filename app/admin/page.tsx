@@ -77,6 +77,8 @@ export default function AdminDashboardPage() {
   const { loading, profile, session } = useAuth(["owner", "admin", "menadzer", "finance", "viewer"]);
   const { language } = useLanguage();
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [totalLeadCount, setTotalLeadCount] = useState(0);
+  const [loadedLeadCount, setLoadedLeadCount] = useState(0);
   const [salespeople, setSalespeople] = useState<Profile[]>([]);
   const [salespeopleLoaded, setSalespeopleLoaded] = useState(false);
   const [filters, setFilters] = useState<AdminLeadFilters>(initialFilters);
@@ -196,16 +198,23 @@ export default function AdminDashboardPage() {
 
     setBusy(true);
     setError("");
+    setTotalLeadCount(0);
+    setLoadedLeadCount(0);
 
-    const pageSize = 1000;
+    // Supabase projects commonly cap a single response at 1000 rows. Use
+    // smaller pages and the exact filtered count so that the UI never treats
+    // that API limit as the actual number of leads.
+    const pageSize = 500;
     const allLeads: Lead[] = [];
     let from = 0;
+    let expectedCount: number | null = null;
 
     while (true) {
       let query = supabase
         .from("leads")
         .select(
-          "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)"
+          "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)",
+          { count: "exact" }
         )
         .eq("crm_environment", crmEnvironment)
         .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false })
@@ -241,7 +250,7 @@ export default function AdminDashboardPage() {
         query = query.eq("assigned_to", debouncedFilters.assignedTo);
       }
 
-      const { data, error: leadsError } = await query;
+      const { data, error: leadsError, count } = await query;
 
       if (leadsError) {
         setError(leadsError.message);
@@ -250,12 +259,19 @@ export default function AdminDashboardPage() {
       }
 
       const page = (data || []) as Lead[];
+      if (expectedCount === null && count !== null) {
+        expectedCount = count;
+        setTotalLeadCount(expectedCount);
+      }
       allLeads.push(...page);
-      if (page.length < pageSize) break;
-      from += pageSize;
+      setLoadedLeadCount(allLeads.length);
+
+      if ((expectedCount !== null && allLeads.length >= expectedCount) || page.length < pageSize) break;
+      from = allLeads.length;
     }
 
     setLeads(allLeads);
+    setTotalLeadCount(expectedCount ?? allLeads.length);
     setSelectedIds([]);
 
     setBusy(false);
@@ -825,7 +841,9 @@ export default function AdminDashboardPage() {
             <h2 className="text-base font-bold text-ink">Leady</h2>
             <div className="flex items-center gap-2 text-sm text-muted">
               <Search className="h-4 w-4" aria-hidden="true" />
-              {busy ? (isEnglish ? "Refreshing" : "Odświeżanie") : `${leads.length} ${isEnglish ? "records" : "rekordów"}`}
+              {busy
+                ? `${isEnglish ? "Refreshing" : "Odświeżanie"}: ${loadedLeadCount}${totalLeadCount ? ` / ${totalLeadCount}` : ""}`
+                : `${totalLeadCount} ${isEnglish ? "records" : "rekordów"}`}
             </div>
           </div>
           <LeadTable
