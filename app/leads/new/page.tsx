@@ -117,7 +117,7 @@ export default function NewLeadPage() {
       voivodeship: voivodeship || null,
       county: county || null,
       source,
-      status: canManage ? "Nowy" : "Przypisany",
+      status: "Nowy",
       assigned_to: canManage ? null : profile.id
     };
 

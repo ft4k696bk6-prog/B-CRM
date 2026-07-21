@@ -64,9 +64,9 @@ const demoLeads = [
   lead("demo-lead-001", "Jan Kowalski", "+48 600 700 800", "20-001", "Lublin, ul. Energetyczna 12", "Umowa", "demo-sales", "B2C", "BCRM/05/2026/017", -8, -2),
   lead("demo-lead-002", "Marta Wisniewska", "+48 501 220 330", "21-500", "Rokitno 18", "Spotkanie", "demo-sales", "polecenie", null, -5, -1),
   lead("demo-lead-003", "GreenPack Sp. z o.o.", "+48 512 300 110", "23-400", "Bilgoraj, ul. Przemyslowa 5", "Call back", "demo-sales", "B2B", null, -3, -0.5),
-  lead("demo-lead-004", "Auto-Komfort", "+48 535 118 445", "08-500", "Ryki, ul. Serwisowa 14", "Przypisany", "demo-sales", "B2B", null, -2, -1),
+  lead("demo-lead-004", "Auto-Komfort", "+48 535 118 445", "08-500", "Ryki, ul. Serwisowa 14", "Nowy", "demo-sales", "B2B", null, -2, -1),
   lead("demo-lead-005", "Justyna Sikora", "+48 537 908 222", "21-070", "Cycow, ul. Szkolna 2", "Nowy", null, "B2C", null, -1, -1),
-  lead("demo-lead-006", "Piotr Markowski", "+48 543 776 221", "24-220", "Niedrzwica Duza, ul. Lipowa 4", "Do weryfikacji", "demo-sales", "wlasne", null, -6, -3)
+  lead("demo-lead-006", "Piotr Markowski", "+48 543 776 221", "24-220", "Niedrzwica Duza, ul. Lipowa 4", "Nie odebrał", "demo-sales", "wlasne", null, -6, -3)
 ];
 
 function lead(

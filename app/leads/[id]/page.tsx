@@ -18,9 +18,6 @@ import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
 import { StatusBadge } from "@/components/status-badge";
-import { ActivityLog } from "@/components/activity-log";
-import { FileList } from "@/components/file-list";
-import { ReminderList } from "@/components/reminder-list";
 import { Alert, EmptyState, SectionHeader } from "@/components/ui";
 import { ACTION_LABELS, LEAD_STATUSES, STATUS_LABELS, STATUS_TILE_TONES } from "@/lib/constants";
 import { hasAnyPermission } from "@/lib/permissions";
@@ -33,17 +30,14 @@ import { useAuth } from "@/lib/use-auth";
 
 function getSalesStatusPath(lead: Lead): LeadStatus[] {
   if (lead.status === "Umowa") return ["Umowa"];
-  if (lead.status === "Zwrot") return ["Zwrot"];
   if (lead.status === "Rezygnacja") return ["Rezygnacja"];
 
   const base: LeadStatus[] = [
+    "Nowy",
+    "Nie odebrał",
     "Call back",
     "Spotkanie",
-    "Rezygnacja",
-    "Zwrot",
-    "Nie odebrał",
-    "Błędny numer",
-    "Do weryfikacji"
+    "Rezygnacja"
   ];
 
   if (lead.status === "Spotkanie") {
@@ -53,13 +47,12 @@ function getSalesStatusPath(lead: Lead): LeadStatus[] {
       "Umowa",
       "Call back",
       "Rezygnacja",
-      "Zwrot",
       "Nie odebrał"
     ];
   }
 
   if (lead.status === "Po spotkaniu") {
-    return ["Po spotkaniu", "Umowa", "Call back", "Rezygnacja", "Zwrot", "Nie odebrał"];
+    return ["Po spotkaniu", "Umowa", "Call back", "Rezygnacja", "Nie odebrał"];
   }
 
   return base.includes(lead.status) ? base : [lead.status, ...base];
@@ -193,7 +186,8 @@ export default function LeadDetailsPage() {
     setError("");
 
     const patch: Partial<Lead> = { status };
-    const availableStatuses = canManage ? LEAD_STATUSES : getSalesStatusPath(lead);
+    const isClosedLead = lead.status === "Umowa" || lead.status === "Rezygnacja";
+    const availableStatuses = isClosedLead ? [lead.status] : canManage ? LEAD_STATUSES : getSalesStatusPath(lead);
 
     if (!availableStatuses.includes(status)) {
       setError("Ten status nie jest dostępny na obecnym etapie leada.");
@@ -270,11 +264,6 @@ export default function LeadDetailsPage() {
       if (isSalesRole(profile.role)) {
         patch.assigned_to = profile.id;
       }
-    }
-
-    if (status === "Zwrot") {
-      await returnLead();
-      return;
     }
 
     const { error: updateError } = await supabase
@@ -406,7 +395,15 @@ export default function LeadDetailsPage() {
   }
 
   if (loading || !profile) return <LoadingScreen />;
-  const availableStatuses = lead ? (canManage ? LEAD_STATUSES : canEditLead ? getSalesStatusPath(lead) : [lead.status]) : [];
+  const availableStatuses = lead
+    ? lead.status === "Umowa" || lead.status === "Rezygnacja"
+      ? [lead.status]
+      : canManage
+        ? LEAD_STATUSES
+        : canEditLead
+          ? getSalesStatusPath(lead)
+          : [lead.status]
+    : [];
 
   return (
     <AppShell profile={profile}>
@@ -540,9 +537,7 @@ export default function LeadDetailsPage() {
                                     ? "Wymaga notatki"
                                     : item === "Umowa"
                                       ? "Wymaga numeru umowy"
-                                      : item === "Zwrot"
-                                        ? "Wraca do bazy leadów"
-                                        : item === "Rezygnacja"
+                                    : item === "Rezygnacja"
                                           ? "Wymaga powodu"
                                           : "Zmień etap leada"}
                             </span>
@@ -649,7 +644,12 @@ export default function LeadDetailsPage() {
                     <Save className="h-4 w-4" aria-hidden="true" />
                     Zapisz
                   </button>
-                  <button type="button" onClick={returnLead} disabled={busy || !canEditLead} className="btn-secondary">
+                  <button
+                    type="button"
+                    onClick={returnLead}
+                    disabled={busy || !canEditLead || lead.status === "Umowa" || lead.status === "Rezygnacja"}
+                    className="btn-secondary"
+                  >
                     <RotateCcw className="h-4 w-4" aria-hidden="true" />
                     Zwrot
                   </button>
@@ -709,88 +709,60 @@ export default function LeadDetailsPage() {
                         ))}
                       </select>
                     </label>
-                    <button type="submit" disabled={busy} className="btn-primary mt-4">
+                    <button
+                      type="submit"
+                      disabled={busy || lead.status === "Umowa" || lead.status === "Rezygnacja"}
+                      className="btn-primary mt-4"
+                    >
                       <Check className="h-4 w-4" aria-hidden="true" />
                       Zapisz przypisanie
                     </button>
                   </form>
                 ) : null}
 
-                {canEditLead ? (
-                <form onSubmit={addComment} className="app-card">
-                  <SectionHeader icon={MessageSquarePlus} title="Komentarz" tone="solar" className="mb-4" />
+              </div>
+            </section>
+
+            <section className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)]">
+              <div className="app-card">
+                <h2 className="text-base font-bold text-ink">Historia leada</h2>
+                <div className="mt-4 grid max-h-[680px] gap-3 overflow-y-auto pr-1">
+                  {history.map((item) => (
+                    <div key={item.id} className="rounded-md border border-line bg-[#f9fbfd] p-3">
+                      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="font-semibold text-ink">
+                          {ACTION_LABELS[item.action_type] || item.action_type}
+                        </div>
+                        <div className="text-xs text-muted">{formatDateTime(item.created_at)}</div>
+                      </div>
+                      <p className="mt-2 text-sm text-muted">{item.description}</p>
+                      <div className="mt-2 text-xs text-muted">
+                        {item.user_profile?.full_name || "System"}
+                      </div>
+                    </div>
+                  ))}
+                  {history.length === 0 ? (
+                    <EmptyState title="Brak historii" description="Historia pojawi się po pierwszej zmianie lub komentarzu." />
+                  ) : null}
+                </div>
+              </div>
+
+              {canEditLead ? (
+                <form onSubmit={addComment} className="app-card h-fit xl:sticky xl:top-20">
+                  <SectionHeader icon={MessageSquarePlus} title="Komentarze" tone="solar" className="mb-4" />
                   <textarea
-                    className="field min-h-28"
+                    className="field min-h-40"
                     value={comment}
                     onChange={(event) => setComment(event.target.value)}
+                    placeholder="Dodaj ustalenia z rozmowy lub ważną informację…"
                   />
-                  <button type="submit" disabled={busy || !comment.trim()} className="btn-primary mt-4">
+                  <button type="submit" disabled={busy || !comment.trim()} className="btn-primary mt-4 w-full">
                     Dodaj komentarz
                   </button>
                 </form>
-                ) : (
-                  <Alert tone="info">Tryb tylko do odczytu: komentarze i edycja są zablokowane dla tej roli.</Alert>
-                )}
-              </div>
-            </section>
-
-            <section className="app-card">
-              <h2 className="text-base font-bold text-ink">Aktywności</h2>
-              <div className="mt-4">
-                {session?.access_token && (
-                  <ActivityLog
-                    leadId={lead.id}
-                    token={session.access_token}
-                  />
-                )}
-              </div>
-            </section>
-
-            <section className="app-card">
-              <h2 className="text-base font-bold text-ink">Pliki</h2>
-              <div className="mt-4">
-                {session?.access_token && (
-                  <FileList
-                    leadId={lead.id}
-                    token={session.access_token}
-                  />
-                )}
-              </div>
-            </section>
-
-            <section className="app-card">
-              <h2 className="text-base font-bold text-ink">Przypomnienia</h2>
-              <div className="mt-4">
-                {session?.access_token && (
-                  <ReminderList
-                    leadId={lead.id}
-                    token={session.access_token}
-                  />
-                )}
-              </div>
-            </section>
-
-            <section className="app-card">
-              <h2 className="text-base font-bold text-ink">Historia leada</h2>
-              <div className="mt-4 grid gap-3">
-                {history.map((item) => (
-                  <div key={item.id} className="rounded-md border border-line bg-[#f9fbfd] p-3">
-                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="font-semibold text-ink">
-                        {ACTION_LABELS[item.action_type] || item.action_type}
-                      </div>
-                      <div className="text-xs text-muted">{formatDateTime(item.created_at)}</div>
-                    </div>
-                    <p className="mt-2 text-sm text-muted">{item.description}</p>
-                    <div className="mt-2 text-xs text-muted">
-                      {item.user_profile?.full_name || "System"}
-                    </div>
-                  </div>
-                ))}
-                {history.length === 0 ? (
-                  <EmptyState title="Brak historii" description="Aktywności pojawią się po pierwszej zmianie lub komentarzu." />
-                ) : null}
-              </div>
+              ) : (
+                <Alert tone="info">Komentarze są dostępne tylko dla osób z prawem edycji leada.</Alert>
+              )}
             </section>
           </>
         )}

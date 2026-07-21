@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Ban,
   CalendarDays,
@@ -29,7 +29,6 @@ import {
   ASSIGNMENT_BATCH_SIZES,
   endOfDay,
   escapeCsv,
-  FOCUSED_LEAD_STATUSES,
   needsNextAction,
   postgrestInValues,
   startOfDay
@@ -88,9 +87,11 @@ export default function AdminDashboardPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedSalesperson, setSelectedSalesperson] = useState("");
   const [assignmentBatchSize, setAssignmentBatchSize] = useState<number>(25);
+  const [leadBucket, setLeadBucket] = useState<"active" | "resignations" | "contracts">("active");
   const [busy, setBusy] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState("");
+  const normalizedStatuses = useRef(false);
   const [stats, setStats] = useState({
     all: 0,
     unassigned: 0,
@@ -182,7 +183,7 @@ export default function AdminDashboardPage() {
 
     for (const lead of statRows) {
       nextStats.all += 1;
-      if (!lead.assigned_to && lead.status !== "Zwrot") nextStats.unassigned += 1;
+      if (!lead.assigned_to) nextStats.unassigned += 1;
       if (lead.assigned_to) nextStats.assigned += 1;
       if (lead.status === "Call back") nextStats.callbacks += 1;
       if (lead.status === "Spotkanie" || lead.meeting_at) nextStats.meetings += 1;
@@ -232,8 +233,10 @@ export default function AdminDashboardPage() {
       if (debouncedFilters.voivodeship) query = query.ilike("voivodeship", `%${debouncedFilters.voivodeship}%`);
       if (debouncedFilters.county) query = query.ilike("county", `%${debouncedFilters.county}%`);
       if (debouncedFilters.status) query = query.eq("status", debouncedFilters.status as LeadStatus);
-      else if (debouncedFilters.assignedTo !== "__returned") {
-        query = query.not("status", "in", postgrestInValues(FOCUSED_LEAD_STATUSES));
+      else {
+        if (leadBucket === "active") query = query.not("status", "in", postgrestInValues(["Umowa", "Rezygnacja"]));
+        if (leadBucket === "contracts") query = query.eq("status", "Umowa");
+        if (leadBucket === "resignations") query = query.eq("status", "Rezygnacja");
       }
 
       if (isManager && !debouncedFilters.assignedTo) {
@@ -241,12 +244,7 @@ export default function AdminDashboardPage() {
       }
 
       if (debouncedFilters.assignedTo === "__unassigned") {
-        query = query.is("assigned_to", null).neq("status", "Zwrot");
-      } else if (debouncedFilters.assignedTo === "__returned") {
-        query = query.eq("status", "Zwrot");
-        if (isManager) {
-          query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null` : "assigned_to.is.null");
-        }
+        query = query.is("assigned_to", null);
       } else if (debouncedFilters.assignedTo) {
         query = query.eq("assigned_to", debouncedFilters.assignedTo);
       }
@@ -276,11 +274,24 @@ export default function AdminDashboardPage() {
     setSelectedIds([]);
 
     setBusy(false);
-  }, [crmEnvironment, debouncedFilters, isManager, salespersonScopeKey, sort]);
+  }, [crmEnvironment, debouncedFilters, isManager, leadBucket, salespersonScopeKey, sort]);
 
   useEffect(() => {
     loadSalespeople();
   }, [loadSalespeople]);
+
+  useEffect(() => {
+    if (!session?.access_token || !profile || normalizedStatuses.current) return;
+    if (profile.role !== "owner" && profile.role !== "admin") return;
+    normalizedStatuses.current = true;
+
+    void fetch("/api/admin/leads/normalize-statuses", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${session.access_token}` }
+    }).then((response) => {
+      if (response.ok) void Promise.all([loadStats(), loadLeads()]);
+    });
+  }, [loadLeads, loadStats, profile, session?.access_token]);
 
   useEffect(() => {
     if (!salespeopleReady) return;
@@ -294,7 +305,7 @@ export default function AdminDashboardPage() {
 
   const selectedCount = selectedIds.length;
   const assignmentCandidateCount = leads.filter(
-    (lead) => !lead.assigned_to && lead.status !== "Zwrot"
+    (lead) => !lead.assigned_to
   ).length;
 
   const activeFilterCount = useMemo(
@@ -388,12 +399,14 @@ export default function AdminDashboardPage() {
     URL.revokeObjectURL(url);
   }
 
-  async function assignSelected() {
-    if (!profile || !session?.access_token || !selectedSalesperson) return;
+  async function assignSelected(takeBack = false) {
+    if (!profile || !session?.access_token || (!takeBack && !selectedSalesperson)) return;
 
-    const leadIds = selectedIds.length > 0
+    const leadIds = takeBack
       ? selectedIds
-      : leads.filter((lead) => !lead.assigned_to && lead.status !== "Zwrot").slice(0, assignmentBatchSize).map((lead) => lead.id);
+      : selectedIds.length > 0
+      ? selectedIds
+      : leads.filter((lead) => !lead.assigned_to).slice(0, assignmentBatchSize).map((lead) => lead.id);
     if (leadIds.length === 0) return;
 
     setBusy(true);
@@ -407,14 +420,14 @@ export default function AdminDashboardPage() {
       },
       body: JSON.stringify({
         leadIds,
-        assignedTo: selectedSalesperson
+        assignedTo: takeBack ? null : selectedSalesperson
       })
     });
 
     const result = (await response.json().catch(() => ({}))) as { error?: string };
 
     if (!response.ok) {
-      setError(result.error || "Nie udało się przypisać leadów.");
+      setError(result.error || (takeBack ? "Nie udało się odebrać leadów." : "Nie udało się przypisać leadów."));
     } else {
       setSelectedIds([]);
       setSelectedSalesperson("");
@@ -678,17 +691,31 @@ export default function AdminDashboardPage() {
               </button>
               <button
                 type="button"
-                onClick={() => setFilters({ ...initialFilters, assignedTo: "__unassigned" })}
+                onClick={() => { setLeadBucket("active"); setFilters({ ...initialFilters, assignedTo: "__unassigned" }); }}
                 className="btn-secondary"
               >
                 Baza leadów
               </button>
               <button
                 type="button"
-                onClick={() => setFilters({ ...initialFilters, assignedTo: "__returned" })}
-                className="btn-secondary"
+                onClick={() => { setLeadBucket("active"); setFilters({ ...initialFilters, assignedTo: "" }); }}
+                className={leadBucket === "active" ? "btn-primary" : "btn-secondary"}
               >
-                Zwrócone
+                Bieżąca praca
+              </button>
+              <button
+                type="button"
+                onClick={() => { setLeadBucket("resignations"); setFilters({ ...initialFilters, assignedTo: "" }); }}
+                className={leadBucket === "resignations" ? "btn-primary" : "btn-secondary"}
+              >
+                Worek rezygnacji ({stats.resignations})
+              </button>
+              <button
+                type="button"
+                onClick={() => { setLeadBucket("contracts"); setFilters({ ...initialFilters, assignedTo: "" }); }}
+                className={leadBucket === "contracts" ? "btn-primary" : "btn-secondary"}
+              >
+                Worek umów ({stats.contracts})
               </button>
               <button
                 type="button"
@@ -775,7 +802,6 @@ export default function AdminDashboardPage() {
               >
                 <option value="">Wszyscy</option>
                 <option value="__unassigned">Nieprzypisane</option>
-                <option value="__returned">Zwrócone</option>
                 {salespeople.map((person) => (
                   <option key={person.id} value={person.id}>
                     {person.full_name}
@@ -816,7 +842,7 @@ export default function AdminDashboardPage() {
                 {isEnglish ? "Selected leads" : "Zaznaczone leady"}: {selectedCount}
               </p>
             </div>
-            <div className="grid gap-2 sm:grid-cols-[260px_150px_auto]">
+            <div className="grid gap-2 sm:grid-cols-[minmax(200px,260px)_130px_auto_auto]">
               <select
                 className="field"
                 value={selectedSalesperson}
@@ -841,12 +867,21 @@ export default function AdminDashboardPage() {
               </select>
               <button
                 type="button"
-                onClick={assignSelected}
+                onClick={() => assignSelected(false)}
                 disabled={busy || !selectedSalesperson || (selectedIds.length === 0 && assignmentCandidateCount === 0)}
                 className="btn-primary"
               >
                 <UserCheck className="h-4 w-4" aria-hidden="true" />
                 {selectedIds.length > 0 ? `Przypisz (${selectedIds.length})` : `Przypisz ${Math.min(assignmentBatchSize, assignmentCandidateCount)}`}
+              </button>
+              <button
+                type="button"
+                onClick={() => assignSelected(true)}
+                disabled={busy || selectedIds.length === 0}
+                className="btn-secondary border-danger/30 text-danger hover:border-danger"
+              >
+                <Ban className="h-4 w-4" aria-hidden="true" />
+                Zabierz handlowcowi
               </button>
             </div>
           </div>

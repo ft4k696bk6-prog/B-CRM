@@ -84,21 +84,33 @@ export async function POST(request: Request) {
     }
 
     const lockedContractLead = foundLeads.find(
-      (lead) => lead.status === "Umowa" && lead.assigned_to && lead.assigned_to !== assignedTo
+      (lead) => ["Umowa", "Rezygnacja"].includes(lead.status) && lead.assigned_to !== assignedTo
     );
 
     if (lockedContractLead) {
       return NextResponse.json(
-        { error: "Lead ze statusem Umowa jest przypisany na stałe do handlowca i nie może zostać przeniesiony." },
+        { error: "Umowy i rezygnacje są zamknięte i nie można zmieniać ich przypisania." },
         { status: 409 }
       );
     }
 
+    const assignmentPatch = assignedTo
+      ? { assigned_to: assignedTo }
+      : {
+          assigned_to: null,
+          status: "Nowy",
+          callback_at: null,
+          meeting_at: null,
+          meeting_address: null,
+          meeting_note: null,
+          resignation_reason: null,
+          contract_number: null,
+          last_opened_at: null
+        };
+
     const { error: updateError } = await supabaseAdmin
       .from("leads")
-      .update({
-        assigned_to: assignedTo
-      })
+      .update(assignmentPatch)
       .eq("crm_environment", profile.crm_environment)
       .in("id", leadIds);
 

@@ -18,12 +18,12 @@ describe("admin lead helpers", () => {
     expect(escapeCsv(null)).toBe('""');
   });
 
-  it("keeps callbacks, meetings and contracts assigned during a bulk return", () => {
+  it("keeps scheduled and closed leads assigned during a bulk return", () => {
     expect(canBulkReturnLead({ status: "Nowy", callback_at: null, meeting_at: null })).toBe(true);
-    expect(canBulkReturnLead({ status: "Rezygnacja", callback_at: null, meeting_at: null })).toBe(true);
+    expect(canBulkReturnLead({ status: "Rezygnacja", callback_at: null, meeting_at: null })).toBe(false);
     expect(canBulkReturnLead({ status: "Call back", callback_at: null, meeting_at: null })).toBe(false);
     expect(canBulkReturnLead({ status: "Nowy", callback_at: "2026-05-19", meeting_at: null })).toBe(false);
-    expect(canBulkReturnLead({ status: "Po spotkaniu", callback_at: null, meeting_at: null })).toBe(false);
+    expect(canBulkReturnLead({ status: "Po spotkaniu", callback_at: null, meeting_at: null })).toBe(true);
     expect(canBulkReturnLead({ status: "Umowa", callback_at: null, meeting_at: null })).toBe(false);
   });
 

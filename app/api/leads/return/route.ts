@@ -87,7 +87,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Nie masz uprawnień do zwrotu tych leadów." }, { status: 403 });
     }
 
-    const returnableIds = foundLeads.filter(canBulkReturnLead).map((lead) => lead.id);
+    const returnableIds = foundLeads
+      .filter((lead) => ownOpen
+        ? canBulkReturnLead(lead)
+        : lead.status !== "Umowa" && lead.status !== "Rezygnacja")
+      .map((lead) => lead.id);
     if (returnableIds.length === 0) {
       return NextResponse.json({ updated: 0 });
     }
@@ -95,8 +99,15 @@ export async function POST(request: Request) {
     const { error: updateError } = await supabaseAdmin
       .from("leads")
       .update({
-        status: "Zwrot",
-        assigned_to: null
+        status: "Nowy",
+        assigned_to: null,
+        callback_at: null,
+        meeting_at: null,
+        meeting_address: null,
+        meeting_note: null,
+        resignation_reason: null,
+        contract_number: null,
+        last_opened_at: null
       })
       .eq("crm_environment", profile.crm_environment)
       .in("id", returnableIds);

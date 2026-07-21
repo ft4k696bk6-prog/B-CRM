@@ -380,7 +380,7 @@ export function AppShell({ profile, children }: AppShellProps) {
         </div>
       ) : null}
 
-      <div className="app-layout mx-auto grid max-w-7xl gap-5 px-4 py-5 lg:grid-cols-[230px_1fr]">
+      <div className="app-layout mx-auto grid max-w-[1600px] gap-4 px-2 py-5 sm:px-3 lg:grid-cols-[180px_minmax(0,1fr)] xl:px-4">
         <aside className="app-sidebar hidden rounded-lg border border-line bg-panel p-2 shadow-sm lg:sticky lg:top-20 lg:block lg:h-fit">
           <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-muted">
             <PanelLeft className="h-4 w-4" aria-hidden="true" />

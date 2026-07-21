@@ -125,13 +125,13 @@ export function LeadTable({
                   />
                 </th>
               ) : null}
-              <th className="w-[22%] px-3 py-3">{labels.lead}</th>
-              <th className="w-[15%] px-3 py-3">{labels.phone}</th>
-              <th className="w-[14%] px-3 py-3">{labels.region}</th>
-              <th className="w-[13%] px-3 py-3">{labels.status}</th>
-              {showAssignee ? <th className="w-[14%] px-3 py-3">{labels.salesperson}</th> : null}
-              <th className="w-[15%] px-3 py-3">{labels.dates}</th>
-              <th className="w-[12%] px-3 py-3">{labels.created}</th>
+              <th className="w-[20%] px-2 py-3">{labels.lead}</th>
+              <th className="w-[14%] px-2 py-3">{labels.phone}</th>
+              <th className="w-[13%] px-2 py-3">{labels.region}</th>
+              <th className="w-[12%] px-2 py-3">{labels.status}</th>
+              {showAssignee ? <th className="w-[14%] px-2 py-3">{labels.salesperson}</th> : null}
+              <th className="w-[15%] px-2 py-3">{labels.dates}</th>
+              <th className="w-[12%] px-2 py-3">{labels.created}</th>
               <th className="w-12 px-3 py-3" />
             </tr>
           </thead>
@@ -162,10 +162,10 @@ export function LeadTable({
                     {formatSource(lead.source, language)} · {lead.postal_code || labels.noCode}
                   </div>
                 </td>
-                <td className="px-3 py-3 align-top break-words">
+                <td className="px-2 py-3 align-top">
                   <a
                     href={`tel:${phoneHref(lead.phone)}`}
-                    className="inline-flex items-center gap-2 break-all font-semibold text-ink hover:text-sky"
+                    className="inline-flex items-center gap-1 whitespace-nowrap font-semibold text-ink hover:text-sky"
                   >
                     <Phone className="h-4 w-4 text-muted" aria-hidden="true" />
                     {formatPhone(lead.phone)}

@@ -22,16 +22,12 @@ export type CrmDataScope = "production" | "demo";
 
 export type LeadStatus =
   | "Nowy"
-  | "Przypisany"
   | "Call back"
   | "Spotkanie"
   | "Po spotkaniu"
   | "Umowa"
-  | "Zwrot"
   | "Rezygnacja"
-  | "Nie odebrał"
-  | "Błędny numer"
-  | "Do weryfikacji";
+  | "Nie odebrał";
 
 export type Profile = {
   id: string;

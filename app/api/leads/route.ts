@@ -88,7 +88,7 @@ export async function POST(request: Request) {
       voivodeship: text(body.voivodeship, 80) || null,
       county: text(body.county, 120) || null,
       source,
-      status: canManageLeads(role) ? "Nowy" : "Przypisany",
+      status: "Nowy",
       assigned_to: canManageLeads(role) ? null : user.id,
       crm_environment: crmEnvironment
     };

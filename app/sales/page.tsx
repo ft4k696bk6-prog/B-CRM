@@ -23,7 +23,7 @@ import type { Lead, LeadStatus } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
 
 function needsNextAction(lead: Pick<Lead, "status" | "callback_at" | "meeting_at">) {
-  if (["Umowa", "Rezygnacja", "Zwrot"].includes(lead.status)) return false;
+  if (["Umowa", "Rezygnacja"].includes(lead.status)) return false;
   return !lead.callback_at && !lead.meeting_at;
 }
 
@@ -46,6 +46,7 @@ export default function SalesDashboardPage() {
       .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)")
       .eq("crm_environment", profile.crm_environment)
       .eq("assigned_to", profile.id)
+      .not("status", "in", '("Umowa","Rezygnacja")')
       .order("updated_at", { ascending: false })
       .limit(1000);
 

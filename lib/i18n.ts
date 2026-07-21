@@ -55,7 +55,7 @@ export const copy = {
     returnLeads: "Zwrot leadów",
     returnLeadsTitle: "Zwróć leady bez call-backu i spotkania",
     returnLeadsConfirm:
-      "Zwrócić wszystkie leady bez zaplanowanego call-backu i spotkania? Leady ze statusem Call-back i Spotkanie zostaną u Ciebie."
+      "Zwrócić bieżące leady do bazy? Ich status i terminy zostaną wyczyszczone. Call-backi i spotkania zostaną u Ciebie; możesz zwrócić je ręcznie z karty leada."
   },
   en: {
     loginSubtitle: "Sign in to the workspace",

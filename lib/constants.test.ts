@@ -11,7 +11,7 @@ describe("lead status constants", () => {
 
   it("contains the core sales workflow statuses", () => {
     expect(LEAD_STATUSES).toEqual(
-      expect.arrayContaining(["Nowy", "Przypisany", "Call back", "Spotkanie", "Umowa"])
+      ["Nowy", "Nie odebrał", "Call back", "Spotkanie", "Po spotkaniu", "Umowa", "Rezygnacja"]
     );
   });
 });

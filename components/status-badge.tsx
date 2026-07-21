@@ -4,16 +4,12 @@ import type { LeadStatus } from "@/lib/types";
 
 const STATUS_LABELS_EN: Record<LeadStatus, string> = {
   Nowy: "New",
-  Przypisany: "Assigned",
   "Call back": "Call-back",
   Spotkanie: "Meeting",
   "Po spotkaniu": "After meeting",
   Umowa: "Contract",
-  Zwrot: "Return",
   Rezygnacja: "Resignation",
-  "Nie odebrał": "No answer",
-  "Błędny numer": "Wrong number",
-  "Do weryfikacji": "Needs verification"
+  "Nie odebrał": "No answer"
 };
 
 export function StatusBadge({ status }: { status: LeadStatus }) {
