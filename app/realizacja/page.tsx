@@ -61,6 +61,14 @@ type ProcessClient = {
   updatedAt: string | null;
   ownerName: string | null;
   ownerRole: UserRole | null;
+  postalCode: string | null;
+  address: string | null;
+  contractDate?: string | null;
+  installation?: string | null;
+  financing?: string | null;
+  grossAmount?: string | null;
+  montageDate?: string | null;
+  operationsNote?: string | null;
   isDemo?: boolean;
 };
 
@@ -605,12 +613,14 @@ function leadToProcessClient(lead: Lead): ProcessClient {
     createdAt: lead.created_at,
     updatedAt: lead.updated_at,
     ownerName: lead.assigned_profile?.full_name || lead.assigned_profile?.email || null,
-    ownerRole
+    ownerRole,
+    postalCode: lead.postal_code,
+    address: lead.address
   };
 }
 
-function demoProcessClient(): ProcessClient {
-  return {
+function demoProcessClients(): ProcessClient[] {
+  const baseClient: ProcessClient = {
     id: "demo-process",
     fullName: demoContractData.clientName,
     phone: demoContractData.phone,
@@ -621,8 +631,72 @@ function demoProcessClient(): ProcessClient {
     updatedAt: demoContractData.contractDate,
     ownerName: demoContractData.sellerName,
     ownerRole: "handlowiec",
+    postalCode: demoContractData.postalCode,
+    address: `${demoContractData.address}, ${demoContractData.city}`,
+    contractDate: demoContractData.contractDate,
+    installation: `${demoContractData.installationPowerKw} kW · ${demoContractData.inverterModel}`,
+    financing: demoContractData.financing,
+    grossAmount: demoContractData.grossPrice,
+    montageDate: demoContractData.montageDate,
+    operationsNote: demoContractData.warehouseNote,
     isDemo: true
   };
+
+  return [
+    baseClient,
+    {
+      ...baseClient,
+      id: "demo-process-2",
+      fullName: "Marta Zielińska",
+      phone: "510 240 360",
+      contractNumber: "BCRM/05/2026/021",
+      postalCode: "30-001",
+      address: "ul. Wiosenna 8, Kraków",
+      ownerName: "Piotr Lis",
+      contractDate: "2026-05-21",
+      installation: "10 kW · Deye 3F Hybrid",
+      financing: "Gotówka",
+      grossAmount: "42 800 PLN",
+      montageDate: "2026-06-12",
+      operationsNote: "Magazyn energii 10 kWh, dach płaski."
+    },
+    {
+      ...baseClient,
+      id: "demo-process-3",
+      fullName: "Tomasz Wiśniewski",
+      phone: "698 120 445",
+      contractNumber: "BCRM/05/2026/024",
+      postalCode: "20-400",
+      address: "ul. Polna 17, Lublin",
+      ownerName: "Anna Nowak",
+      contractDate: "2026-05-24",
+      installation: "6.15 kW · Kon-Tec 6K",
+      financing: "Kredyt 80% / gotówka 20%",
+      grossAmount: "31 450 PLN",
+      montageDate: "2026-06-18",
+      operationsNote: "15 paneli, bojler 120 l."
+    },
+    {
+      ...baseClient,
+      id: "demo-process-4",
+      fullName: "Karolina Maj",
+      phone: "604 330 920",
+      contractNumber: "BCRM/06/2026/003",
+      postalCode: "35-001",
+      address: "ul. Leśna 42, Rzeszów",
+      ownerName: "Piotr Lis",
+      contractDate: "2026-06-03",
+      installation: "8.2 kW · Deye 3F Hybrid",
+      financing: "Gotówka",
+      grossAmount: "36 900 PLN",
+      montageDate: "2026-06-25",
+      operationsNote: "Klient prosi o kontakt 2 dni przed montażem."
+    }
+  ];
+}
+
+function demoProcessClient(): ProcessClient {
+  return demoProcessClients()[0];
 }
 
 function formatProcessDate(value: string | null, language: AppLanguage) {
@@ -742,7 +816,7 @@ export default function RealizacjaPage() {
   const [selectedProcessId, setSelectedProcessId] = useState(demoProcessClient().id);
   const [workflowByProcess, setWorkflowByProcess] = useState<Record<string, WorkflowMap>>({});
   const [documentMessage, setDocumentMessage] = useState("");
-  const [showProcessList, setShowProcessList] = useState(false);
+  const [showProcessList, setShowProcessList] = useState(true);
   const [processSearch, setProcessSearch] = useState("");
   const [processUpdatedFrom, setProcessUpdatedFrom] = useState("");
   const [processUpdatedTo, setProcessUpdatedTo] = useState("");
@@ -752,7 +826,7 @@ export default function RealizacjaPage() {
   const processClients = useMemo<ProcessClient[]>(() => {
     const clients = processLeads.map(leadToProcessClient);
     if (clients.length > 0) return clients;
-    return profile && isDemoScope(profile.crm_environment) ? [demoProcessClient()] : [];
+    return profile && isDemoScope(profile.crm_environment) ? demoProcessClients() : [];
   }, [processLeads, profile]);
   const visibleProcessClients = useMemo(() => {
     return processClients.filter((client) => {
@@ -907,7 +981,7 @@ export default function RealizacjaPage() {
           </div>
         </section>
 
-        <section className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
+        <section className="grid gap-3">
           <div
             className={showProcessList ? "app-card" : "rounded-lg border border-line bg-white px-4 py-3 shadow-sm"}
             data-guide-target="process-list"
@@ -979,49 +1053,85 @@ export default function RealizacjaPage() {
             ) : null}
 
             {showProcessList ? (
-            <div className="grid gap-3">
-              {visibleProcessClients.map((client) => {
-                const workflow = workflowForProcess(client, workflowByProcess);
-                const progress = workflowCompletion(workflow);
-                const stage = operationalStageLabel(workflow, language);
-                const isSelected = selectedProcess.id === client.id;
+            <div>
+              {visibleProcessClients.length > 0 ? (
+                <div className="overflow-x-auto rounded-lg border border-line bg-white">
+                  <table className="min-w-[1500px] w-full border-collapse text-left text-xs">
+                    <thead className="bg-sky/10 text-[11px] font-black uppercase tracking-wide text-ink">
+                      <tr>
+                        {[
+                          language === "en" ? "Contract no." : "Numer umowy",
+                          language === "en" ? "Client" : "Imię i nazwisko",
+                          copy.phoneLabel,
+                          language === "en" ? "Postal code" : "Kod pocztowy",
+                          language === "en" ? "Address" : "Adres realizacji",
+                          language === "en" ? "Sales owner" : "Opiekun / PH",
+                          language === "en" ? "Contract date" : "Data umowy",
+                          language === "en" ? "Installation" : "Instalacja / falownik",
+                          language === "en" ? "Financing" : "Finansowanie",
+                          language === "en" ? "Installation date" : "Termin montażu",
+                          copy.statusLabel,
+                          language === "en" ? "Gross amount" : "Kwota brutto",
+                          language === "en" ? "Notes" : "Uwagi"
+                        ].map((heading) => (
+                          <th key={heading} className="whitespace-nowrap border-b border-r border-line px-3 py-3 last:border-r-0">{heading}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {visibleProcessClients.map((client) => {
+                        const workflow = workflowForProcess(client, workflowByProcess);
+                        const progress = workflowCompletion(workflow);
+                        const stage = operationalStageLabel(workflow, language);
+                        const isSelected = selectedProcess.id === client.id;
+                        const values = [
+                          client.contractNumber || copy.noContractNumber,
+                          client.fullName,
+                          client.phone || "—",
+                          client.postalCode || "—",
+                          client.address || "—",
+                          client.ownerName || copy.noOwner,
+                          client.contractDate || formatProcessDate(client.createdAt, language),
+                          client.installation || "—",
+                          client.financing || "—",
+                          client.montageDate || "—",
+                          stage,
+                          client.grossAmount || "—",
+                          client.operationsNote || "—"
+                        ];
 
-                return (
-                  <button
-                    key={client.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedProcessId(client.id);
-                      saveSelectedProcessId(selectedProcessStorageKeyFor(profile), client.id);
-                    }}
-                    className={`grid gap-3 rounded-lg border p-4 text-left transition sm:grid-cols-[1fr_auto] sm:items-center ${
-                      isSelected ? "border-ink bg-[#f8fafc]" : "border-line bg-white hover:border-sky/30"
-                    }`}
-                  >
-                    <span>
-                      <span className="block text-sm font-black text-ink">{client.fullName}</span>
-                      <span className="mt-1 block text-xs font-semibold text-muted">
-                        {copy.ownerLabel}: {client.ownerName || copy.noOwner}
-                        {client.ownerRole ? ` · ${copy.roles[client.ownerRole]}` : ""}
-                      </span>
-                      <span className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-muted">
-                        <span>
-                          {copy.contractLabel}: {client.contractNumber || copy.noContractNumber}
-                        </span>
-                        <span>
-                          {copy.updatedLabel}: {formatProcessDate(client.updatedAt, language)}
-                        </span>
-                      </span>
-                    </span>
-                    <span className="grid gap-2 text-right">
-                      <span className="rounded-md border border-sky/20 bg-sky/10 px-3 py-1 text-xs font-bold text-sky">
-                        {stage}
-                      </span>
-                      <span className="text-xs font-bold text-ink">{progress}%</span>
-                    </span>
-                  </button>
-                );
-              })}
+                        return (
+                          <tr
+                            key={client.id}
+                            onClick={() => {
+                              setSelectedProcessId(client.id);
+                              saveSelectedProcessId(selectedProcessStorageKeyFor(profile), client.id);
+                            }}
+                            className={`cursor-pointer border-b border-line transition last:border-b-0 ${
+                              isSelected ? "bg-sky/10" : "hover:bg-[#f8fafc]"
+                            }`}
+                          >
+                            {values.map((value, index) => (
+                              <td
+                                key={`${client.id}-${index}`}
+                                className={`max-w-[220px] border-r border-line px-3 py-3 align-top font-semibold last:border-r-0 ${
+                                  index === 0 || index === 1 ? "font-black text-ink" : "text-muted"
+                                }`}
+                              >
+                                {index === 10 ? (
+                                  <span className="inline-flex whitespace-nowrap rounded-full border border-sky/20 bg-sky/10 px-2 py-1 font-bold text-sky">
+                                    {value} · {progress}%
+                                  </span>
+                                ) : value}
+                              </td>
+                            ))}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : null}
               {!processLoading && visibleProcessClients.length === 0 ? (
                 <EmptyState
                   title={language === "en" ? "No clients in process" : "Brak klientów w procesie"}
