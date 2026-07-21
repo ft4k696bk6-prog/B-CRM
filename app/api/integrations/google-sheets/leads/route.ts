@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { importGoogleSheetsLeads } from "@/lib/google-sheets-lead-import";
+import { requireApiProfile } from "@/lib/server-auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 300;
 
-function hasAccess(request: Request) {
+function hasImportSecret(request: Request) {
   const authHeader = request.headers.get("authorization");
   const token = authHeader?.startsWith("Bearer ") ? authHeader.replace("Bearer ", "").trim() : "";
   const importSecret = process.env.GOOGLE_SHEETS_IMPORT_SECRET;
@@ -15,8 +16,12 @@ function hasAccess(request: Request) {
 }
 
 async function runImport(request: Request) {
-  if (!hasAccess(request)) {
-    return NextResponse.json({ error: "Brak dostępu do importu." }, { status: 401 });
+  if (!hasImportSecret(request)) {
+    const auth = await requireApiProfile(request);
+    if ("error" in auth) return auth.error;
+    if (!['owner', 'admin'].includes(auth.profile.role)) {
+      return NextResponse.json({ error: "Tylko administrator może synchronizować bazę leadów." }, { status: 403 });
+    }
   }
 
   try {

@@ -89,6 +89,7 @@ export default function AdminDashboardPage() {
   const [selectedSalesperson, setSelectedSalesperson] = useState("");
   const [assignmentBatchSize, setAssignmentBatchSize] = useState<number>(25);
   const [busy, setBusy] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState("");
   const [stats, setStats] = useState({
     all: 0,
@@ -423,6 +424,20 @@ export default function AdminDashboardPage() {
     setBusy(false);
   }
 
+  async function syncLeadDatabase() {
+    if (!session?.access_token || syncing) return;
+    setSyncing(true);
+    setError("");
+    const response = await fetch("/api/integrations/google-sheets/leads", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${session.access_token}` }
+    });
+    const result = await response.json().catch(() => ({})) as { error?: string; inserted?: number };
+    if (!response.ok) setError(result.error || "Nie udało się zsynchronizować bazy leadów.");
+    else await Promise.all([loadStats(), loadLeads()]);
+    setSyncing(false);
+  }
+
   if (loading || !profile) return <LoadingScreen />;
 
   const dashboardCopy = isEnglish
@@ -682,6 +697,12 @@ export default function AdminDashboardPage() {
               >
                 Wyczyść
               </button>
+              {profile.role === "owner" || profile.role === "admin" ? (
+                <button type="button" onClick={syncLeadDatabase} disabled={syncing} className="btn-secondary">
+                  <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} aria-hidden="true" />
+                  {syncing ? "Synchronizowanie…" : "Synchronizuj bazę"}
+                </button>
+              ) : null}
             </div>
           </div>
 
