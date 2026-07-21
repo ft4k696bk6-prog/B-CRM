@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { useLanguage } from "@/components/language-provider";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { Alert } from "@/components/ui";
 import { demoModeEnabled } from "@/lib/demo-mode";
 import { homePathForRole, normalizeRole } from "@/lib/roles";
@@ -167,7 +166,6 @@ export default function LoginPage() {
                 <p className="text-sm text-muted">{t("loginSubtitle")}</p>
               </div>
             </div>
-            <LanguageSwitcher />
           </div>
 
           {!isSupabaseConfigured ? (

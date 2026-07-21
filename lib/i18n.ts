@@ -1,16 +1,5 @@
 export type AppLanguage = "pl" | "en";
 
-export const LANGUAGE_STORAGE_KEY = "bcrm-language";
-
-export const languageOptions: Array<{ value: AppLanguage; label: string }> = [
-  { value: "pl", label: "PL" },
-  { value: "en", label: "EN" }
-];
-
-export function isAppLanguage(value: string | null): value is AppLanguage {
-  return value === "pl" || value === "en";
-}
-
 export const copy = {
   pl: {
     loginSubtitle: "Logowanie do panelu",

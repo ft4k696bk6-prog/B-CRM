@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { useLanguage } from "@/components/language-provider";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { Alert, ConfirmDialog } from "@/components/ui";
 import { demoModeEnabled } from "@/lib/demo-mode";
 import { hasAnyPermission } from "@/lib/permissions";
@@ -322,9 +321,6 @@ export function AppShell({ profile, children }: AppShellProps) {
                 <span className="hidden sm:inline">{language === "en" ? "Demo tour" : "Samouczek"}</span>
               </button>
             ) : null}
-            <div className="hidden md:block">
-              <LanguageSwitcher />
-            </div>
             <button
               type="button"
               onClick={signOut}
@@ -367,9 +363,6 @@ export function AppShell({ profile, children }: AppShellProps) {
               <button type="button" onClick={() => setMobileOpen(false)} className="mobile-menu-close" aria-label="Zamknij menu">
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
-            </div>
-            <div className="mb-3 md:hidden">
-              <LanguageSwitcher />
             </div>
             <div className="mb-2 flex items-center gap-2 px-2 py-2 text-xs font-bold uppercase tracking-wide text-[#667085]">
               <PanelLeft className="h-4 w-4" aria-hidden="true" />
