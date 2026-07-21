@@ -89,7 +89,6 @@ export default function AdminDashboardPage() {
   const [assignmentBatchSize, setAssignmentBatchSize] = useState<number>(25);
   const [leadBucket, setLeadBucket] = useState<"active" | "resignations" | "contracts">("active");
   const [busy, setBusy] = useState(false);
-  const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState("");
   const normalizedStatuses = useRef(false);
   const [stats, setStats] = useState({
@@ -186,7 +185,7 @@ export default function AdminDashboardPage() {
       if (!lead.assigned_to) nextStats.unassigned += 1;
       if (lead.assigned_to) nextStats.assigned += 1;
       if (lead.status === "Call back") nextStats.callbacks += 1;
-      if (lead.status === "Spotkanie" || lead.meeting_at) nextStats.meetings += 1;
+      if (lead.status === "Spotkanie") nextStats.meetings += 1;
       if (lead.status === "Umowa") nextStats.contracts += 1;
       if (lead.status === "Rezygnacja") nextStats.resignations += 1;
       if (needsNextAction(lead)) nextStats.noNextAction += 1;
@@ -319,7 +318,13 @@ export default function AdminDashboardPage() {
       const totals = new Map(
         salespeople.map((person) => [
           person.id,
-          { leads: 0, meetings: 0, contracts: 0, overdueCallbacks: 0, noNextAction: 0 }
+          {
+            leadKeys: new Set<string>(),
+            meetingKeys: new Set<string>(),
+            contractKeys: new Set<string>(),
+            overdueCallbackKeys: new Set<string>(),
+            noNextActionKeys: new Set<string>()
+          }
         ])
       );
 
@@ -327,18 +332,29 @@ export default function AdminDashboardPage() {
         if (!lead.assigned_to) continue;
         const row = totals.get(lead.assigned_to);
         if (!row) continue;
+        const phoneKey = lead.phone.replace(/\D/g, "").slice(-9) || lead.id;
 
-        row.leads += 1;
-        if (lead.status === "Spotkanie" || lead.meeting_at) row.meetings += 1;
-        if (lead.status === "Umowa") row.contracts += 1;
+        row.leadKeys.add(phoneKey);
+        if (lead.status === "Spotkanie") row.meetingKeys.add(phoneKey);
+        if (lead.status === "Umowa") row.contractKeys.add(phoneKey);
         if (lead.status === "Call back" && lead.callback_at && new Date(lead.callback_at).getTime() < now) {
-          row.overdueCallbacks += 1;
+          row.overdueCallbackKeys.add(phoneKey);
         }
-        if (needsNextAction(lead)) row.noNextAction += 1;
+        if (needsNextAction(lead)) row.noNextActionKeys.add(phoneKey);
       }
 
       return salespeople
-        .map((person) => ({ person, ...totals.get(person.id)! }))
+        .map((person) => {
+          const row = totals.get(person.id)!;
+          return {
+            person,
+            leads: row.leadKeys.size,
+            meetings: row.meetingKeys.size,
+            contracts: row.contractKeys.size,
+            overdueCallbacks: row.overdueCallbackKeys.size,
+            noNextAction: row.noNextActionKeys.size
+          };
+        })
         .sort((a, b) => b.contracts - a.contracts || b.meetings - a.meetings || b.leads - a.leads);
     },
     [leads, salespeople]
@@ -435,20 +451,6 @@ export default function AdminDashboardPage() {
     }
 
     setBusy(false);
-  }
-
-  async function syncLeadDatabase() {
-    if (!session?.access_token || syncing) return;
-    setSyncing(true);
-    setError("");
-    const response = await fetch("/api/integrations/google-sheets/leads", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${session.access_token}` }
-    });
-    const result = await response.json().catch(() => ({})) as { error?: string; inserted?: number };
-    if (!response.ok) setError(result.error || "Nie udało się zsynchronizować bazy leadów.");
-    else await Promise.all([loadStats(), loadLeads()]);
-    setSyncing(false);
   }
 
   if (loading || !profile) return <LoadingScreen />;
@@ -708,14 +710,14 @@ export default function AdminDashboardPage() {
                 onClick={() => { setLeadBucket("resignations"); setFilters({ ...initialFilters, assignedTo: "" }); }}
                 className={leadBucket === "resignations" ? "btn-primary" : "btn-secondary"}
               >
-                Worek rezygnacji ({stats.resignations})
+                Rezygnacje ({stats.resignations})
               </button>
               <button
                 type="button"
                 onClick={() => { setLeadBucket("contracts"); setFilters({ ...initialFilters, assignedTo: "" }); }}
                 className={leadBucket === "contracts" ? "btn-primary" : "btn-secondary"}
               >
-                Worek umów ({stats.contracts})
+                Umowy ({stats.contracts})
               </button>
               <button
                 type="button"
@@ -724,12 +726,6 @@ export default function AdminDashboardPage() {
               >
                 Wyczyść
               </button>
-              {profile.role === "owner" || profile.role === "admin" ? (
-                <button type="button" onClick={syncLeadDatabase} disabled={syncing} className="btn-secondary">
-                  <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} aria-hidden="true" />
-                  {syncing ? "Synchronizowanie…" : "Synchronizuj bazę"}
-                </button>
-              ) : null}
             </div>
           </div>
 
