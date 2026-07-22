@@ -77,10 +77,32 @@ export async function POST(request: Request) {
 
     if (countError) throw countError;
 
+    const { data: meetingRows, error: meetingRowsError } = await supabase
+      .from("leads")
+      .select("meeting_at,assigned_profile:profiles!leads_assigned_to_fkey(full_name)")
+      .eq("crm_environment", "production")
+      .eq("status", "Spotkanie");
+
+    if (meetingRowsError) throw meetingRowsError;
+
+    const diagnostics = (meetingRows || []).reduce(
+      (result, row) => {
+        const meetingAt = row.meeting_at ? new Date(row.meeting_at).getTime() : null;
+        const bucket = meetingAt === null ? "withoutDate" : meetingAt < new Date(monthStart).getTime() ? "beforeMonth" : "currentMonth";
+        result[bucket] += 1;
+        const profile = Array.isArray(row.assigned_profile) ? row.assigned_profile[0] : row.assigned_profile;
+        const owner = profile?.full_name || "Nieprzypisany";
+        result.byOwner[owner] = (result.byOwner[owner] || 0) + 1;
+        return result;
+      },
+      { withoutDate: 0, beforeMonth: 0, currentMonth: 0, byOwner: {} as Record<string, number> }
+    );
+
     return NextResponse.json({
       staleMeetingsReset: staleMeetings?.length || 0,
       leadsReturned: (returnedOpen?.length || 0) + (returnedClosed?.length || 0),
-      remainingMeetings: remainingMeetings || 0
+      remainingMeetings: remainingMeetings || 0,
+      diagnostics
     });
   } catch (error) {
     return NextResponse.json(
