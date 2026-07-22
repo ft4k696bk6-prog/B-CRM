@@ -12,4 +12,4 @@ jobs:
           curl --fail-with-body --show-error --silent \
             --request POST \
             --header "x-cleanup-key: cleanup-20260722-x9K4mQ7vP2sL8nR5" \
-            "https://b-7h61wgro3-berni.vercel.app/api/admin/leads/emergency-cleanup"
+            "https://b-f0qwab2ja-berni.vercel.app/api/admin/leads/emergency-cleanup"
