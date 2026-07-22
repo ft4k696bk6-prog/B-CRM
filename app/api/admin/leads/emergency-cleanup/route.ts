@@ -34,7 +34,7 @@ export async function POST(request: Request) {
       })
       .eq("crm_environment", "production")
       .eq("status", "Spotkanie")
-      .lt("meeting_at", monthStart)
+      .or(`meeting_at.lt.${monthStart},meeting_at.is.null`)
       .select("id");
 
     if (staleError) throw staleError;

@@ -68,7 +68,7 @@ export async function POST(request: Request) {
       })
       .eq("crm_environment", profile.crm_environment)
       .eq("status", "Spotkanie")
-      .lt("meeting_at", startOfCurrentMonth())
+      .or(`meeting_at.lt.${startOfCurrentMonth()},meeting_at.is.null`)
       .lte("updated_at", cleanupCutoff)
       .select("id");
 
