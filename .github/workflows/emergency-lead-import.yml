@@ -12,4 +12,4 @@ jobs:
           curl --fail-with-body --show-error --silent \
             --request POST \
             --header "x-import-key: import-20260722-p8Q2wM5xR9kL4vN7" \
-            "https://IMPORT_DEPLOYMENT/api/integrations/google-sheets/leads"
+            "https://b-dkp7eazvt-berni.vercel.app/api/integrations/google-sheets/leads"
