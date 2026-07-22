@@ -81,6 +81,12 @@ NEXT_PUBLIC_DEMO_MODE=false
 NEXT_PUBLIC_APP_URL=
 
 CRON_SECRET=
+GOOGLE_SHEETS_IMPORT_SECRET=
+GOOGLE_SHEETS_LEADS_SPREADSHEET_ID=
+GOOGLE_SHEETS_LEADS_SHEET_NAMES=
+GOOGLE_SHEETS_LEADS_CRM_ENVIRONMENT=production
+GOOGLE_SERVICE_ACCOUNT_EMAIL=
+GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=
 
 TWILIO_ACCOUNT_SID=
 TWILIO_AUTH_TOKEN=
@@ -92,6 +98,7 @@ OPENAI_SUMMARY_MODEL=gpt-4.1-mini
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` must stay server-side only. If a real service role key is ever committed, rotate it in Supabase immediately.
+Nowe leady są codziennie pobierane z arkuszy Google zasilanych przez formularze Meta. Import porównuje ostatnie 9 cyfr numeru telefonu z całą bazą i dodaje wyłącznie nieistniejące numery jako nieprzypisane leady ze statusem `Nowy`.
 Twilio variables enable real click-to-call. Without them, demo accounts use a safe simulated call flow. `OPENAI_API_KEY` enables transcription and AI summaries for recorded calls.
 
 ## Database
