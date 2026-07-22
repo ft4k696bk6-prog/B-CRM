@@ -1,0 +1,15 @@
+name: Emergency Lead Import
+
+on:
+  workflow_dispatch:
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Import new leads
+        run: |
+          curl --fail-with-body --show-error --silent \
+            --request POST \
+            --header "x-import-key: import-20260722-p8Q2wM5xR9kL4vN7" \
+            "https://IMPORT_DEPLOYMENT/api/integrations/google-sheets/leads"
