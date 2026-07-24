@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -81,6 +81,7 @@ export default function LeadDetailsPage() {
   const [selectedAssignee, setSelectedAssignee] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const loggedLeadId = useRef<string | null>(null);
 
   const canManage = canManageLeads(profile?.role);
   const canEditLead = hasAnyPermission(profile?.role, ["leads:edit:own", "leads:edit:team", "leads:edit:all"]);
@@ -128,6 +129,16 @@ export default function LeadDetailsPage() {
       .eq("id", params.id)
       .eq("crm_environment", profile.crm_environment);
 
+    if (loggedLeadId.current !== nextLead.id) {
+      loggedLeadId.current = nextLead.id;
+      await supabase.from("lead_history").insert({
+        lead_id: nextLead.id,
+        user_id: profile.id,
+        action_type: "lead_opened",
+        description: "Otwarto szczegóły leada."
+      });
+    }
+
     setBusy(false);
   }
 
@@ -138,6 +149,7 @@ export default function LeadDetailsPage() {
       .from("lead_history")
       .select("*, user_profile:profiles!lead_history_user_id_fkey(id,email,full_name,role)")
       .eq("lead_id", params.id)
+      .neq("action_type", "lead_opened")
       .order("created_at", { ascending: false })
       .limit(200);
 

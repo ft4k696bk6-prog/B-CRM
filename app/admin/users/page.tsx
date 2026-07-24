@@ -2,13 +2,16 @@
 
 import { FormEvent, ReactNode, useEffect, useState } from "react";
 import {
+  Activity,
   ChevronDown,
   GitBranch,
+  Eye,
   KeyRound,
   Plus,
   RefreshCw,
   Save,
   ShieldCheck,
+  MessageSquareText,
   Trash2,
   UserRoundCog,
   UserRoundPlus,
@@ -31,6 +34,26 @@ type OrgNode = {
   meta: OrgMeta;
   children: OrgNode[];
 };
+
+type ActivitySummary = {
+  userId: string;
+  fullName: string;
+  email: string | null;
+  openedLeads: number;
+  statusChanges: number;
+  comments: number;
+};
+
+function isoDate(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function activityRange(days: number) {
+  const to = new Date();
+  const from = new Date();
+  from.setUTCDate(from.getUTCDate() - (days - 1));
+  return { from: isoDate(from), to: isoDate(to) };
+}
 
 const roleToneClasses: Record<UserRole, string> = {
   owner: "border-ink/15 bg-ink text-white",
@@ -204,6 +227,12 @@ export default function UsersPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
+  const [activitySummaries, setActivitySummaries] = useState<ActivitySummary[]>([]);
+  const [activityUserId, setActivityUserId] = useState("");
+  const [activityFrom, setActivityFrom] = useState(() => isoDate(new Date()));
+  const [activityTo, setActivityTo] = useState(() => isoDate(new Date()));
+  const [activityLoading, setActivityLoading] = useState(false);
+  const [activityError, setActivityError] = useState("");
 
   async function loadUsers() {
     if (!session) return;
@@ -234,6 +263,39 @@ export default function UsersPage() {
   useEffect(() => {
     loadUsers();
   }, [session?.access_token]);
+
+  async function loadActivitySummary(range?: { from: string; to: string }) {
+    if (!session) return;
+    setActivityLoading(true);
+    setActivityError("");
+    const params = new URLSearchParams({
+      from: range?.from || activityFrom,
+      to: range?.to || activityTo
+    });
+    if (activityUserId) params.set("userId", activityUserId);
+
+    const response = await fetch(`/api/admin/activity-summary?${params}`, {
+      headers: { Authorization: `Bearer ${session.access_token}` }
+    });
+    const body = await response.json();
+    if (!response.ok) {
+      setActivityError(body.error || "Nie udało się pobrać aktywności.");
+    } else {
+      setActivitySummaries((body.summaries || []) as ActivitySummary[]);
+    }
+    setActivityLoading(false);
+  }
+
+  useEffect(() => {
+    if (session?.access_token) loadActivitySummary();
+  }, [session?.access_token]);
+
+  function selectActivityRange(days: number) {
+    const range = activityRange(days);
+    setActivityFrom(range.from);
+    setActivityTo(range.to);
+    void loadActivitySummary(range);
+  }
 
   async function createUser(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -415,6 +477,68 @@ export default function UsersPage() {
             <div className="mt-2 text-3xl font-black text-ink">{operationsCount}</div>
           </div>
         </section>
+
+        <CollapsibleSection
+          icon={Activity}
+          title="Podsumowanie aktywności"
+          description="Sprawdź pracę konkretnego handlowca dzisiaj albo w wybranym okresie."
+          defaultOpen
+        >
+          <div className="grid gap-3 lg:grid-cols-[minmax(220px,1fr)_160px_160px_auto] lg:items-end">
+            <label>
+              <span className="label">Handlowiec</span>
+              <select className="field" value={activityUserId} onChange={(event) => setActivityUserId(event.target.value)}>
+                <option value="">Wszyscy handlowcy</option>
+                {salespeople.map((person) => <option key={person.id} value={person.id}>{person.full_name}</option>)}
+              </select>
+            </label>
+            <label>
+              <span className="label">Data od</span>
+              <input className="field" type="date" value={activityFrom} onChange={(event) => setActivityFrom(event.target.value)} />
+            </label>
+            <label>
+              <span className="label">Data do</span>
+              <input className="field" type="date" value={activityTo} onChange={(event) => setActivityTo(event.target.value)} />
+            </label>
+            <button type="button" className="btn-primary" onClick={() => loadActivitySummary()} disabled={activityLoading}>
+              <RefreshCw className={`h-4 w-4 ${activityLoading ? "animate-spin" : ""}`} aria-hidden="true" />
+              Pokaż aktywność
+            </button>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" className="btn-secondary" onClick={() => selectActivityRange(1)}>Dzisiaj</button>
+            <button type="button" className="btn-secondary" onClick={() => selectActivityRange(7)}>Ostatnie 7 dni</button>
+            <button type="button" className="btn-secondary" onClick={() => selectActivityRange(30)}>Ostatnie 30 dni</button>
+          </div>
+
+          {activityError ? <Alert tone="danger" className="mt-4">{activityError}</Alert> : null}
+
+          <div className="mt-5 grid gap-3">
+            {activitySummaries.map((summary) => (
+              <article key={summary.userId} className="rounded-lg border border-line bg-[#f9fbfd] p-4">
+                <div className="mb-4">
+                  <div className="font-black text-ink">{summary.fullName}</div>
+                  <div className="text-xs text-muted">{summary.email}</div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-lg border border-line bg-white p-3">
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-muted"><Eye className="h-4 w-4 text-sky" /> Otwarte leady</div>
+                    <div className="mt-2 text-2xl font-black text-ink">{summary.openedLeads}</div>
+                  </div>
+                  <div className="rounded-lg border border-line bg-white p-3">
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-muted"><Activity className="h-4 w-4 text-solar" /> Zmiany statusu</div>
+                    <div className="mt-2 text-2xl font-black text-ink">{summary.statusChanges}</div>
+                  </div>
+                  <div className="rounded-lg border border-line bg-white p-3">
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-muted"><MessageSquareText className="h-4 w-4 text-leaf" /> Komentarze</div>
+                    <div className="mt-2 text-2xl font-black text-ink">{summary.comments}</div>
+                  </div>
+                </div>
+              </article>
+            ))}
+            {!activityLoading && activitySummaries.length === 0 ? <EmptyState title="Brak aktywności" description="W wybranym okresie nie znaleziono aktywności handlowców." /> : null}
+          </div>
+        </CollapsibleSection>
 
         <section className="app-card">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
