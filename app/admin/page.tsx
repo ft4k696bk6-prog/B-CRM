@@ -87,7 +87,7 @@ export default function AdminDashboardPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedSalesperson, setSelectedSalesperson] = useState("");
   const [assignmentBatchSize, setAssignmentBatchSize] = useState<number>(25);
-  const [leadBucket, setLeadBucket] = useState<"active" | "resignations" | "contracts">("active");
+  const [leadBucket, setLeadBucket] = useState<"all" | "active" | "resignations" | "contracts">("active");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const normalizedStatuses = useRef(false);
@@ -721,7 +721,10 @@ export default function AdminDashboardPage() {
               </button>
               <button
                 type="button"
-                onClick={() => setFilters(initialFilters)}
+                onClick={() => {
+                  setLeadBucket("all");
+                  setFilters({ ...initialFilters, assignedTo: "" });
+                }}
                 className="btn-secondary"
               >
                 Wyczyść
