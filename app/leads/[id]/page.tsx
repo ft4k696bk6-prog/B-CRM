@@ -260,22 +260,9 @@ export default function LeadDetailsPage() {
         return;
       }
 
-      if (!contractNumber.trim()) {
-        setError("Wpisz numer umowy.");
-        setBusy(false);
-        return;
-      }
-
-      patch.contract_number = contractNumber.trim();
-      if (soldScope.trim()) {
-        patch.meeting_note = [
-          meetingNote.trim(),
-          `Sprzedano / zakres oferty: ${soldScope.trim()}`
-        ].filter(Boolean).join("\n\n");
-      }
-      if (isSalesRole(profile.role)) {
-        patch.assigned_to = profile.id;
-      }
+      router.push(`/realizacja/nowa?leadId=${lead.id}`);
+      setBusy(false);
+      return;
     }
 
     const { error: updateError } = await supabase
