@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canBulkReturnLead, endOfDay, escapeCsv, needsNextAction, postgrestInValues, startOfDay } from "@/lib/admin-leads";
+import { canBulkReturnLead, endOfDay, escapeCsv, needsNextAction, postgrestInValues, startOfDay, voivodeshipFilterTerms } from "@/lib/admin-leads";
 
 describe("admin lead helpers", () => {
   it("normalizes date filters to full-day ISO bounds", () => {
@@ -29,5 +29,11 @@ describe("admin lead helpers", () => {
 
   it("serializes statuses containing spaces for PostgREST in filters", () => {
     expect(postgrestInValues(["Call back", "Po spotkaniu"])).toBe('(\"Call back\",\"Po spotkaniu\")');
+  });
+
+  it("includes legacy Lubelskie leads inferred from postal codes", () => {
+    expect(voivodeshipFilterTerms("lubelskie")).toBe(
+      "voivodeship.ilike.%lubelskie%,postal_code.ilike.20-%,postal_code.ilike.21-%,postal_code.ilike.22-%,postal_code.ilike.23-%,postal_code.ilike.24-%"
+    );
   });
 });

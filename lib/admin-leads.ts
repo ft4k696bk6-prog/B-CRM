@@ -6,6 +6,19 @@ export const FOCUSED_LEAD_STATUSES = ["Call back", "Spotkanie", "Po spotkaniu", 
 
 export const RETURN_PROTECTED_STATUSES = ["Call back", "Spotkanie", "Umowa", "Rezygnacja"] as const;
 
+const VOIVODESHIP_POSTAL_PREFIXES: Record<string, string[]> = {
+  lubelskie: ["20", "21", "22", "23", "24"]
+};
+
+export function voivodeshipFilterTerms(voivodeship: string) {
+  const normalized = voivodeship.trim().toLowerCase().replace(/[,%]/g, "");
+  const terms = [`voivodeship.ilike.%${normalized}%`];
+  for (const prefix of VOIVODESHIP_POSTAL_PREFIXES[normalized] || []) {
+    terms.push(`postal_code.ilike.${prefix}-%`);
+  }
+  return terms.join(",");
+}
+
 export function postgrestInValues(values: readonly string[]) {
   return `(${values.map((value) => `"${value.replaceAll('"', '\\"')}"`).join(",")})`;
 }

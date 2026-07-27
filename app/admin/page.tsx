@@ -31,7 +31,8 @@ import {
   escapeCsv,
   needsNextAction,
   postgrestInValues,
-  startOfDay
+  startOfDay,
+  voivodeshipFilterTerms
 } from "@/lib/admin-leads";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { hasPermission } from "@/lib/permissions";
@@ -229,7 +230,7 @@ export default function AdminDashboardPage() {
       if (debouncedFilters.createdFrom) query = query.gte("created_at", startOfDay(debouncedFilters.createdFrom));
       if (debouncedFilters.createdTo) query = query.lte("created_at", endOfDay(debouncedFilters.createdTo));
       if (debouncedFilters.postalCode) query = query.ilike("postal_code", `%${debouncedFilters.postalCode}%`);
-      if (debouncedFilters.voivodeship) query = query.ilike("voivodeship", `%${debouncedFilters.voivodeship}%`);
+      if (debouncedFilters.voivodeship) query = query.or(voivodeshipFilterTerms(debouncedFilters.voivodeship));
       if (debouncedFilters.county) query = query.ilike("county", `%${debouncedFilters.county}%`);
       if (debouncedFilters.status) query = query.eq("status", debouncedFilters.status as LeadStatus);
       else {
