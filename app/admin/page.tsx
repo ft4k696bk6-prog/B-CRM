@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Ban,
   CalendarDays,
@@ -91,7 +91,6 @@ export default function AdminDashboardPage() {
   const [leadBucket, setLeadBucket] = useState<"all" | "active" | "resignations" | "contracts">("active");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const normalizedStatuses = useRef(false);
   const [stats, setStats] = useState({
     all: 0,
     unassigned: 0,
@@ -279,19 +278,6 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     loadSalespeople();
   }, [loadSalespeople]);
-
-  useEffect(() => {
-    if (!session?.access_token || !profile || normalizedStatuses.current) return;
-    if (profile.role !== "owner" && profile.role !== "admin") return;
-    normalizedStatuses.current = true;
-
-    void fetch("/api/admin/leads/normalize-statuses", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${session.access_token}` }
-    }).then((response) => {
-      if (response.ok) void Promise.all([loadStats(), loadLeads()]);
-    });
-  }, [loadLeads, loadStats, profile, session?.access_token]);
 
   useEffect(() => {
     if (!salespeopleReady) return;

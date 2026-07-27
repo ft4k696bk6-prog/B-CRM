@@ -27,30 +27,75 @@ async function fallbackContracts(supabaseAdmin: ReturnType<typeof import("@/lib/
   return [...latest.values()].map((item) => ({ ...item, creator: (creators || []).find((person) => person.id === item.created_by) || null } as ContractRow));
 }
 
+async function legacyLeadContracts(supabaseAdmin: ReturnType<typeof import("@/lib/server-auth").getServiceClient>, environment: string): Promise<ContractRow[]> {
+  const { data: leads } = await supabaseAdmin
+    .from("leads")
+    .select("id,full_name,phone,postal_code,address,contract_number,created_at,updated_at,assigned_to,source")
+    .eq("crm_environment", environment)
+    .eq("status", "Umowa")
+    .order("updated_at", { ascending: false });
+  const leadIds = (leads || []).map((lead) => lead.id);
+  const { data: ownershipHistory } = leadIds.length
+    ? await supabaseAdmin.from("lead_history").select("lead_id,old_value,created_at").in("lead_id", leadIds).in("action_type", ["return", "assignment"]).order("created_at", { ascending: false })
+    : { data: [] };
+  const previousOwners = new Map<string, string>();
+  for (const row of ownershipHistory || []) {
+    const owner = typeof row.old_value?.assigned_to === "string" ? row.old_value.assigned_to : null;
+    if (owner && !previousOwners.has(row.lead_id)) previousOwners.set(row.lead_id, owner);
+  }
+  const ownerIds = [...new Set((leads || []).map((lead) => lead.assigned_to || previousOwners.get(lead.id)).filter(Boolean))] as string[];
+  const { data: creators } = ownerIds.length ? await supabaseAdmin.from("profiles").select("id,full_name,email,manager_id").in("id", ownerIds) : { data: [] };
+  return (leads || []).map((lead) => {
+    const createdBy = lead.assigned_to || previousOwners.get(lead.id) || "";
+    return {
+      id: lead.id,
+      lead_id: lead.id,
+      contract_number: lead.contract_number || `UMOWA-${lead.id.slice(0, 8)}`,
+      signed_at: lead.updated_at.slice(0, 10), customer_name: lead.full_name, phone: lead.phone,
+      email: "", postal_code: lead.postal_code || "", city: "", street: lead.address || "", house_number: "",
+      financing: "gotowka", credit_amount: null, product_type: "ME", pv_power_kwp: null,
+      storage_capacity_kwh: null, panel_power_wp: null, panels_count: null, has_inverter: false,
+      inverter_power_kw: null, mounting_locations: [], multiple_mounting_locations: false,
+      gross_amount: 0, backup_power: false, optimizer_count: 0, surge_protection: false,
+      grounding: false, additional_notes: lead.source ? `Źródło: ${lead.source}` : null,
+      installation_at: null, created_by: createdBy, crm_environment: environment,
+      created_at: lead.created_at, updated_at: lead.updated_at, legacy: true, tasks: [],
+      creator: (creators || []).find((person) => person.id === createdBy) || null
+    } as ContractRow;
+  });
+}
+
+function visibleContractsFor(profile: { id: string; role: string }, contracts: ContractRow[], teamIds: Set<string>) {
+  if (profile.role === "handlowiec") return contracts.filter((contract) => contract.created_by === profile.id);
+  if (profile.role === "menadzer") return contracts.filter((contract) => teamIds.has(contract.created_by));
+  return contracts;
+}
+
 export async function GET(request: Request) {
   const auth = await requireApiProfile(request); if ("error" in auth) return auth.error;
   const { profile, supabaseAdmin } = auth;
   const id = new URL(request.url).searchParams.get("id");
   let query = supabaseAdmin.from("contracts").select(contractSelect).eq("crm_environment", profile.crm_environment);
   if (id) query = query.eq("id", id);
-  if (profile.role === "handlowiec") query = query.eq("created_by", profile.id);
+  let teamIds = new Set<string>();
   if (profile.role === "menadzer") {
     const { data: team } = await supabaseAdmin.from("profiles").select("id").or(`id.eq.${profile.id},manager_id.eq.${profile.id}`);
-    query = query.in("created_by", (team || []).map((person) => person.id));
+    teamIds = new Set((team || []).map((person) => person.id));
   }
   const { data, error } = await query.order("updated_at", { ascending: false });
+  const legacy = await legacyLeadContracts(supabaseAdmin, profile.crm_environment);
   if (error?.message?.includes("contracts")) {
-    let contracts = await fallbackContracts(supabaseAdmin, profile.crm_environment);
-    if (profile.role === "handlowiec") contracts = contracts.filter((contract) => contract.created_by === profile.id);
-    if (profile.role === "menadzer") {
-      const { data: team } = await supabaseAdmin.from("profiles").select("id").or(`id.eq.${profile.id},manager_id.eq.${profile.id}`);
-      const ids = new Set((team || []).map((person) => person.id)); contracts = contracts.filter((contract) => ids.has(String(contract.created_by)));
-    }
+    let contracts = [...legacy, ...await fallbackContracts(supabaseAdmin, profile.crm_environment)];
+    contracts = [...new Map(contracts.map((contract) => [contract.lead_id, contract])).values()];
+    contracts = visibleContractsFor(profile, contracts, teamIds);
     if (id) contracts = contracts.filter((contract) => contract.id === id);
     return NextResponse.json(id ? { contract: contracts[0] || null } : { contracts });
   }
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-  return NextResponse.json(id ? { contract: data?.[0] || null } : { contracts: data || [] });
+  let contracts = [...(data || []) as ContractRow[], ...legacy.filter((old) => !(data || []).some((current) => current.lead_id === old.lead_id))];
+  contracts = visibleContractsFor(profile, contracts, teamIds);
+  if (id) contracts = contracts.filter((contract) => contract.id === id);
+  return NextResponse.json(id ? { contract: contracts[0] || null } : { contracts });
 }
 
 export async function POST(request: Request) {
