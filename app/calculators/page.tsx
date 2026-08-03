@@ -189,7 +189,7 @@ function boilerImageFor(layout: BoilerLayout) {
 export default function CalculatorsPage() {
   const { loading, profile } = useAuth(["owner", "admin", "menadzer", "handlowiec", "finance"]);
   const { language } = useLanguage();
-  const { settings } = usePricingSettings(profile?.role);
+  const { settings } = usePricingSettings(profile);
   const [tab, setTab] = useState<CalculatorTab>("offer");
   const [vatRate, setVatRate] = useState<VatRate>(8);
   const [customerName, setCustomerName] = useState("");

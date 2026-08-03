@@ -36,6 +36,8 @@ export type Profile = {
   role: UserRole;
   manager_id: string | null;
   business_phone: string | null;
+  company_margin_net?: number;
+  sales_margin_net?: number;
   crm_environment: CrmDataScope;
   created_at: string;
   manager_profile?: Pick<Profile, "id" | "email" | "full_name" | "role" | "crm_environment"> | null;
@@ -84,7 +86,7 @@ export type AdminLeadFilters = {
   postalCode: string;
   voivodeship: string;
   county: string;
-  status: string;
+  status: LeadStatus[];
   assignedTo: string;
 };
 

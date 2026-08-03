@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireApiProfile } from "@/lib/server-auth";
-import { CONTRACT_TASKS, FINANCING_OPTIONS, MOUNTING_OPTIONS, PRODUCT_OPTIONS } from "@/lib/contracts";
+import { ACTIVE_CONTRACT_STATUSES, CONTRACT_TASKS, type ContractStatus, FINANCING_OPTIONS, MOUNTING_OPTIONS, PRODUCT_OPTIONS } from "@/lib/contracts";
 import { canManageLeads } from "@/lib/roles";
 
 const contractSelect = "*,creator:profiles!contracts_created_by_fkey(id,full_name,email,manager_id),tasks:contract_tasks(*)";
@@ -8,7 +8,7 @@ const contractSelect = "*,creator:profiles!contracts_created_by_fkey(id,full_nam
 type ContractRow = Record<string, unknown> & {
   id: string; lead_id: string; created_by: string; contract_number: string; customer_name: string;
   creator?: { manager_id?: string | null } | null; tasks?: Array<Record<string, unknown>>;
-  installation_at?: string | null; updated_at?: string;
+  installation_at?: string | null; updated_at?: string; process_status?: ContractStatus; is_process_visible?: boolean; management_notes?: Array<Record<string, unknown>>; files?: Array<Record<string, unknown>>;
 };
 
 function text(body: Record<string, unknown>, key: string) { return typeof body[key] === "string" ? body[key].trim() : ""; }
@@ -19,12 +19,16 @@ async function fallbackContracts(supabaseAdmin: ReturnType<typeof import("@/lib/
   const { data: leadRows } = await supabaseAdmin.from("leads").select("id").eq("crm_environment", environment);
   const leadIds = (leadRows || []).map((lead) => lead.id);
   if (!leadIds.length) return [];
-  const { data } = await supabaseAdmin.from("lead_history").select("lead_id,new_value,created_at").eq("action_type", "contract_record").in("lead_id", leadIds).order("created_at", { ascending: false });
+  const { data } = await supabaseAdmin.from("lead_history").select("lead_id,action_type,new_value,created_at").in("action_type", ["contract_record","contract_file"]).in("lead_id", leadIds).order("created_at", { ascending: false });
   const latest = new Map<string, Record<string, unknown>>();
-  for (const row of data || []) if (!latest.has(row.lead_id) && row.new_value) latest.set(row.lead_id, row.new_value as Record<string, unknown>);
+  const files = new Map<string, Array<Record<string, unknown>>>();
+  for (const row of data || []) {
+    if (row.action_type === "contract_file" && row.new_value) files.set(row.lead_id,[...(files.get(row.lead_id)||[]),row.new_value as Record<string,unknown>]);
+    if (row.action_type === "contract_record" && !latest.has(row.lead_id) && row.new_value) latest.set(row.lead_id, row.new_value as Record<string, unknown>);
+  }
   const creatorIds = [...new Set([...latest.values()].map((item) => String(item.created_by || "")).filter(Boolean))];
   const { data: creators } = creatorIds.length ? await supabaseAdmin.from("profiles").select("id,full_name,email,manager_id").in("id", creatorIds) : { data: [] };
-  return [...latest.values()].map((item) => ({ ...item, creator: (creators || []).find((person) => person.id === item.created_by) || null } as ContractRow));
+  return [...latest.entries()].map(([leadId,item]) => ({ ...item, files:[...(Array.isArray(item.files)?item.files:[]),...(files.get(leadId)||[])], creator: (creators || []).find((person) => person.id === item.created_by) || null } as ContractRow));
 }
 
 async function legacyLeadContracts(supabaseAdmin: ReturnType<typeof import("@/lib/server-auth").getServiceClient>, environment: string): Promise<ContractRow[]> {
@@ -47,6 +51,10 @@ async function legacyLeadContracts(supabaseAdmin: ReturnType<typeof import("@/li
   const { data: creators } = ownerIds.length ? await supabaseAdmin.from("profiles").select("id,full_name,email,manager_id").in("id", ownerIds) : { data: [] };
   return (leads || []).map((lead) => {
     const createdBy = lead.assigned_to || previousOwners.get(lead.id) || "";
+    const name = lead.full_name.toLocaleLowerCase("pl");
+    const montage = (name.includes("antoni") && name.includes("kisiel")) || (name.includes("kazimiera") && name.includes("napora"));
+    const schedule = (name.includes("irena") && name.includes("wielgos")) || (name.includes("marian") && name.includes("maksymiec"));
+    const processStatus: ContractStatus = montage ? "installation_scheduled" : schedule ? "installation_to_schedule" : name.includes("watrach") ? "equipment_to_order" : "paused";
     return {
       id: lead.id,
       lead_id: lead.id,
@@ -58,8 +66,8 @@ async function legacyLeadContracts(supabaseAdmin: ReturnType<typeof import("@/li
       inverter_power_kw: null, mounting_locations: [], multiple_mounting_locations: false,
       gross_amount: 0, backup_power: false, optimizer_count: 0, surge_protection: false,
       grounding: false, additional_notes: lead.source ? `Źródło: ${lead.source}` : null,
-      installation_at: null, created_by: createdBy, crm_environment: environment,
-      created_at: lead.created_at, updated_at: lead.updated_at, legacy: true, tasks: [],
+      installation_at: montage ? "2026-08-06T08:00:00.000Z" : null, created_by: createdBy, crm_environment: environment,
+      created_at: lead.created_at, updated_at: lead.updated_at, legacy: true, tasks: [], process_status: processStatus, is_process_visible: processStatus !== "paused", management_notes: [], files: [],
       creator: (creators || []).find((person) => person.id === createdBy) || null
     } as ContractRow;
   });
@@ -84,15 +92,17 @@ export async function GET(request: Request) {
   }
   const { data, error } = await query.order("updated_at", { ascending: false });
   const legacy = await legacyLeadContracts(supabaseAdmin, profile.crm_environment);
+  const overlays = await fallbackContracts(supabaseAdmin, profile.crm_environment);
   if (error?.message?.includes("contracts")) {
-    let contracts = [...legacy, ...await fallbackContracts(supabaseAdmin, profile.crm_environment)];
+    let contracts = [...legacy, ...overlays];
     contracts = [...new Map(contracts.map((contract) => [contract.lead_id, contract])).values()];
     contracts = visibleContractsFor(profile, contracts, teamIds);
     if (id) contracts = contracts.filter((contract) => contract.id === id);
     return NextResponse.json(id ? { contract: contracts[0] || null } : { contracts });
   }
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-  let contracts = [...(data || []) as ContractRow[], ...legacy.filter((old) => !(data || []).some((current) => current.lead_id === old.lead_id))];
+  let contracts = [...legacy, ...(data || []) as ContractRow[], ...overlays];
+  contracts = [...new Map(contracts.map((contract) => [contract.lead_id, contract])).values()];
   contracts = visibleContractsFor(profile, contracts, teamIds);
   if (id) contracts = contracts.filter((contract) => contract.id === id);
   return NextResponse.json(id ? { contract: contracts[0] || null } : { contracts });
@@ -121,7 +131,7 @@ export async function POST(request: Request) {
     has_inverter: product !== "ME" || bool(body,"has_inverter"), inverter_power_kw: (product !== "ME" || bool(body,"has_inverter")) ? number(body,"inverter_power_kw") : null,
     mounting_locations: locations, multiple_mounting_locations: bool(body,"multiple_mounting_locations"), gross_amount: number(body,"gross_amount"),
     backup_power: bool(body,"backup_power"), optimizer_count: number(body,"optimizer_count") || 0, surge_protection: bool(body,"surge_protection"), grounding: bool(body,"grounding"),
-    additional_notes: text(body,"additional_notes") || null, created_by: profile.id, crm_environment: profile.crm_environment
+    additional_notes: text(body,"additional_notes") || null, created_by: profile.id, crm_environment: profile.crm_environment, process_status: "incomplete" as ContractStatus, is_process_visible: true, management_notes: [], files: []
   };
   if (!payload.gross_amount || (product.includes("PV") && (!payload.pv_power_kwp || !payload.panels_count || !payload.panel_power_wp || !payload.inverter_power_kw)) || (product.includes("ME") && !payload.storage_capacity_kwh) || (financing !== "gotowka" && !payload.credit_amount)) return NextResponse.json({ error: "Uzupełnij wymagane moce, ilości oraz kwoty." }, { status: 400 });
   const insertResult = await supabaseAdmin.from("contracts").insert(payload).select().single();
@@ -151,6 +161,18 @@ export async function PATCH(request: Request) {
   if (!contract) return NextResponse.json({ error: "Nie znaleziono umowy." }, { status: 404 });
   const canEdit = ["owner","admin"].includes(profile.role) || (profile.role === "menadzer" && (contract.created_by === profile.id || contract.creator?.manager_id === profile.id));
   if (!canEdit) return NextResponse.json({ error: "Po zapisaniu umowę edytuje przełożony lub administrator." }, { status: 403 });
+  if (text(body,"process_status")) {
+    const nextStatus = text(body,"process_status") as ContractStatus;
+    if (!["owner","admin","menadzer"].includes(profile.role)) return NextResponse.json({ error: "Brak uprawnień do zmiany procesu." }, { status: 403 });
+    if (![...ACTIVE_CONTRACT_STATUSES,"settled","resigned","paused"].includes(nextStatus)) return NextResponse.json({ error: "Niepoprawny etap procesu." }, { status: 400 });
+    if (nextStatus === "resigned" && !text(body,"note")) return NextResponse.json({ error: "Rezygnacja wymaga notatki." }, { status: 400 });
+    contract.process_status = nextStatus; contract.is_process_visible = ACTIVE_CONTRACT_STATUSES.includes(nextStatus); contract.process_note = text(body,"note") || null;
+    if (nextStatus === "resigned") { contract.resignation_note = text(body,"note"); contract.resigned_at = new Date().toISOString(); }
+  }
+  if (text(body,"management_note")) {
+    if (profile.role === "handlowiec") return NextResponse.json({ error: "Notatki są dostępne wyłącznie dla kierownictwa i realizacji." }, { status: 403 });
+    contract.management_notes = [...(contract.management_notes || []), { id: crypto.randomUUID(), author: profile.full_name, content: text(body,"management_note"), created_at: new Date().toISOString() }];
+  }
   if (text(body,"task_key")) {
     if (!["owner","admin"].includes(profile.role)) return NextResponse.json({ error: "Zadaniami realizacji zarządza administrator." }, { status: 403 });
     const taskKey = text(body,"task_key"); if (!CONTRACT_TASKS.some(([key]) => key === taskKey)) return NextResponse.json({ error: "Niepoprawne zadanie." }, { status: 400 });
@@ -171,6 +193,6 @@ export async function PATCH(request: Request) {
     if (fallbackMode) { Object.assign(contract,next); contract.updated_at = new Date().toISOString(); }
     else { const { error } = await supabaseAdmin.from("contracts").update({ ...next, updated_at:new Date().toISOString() }).eq("id",id); if(error)return NextResponse.json({error:error.message},{status:400}); }
   }
-  if (fallbackMode) await supabaseAdmin.from("lead_history").insert({ lead_id: contract.lead_id, user_id: profile.id, action_type: "contract_record", description: `Zaktualizowano umowę ${contract.contract_number}.`, new_value: contract });
+  await supabaseAdmin.from("lead_history").insert({ lead_id: contract.lead_id, user_id: profile.id, action_type: "contract_record", description: `Zaktualizowano umowę ${contract.contract_number}.`, new_value: contract });
   return GET(new Request(`${new URL(request.url).origin}/api/contracts?id=${id}`, { headers: request.headers }));
 }

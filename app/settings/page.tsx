@@ -14,7 +14,7 @@ import { useAuth } from "@/lib/use-auth";
 export default function SettingsPage() {
   const { loading, profile, session } = useAuth();
   const { theme, setTheme } = useTheme();
-  const { settings, setSettings } = usePricingSettings(profile?.role);
+  const { settings, setSettings } = usePricingSettings(profile);
   const [adminMargin, setAdminMargin] = useState(settings.adminMargin);
   const [salesMargin, setSalesMargin] = useState(settings.salesMargin);
   const [businessPhone, setBusinessPhone] = useState("");

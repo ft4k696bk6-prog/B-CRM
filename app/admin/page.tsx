@@ -48,7 +48,7 @@ const initialFilters: AdminLeadFilters = {
   postalCode: "",
   voivodeship: "",
   county: "",
-  status: "",
+  status: [],
   assignedTo: "__unassigned"
 };
 
@@ -231,7 +231,7 @@ export default function AdminDashboardPage() {
       if (debouncedFilters.postalCode) query = query.ilike("postal_code", `%${debouncedFilters.postalCode}%`);
       if (debouncedFilters.voivodeship) query = query.or(voivodeshipFilterTerms(debouncedFilters.voivodeship));
       if (debouncedFilters.county) query = query.ilike("county", `%${debouncedFilters.county}%`);
-      if (debouncedFilters.status) query = query.eq("status", debouncedFilters.status as LeadStatus);
+      if (debouncedFilters.status.length) query = query.in("status", debouncedFilters.status);
       else {
         if (leadBucket === "active") query = query.not("status", "in", postgrestInValues(["Umowa", "Rezygnacja"]));
         if (leadBucket === "contracts") query = query.eq("status", "Umowa");
@@ -295,7 +295,7 @@ export default function AdminDashboardPage() {
   ).length;
 
   const activeFilterCount = useMemo(
-    () => Object.values(filters).filter(Boolean).length,
+    () => Object.values(filters).filter((value) => Array.isArray(value) ? value.length > 0 : Boolean(value)).length,
     [filters]
   );
 
@@ -347,7 +347,7 @@ export default function AdminDashboardPage() {
     [leads, salespeople]
   );
 
-  function updateFilter(key: keyof AdminLeadFilters, value: string) {
+  function updateFilter(key: keyof AdminLeadFilters, value: string | LeadStatus[]) {
     setFilters((current) => ({ ...current, [key]: value }));
   }
 
@@ -764,21 +764,13 @@ export default function AdminDashboardPage() {
               onVoivodeshipChange={(value) => updateFilter("voivodeship", value)}
               onCountyChange={(value) => updateFilter("county", value)}
             />
-            <label>
-              <span className="label">Status</span>
-              <select
-                className="field"
-                value={filters.status}
-                onChange={(event) => updateFilter("status", event.target.value)}
-              >
-                <option value="">Wszystkie</option>
-                {LEAD_STATUSES.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <fieldset className="rounded-lg border border-line p-3 md:col-span-2">
+              <legend className="label px-1">Statusy ({filters.status.length || "wszystkie"})</legend>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {LEAD_STATUSES.map((status) => <label key={status} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={filters.status.includes(status)} onChange={() => updateFilter("status", filters.status.includes(status) ? filters.status.filter(item => item !== status) : [...filters.status,status])}/>{status}</label>)}
+              </div>
+              <div className="mt-3 flex gap-2"><button type="button" className="btn-secondary" onClick={()=>updateFilter("status",[...LEAD_STATUSES])}>Zaznacz wszystkie</button><button type="button" className="btn-secondary" onClick={()=>updateFilter("status",[])}>Wyczyść</button></div>
+            </fieldset>
             <label>
               <span className="label">Handlowiec</span>
               <select
