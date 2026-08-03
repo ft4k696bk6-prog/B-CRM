@@ -263,6 +263,10 @@ export default function AdminDashboardPage() {
       }
       allLeads.push(...page);
       setLoadedLeadCount(allLeads.length);
+      // Renderuj pierwszą paczkę natychmiast, a pozostałe rekordy dobieraj w tle.
+      // Dzięki temu panel jest użyteczny po pierwszym zapytaniu zamiast czekać na całą bazę.
+      setLeads([...allLeads]);
+      if (from === 0) setBusy(false);
 
       if ((expectedCount !== null && allLeads.length >= expectedCount) || page.length < pageSize) break;
       from = allLeads.length;
