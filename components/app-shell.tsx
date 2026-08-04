@@ -44,6 +44,7 @@ type NavigationLink = {
     | "navDashboard"
     | "navTeamDashboard"
     | "navMyLeads"
+    | "navWorkPanel"
     | "navOperations"
     | "navEquipment"
     | "navNewLead"
@@ -62,6 +63,13 @@ type NavigationLink = {
 };
 
 const navigationLinks: NavigationLink[] = [
+  {
+    href: "/panel",
+    labelKey: "navWorkPanel",
+    groupKey: "main",
+    icon: MousePointerClick,
+    permissions: ["operations:view"]
+  },
   {
     href: "/admin",
     labelKey: "navDashboard",

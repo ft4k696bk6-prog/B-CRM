@@ -24,13 +24,15 @@ import { LoadingScreen } from "@/components/loading-screen";
 import { useLanguage } from "@/components/language-provider";
 import { Alert, EmptyState, PageHeader, SectionHeader } from "@/components/ui";
 import { formatDate, formatDateTime } from "@/lib/date";
+import type { ContractRecord } from "@/lib/contracts";
 import { normalizeRole, ROLE_LABELS } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { Lead, Profile, UserRole } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
 
 type CalendarKind = "handlowiec" | "monter" | "menadzer" | "ksiegowosc" | "internal";
-type CalendarEventType = "meeting" | "callback" | "internal";
+type CalendarEventType = "meeting" | "callback" | "installation" | "internal";
+type CalendarFilter = "all" | "meeting" | "callback" | "installation";
 
 type CalendarEvent = {
   id: string;
@@ -42,6 +44,7 @@ type CalendarEvent = {
   ownerName: string;
   ownerRole: UserRole;
   leadId?: string;
+  contractId?: string;
   lead?: Lead;
 };
 
@@ -138,17 +141,6 @@ function defaultKindForRole(role: UserRole): CalendarKind {
   return "handlowiec";
 }
 
-function allowedKinds(role: UserRole) {
-  if (isSystemWide(role)) return calendarKinds;
-  if (role === "menadzer") {
-    return calendarKinds.filter((kind) => ["handlowiec", "menadzer", "internal"].includes(kind.key));
-  }
-  if (role === "handlowiec") return calendarKinds.filter((kind) => kind.key === "handlowiec");
-  if (role === "ksiegowosc") return calendarKinds.filter((kind) => ["ksiegowosc", "internal"].includes(kind.key));
-  if (role === "logistyk" || role === "monter") return calendarKinds.filter((kind) => ["monter", "internal"].includes(kind.key));
-  return calendarKinds.filter((kind) => kind.key === defaultKindForRole(role));
-}
-
 function visibleProfilesFor(profile: Profile, users: Profile[], kind: CalendarKind) {
   const normalizedUsers = users.map((user) => ({ ...user, role: normalizeRole(user.role, user.email) }));
   if (isSystemWide(profile.role)) {
@@ -192,17 +184,20 @@ function buildDemoInternalEvents(month: Date, owners: Profile[], kind: CalendarK
 function EventRow({ event }: { event: CalendarEvent }) {
   const isMeeting = event.type === "meeting";
   const isCallback = event.type === "callback";
+  const isInstallation = event.type === "installation";
   const content = (
     <>
       <span
         className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-          isMeeting ? "bg-leaf text-white" : isCallback ? "bg-solar text-ink" : "bg-sky/10 text-sky"
+          isMeeting ? "bg-leaf text-white" : isCallback ? "bg-solar text-ink" : isInstallation ? "bg-sky text-white" : "bg-sky/10 text-sky"
         }`}
       >
         {isMeeting ? (
           <CalendarDays className="h-5 w-5" aria-hidden="true" />
         ) : isCallback ? (
           <PhoneCall className="h-5 w-5" aria-hidden="true" />
+        ) : isInstallation ? (
+          <Hammer className="h-5 w-5" aria-hidden="true" />
         ) : (
           <UsersRound className="h-5 w-5" aria-hidden="true" />
         )}
@@ -230,25 +225,26 @@ function EventRow({ event }: { event: CalendarEvent }) {
       </Link>
     );
   }
+  if (event.contractId) return <Link href={`/realizacja/${event.contractId}`} className={className}>{content}</Link>;
 
   return <div className={className}>{content}</div>;
 }
 
 export default function CalendarPage() {
-  const { loading, profile } = useAuth(["owner", "admin", "menadzer", "handlowiec", "ksiegowosc", "logistyk", "monter"]);
+  const { loading, profile, session } = useAuth(["owner", "admin", "menadzer", "handlowiec", "ksiegowosc", "logistyk", "monter"]);
   const { language } = useLanguage();
   const locale = language === "en" ? "en-US" : "pl-PL";
   const [month, setMonth] = useState(() => new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [users, setUsers] = useState<Profile[]>([]);
   const [calendarKind, setCalendarKind] = useState<CalendarKind>("handlowiec");
+  const [eventFilter, setEventFilter] = useState<CalendarFilter>("all");
   const [selectedUserId, setSelectedUserId] = useState("");
   const [selectedDay, setSelectedDay] = useState(() => dateKey(new Date()));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [usesDemoEvents, setUsesDemoEvents] = useState(false);
 
-  const kindOptions = useMemo(() => (profile ? allowedKinds(profile.role) : []), [profile?.role]);
   const visibleUsers = useMemo(
     () => (profile ? visibleProfilesFor(profile, users, calendarKind) : []),
     [calendarKind, profile, users]
@@ -386,6 +382,23 @@ export default function CalendarPage() {
     return [...meetingEvents, ...callbackEvents];
   }
 
+  async function loadInstallationEvents(owners: Profile[]) {
+    if (!session?.access_token) return [];
+    const response = await fetch("/api/contracts", { headers: { Authorization: `Bearer ${session.access_token}` } });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.error || "Nie udało się pobrać montaży.");
+    const ownerIds = new Set(owners.map((owner) => owner.id));
+    return ((body.contracts || []) as ContractRecord[])
+      .filter((contract) => contract.installation_at && isInRange(contract.installation_at, new Date(startOfMonthIso(month)), new Date(startOfNextMonthIso(month))))
+      .filter((contract) => !selectedUserId || ownerIds.has(contract.created_by))
+      .map((contract) => ({
+        id: `${contract.id}-installation`, type: "installation" as const, at: contract.installation_at as string,
+        title: `Montaż — ${contract.customer_name}`, subtitle: `${contract.product_type} · ${contract.street} ${contract.house_number}, ${contract.city}`,
+        ownerId: contract.created_by, ownerName: contract.creator?.full_name || "Realizacja", ownerRole: "logistyk" as UserRole,
+        contractId: contract.id
+      }));
+  }
+
   async function loadCalendar() {
     if (!profile) return;
     setBusy(true);
@@ -396,7 +409,8 @@ export default function CalendarPage() {
       const shouldLoadLeadEvents = calendarKind === "handlowiec" || calendarKind === "menadzer";
       const roleEvents = shouldLoadLeadEvents ? await loadSalesLeadEvents(owners) : [];
       const internalEvents = shouldLoadLeadEvents ? [] : await loadInternalEvents(owners);
-      setEvents([...roleEvents, ...internalEvents].sort((a, b) => a.at.localeCompare(b.at)));
+      const installationEvents = await loadInstallationEvents(owners);
+      setEvents([...roleEvents, ...internalEvents, ...installationEvents].sort((a, b) => a.at.localeCompare(b.at)));
     } catch (calendarError) {
       setError(calendarError instanceof Error ? calendarError.message : "Błąd kalendarza.");
     } finally {
@@ -433,13 +447,14 @@ export default function CalendarPage() {
   }, [selectedDay]);
   const selectedWeek = useMemo(() => weekRange(selectedDate), [selectedDate]);
 
+  const filteredEvents = useMemo(() => events.filter((event) => eventFilter === "all" || event.type === eventFilter), [eventFilter, events]);
   const eventsByDay = useMemo(() => {
-    return events.reduce<Record<string, CalendarEvent[]>>((acc, event) => {
+    return filteredEvents.reduce<Record<string, CalendarEvent[]>>((acc, event) => {
       const key = dateKey(new Date(event.at));
       acc[key] = [...(acc[key] || []), event];
       return acc;
     }, {});
-  }, [events]);
+  }, [filteredEvents]);
 
   const selectedDayEvents = eventsByDay[selectedDay] || [];
   const meetings = events.filter((event) => event.type === "meeting");
@@ -509,24 +524,17 @@ export default function CalendarPage() {
           }
         />
 
-        <section className="grid gap-2 md:grid-cols-5">
-          {kindOptions.map((kind) => {
-            const Icon = kind.icon;
-            const active = calendarKind === kind.key;
-            return (
-              <button
-                key={kind.key}
-                type="button"
-                onClick={() => setCalendarKind(kind.key)}
-                className={`flex min-h-14 items-center justify-center gap-2 rounded-lg border px-3 text-sm font-black transition ${
-                  active ? "border-ink bg-ink text-white" : "border-line bg-white text-ink hover:border-ink"
-                }`}
-              >
-                <Icon className="h-4 w-4" aria-hidden="true" />
-                {language === "en" ? kind.labelEn : kind.labelPl}
-              </button>
-            );
-          })}
+        <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+          {([
+            ["all", "Wszystko", CalendarDays],
+            ["meeting", "Spotkania", UsersRound],
+            ["callback", "Call-backi", PhoneCall],
+            ["installation", "Montaże", Hammer]
+          ] as const).map(([key, label, Icon]) => (
+            <button key={key} type="button" onClick={() => setEventFilter(key)} className={`flex min-h-14 items-center justify-center gap-2 rounded-lg border px-3 text-sm font-black transition ${eventFilter === key ? "border-ink bg-ink text-white" : "border-line bg-white text-ink hover:border-ink"}`}>
+              <Icon className="h-4 w-4" aria-hidden="true" />{label}
+            </button>
+          ))}
         </section>
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
@@ -682,6 +690,12 @@ export default function CalendarPage() {
                         {dayInternal.length}
                       </span>
                     ) : null}
+                    {dayEvents.filter((event) => event.type === "installation").length > 0 ? (
+                      <span className="inline-flex w-fit items-center gap-1 rounded-full bg-sky/15 px-2 py-1 text-[11px] font-black text-sky">
+                        <Hammer className="h-3 w-3" aria-hidden="true" />
+                        {dayEvents.filter((event) => event.type === "installation").length}
+                      </span>
+                    ) : null}
                   </span>
                 </button>
               );
@@ -710,10 +724,10 @@ export default function CalendarPage() {
           <div className="app-card">
             <h2 className="text-base font-bold text-ink">{language === "en" ? "Upcoming this month" : "Najbliższe w miesiącu"}</h2>
             <div className="mt-3 grid gap-2">
-              {events.slice(0, 12).map((event) => (
+              {filteredEvents.slice(0, 12).map((event) => (
                 <EventRow key={event.id} event={event} />
               ))}
-              {!busy && events.length === 0 ? (
+              {!busy && filteredEvents.length === 0 ? (
                 <EmptyState
                   title={language === "en" ? "No scheduled events" : "Brak zaplanowanych działań"}
                   description={language === "en" ? "This month has no visible calendar entries." : "Ten miesiąc nie ma widocznych wpisów kalendarza."}
