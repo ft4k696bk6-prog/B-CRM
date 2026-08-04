@@ -4,7 +4,22 @@ import { requireApiProfile } from "@/lib/server-auth";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
-export async function GET(request:Request){const auth=await requireApiProfile(request);if("error"in auth)return auth.error;const path=new URL(request.url).searchParams.get("path");if(!path)return NextResponse.json({error:"Brak pliku."},{status:400});const{data,error}=await auth.supabaseAdmin.storage.from("contract-files").createSignedUrl(path,300);if(error)return NextResponse.json({error:error.message},{status:400});return NextResponse.json({url:data.signedUrl});}
+const CONTRACT_FILES_BUCKET = "contract-files";
+
+async function ensureContractFilesBucket(storage: ReturnType<typeof import("@/lib/server-auth").getServiceClient>["storage"]) {
+  const { data: existing } = await storage.getBucket(CONTRACT_FILES_BUCKET);
+  if (existing) return null;
+
+  const { error } = await storage.createBucket(CONTRACT_FILES_BUCKET, {
+    public: false,
+    fileSizeLimit: 209715200,
+    allowedMimeTypes: ["application/pdf", "image/*", "video/*"]
+  });
+  if (error && !/already exists|duplicate/i.test(error.message)) return error.message;
+  return null;
+}
+
+export async function GET(request:Request){const auth=await requireApiProfile(request);if("error"in auth)return auth.error;const path=new URL(request.url).searchParams.get("path");if(!path)return NextResponse.json({error:"Brak pliku."},{status:400});const bucketError=await ensureContractFilesBucket(auth.supabaseAdmin.storage);if(bucketError)return NextResponse.json({error:`Nie udało się przygotować magazynu plików: ${bucketError}`},{status:500});const{data,error}=await auth.supabaseAdmin.storage.from(CONTRACT_FILES_BUCKET).createSignedUrl(path,300);if(error)return NextResponse.json({error:error.message},{status:400});return NextResponse.json({url:data.signedUrl});}
 
 export async function POST(request: Request) {
   const auth = await requireApiProfile(request); if ("error" in auth) return auth.error;
@@ -29,11 +44,12 @@ export async function POST(request: Request) {
   if(!lead)return NextResponse.json({error:"Brak dostępu."},{status:403});
   if(contract&&auth.profile.role==="handlowiec"&&contract.created_by!==auth.profile.id)return NextResponse.json({error:"Brak dostępu do tej umowy."},{status:403});
 
-  await auth.supabaseAdmin.storage.createBucket("contract-files",{public:false,fileSizeLimit:209715200}).catch(()=>null);
+  const bucketError=await ensureContractFilesBucket(auth.supabaseAdmin.storage);
+  if(bucketError)return NextResponse.json({error:`Nie udało się utworzyć miejsca na załączniki: ${bucketError}`},{status:500});
   const prefix=`${auth.profile.crm_environment}/${leadId}/`;
   if(action==="prepare"){
     const path=`${prefix}${crypto.randomUUID()}-${fileName.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
-    const {data,error}=await auth.supabaseAdmin.storage.from("contract-files").createSignedUploadUrl(path);
+    const {data,error}=await auth.supabaseAdmin.storage.from(CONTRACT_FILES_BUCKET).createSignedUploadUrl(path);
     if(error)return NextResponse.json({error:error.message},{status:400});
     return NextResponse.json({path,token:data.token});
   }
@@ -43,7 +59,7 @@ export async function POST(request: Request) {
   const record={id:crypto.randomUUID(),name:fileName,kind,path,mime,size,created_at:new Date().toISOString()};
   const historyResult=await auth.supabaseAdmin.from("lead_history").insert({lead_id:leadId,user_id:auth.profile.id,action_type:"contract_file",description:`Dodano załącznik: ${fileName}`,new_value:record});
   const fileResult=contract?await auth.supabaseAdmin.from("contract_files").insert({id:record.id,contract_id:contractId,uploaded_by:auth.profile.id,kind,file_name:fileName,file_path:path,mime_type:mime,file_size:size}):{error:null};
-  if(historyResult.error&&fileResult.error){await auth.supabaseAdmin.storage.from("contract-files").remove([path]);return NextResponse.json({error:"Nie udało się zapisać informacji o załączniku."},{status:400});}
+  if(historyResult.error&&fileResult.error){await auth.supabaseAdmin.storage.from(CONTRACT_FILES_BUCKET).remove([path]);return NextResponse.json({error:"Nie udało się zapisać informacji o załączniku."},{status:400});}
   const {data:history}=await auth.supabaseAdmin.from("lead_history").select("action_type,new_value").eq("lead_id",leadId).in("action_type",["contract_file","contract_record"]).order("created_at",{ascending:false});
   const kinds=new Set((history||[]).filter(row=>row.action_type==="contract_file").map(row=>String(row.new_value?.kind||"")));
   const current=(history||[]).find(row=>row.action_type==="contract_record")?.new_value as Record<string,unknown>|undefined;
