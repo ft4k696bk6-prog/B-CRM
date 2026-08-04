@@ -116,8 +116,9 @@ export async function POST(request: Request) {
   if (required.some((key) => !text(body, key))) return NextResponse.json({ error: "Uzupełnij wszystkie obowiązkowe dane klienta i umowy." }, { status: 400 });
   const financing = text(body, "financing"); const product = text(body, "product_type");
   if (!FINANCING_OPTIONS.some(([key]) => key === financing) || !PRODUCT_OPTIONS.includes(product as never)) return NextResponse.json({ error: "Niepoprawny produkt lub finansowanie." }, { status: 400 });
-  const locations = Array.isArray(body.mounting_locations) ? body.mounting_locations.filter((x): x is string => typeof x === "string" && MOUNTING_OPTIONS.includes(x as never)) : [];
-  if (!locations.length) return NextResponse.json({ error: "Wybierz miejsce montażu." }, { status: 400 });
+  const rawLocations = Array.isArray(body.mounting_locations) ? body.mounting_locations.filter((x): x is string => typeof x === "string").map((x) => x.trim()).filter(Boolean) : [];
+  const locations = product === "ME" ? rawLocations.slice(0, 1).map((value) => value.slice(0, 160)) : rawLocations.filter((value) => MOUNTING_OPTIONS.includes(value as never));
+  if (!locations.length) return NextResponse.json({ error: product === "ME" ? "Wpisz miejsce montażu magazynu energii." : "Wybierz miejsce montażu instalacji PV." }, { status: 400 });
   const leadId = text(body, "lead_id");
   const { data: lead } = await supabaseAdmin.from("leads").select("id,assigned_to,crm_environment").eq("id", leadId).eq("crm_environment", profile.crm_environment).single();
   if (!lead || (profile.role === "handlowiec" && lead.assigned_to !== profile.id)) return NextResponse.json({ error: "Nie masz dostępu do tego leada." }, { status: 403 });
