@@ -40,7 +40,7 @@ export default function SalesDashboardPage() {
   const [voivodeship, setVoivodeship] = useState("");
   const [county, setCounty] = useState("");
   const [sort, setSort] = useState<SortOption>({ column: "created_at", direction: "desc" });
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
 
   async function loadLeads() {
@@ -154,28 +154,28 @@ export default function SalesDashboardPage() {
         />
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          <StatTile label="Moje leady" value={leads.length} icon={ClipboardList} tone="sky" />
+          <StatTile label="Moje leady" value={busy ? "—" : leads.length} icon={ClipboardList} tone="sky" />
           <StatTile
             label="Call-back"
-            value={upcomingCallbacks.length}
+            value={busy ? "—" : upcomingCallbacks.length}
             icon={PhoneCall}
             tone="warn"
           />
           <StatTile
             label="Dzisiejsze spotkania"
-            value={todayMeetings.length}
+            value={busy ? "—" : todayMeetings.length}
             icon={CalendarDays}
             tone="leaf"
           />
           <StatTile
             label="Zaległe call-backi"
-            value={overdueCallbacks.length}
+            value={busy ? "—" : overdueCallbacks.length}
             icon={AlertTriangle}
             tone="danger"
           />
           <StatTile
             label="Bez akcji"
-            value={leadsWithoutNextAction.length}
+            value={busy ? "—" : leadsWithoutNextAction.length}
             icon={ListChecks}
             tone="warn"
           />
