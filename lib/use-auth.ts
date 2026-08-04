@@ -14,21 +14,50 @@ type AuthState = {
   profile: Profile | null;
 };
 
+let authCache: AuthState | null = null;
+let authRequest: Promise<AuthState> | null = null;
+
+async function fetchAuthState(force = false): Promise<AuthState> {
+  if (!force && authCache) return authCache;
+  if (authRequest) return authRequest;
+
+  authRequest = (async () => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const session = sessionData.session;
+    if (!session) return { loading: false, session: null, profile: null };
+
+    const { data: profile } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
+    if (!profile) return { loading: false, session, profile: null };
+
+    return {
+      loading: false,
+      session,
+      profile: {
+        ...profile,
+        business_phone: profile.business_phone || null,
+        role: normalizeRole(profile.role, profile.email, typeof session.user.app_metadata?.role === "string" ? session.user.app_metadata.role : null),
+        crm_environment: normalizeCrmScope(profile.crm_environment, profile.email)
+      } as Profile
+    };
+  })();
+
+  const result = await authRequest;
+  authCache = result;
+  authRequest = null;
+  return result;
+}
+
 export function useAuth(requiredRole?: UserRole | UserRole[]) {
   const router = useRouter();
   const requiredRoleKey = Array.isArray(requiredRole) ? requiredRole.join("|") : requiredRole || "";
-  const [state, setState] = useState<AuthState>({
-    loading: true,
-    session: null,
-    profile: null
-  });
+  const [state, setState] = useState<AuthState>(() => authCache || { loading: true, session: null, profile: null });
 
   useEffect(() => {
     let mounted = true;
 
-    async function load() {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const session = sessionData.session;
+    async function load(force = false) {
+      const nextState = await fetchAuthState(force);
+      const { session, profile } = nextState;
 
       if (!session) {
         if (mounted) setState({ loading: false, session: null, profile: null });
@@ -36,42 +65,27 @@ export function useAuth(requiredRole?: UserRole | UserRole[]) {
         return;
       }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", session.user.id)
-        .single();
-
       if (!profile) {
         if (mounted) setState({ loading: false, session, profile: null });
         return;
       }
 
-      const normalizedProfile = {
-        ...profile,
-        business_phone: profile.business_phone || null,
-        role: normalizeRole(
-          profile.role,
-          profile.email,
-          typeof session.user.app_metadata?.role === "string" ? session.user.app_metadata.role : null
-        ),
-        crm_environment: normalizeCrmScope(profile.crm_environment, profile.email)
-      };
-
       const allowedRoles = requiredRoleKey ? (requiredRoleKey.split("|") as UserRole[]) : [];
 
-      if (allowedRoles.length > 0 && !allowedRoles.includes(normalizedProfile.role)) {
-        router.replace(homePathForRole(normalizedProfile.role));
+      if (allowedRoles.length > 0 && !allowedRoles.includes(profile.role)) {
+        router.replace(homePathForRole(profile.role));
         return;
       }
 
-      if (mounted) setState({ loading: false, session, profile: normalizedProfile });
+      if (mounted) setState({ loading: false, session, profile });
     }
 
     load();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(() => {
-      load();
+    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "INITIAL_SESSION") return;
+      authCache = null;
+      load(true);
     });
 
     return () => {

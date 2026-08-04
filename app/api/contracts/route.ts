@@ -3,7 +3,7 @@ import { requireApiProfile } from "@/lib/server-auth";
 import { ACTIVE_CONTRACT_STATUSES, CONTRACT_TASKS, type ContractStatus, FINANCING_OPTIONS, MOUNTING_OPTIONS, PRODUCT_OPTIONS } from "@/lib/contracts";
 import { canManageLeads } from "@/lib/roles";
 
-const contractSelect = "*,creator:profiles!contracts_created_by_fkey(id,full_name,email,manager_id),tasks:contract_tasks(*)";
+const contractSelect = "*,creator:profiles!contracts_created_by_fkey(id,full_name,email,manager_id),tasks:contract_tasks(*),files:contract_files(*)";
 
 type ContractRow = Record<string, unknown> & {
   id: string; lead_id: string; created_by: string; contract_number: string; customer_name: string;
@@ -14,6 +14,18 @@ type ContractRow = Record<string, unknown> & {
 function text(body: Record<string, unknown>, key: string) { return typeof body[key] === "string" ? body[key].trim() : ""; }
 function number(body: Record<string, unknown>, key: string) { const value = Number(body[key]); return Number.isFinite(value) ? value : null; }
 function bool(body: Record<string, unknown>, key: string) { return body[key] === true; }
+
+function normalizeContract(contract: ContractRow): ContractRow {
+  return {
+    ...contract,
+    files: (contract.files || []).map((file) => ({
+      ...file,
+      name: file.name || file.file_name,
+      path: file.path || file.file_path,
+      mime: file.mime || file.mime_type
+    }))
+  };
+}
 
 async function fallbackContracts(supabaseAdmin: ReturnType<typeof import("@/lib/server-auth").getServiceClient>, environment: string): Promise<ContractRow[]> {
   const { data } = await supabaseAdmin.from("lead_history").select("lead_id,action_type,new_value,created_at,lead:leads!inner(crm_environment)").in("action_type", ["contract_record","contract_file"]).eq("lead.crm_environment", environment).order("created_at", { ascending: false });
@@ -87,23 +99,27 @@ export async function GET(request: Request) {
     const { data: team } = await supabaseAdmin.from("profiles").select("id").or(`id.eq.${profile.id},manager_id.eq.${profile.id}`);
     teamIds = new Set((team || []).map((person) => person.id));
   }
-  const [{ data, error }, legacy, overlays] = await Promise.all([
-    query.order("updated_at", { ascending: false }),
-    legacyLeadContracts(supabaseAdmin, profile.crm_environment),
-    fallbackContracts(supabaseAdmin, profile.crm_environment)
-  ]);
+  const { data, error } = await query.order("updated_at", { ascending: false });
   if (error?.message?.includes("contracts")) {
+    const [legacy, overlays] = await Promise.all([
+      legacyLeadContracts(supabaseAdmin, profile.crm_environment),
+      fallbackContracts(supabaseAdmin, profile.crm_environment)
+    ]);
     let contracts = [...legacy, ...overlays];
     contracts = [...new Map(contracts.map((contract) => [contract.lead_id, contract])).values()];
     contracts = visibleContractsFor(profile, contracts, teamIds);
     if (id) contracts = contracts.filter((contract) => contract.id === id);
+    contracts = contracts.map(normalizeContract);
     return NextResponse.json(id ? { contract: contracts[0] || null } : { contracts });
   }
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-  let contracts = [...legacy, ...(data || []) as ContractRow[], ...overlays];
+  let contracts = [...((data || []) as ContractRow[])];
+  if (!id) contracts = [...await legacyLeadContracts(supabaseAdmin, profile.crm_environment), ...contracts];
+  if (id && contracts.length === 0) contracts = [...await legacyLeadContracts(supabaseAdmin, profile.crm_environment), ...await fallbackContracts(supabaseAdmin, profile.crm_environment)].filter((contract) => contract.id === id);
   contracts = [...new Map(contracts.map((contract) => [contract.lead_id, contract])).values()];
   contracts = visibleContractsFor(profile, contracts, teamIds);
   if (id) contracts = contracts.filter((contract) => contract.id === id);
+  contracts = contracts.map(normalizeContract);
   return NextResponse.json(id ? { contract: contracts[0] || null } : { contracts });
 }
 

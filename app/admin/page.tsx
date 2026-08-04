@@ -89,7 +89,7 @@ export default function AdminDashboardPage() {
   const [selectedSalesperson, setSelectedSalesperson] = useState("");
   const [assignmentBatchSize, setAssignmentBatchSize] = useState<number>(25);
   const [leadBucket, setLeadBucket] = useState<"all" | "active" | "resignations" | "contracts">("active");
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
   const [stats, setStats] = useState({
     all: 0,
