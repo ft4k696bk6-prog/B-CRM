@@ -5,7 +5,7 @@ values (
   'contract-files',
   'contract-files',
   false,
-  209715200,
+  null,
   array['application/pdf', 'image/*', 'video/*']
 )
 on conflict (id) do update
