@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FileSignature, Save } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
@@ -17,11 +17,12 @@ export default function NewContractPage() {
   const { loading, profile, session } = useAuth(["owner","admin","menadzer","handlowiec"]);
   const router = useRouter(); const [leadId,setLeadId] = useState(""); const [contractId,setContractId] = useState("");
   const [form,setForm] = useState(initial); const [lead,setLead] = useState<Lead|null>(null); const [error,setError] = useState(""); const [busy,setBusy] = useState(false);
+  const loadedContractId = useRef(""); const loadedLeadId = useRef("");
   const set = (key:keyof typeof initial, value:unknown) => setForm((current)=>({...current,[key]:value}));
 
   useEffect(()=>{ const query=new URLSearchParams(window.location.search);setLeadId(query.get("leadId")||"");setContractId(query.get("contractId")||""); },[]);
-  useEffect(()=>{if(!session||!contractId)return;fetch(`/api/contracts?id=${contractId}`,{headers:{Authorization:`Bearer ${session.access_token}`}}).then(r=>r.json()).then(({contract})=>{if(!contract)return;setForm((current)=>({...current,...Object.fromEntries(Object.keys(current).filter(key=>key in contract).map(key=>[key,contract[key]]))}));});},[session,contractId]);
-  useEffect(()=>{ if(!profile||!leadId)return; supabase.from("leads").select("*").eq("id",leadId).eq("crm_environment",profile.crm_environment).single().then(({data})=>{ if(!data){setError("Nie znaleziono leada.");return;} const next=data as Lead; setLead(next); setForm((current)=>({...current,customer_name:next.full_name,phone:next.phone,postal_code:next.postal_code||"",street:next.address||"",contract_number:next.contract_number||""})); }); },[profile,leadId]);
+  useEffect(()=>{if(!session?.access_token||!contractId||loadedContractId.current===contractId)return;loadedContractId.current=contractId;fetch(`/api/contracts?id=${contractId}`,{headers:{Authorization:`Bearer ${session.access_token}`}}).then(r=>r.json()).then(({contract})=>{if(!contract)return;setForm((current)=>({...current,...Object.fromEntries(Object.keys(current).filter(key=>key in contract).map(key=>[key,contract[key]]))}));});},[session?.access_token,contractId]);
+  useEffect(()=>{ if(!profile?.crm_environment||!leadId||loadedLeadId.current===leadId)return;loadedLeadId.current=leadId;supabase.from("leads").select("*").eq("id",leadId).eq("crm_environment",profile.crm_environment).single().then(({data})=>{ if(!data){setError("Nie znaleziono leada.");return;} const next=data as Lead; setLead(next); setForm((current)=>({...current,customer_name:next.full_name,phone:next.phone,postal_code:next.postal_code||"",street:next.address||"",contract_number:next.contract_number||""})); }); },[profile?.crm_environment,leadId]);
   if(loading||!profile)return <LoadingScreen/>;
   const isPV=form.product_type.includes("PV"), isME=form.product_type.includes("ME"), inverterRequired=form.product_type!=="ME"||form.has_inverter;
   async function submit(event:FormEvent){event.preventDefault();if(!session||(!lead&&!contractId))return;setBusy(true);setError("");const response=await fetch("/api/contracts",{method:contractId?"PATCH":"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${session.access_token}`},body:JSON.stringify(contractId?{id:contractId,contract_data:form}:{...form,lead_id:lead!.id})});const body=await response.json();if(!response.ok){setError(body.error||"Nie udało się zapisać umowy.");setBusy(false);return;}router.replace(`/realizacja/${contractId||body.contract.id}`);}
