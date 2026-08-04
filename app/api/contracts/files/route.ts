@@ -12,7 +12,6 @@ async function ensureContractFilesBucket(storage: ReturnType<typeof import("@/li
 
   const { error } = await storage.createBucket(CONTRACT_FILES_BUCKET, {
     public: false,
-    fileSizeLimit: 209715200,
     allowedMimeTypes: ["application/pdf", "image/*", "video/*"]
   });
   if (error && !/already exists|duplicate/i.test(error.message)) return error.message;
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
   const mime = String(body.mime || "application/octet-stream");
   const size = Number(body.size || 0);
   if (!leadId || !contractId || !fileName || !["contract_pdf","photo","video"].includes(kind)) return NextResponse.json({error:"Niepoprawny plik."},{status:400});
-  const limits:Record<string,number>={contract_pdf:25,photo:15,video:200};
+  const limits:Record<string,number>={contract_pdf:25,photo:15,video:50};
   if(!Number.isFinite(size)||size<=0||size>limits[kind]*1024*1024)return NextResponse.json({error:`Plik przekracza limit ${limits[kind]} MB albo jest pusty.`},{status:400});
   if(kind==="contract_pdf"&&mime!=="application/pdf")return NextResponse.json({error:"Umowa musi być plikiem PDF."},{status:400});
   if(kind==="photo"&&!mime.startsWith("image/"))return NextResponse.json({error:"Wybierz zdjęcie."},{status:400});
