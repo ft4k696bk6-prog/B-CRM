@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Ban,
   CalendarDays,
@@ -49,7 +49,7 @@ const initialFilters: AdminLeadFilters = {
   voivodeship: "",
   county: "",
   status: [],
-  assignedTo: "__unassigned"
+  assignedTo: ""
 };
 
 const sortOptions: Array<SortOption & { label: string }> = [
@@ -61,6 +61,8 @@ const sortOptions: Array<SortOption & { label: string }> = [
   { label: "Kod pocztowy", column: "postal_code", direction: "asc" },
   { label: "Status", column: "status", direction: "asc" }
 ];
+
+const LEADS_PAGE_SIZE = 100;
 
 function useDebouncedValue<T>(value: T, delayMs: number) {
   const [debounced, setDebounced] = useState(value);
@@ -90,6 +92,7 @@ export default function AdminDashboardPage() {
   const [assignmentBatchSize, setAssignmentBatchSize] = useState<number>(25);
   const [leadBucket, setLeadBucket] = useState<"all" | "active" | "resignations" | "contracts">("active");
   const [busy, setBusy] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
   const [stats, setStats] = useState({
     all: 0,
@@ -101,6 +104,7 @@ export default function AdminDashboardPage() {
     resignations: 0,
     noNextAction: 0
   });
+  const leadRequestId = useRef(0);
 
   const isManager = isManagerRole(profile?.role);
   const profileId = profile?.id;
@@ -139,116 +143,56 @@ export default function AdminDashboardPage() {
   }, [crmEnvironment, isManager, profile, profileId]);
 
   const loadStats = useCallback(async () => {
-    if (!crmEnvironment) return;
+    if (!session?.access_token) return;
+    const response = await fetch("/api/admin/leads/stats", {
+      headers: { Authorization: `Bearer ${session.access_token}` }
+    });
+    const body = await response.json();
+    if (!response.ok) { setError(body.error || "Nie udało się pobrać statystyk."); return; }
+    setStats(body.stats);
+  }, [session?.access_token]);
 
-    const statRows: Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at" | "callback_at">[] = [];
-    const pageSize = 1000;
-    let from = 0;
+  const buildLeadQuery = useCallback((from: number) => {
+    let query = supabase
+      .from("leads")
+      .select(
+        "id,full_name,postal_code,phone,address,voivodeship,county,status,assigned_to,created_at,updated_at,last_opened_at,source,resignation_reason,callback_at,meeting_at,meeting_address,meeting_note,contract_number,crm_environment,assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)",
+        { count: "exact" }
+      )
+      .eq("crm_environment", crmEnvironment!)
+      .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false })
+      .order("id", { ascending: true })
+      .range(from, from + LEADS_PAGE_SIZE - 1);
 
-    while (true) {
-      let query = supabase
-        .from("leads")
-        .select("id,status,assigned_to,meeting_at,callback_at")
-        .eq("crm_environment", crmEnvironment)
-        .range(from, from + pageSize - 1);
-
-      if (isManager) {
-        query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null` : "assigned_to.is.null");
-      }
-
-      const { data, error: statsError } = await query;
-
-      if (statsError) {
-        setError(statsError.message);
-        break;
-      }
-
-      statRows.push(...((data || []) as Pick<Lead, "id" | "status" | "assigned_to" | "meeting_at" | "callback_at">[]));
-
-      if (!data || data.length < pageSize) break;
-      from += pageSize;
+    if (debouncedFilters.search.trim()) {
+      const search = debouncedFilters.search.trim().replace(/[,%]/g, " ");
+      query = query.or(`full_name.ilike.%${search}%,phone.ilike.%${search}%,address.ilike.%${search}%,meeting_address.ilike.%${search}%`);
     }
-
-    const nextStats = {
-      all: 0,
-      unassigned: 0,
-      assigned: 0,
-      callbacks: 0,
-      meetings: 0,
-      contracts: 0,
-      resignations: 0,
-      noNextAction: 0
-    };
-
-    for (const lead of statRows) {
-      nextStats.all += 1;
-      if (!lead.assigned_to) nextStats.unassigned += 1;
-      if (lead.assigned_to) nextStats.assigned += 1;
-      if (lead.status === "Call back") nextStats.callbacks += 1;
-      if (lead.status === "Spotkanie") nextStats.meetings += 1;
-      if (lead.status === "Umowa") nextStats.contracts += 1;
-      if (lead.status === "Rezygnacja") nextStats.resignations += 1;
-      if (needsNextAction(lead)) nextStats.noNextAction += 1;
+    if (debouncedFilters.createdFrom) query = query.gte("created_at", startOfDay(debouncedFilters.createdFrom));
+    if (debouncedFilters.createdTo) query = query.lte("created_at", endOfDay(debouncedFilters.createdTo));
+    if (debouncedFilters.postalCode) query = query.ilike("postal_code", `%${debouncedFilters.postalCode}%`);
+    if (debouncedFilters.voivodeship) query = query.or(voivodeshipFilterTerms(debouncedFilters.voivodeship));
+    if (debouncedFilters.county) query = query.ilike("county", `%${debouncedFilters.county}%`);
+    if (debouncedFilters.status.length) query = query.in("status", debouncedFilters.status);
+    else {
+      if (leadBucket === "active") query = query.not("status", "in", postgrestInValues(["Umowa", "Rezygnacja"]));
+      if (leadBucket === "contracts") query = query.eq("status", "Umowa");
+      if (leadBucket === "resignations") query = query.eq("status", "Rezygnacja");
     }
-
-    setStats(nextStats);
-  }, [crmEnvironment, isManager, salespersonScopeKey]);
+    if (isManager && !debouncedFilters.assignedTo) query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null` : "assigned_to.is.null");
+    if (debouncedFilters.assignedTo === "__unassigned") query = query.is("assigned_to", null);
+    else if (debouncedFilters.assignedTo) query = query.eq("assigned_to", debouncedFilters.assignedTo);
+    return query;
+  }, [crmEnvironment, debouncedFilters, isManager, leadBucket, salespersonScopeKey, sort]);
 
   const loadLeads = useCallback(async () => {
     if (!crmEnvironment) return;
 
     setBusy(true);
     setError("");
-    setTotalLeadCount(0);
-    setLoadedLeadCount(0);
-
-    // Supabase projects commonly cap a single response at 1000 rows. Use
-    // smaller pages and the exact filtered count so that the UI never treats
-    // that API limit as the actual number of leads.
-    const pageSize = 500;
-    const allLeads: Lead[] = [];
-    let from = 0;
-    let expectedCount: number | null = null;
-
-    while (true) {
-      let query = supabase
-        .from("leads")
-        .select(
-          "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)",
-          { count: "exact" }
-        )
-        .eq("crm_environment", crmEnvironment)
-        .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false })
-        .order("id", { ascending: true })
-        .range(from, from + pageSize - 1);
-
-      if (debouncedFilters.search.trim()) {
-        const search = debouncedFilters.search.trim().replace(/[,%]/g, " ");
-        query = query.or(`full_name.ilike.%${search}%,phone.ilike.%${search}%,address.ilike.%${search}%,meeting_address.ilike.%${search}%`);
-      }
-      if (debouncedFilters.createdFrom) query = query.gte("created_at", startOfDay(debouncedFilters.createdFrom));
-      if (debouncedFilters.createdTo) query = query.lte("created_at", endOfDay(debouncedFilters.createdTo));
-      if (debouncedFilters.postalCode) query = query.ilike("postal_code", `%${debouncedFilters.postalCode}%`);
-      if (debouncedFilters.voivodeship) query = query.or(voivodeshipFilterTerms(debouncedFilters.voivodeship));
-      if (debouncedFilters.county) query = query.ilike("county", `%${debouncedFilters.county}%`);
-      if (debouncedFilters.status.length) query = query.in("status", debouncedFilters.status);
-      else {
-        if (leadBucket === "active") query = query.not("status", "in", postgrestInValues(["Umowa", "Rezygnacja"]));
-        if (leadBucket === "contracts") query = query.eq("status", "Umowa");
-        if (leadBucket === "resignations") query = query.eq("status", "Rezygnacja");
-      }
-
-      if (isManager && !debouncedFilters.assignedTo) {
-        query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null` : "assigned_to.is.null");
-      }
-
-      if (debouncedFilters.assignedTo === "__unassigned") {
-        query = query.is("assigned_to", null);
-      } else if (debouncedFilters.assignedTo) {
-        query = query.eq("assigned_to", debouncedFilters.assignedTo);
-      }
-
-      const { data, error: leadsError, count } = await query;
+    const requestId = ++leadRequestId.current;
+    const { data, error: leadsError, count } = await buildLeadQuery(0);
+    if (requestId !== leadRequestId.current) return;
 
       if (leadsError) {
         setError(leadsError.message);
@@ -256,28 +200,26 @@ export default function AdminDashboardPage() {
         return;
       }
 
-      const page = (data || []) as Lead[];
-      if (expectedCount === null && count !== null) {
-        expectedCount = count;
-        setTotalLeadCount(expectedCount);
-      }
-      allLeads.push(...page);
-      setLoadedLeadCount(allLeads.length);
-      // Renderuj pierwszą paczkę natychmiast, a pozostałe rekordy dobieraj w tle.
-      // Dzięki temu panel jest użyteczny po pierwszym zapytaniu zamiast czekać na całą bazę.
-      setLeads([...allLeads]);
-      if (from === 0) setBusy(false);
-
-      if ((expectedCount !== null && allLeads.length >= expectedCount) || page.length < pageSize) break;
-      from = allLeads.length;
-    }
-
-    setLeads(allLeads);
-    setTotalLeadCount(expectedCount ?? allLeads.length);
+    const page = (data || []) as unknown as Lead[];
+    setLeads(page);
+    setLoadedLeadCount(page.length);
+    setTotalLeadCount(count ?? page.length);
     setSelectedIds([]);
-
     setBusy(false);
-  }, [crmEnvironment, debouncedFilters, isManager, leadBucket, salespersonScopeKey, sort]);
+  }, [buildLeadQuery, crmEnvironment]);
+
+  const loadMoreLeads = useCallback(async () => {
+    if (loadingMore || leads.length >= totalLeadCount) return;
+    setLoadingMore(true); setError("");
+    const { data, error: leadsError } = await buildLeadQuery(leads.length);
+    if (leadsError) setError(leadsError.message);
+    else {
+      const page = (data || []) as unknown as Lead[];
+      setLeads((current) => [...current, ...page]);
+      setLoadedLeadCount((current) => current + page.length);
+    }
+    setLoadingMore(false);
+  }, [buildLeadQuery, leads.length, loadingMore, totalLeadCount]);
 
   useEffect(() => {
     loadSalespeople();
@@ -899,6 +841,11 @@ export default function AdminDashboardPage() {
             onToggleAll={toggleAllVisible}
             showAssignee
           />
+          {loadedLeadCount < totalLeadCount ? (
+            <button type="button" className="btn-secondary mx-auto" onClick={loadMoreLeads} disabled={loadingMore}>
+              {loadingMore ? "Pobieranie…" : `Pokaż kolejne ${Math.min(LEADS_PAGE_SIZE, totalLeadCount - loadedLeadCount)}`}
+            </button>
+          ) : null}
         </section>
       </div>
     </AppShell>
