@@ -6,6 +6,9 @@ export async function GET(request: Request) {
   if ("error" in auth) return auth.error;
 
   const { profile, supabaseAdmin } = auth;
+  if (!["owner", "admin", "menadzer", "finance", "viewer"].includes(profile.role)) {
+    return NextResponse.json({ error: "Brak uprawnień." }, { status: 403 });
+  }
   let salespersonIds: string[] = [];
 
   if (profile.role === "menadzer") {
