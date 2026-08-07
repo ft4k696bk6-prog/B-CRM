@@ -36,6 +36,7 @@ import type { Profile, UserRole } from "@/lib/types";
 type AppShellProps = {
   profile: Profile;
   children: ReactNode;
+  embedded?: boolean;
 };
 
 type NavigationLink = {
@@ -150,7 +151,7 @@ const DemoTour = dynamic(() => import("@/components/demo-tour").then((mod) => mo
   loading: () => null
 });
 
-export function AppShell({ profile, children }: AppShellProps) {
+export function AppShell({ profile, children, embedded = false }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { language, t } = useLanguage();
@@ -169,6 +170,8 @@ export function AppShell({ profile, children }: AppShellProps) {
     if (link.permissions) return hasAnyPermission(profile.role, link.permissions);
     return true;
   });
+
+  if (embedded) return <main className="min-h-screen bg-[#f5f7fa] p-3 sm:p-5">{children}</main>;
 
   async function signOut() {
     await supabase.auth.signOut();
