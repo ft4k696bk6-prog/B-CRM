@@ -172,8 +172,15 @@ export async function PATCH(request: Request) {
   const { profile, supabaseAdmin } = auth; const body = await request.json() as Record<string, unknown>; const id = text(body,"id");
   const dbResult = await supabaseAdmin.from("contracts").select("*,creator:profiles!contracts_created_by_fkey(manager_id),tasks:contract_tasks(*)").eq("id",id).eq("crm_environment",profile.crm_environment).single();
   let contract = dbResult.data as ContractRow | null;
-  const fallbackMode = Boolean(dbResult.error?.message?.includes("contracts"));
-  if (fallbackMode) contract = (await fallbackContracts(supabaseAdmin, profile.crm_environment)).find((item) => item.id === id) || null;
+  let fallbackMode = Boolean(dbResult.error?.message?.includes("contracts"));
+  if (!contract) {
+    const [historyContracts, legacyContracts] = await Promise.all([
+      fallbackContracts(supabaseAdmin, profile.crm_environment),
+      legacyLeadContracts(supabaseAdmin, profile.crm_environment)
+    ]);
+    contract = [...historyContracts, ...legacyContracts].find((item) => item.id === id) || null;
+    fallbackMode = Boolean(contract);
+  }
   if (!contract) return NextResponse.json({ error: "Nie znaleziono umowy." }, { status: 404 });
   const canEdit = ["owner","admin"].includes(profile.role) || (profile.role === "menadzer" && (contract.created_by === profile.id || contract.creator?.manager_id === profile.id));
   if (!canEdit) return NextResponse.json({ error: "Po zapisaniu umowę edytuje przełożony lub administrator." }, { status: 403 });
