@@ -182,8 +182,9 @@ export async function PATCH(request: Request) {
     fallbackMode = Boolean(contract);
   }
   if (!contract) return NextResponse.json({ error: "Nie znaleziono umowy." }, { status: 404 });
-  const canEdit = ["owner","admin"].includes(profile.role) || (profile.role === "menadzer" && (contract.created_by === profile.id || contract.creator?.manager_id === profile.id));
-  if (!canEdit) return NextResponse.json({ error: "Po zapisaniu umowę edytuje przełożony lub administrator." }, { status: 403 });
+  const canManageContract = ["owner","admin"].includes(profile.role) || (profile.role === "menadzer" && (contract.created_by === profile.id || contract.creator?.manager_id === profile.id));
+  const isSalespersonContract = profile.role === "handlowiec" && contract.created_by === profile.id;
+  if (!canManageContract && !isSalespersonContract) return NextResponse.json({ error: "Nie masz dostępu do edycji tej umowy." }, { status: 403 });
   if (text(body,"process_status")) {
     const nextStatus = text(body,"process_status") as ContractStatus;
     if (!["owner","admin","menadzer"].includes(profile.role)) return NextResponse.json({ error: "Brak uprawnień do zmiany procesu." }, { status: 403 });
@@ -204,6 +205,7 @@ export async function PATCH(request: Request) {
     else { await supabaseAdmin.from("contract_tasks").update({ completed, completed_at: completed ? new Date().toISOString() : null, completed_by: completed ? profile.id : null, updated_at: new Date().toISOString() }).eq("contract_id",id).eq("task_key",taskKey); await supabaseAdmin.from("contract_task_history").insert({ contract_id:id, task_key:taskKey, completed, changed_by:profile.id }); }
   }
   if (Object.prototype.hasOwnProperty.call(body,"installation_at")) {
+    if (!canManageContract) return NextResponse.json({ error: "Termin montażu zmienia przełożony lub administrator." }, { status: 403 });
     const installationAt = text(body,"installation_at") || null;
     if (fallbackMode) { contract.installation_at = installationAt; contract.updated_at = new Date().toISOString(); }
     else await supabaseAdmin.from("contracts").update({ installation_at: installationAt, updated_at:new Date().toISOString() }).eq("id",id);
