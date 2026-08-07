@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { CalendarClock, ExternalLink, Phone } from "lucide-react";
+import { useEffect, useState } from "react";
+import { CalendarClock, ExternalLink, Phone, X } from "lucide-react";
 import { formatDateTime } from "@/lib/date";
 import type { Lead } from "@/lib/types";
 import { StatusBadge } from "@/components/status-badge";
@@ -54,6 +54,14 @@ export function LeadTable({
   showAssignee = false
 }: LeadTableProps) {
   const { language } = useLanguage();
+  const [openLeadId, setOpenLeadId] = useState<string | null>(null);
+  useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      if (event.origin === window.location.origin && event.data?.type === "bcrm:lead-updated") window.dispatchEvent(new Event("leads:changed"));
+    }
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
   const allSelected = leads.length > 0 && leads.every((lead) => selectedIds.includes(lead.id));
   const labels = language === "en"
     ? {
@@ -150,14 +158,13 @@ export function LeadTable({
                   </td>
                 ) : null}
                 <td className="px-3 py-3 align-top break-words">
-                  <Link
-                    href={`/leads/${lead.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    type="button"
+                    onClick={() => setOpenLeadId(lead.id)}
                     className="font-semibold text-ink hover:text-sky"
                   >
                     {lead.full_name}
-                  </Link>
+                  </button>
                   <div className="mt-1 text-xs text-muted">
                     {formatSource(lead.source, language)} · {lead.postal_code || labels.noCode}
                   </div>
@@ -197,15 +204,14 @@ export function LeadTable({
                   {formatDateTime(lead.created_at)}
                 </td>
                 <td className="px-3 py-3 align-top break-words">
-                  <Link
-                    href={`/leads/${lead.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    type="button"
+                    onClick={() => setOpenLeadId(lead.id)}
                     className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-line text-muted transition hover:border-ink hover:text-ink"
                     title={labels.openLeadCard}
                   >
                     <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                  </Link>
+                  </button>
                 </td>
               </tr>
             ))}
@@ -218,9 +224,9 @@ export function LeadTable({
           <article key={lead.id} className="rounded-lg border border-line bg-white p-4 shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <Link href={`/leads/${lead.id}`} target="_blank" rel="noopener noreferrer" className="text-base font-black text-ink hover:text-sky">
+                <button type="button" onClick={() => setOpenLeadId(lead.id)} className="text-base font-black text-ink hover:text-sky">
                   {lead.full_name}
-                </Link>
+                </button>
                 <div className="mt-1 text-xs font-semibold text-muted">
                   {formatSource(lead.source, language)} · {lead.postal_code || labels.noCode}
                 </div>
@@ -260,10 +266,10 @@ export function LeadTable({
               </div>
             </div>
 
-            <Link href={`/leads/${lead.id}`} target="_blank" rel="noopener noreferrer" className="btn-secondary mt-4 w-full">
+            <button type="button" onClick={() => setOpenLeadId(lead.id)} className="btn-secondary mt-4 w-full">
               <ExternalLink className="h-4 w-4" aria-hidden="true" />
               {labels.openCard}
-            </Link>
+            </button>
           </article>
         ))}
       </div>
@@ -271,6 +277,12 @@ export function LeadTable({
       {leads.length === 0 ? (
         <EmptyState title={labels.noLeads} description={labels.noLeadsDescription} className="m-3" />
       ) : null}
+      {openLeadId ? <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-2 backdrop-blur-sm" onClick={() => { setOpenLeadId(null); window.dispatchEvent(new Event("leads:changed")); }}>
+        <div className="relative h-[96vh] w-full max-w-6xl overflow-hidden rounded-xl bg-white shadow-2xl" onClick={(event) => event.stopPropagation()}>
+          <button type="button" className="btn-icon absolute right-3 top-3 z-20 bg-white shadow" onClick={() => { setOpenLeadId(null); window.dispatchEvent(new Event("leads:changed")); }} aria-label="Zamknij"><X className="h-5 w-5" /></button>
+          <iframe title="Karta leada" src={`/leads/${openLeadId}?embedded=1`} className="h-full w-full border-0" />
+        </div>
+      </div> : null}
     </div>
   );
 }

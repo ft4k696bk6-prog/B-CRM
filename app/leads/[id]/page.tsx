@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   CalendarClock,
@@ -60,6 +60,8 @@ function getSalesStatusPath(lead: Lead): LeadStatus[] {
 
 export default function LeadDetailsPage() {
   const params = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const embedded = searchParams.get("embedded") === "1";
   const router = useRouter();
   const { loading, profile, session } = useAuth();
   const [lead, setLead] = useState<Lead | null>(null);
@@ -184,10 +186,11 @@ export default function LeadDetailsPage() {
     loadLead();
     loadHistory();
     if (canManageLeads(profile.role)) loadSalespeople();
-  }, [profile, params.id]);
+  }, [profile?.id, profile?.crm_environment, params.id]);
 
   async function refresh() {
     await Promise.all([loadLead(), loadHistory()]);
+    if (embedded && window.parent !== window) window.parent.postMessage({ type: "bcrm:lead-updated", leadId: params.id }, window.location.origin);
   }
 
   async function saveStatus(event: FormEvent<HTMLFormElement>) {
@@ -405,13 +408,13 @@ export default function LeadDetailsPage() {
     : [];
 
   return (
-    <AppShell profile={profile}>
+    <AppShell profile={profile} embedded={embedded}>
       <div className="grid gap-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <Link href={backHref} className="btn-secondary w-fit">
+          {!embedded ? <Link href={backHref} className="btn-secondary w-fit">
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Wróć
-          </Link>
+          </Link> : <span />}
           {lead ? <StatusBadge status={lead.status} /> : null}
         </div>
 

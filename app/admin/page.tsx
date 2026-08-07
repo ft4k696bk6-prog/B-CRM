@@ -293,6 +293,13 @@ export default function AdminDashboardPage() {
     loadLeads();
   }, [loadLeads, salespeopleReady]);
 
+  useEffect(() => {
+    if (!salespeopleReady) return;
+    const refreshCurrentView = () => { void Promise.all([loadLeads(), loadStats()]); };
+    window.addEventListener("leads:changed", refreshCurrentView);
+    return () => window.removeEventListener("leads:changed", refreshCurrentView);
+  }, [loadLeads, loadStats, salespeopleReady]);
+
   const selectedCount = selectedIds.length;
   const assignmentCandidateCount = leads.filter(
     (lead) => !lead.assigned_to
