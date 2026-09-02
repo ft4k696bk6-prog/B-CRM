@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   BarChart3,
   Calculator,
@@ -110,6 +110,7 @@ const navigationLinks: NavigationLink[] = [
     groupKey: "operations",
     icon: FolderKanban,
     permissions: ["operations:view"],
+    allowedRoles: ["owner", "admin", "menadzer", "finance", "viewer", "ksiegowosc", "logistyk", "monter"],
     tourId: "tour-nav-process"
   },
   {
@@ -159,11 +160,14 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
   const [returningLeads, setReturningLeads] = useState(false);
   const [returnConfirmOpen, setReturnConfirmOpen] = useState(false);
   const [shellNotice, setShellNotice] = useState<{ tone: "success" | "danger"; message: string } | null>(null);
+  const [mandatoryLeadIds, setMandatoryLeadIds] = useState<string[]>([]);
+  const [mandatoryLoading, setMandatoryLoading] = useState(profile.role === "handlowiec");
   const homeHref = homePathForRole(profile.role);
   const roleLabel = language === "en" ? roleLabelsEn[profile.role] : ROLE_LABELS[profile.role];
   const isDemoProfile = demoModeEnabled && isDemoScope(profile.crm_environment);
   const canRunDemoTour = isDemoProfile && isSystemAdminRole(profile.role);
   const links = navigationLinks.filter((link) => {
+    if ((mandatoryLoading || mandatoryLeadIds.length > 0) && profile.role === "handlowiec" && link.href !== "/sales") return false;
     if (link.salesOnly && !isSalesRole(profile.role)) return false;
     if (link.hideWhenAnyPermission && hasAnyPermission(profile.role, link.hideWhenAnyPermission)) return false;
     if (link.allowedRoles && !link.allowedRoles.includes(profile.role) && !isSystemAdminRole(profile.role)) return false;
@@ -171,7 +175,38 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
     return true;
   });
 
-  if (embedded) return <main className="min-h-screen bg-[#f5f7fa] p-3 sm:p-5">{children}</main>;
+  useEffect(() => {
+    if (profile.role !== "handlowiec") {
+      setMandatoryLoading(false);
+      return;
+    }
+    let active = true;
+    async function loadMandatoryQueue() {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session?.access_token) return;
+      const response = await fetch("/api/leads/mandatory-queue", { headers: { Authorization: `Bearer ${data.session.access_token}` }, cache: "no-store" });
+      const result = (await response.json().catch(() => ({}))) as { leads?: Array<{ id: string }> };
+      if (active) {
+        setMandatoryLeadIds(response.ok ? (result.leads || []).map((lead) => lead.id) : []);
+        setMandatoryLoading(false);
+      }
+    }
+    loadMandatoryQueue();
+    window.addEventListener("leads:changed", loadMandatoryQueue);
+    return () => { active = false; window.removeEventListener("leads:changed", loadMandatoryQueue); };
+  }, [profile.id, profile.role, pathname]);
+
+  const mandatoryPathAllowed = pathname === "/sales" || mandatoryLeadIds.some((id) => pathname === `/leads/${id}`);
+  const salesContractListBlocked = profile.role === "handlowiec" && (pathname === "/realizacja" || pathname === "/realizacja/umowy");
+  const gateContent = profile.role === "handlowiec" && mandatoryLoading
+    ? <div className="app-card text-sm font-semibold text-muted">Sprawdzanie obowiązkowej kolejki…</div>
+    : profile.role === "handlowiec" && mandatoryLeadIds.length > 0 && !mandatoryPathAllowed
+      ? <div className="app-card mx-auto max-w-2xl"><Alert tone="danger"><strong>Najpierw obsłuż zaległą kolejkę.</strong><br />Masz {mandatoryLeadIds.length} zaległych call-backów lub spotkań. Pozostałe moduły odblokują się po zapisaniu wyniku ostatniej pozycji.</Alert><Link href="/sales" className="btn-primary mt-4 min-h-11">Przejdź do kolejki</Link></div>
+      : salesContractListBlocked
+        ? <div className="app-card mx-auto max-w-2xl"><Alert tone="info"><strong>Umowy handlowca są dostępne w prostym widoku „Moje umowy”.</strong><br />Znajdziesz tam klienta, numer umowy i bieżący etap bez danych operacyjnych.</Alert><Link href="/sales" className="btn-primary mt-4 min-h-11">Przejdź do moich umów</Link></div>
+        : children;
+
+  if (embedded) return <main className="min-h-screen bg-[#f5f7fa] p-3 sm:p-5">{gateContent}</main>;
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -309,7 +344,7 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
               <div className="text-sm font-semibold">{profile.full_name}</div>
               <div className="text-xs text-muted">{profile.email}</div>
             </div>
-            {isSalesRole(profile.role) ? (
+            {isSalesRole(profile.role) && !mandatoryLoading && mandatoryLeadIds.length === 0 ? (
               <button
                 type="button"
                 onClick={() => setReturnConfirmOpen(true)}
@@ -399,7 +434,7 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
               {shellNotice.message}
             </Alert>
           ) : null}
-          {children}
+          {gateContent}
         </main>
       </div>
 

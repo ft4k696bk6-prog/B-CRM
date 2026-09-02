@@ -1,5 +1,8 @@
+"use client";
+
 import { AlertCircle, CheckCircle2, Info, X, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 
 type Tone = "default" | "success" | "warning" | "danger" | "info";
 
@@ -158,8 +161,6 @@ export function ModalShell({
   onClose: () => void;
   size?: "sm" | "md" | "lg" | "xl";
 }) {
-  if (!open) return null;
-
   const sizeClass = {
     sm: "max-w-md",
     md: "max-w-2xl",
@@ -168,21 +169,39 @@ export function ModalShell({
   }[size];
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-[#101722]/70 px-3 py-4 backdrop-blur-sm sm:px-4">
-      <section className={cx("max-h-[92vh] w-full overflow-hidden rounded-lg border border-line bg-white shadow-soft", sizeClass)}>
+    <Dialog.Root open={open} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-[#101722]/70 backdrop-blur-sm data-[state=closed]:animate-out data-[state=open]:animate-in" />
+        <Dialog.Content
+          className={cx(
+            "fixed left-1/2 top-1/2 z-[51] max-h-[92vh] w-[calc(100%-1.5rem)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg border border-line bg-white shadow-soft outline-none transition-[opacity,transform] duration-200 ease-out data-[state=closed]:scale-[0.98] data-[state=closed]:opacity-0 data-[state=open]:scale-100 data-[state=open]:opacity-100 sm:w-[calc(100%-2rem)]",
+            sizeClass
+          )}
+          onOpenAutoFocus={(event) => {
+            const content = event.currentTarget as HTMLElement | null;
+            const target = content?.querySelector<HTMLElement>("input, textarea, select, button");
+            if (target) {
+              event.preventDefault();
+              target.focus();
+            }
+          }}
+        >
         <div className="flex items-start justify-between gap-4 border-b border-line px-4 py-4 sm:px-5">
           <div className="min-w-0">
-            <h2 className="text-lg font-black text-ink">{title}</h2>
-            {description ? <p className="mt-1 text-sm leading-6 text-muted">{description}</p> : null}
+            <Dialog.Title className="text-lg font-black text-ink">{title}</Dialog.Title>
+            {description ? <Dialog.Description className="mt-1 text-sm leading-6 text-muted">{description}</Dialog.Description> : null}
           </div>
-          <button type="button" onClick={onClose} className="btn-icon" aria-label="Zamknij">
-            <X className="h-4 w-4" aria-hidden="true" />
-          </button>
+          <Dialog.Close asChild>
+            <button type="button" className="btn-icon" aria-label="Zamknij">
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </Dialog.Close>
         </div>
         <div className="max-h-[calc(92vh-132px)] overflow-y-auto px-4 py-4 sm:px-5">{children}</div>
         {footer ? <div className="border-t border-line px-4 py-3 sm:px-5">{footer}</div> : null}
-      </section>
-    </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
 

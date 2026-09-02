@@ -262,7 +262,7 @@ export default function SettingsPage() {
           </button>
         </form>
 
-        <form onSubmit={save} className="app-card max-w-2xl">
+        {profile.role === "owner" || profile.role === "admin" ? <form onSubmit={save} className="app-card max-w-2xl">
           <SectionHeader
             icon={Settings}
             title="Ustawienia oferty"
@@ -272,8 +272,7 @@ export default function SettingsPage() {
           />
 
           <div className="grid gap-3 sm:grid-cols-2">
-            {profile.role === "owner" || profile.role === "admin" ? (
-              <label>
+            <label>
                 <span className="label">Marża bazowa firmy netto</span>
                 <input
                   className="field"
@@ -282,8 +281,7 @@ export default function SettingsPage() {
                   min={0}
                   onChange={(event) => setAdminMargin(Number(event.target.value))}
                 />
-              </label>
-            ) : null}
+            </label>
 
             <label>
               <span className="label">Moja marża ofertowa netto</span>
@@ -307,7 +305,7 @@ export default function SettingsPage() {
             <Save className="h-4 w-4" aria-hidden="true" />
             Zapisz
           </button>
-        </form>
+        </form> : null}
       </div>
     </AppShell>
   );

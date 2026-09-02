@@ -19,6 +19,7 @@ export const CONTRACT_STATUSES = [
   ["settlement", "Do rozliczenia"], ["settled", "Rozliczone"], ["resigned", "Rezygnacja"], ["paused", "Wstrzymana"]
 ] as const;
 export type ContractStatus = (typeof CONTRACT_STATUSES)[number][0];
+export type ContractSubmissionStatus = "draft" | "submitted";
 export const ACTIVE_CONTRACT_STATUSES: ContractStatus[] = ["incomplete","verification","equipment_to_order","installation_to_schedule","installation_scheduled","installation_confirmation","settlement"];
 export const CONTRACT_TASKS = [
   ["zamowic_sprzet", "Zamówić sprzęt"], ["umowic_montaz", "Umówić montaż"],
@@ -41,6 +42,7 @@ export type ContractRecord = {
   crm_environment: string; created_at: string; updated_at: string;
   creator?: { id: string; full_name: string; email: string | null; manager_id: string | null } | null;
   tasks?: ContractTask[];
+  submission_status?: ContractSubmissionStatus; submitted_at?: string | null;
   process_status?: ContractStatus; process_note?: string | null; is_process_visible?: boolean;
   resignation_note?: string | null; resigned_at?: string | null;
   management_notes?: Array<{ id: string; author: string; content: string; created_at: string }>;
@@ -61,3 +63,20 @@ export function contractProgress(contract: Pick<ContractRecord,"process_status">
 }
 
 export function contractStatusLabel(status?: ContractStatus) { return CONTRACT_STATUSES.find(([key]) => key === status)?.[1] || "Do weryfikacji"; }
+export function contractDisplayStatus(contract: Pick<ContractRecord, "submission_status" | "process_status">) {
+  return contract.submission_status === "draft" ? "Wersja robocza" : contractStatusLabel(contract.process_status);
+}
+
+export function canViewContractForRole(input: {
+  role: string;
+  profileId: string;
+  createdBy: string;
+  creatorManagerId?: string | null;
+  submissionStatus: ContractSubmissionStatus;
+}) {
+  if (input.role === "owner" || input.role === "admin") return true;
+  if (input.role === "handlowiec") return input.createdBy === input.profileId;
+  if (input.submissionStatus !== "submitted") return false;
+  if (input.role === "menadzer") return input.createdBy === input.profileId || input.creatorManagerId === input.profileId;
+  return true;
+}

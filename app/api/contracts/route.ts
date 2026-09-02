@@ -1,23 +1,27 @@
 import { NextResponse } from "next/server";
 import { requireApiProfile } from "@/lib/server-auth";
-import { ACTIVE_CONTRACT_STATUSES, CONTRACT_TASKS, type ContractStatus, FINANCING_OPTIONS, MOUNTING_OPTIONS, PRODUCT_OPTIONS } from "@/lib/contracts";
-import { canManageLeads } from "@/lib/roles";
+import { ACTIVE_CONTRACT_STATUSES, canViewContractForRole, CONTRACT_TASKS, type ContractStatus, type ContractSubmissionStatus, FINANCING_OPTIONS, MOUNTING_OPTIONS, PRODUCT_OPTIONS } from "@/lib/contracts";
 
 const contractSelect = "*,creator:profiles!contracts_created_by_fkey(id,full_name,email,manager_id),tasks:contract_tasks(*),files:contract_files(*)";
 
 type ContractRow = Record<string, unknown> & {
   id: string; lead_id: string; created_by: string; contract_number: string; customer_name: string;
   creator?: { manager_id?: string | null } | null; tasks?: Array<Record<string, unknown>>;
-  installation_at?: string | null; updated_at?: string; process_status?: ContractStatus; is_process_visible?: boolean; management_notes?: Array<Record<string, unknown>>; files?: Array<Record<string, unknown>>;
+  installation_at?: string | null; updated_at?: string; process_status?: ContractStatus; submission_status?: ContractSubmissionStatus; submitted_at?: string | null; is_process_visible?: boolean; management_notes?: Array<Record<string, unknown>>; files?: Array<Record<string, unknown>>;
 };
 
 function text(body: Record<string, unknown>, key: string) { return typeof body[key] === "string" ? body[key].trim() : ""; }
 function number(body: Record<string, unknown>, key: string) { const value = Number(body[key]); return Number.isFinite(value) ? value : null; }
 function bool(body: Record<string, unknown>, key: string) { return body[key] === true; }
+function submissionStatusOf(contract: ContractRow): ContractSubmissionStatus {
+  return contract.submission_status || (contract.process_status === "incomplete" ? "draft" : "submitted");
+}
 
 function normalizeContract(contract: ContractRow): ContractRow {
   return {
     ...contract,
+    submission_status: submissionStatusOf(contract),
+    submitted_at: contract.submitted_at || null,
     files: (contract.files || []).map((file) => ({
       ...file,
       name: file.name || file.file_name,
@@ -83,9 +87,13 @@ async function legacyLeadContracts(supabaseAdmin: ReturnType<typeof import("@/li
 }
 
 function visibleContractsFor(profile: { id: string; role: string }, contracts: ContractRow[], teamIds: Set<string>) {
-  if (profile.role === "handlowiec") return contracts.filter((contract) => contract.created_by === profile.id);
-  if (profile.role === "menadzer") return contracts.filter((contract) => teamIds.has(contract.created_by));
-  return contracts;
+  return contracts.filter((contract) => canViewContractForRole({
+    role: profile.role,
+    profileId: profile.id,
+    createdBy: contract.created_by,
+    creatorManagerId: teamIds.has(contract.created_by) ? profile.id : contract.creator?.manager_id,
+    submissionStatus: submissionStatusOf(contract)
+  }));
 }
 
 export async function GET(request: Request) {
@@ -126,7 +134,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const auth = await requireApiProfile(request); if ("error" in auth) return auth.error;
   const { profile, supabaseAdmin } = auth;
-  if (!canManageLeads(profile.role) && profile.role !== "handlowiec") return NextResponse.json({ error: "Brak uprawnień." }, { status: 403 });
+  if (!["owner", "admin", "handlowiec"].includes(profile.role)) return NextResponse.json({ error: "Brak uprawnień." }, { status: 403 });
   const body = await request.json() as Record<string, unknown>;
   const required = ["lead_id", "contract_number", "signed_at", "customer_name", "phone", "email", "postal_code", "city", "street", "house_number"];
   if (required.some((key) => !text(body, key))) return NextResponse.json({ error: "Uzupełnij wszystkie obowiązkowe dane klienta i umowy." }, { status: 400 });
@@ -147,7 +155,7 @@ export async function POST(request: Request) {
     has_inverter: product !== "ME" || bool(body,"has_inverter"), inverter_power_kw: (product !== "ME" || bool(body,"has_inverter")) ? number(body,"inverter_power_kw") : null,
     mounting_locations: locations, multiple_mounting_locations: bool(body,"multiple_mounting_locations"), gross_amount: number(body,"gross_amount"),
     backup_power: bool(body,"backup_power"), optimizer_count: number(body,"optimizer_count") || 0, surge_protection: bool(body,"surge_protection"), grounding: bool(body,"grounding"),
-    additional_notes: text(body,"additional_notes") || null, created_by: profile.id, crm_environment: profile.crm_environment, process_status: "incomplete" as ContractStatus, is_process_visible: true, management_notes: [], files: []
+    additional_notes: text(body,"additional_notes") || null, created_by: profile.id, crm_environment: profile.crm_environment, submission_status: "draft" as ContractSubmissionStatus, submitted_at: null, process_status: "incomplete" as ContractStatus, is_process_visible: false, management_notes: [], files: []
   };
   if (!payload.gross_amount || (product.includes("PV") && (!payload.pv_power_kwp || !payload.panels_count || !payload.panel_power_wp || !payload.inverter_power_kw)) || (product.includes("ME") && !payload.storage_capacity_kwh) || (financing !== "gotowka" && !payload.credit_amount)) return NextResponse.json({ error: "Uzupełnij wymagane moce, ilości oraz kwoty." }, { status: 400 });
   const insertResult = await supabaseAdmin.from("contracts").insert(payload).select().single();
@@ -162,8 +170,6 @@ export async function POST(request: Request) {
     await supabaseAdmin.from("contract_tasks").insert(CONTRACT_TASKS.map(([task_key]) => ({ contract_id: contract!.id, task_key })));
   }
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-  const { error: leadError } = await supabaseAdmin.from("leads").update({ status: "Umowa", assigned_to: null, contract_number: payload.contract_number, callback_at: null, meeting_at: null }).eq("id", leadId);
-  if (leadError) return NextResponse.json({ error: leadError.message }, { status: 400 });
   return NextResponse.json({ contract }, { status: 201 });
 }
 
@@ -185,7 +191,18 @@ export async function PATCH(request: Request) {
   const canManageContract = ["owner","admin"].includes(profile.role) || (profile.role === "menadzer" && (contract.created_by === profile.id || contract.creator?.manager_id === profile.id));
   const isSalespersonContract = profile.role === "handlowiec" && contract.created_by === profile.id;
   if (!canManageContract && !isSalespersonContract) return NextResponse.json({ error: "Nie masz dostępu do edycji tej umowy." }, { status: 403 });
+  const submissionStatus = submissionStatusOf(contract);
+  if (profile.role === "menadzer" && submissionStatus === "draft") return NextResponse.json({ error: "Menadżer nie ma dostępu do wersji roboczych umów zespołu." }, { status: 403 });
+  if (text(body, "action") === "submit") {
+    if (submissionStatus === "submitted") return GET(new Request(`${new URL(request.url).origin}/api/contracts?id=${id}`, { headers: request.headers }));
+    if (profile.role === "menadzer") return NextResponse.json({ error: "Wersję roboczą wysyła jej autor albo administrator." }, { status: 403 });
+    if (fallbackMode) return NextResponse.json({ error: "Uruchom migrację 18_contract_drafts_and_submission.sql przed wysłaniem umowy." }, { status: 409 });
+    const { error: submitError } = await supabaseAdmin.rpc("submit_contract", { p_contract_id: id, p_actor_id: profile.id });
+    if (submitError) return NextResponse.json({ error: submitError.message }, { status: 400 });
+    return GET(new Request(`${new URL(request.url).origin}/api/contracts?id=${id}`, { headers: request.headers }));
+  }
   if (text(body,"process_status")) {
+    if (submissionStatus === "draft") return NextResponse.json({ error: "Najpierw wyślij kompletną umowę do weryfikacji." }, { status: 409 });
     const nextStatus = text(body,"process_status") as ContractStatus;
     if (!["owner","admin","menadzer"].includes(profile.role)) return NextResponse.json({ error: "Brak uprawnień do zmiany procesu." }, { status: 403 });
     if (![...ACTIVE_CONTRACT_STATUSES,"settled","resigned","paused"].includes(nextStatus)) return NextResponse.json({ error: "Niepoprawny etap procesu." }, { status: 400 });
@@ -212,6 +229,7 @@ export async function PATCH(request: Request) {
     if (installationAt) await supabaseAdmin.from("calendar_events").upsert({ id, title:`Montaż — ${contract.customer_name}`, description:`Umowa ${contract.contract_number}`, starts_at:installationAt, owner_id:profile.id, owner_role:profile.role, visibility:"internal", created_by:profile.id, crm_environment:profile.crm_environment });
   }
   if (body.contract_data && typeof body.contract_data === "object") {
+    if (isSalespersonContract && submissionStatus !== "draft") return NextResponse.json({ error: "Po wysłaniu umowy handlowiec nie może już zmieniać jej danych." }, { status: 409 });
     const source = body.contract_data as Record<string, unknown>;
     const editable = ["contract_number","signed_at","customer_name","phone","email","postal_code","city","street","house_number","financing","credit_amount","product_type","pv_power_kwp","storage_capacity_kwh","panel_power_wp","panels_count","has_inverter","inverter_power_kw","mounting_locations","multiple_mounting_locations","gross_amount","backup_power","optimizer_count","surge_protection","grounding","additional_notes"];
     const next = Object.fromEntries(editable.filter((key) => Object.prototype.hasOwnProperty.call(source,key)).map((key) => [key, source[key]]));
