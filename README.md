@@ -110,6 +110,7 @@ SQL files are stored in `supabase/`. Apply them in order when creating a fresh S
 - `supabase/05_roles_users_demo.sql` — demo roles and users.
 - `supabase/06_manager_hierarchy.sql` — manager/team hierarchy.
 - `supabase/07_roles_permissions_security.sql` — role and permission hardening.
+- `supabase/18_contract_drafts_and_submission.sql` — contract drafts and atomic submission validation.
 - `supabase/sample-data.sql` and `supabase/seed_demo_users.sql` — optional demo data.
 
 ## Documentation

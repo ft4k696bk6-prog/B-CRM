@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { normalizeRole } from "@/lib/roles";
 import { normalizeCrmScope } from "@/lib/scope";
 import type { CrmDataScope, Profile, UserRole } from "@/lib/types";
+import { canAccessAssignedLead } from "@/lib/lead-access";
 
 export type ApiProfile = Pick<
   Profile,
@@ -99,6 +100,28 @@ export function canAccessLead(
   lead: { assigned_to: string | null; crm_environment: CrmDataScope | string }
 ) {
   if (lead.crm_environment !== profile.crm_environment) return false;
-  if (profile.role === "owner" || profile.role === "admin" || profile.role === "menadzer") return true;
-  return lead.assigned_to === profile.id;
+  return canAccessAssignedLead({ role: profile.role, profileId: profile.id, assignedTo: lead.assigned_to });
+}
+
+export async function managerTeamIds(
+  supabaseAdmin: ReturnType<typeof getServiceClient>,
+  profile: Pick<ApiProfile, "id" | "crm_environment">
+) {
+  const { data, error } = await supabaseAdmin
+    .from("profiles")
+    .select("id")
+    .eq("crm_environment", profile.crm_environment)
+    .eq("manager_id", profile.id);
+  if (error) throw new Error(error.message);
+  return new Set([profile.id, ...(data || []).map((person) => person.id)]);
+}
+
+export async function canAccessLeadWithTeam(
+  supabaseAdmin: ReturnType<typeof getServiceClient>,
+  profile: Pick<ApiProfile, "id" | "role" | "crm_environment">,
+  lead: { assigned_to: string | null; crm_environment: CrmDataScope | string }
+) {
+  if (lead.crm_environment !== profile.crm_environment) return false;
+  const teamIds = profile.role === "menadzer" ? await managerTeamIds(supabaseAdmin, profile) : undefined;
+  return canAccessAssignedLead({ role: profile.role, profileId: profile.id, assignedTo: lead.assigned_to, managerTeamIds: teamIds });
 }

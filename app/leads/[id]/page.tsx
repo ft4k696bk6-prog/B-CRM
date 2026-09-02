@@ -80,6 +80,7 @@ export default function LeadDetailsPage() {
   const [voivodeship, setVoivodeship] = useState("");
   const [county, setCounty] = useState("");
   const [comment, setComment] = useState("");
+  const [returnNote, setReturnNote] = useState("");
   const [selectedAssignee, setSelectedAssignee] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -207,6 +208,36 @@ export default function LeadDetailsPage() {
     if (!availableStatuses.includes(status)) {
       setError("Ten status nie jest dostępny na obecnym etapie leada.");
       setBusy(false);
+      return;
+    }
+
+    if (profile.role === "handlowiec" && status !== "Po spotkaniu" && (status !== lead.status || status === "Call back" || status === "Spotkanie")) {
+      if (!session?.access_token) {
+        setError("Sesja wygasła. Zaloguj się ponownie.");
+        setBusy(false);
+        return;
+      }
+      const outcome = status === "Call back" ? "callback" : status === "Spotkanie" ? "meeting" : status === "Nie odebrał" ? "no_answer" : status === "Rezygnacja" ? "resignation" : status === "Umowa" ? "contract" : null;
+      if (!outcome) {
+        setError("Ta zmiana nie jest dostępna na obecnym etapie leada.");
+        setBusy(false);
+        return;
+      }
+      const response = await fetch("/api/leads/outcome", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ leadId: lead.id, outcome, callbackAt, meetingAt, address: meetingAddress, note: outcome === "resignation" ? resignationReason : meetingNote })
+      });
+      const result = (await response.json().catch(() => ({}))) as { error?: string; redirect?: string };
+      if (!response.ok) {
+        setError(result.error || "Nie udało się zapisać wyniku.");
+        setBusy(false);
+        return;
+      }
+      await refresh();
+      window.dispatchEvent(new Event("leads:changed"));
+      setBusy(false);
+      if (result.redirect) router.push(result.redirect);
       return;
     }
 
@@ -341,13 +372,18 @@ export default function LeadDetailsPage() {
     setBusy(true);
     setError("");
 
-    const response = await fetch("/api/leads/return", {
+    if (isSalesRole(profile.role) && !returnNote.trim()) {
+      setError("Zwrot wymaga notatki.");
+      setBusy(false);
+      return;
+    }
+    const response = await fetch(isSalesRole(profile.role) ? "/api/leads/outcome" : "/api/leads/return", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.access_token}`
       },
-      body: JSON.stringify({ leadIds: [lead.id] })
+      body: JSON.stringify(isSalesRole(profile.role) ? { leadId: lead.id, outcome: "return", note: returnNote.trim() } : { leadIds: [lead.id] })
     });
 
     const result = (await response.json().catch(() => ({}))) as { error?: string };
@@ -623,7 +659,7 @@ export default function LeadDetailsPage() {
                         />
                       </label>
                       <div className="sm:col-span-2 rounded-md border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
-                        Umowę PDF i zdjęcia dodaj niżej w sekcji plików leada. Po zapisaniu statusu Umowa klient trafi do zakładki Umowy i proces.
+                        Po wybraniu „Umowa” otworzy się wersja robocza. Lead trafi do realizacji dopiero po dodaniu PDF-u, zdjęcia i użyciu „Wyślij komplet”.
                       </div>
                     </>
                   ) : null}
@@ -646,6 +682,7 @@ export default function LeadDetailsPage() {
                     <Save className="h-4 w-4" aria-hidden="true" />
                     Zapisz
                   </button>
+                  {isSalesRole(profile.role) ? <label className="basis-full"><span className="label">Notatka wymagana przy zwrocie</span><textarea className="field min-h-20" value={returnNote} onChange={(event) => setReturnNote(event.target.value)} placeholder="Dlaczego lead wraca do puli?" /></label> : null}
                   <button
                     type="button"
                     onClick={returnLead}

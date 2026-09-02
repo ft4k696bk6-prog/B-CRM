@@ -36,6 +36,7 @@ import {
 } from "@/lib/admin-leads";
 import { LEAD_STATUSES } from "@/lib/constants";
 import { hasPermission } from "@/lib/permissions";
+import { selectLeadRange } from "@/lib/lead-selection";
 import { canManageLeads, isManagerRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { AdminLeadFilters, Lead, LeadStatus, Profile, SortOption } from "@/lib/types";
@@ -88,8 +89,8 @@ export default function AdminDashboardPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [showTeamResults, setShowTeamResults] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectionAnchorId, setSelectionAnchorId] = useState<string | null>(null);
   const [selectedSalesperson, setSelectedSalesperson] = useState("");
-  const [assignmentBatchSize, setAssignmentBatchSize] = useState<number>(25);
   const [leadBucket, setLeadBucket] = useState<"all" | "active" | "resignations" | "contracts">("active");
   const [busy, setBusy] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -205,6 +206,7 @@ export default function AdminDashboardPage() {
     setLoadedLeadCount(page.length);
     setTotalLeadCount(count ?? page.length);
     setSelectedIds([]);
+    setSelectionAnchorId(null);
     setBusy(false);
   }, [buildLeadQuery, crmEnvironment]);
 
@@ -243,10 +245,6 @@ export default function AdminDashboardPage() {
   }, [loadLeads, loadStats, salespeopleReady]);
 
   const selectedCount = selectedIds.length;
-  const assignmentCandidateCount = leads.filter(
-    (lead) => !lead.assigned_to
-  ).length;
-
   const activeFilterCount = useMemo(
     () => Object.values(filters).filter((value) => Array.isArray(value) ? value.length > 0 : Boolean(value)).length,
     [filters]
@@ -305,15 +303,21 @@ export default function AdminDashboardPage() {
   }
 
   function toggleLead(id: string) {
+    setSelectionAnchorId(id);
     setSelectedIds((current) =>
       current.includes(id) ? current.filter((value) => value !== id) : [...current, id]
     );
+  }
+
+  function selectFromAnchor(size: number) {
+    setSelectedIds((current) => selectLeadRange(leads.map((lead) => lead.id), selectionAnchorId, size, current));
   }
 
   function toggleAllVisible() {
     const allVisibleIds = leads.map((lead) => lead.id);
     const allSelected = allVisibleIds.every((id) => selectedIds.includes(id));
     setSelectedIds(allSelected ? [] : allVisibleIds);
+    setSelectionAnchorId(allSelected ? null : allVisibleIds[0] || null);
   }
 
   function exportCurrentView() {
@@ -358,11 +362,7 @@ export default function AdminDashboardPage() {
   async function assignSelected(takeBack = false) {
     if (!profile || !session?.access_token || (!takeBack && !selectedSalesperson)) return;
 
-    const leadIds = takeBack
-      ? selectedIds
-      : selectedIds.length > 0
-      ? selectedIds
-      : leads.filter((lead) => !lead.assigned_to).slice(0, assignmentBatchSize).map((lead) => lead.id);
+    const leadIds = selectedIds;
     if (leadIds.length === 0) return;
 
     setBusy(true);
@@ -773,7 +773,7 @@ export default function AdminDashboardPage() {
                 {isEnglish ? "Selected leads" : "Zaznaczone leady"}: {selectedCount}
               </p>
             </div>
-            <div className="grid gap-2 sm:grid-cols-[minmax(200px,260px)_130px_auto_auto]">
+            <div className="grid gap-2 sm:grid-cols-[minmax(200px,260px)_auto_auto]">
               <select
                 className="field"
                 value={selectedSalesperson}
@@ -786,24 +786,14 @@ export default function AdminDashboardPage() {
                   </option>
                 ))}
               </select>
-              <select
-                className="field"
-                value={assignmentBatchSize}
-                onChange={(event) => setAssignmentBatchSize(Number(event.target.value))}
-                aria-label="Liczba leadów do przypisania"
-              >
-                {ASSIGNMENT_BATCH_SIZES.map((size) => (
-                  <option key={size} value={size}>{size} leadów</option>
-                ))}
-              </select>
               <button
                 type="button"
                 onClick={() => assignSelected(false)}
-                disabled={busy || !selectedSalesperson || (selectedIds.length === 0 && assignmentCandidateCount === 0)}
+                disabled={busy || !selectedSalesperson || selectedIds.length === 0}
                 className="btn-primary"
               >
                 <UserCheck className="h-4 w-4" aria-hidden="true" />
-                {selectedIds.length > 0 ? `Przypisz (${selectedIds.length})` : `Przypisz ${Math.min(assignmentBatchSize, assignmentCandidateCount)}`}
+                Przypisz ({selectedIds.length})
               </button>
               <button
                 type="button"
@@ -815,6 +805,16 @@ export default function AdminDashboardPage() {
                 Zabierz handlowcowi
               </button>
             </div>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-line pt-4">
+            <span className="text-sm font-bold text-muted">
+              {selectionAnchorId ? "Zaznacz od ostatnio klikniętego leada:" : "Najpierw kliknij checkbox leada:"}
+            </span>
+            {ASSIGNMENT_BATCH_SIZES.map((size) => (
+              <button key={size} type="button" className="btn-secondary min-h-11" disabled={!selectionAnchorId || busy} onClick={() => selectFromAnchor(size)}>
+                +{size}
+              </button>
+            ))}
           </div>
         </section>
         ) : null}

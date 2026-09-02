@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarClock, ExternalLink, Phone, X } from "lucide-react";
+import { CalendarClock, ExternalLink, Phone, Zap, X } from "lucide-react";
 import { formatDateTime } from "@/lib/date";
 import type { Lead } from "@/lib/types";
 import { StatusBadge } from "@/components/status-badge";
@@ -15,6 +15,7 @@ type LeadTableProps = {
   onToggle?: (id: string) => void;
   onToggleAll?: () => void;
   showAssignee?: boolean;
+  onQuickAction?: (lead: Lead) => void;
 };
 
 function formatPhone(phone: string) {
@@ -51,7 +52,8 @@ export function LeadTable({
   selectedIds = [],
   onToggle,
   onToggleAll,
-  showAssignee = false
+  showAssignee = false,
+  onQuickAction
 }: LeadTableProps) {
   const { language } = useLanguage();
   const [openLeadId, setOpenLeadId] = useState<string | null>(null);
@@ -140,7 +142,7 @@ export function LeadTable({
               {showAssignee ? <th className="w-[14%] px-2 py-3">{labels.salesperson}</th> : null}
               <th className="w-[15%] px-2 py-3">{labels.dates}</th>
               <th className="w-[12%] px-2 py-3">{labels.created}</th>
-              <th className="w-12 px-3 py-3" />
+              <th className={onQuickAction ? "w-24 px-3 py-3" : "w-12 px-3 py-3"} />
             </tr>
           </thead>
           <tbody>
@@ -158,6 +160,7 @@ export function LeadTable({
                   </td>
                 ) : null}
                 <td className="px-3 py-3 align-top break-words">
+                  {onQuickAction ? <button type="button" onClick={() => onQuickAction(lead)} className="mr-1 inline-flex h-9 w-9 items-center justify-center rounded-md border border-line text-muted transition hover:border-ink hover:text-ink" title="Szybka akcja" aria-label={`Szybka akcja dla ${lead.full_name}`}><Zap className="h-4 w-4" aria-hidden="true" /></button> : null}
                   <button
                     type="button"
                     onClick={() => setOpenLeadId(lead.id)}
@@ -266,7 +269,8 @@ export function LeadTable({
               </div>
             </div>
 
-            <button type="button" onClick={() => setOpenLeadId(lead.id)} className="btn-secondary mt-4 w-full">
+            {onQuickAction ? <button type="button" onClick={() => onQuickAction(lead)} className="btn-primary mt-4 min-h-11 w-full"><Zap className="h-4 w-4" aria-hidden="true" />Szybka akcja</button> : null}
+            <button type="button" onClick={() => setOpenLeadId(lead.id)} className="btn-secondary mt-2 w-full">
               <ExternalLink className="h-4 w-4" aria-hidden="true" />
               {labels.openCard}
             </button>
