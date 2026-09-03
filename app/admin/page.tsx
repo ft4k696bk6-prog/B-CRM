@@ -596,7 +596,7 @@ export default function AdminDashboardPage() {
                           <td className="px-3 py-3 font-semibold text-leaf">{row.contracts}</td>
                           <td className="px-3 py-3 text-danger">{row.overdueCallbacks}</td>
                           <td className="px-3 py-3 text-warn">{row.noNextAction}</td>
-                          {["owner", "admin"].includes(profile.role) ? <td className="px-3 py-3"><button type="button" className="btn-secondary min-h-11 whitespace-nowrap" disabled={Boolean(queuePauseBusyId)} onClick={() => pauseMandatoryQueue(row.person.id, row.person.full_name)}><Clock3 className="h-4 w-4" aria-hidden="true" />{queuePauseBusyId === row.person.id ? "Odblokowuję…" : "Odblokuj na 24h"}</button></td> : null}
+                          {["owner", "admin"].includes(profile.role) ? <td className="px-3 py-3">{["handlowiec", "sales"].includes(row.person.role) ? <button type="button" className="btn-secondary min-h-11 whitespace-nowrap" disabled={Boolean(queuePauseBusyId)} onClick={() => pauseMandatoryQueue(row.person.id, row.person.full_name)}><Clock3 className="h-4 w-4" aria-hidden="true" />{queuePauseBusyId === row.person.id ? "Odblokowuję…" : "Odblokuj na 24h"}</button> : "—"}</td> : null}
                         </tr>
                       ))}
                     </tbody>
@@ -624,7 +624,7 @@ export default function AdminDashboardPage() {
                           <div className="mt-1 font-black text-warn">{row.noNextAction}</div>
                         </div>
                       </div>
-                      {["owner", "admin"].includes(profile.role) ? <button type="button" className="btn-secondary mt-3 min-h-11 w-full" disabled={Boolean(queuePauseBusyId)} onClick={() => pauseMandatoryQueue(row.person.id, row.person.full_name)}><Clock3 className="h-4 w-4" aria-hidden="true" />{queuePauseBusyId === row.person.id ? "Odblokowuję…" : "Odblokuj kolejkę na 24h"}</button> : null}
+                      {["owner", "admin"].includes(profile.role) && ["handlowiec", "sales"].includes(row.person.role) ? <button type="button" className="btn-secondary mt-3 min-h-11 w-full" disabled={Boolean(queuePauseBusyId)} onClick={() => pauseMandatoryQueue(row.person.id, row.person.full_name)}><Clock3 className="h-4 w-4" aria-hidden="true" />{queuePauseBusyId === row.person.id ? "Odblokowuję…" : "Odblokuj kolejkę na 24h"}</button> : null}
                     </article>
                   ))}
                 </div>
