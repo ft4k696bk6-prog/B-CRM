@@ -164,7 +164,7 @@ export default function LeadDetailsPage() {
 
     const query = supabase
       .from("profiles")
-      .select("*")
+      .select("id,email,full_name,role,manager_id,crm_environment,created_at,business_phone,can_view_lead_pool")
       .in("role", ["handlowiec", "sales", "menadzer"])
       .eq("crm_environment", profile.crm_environment)
       .order("full_name", { ascending: true });

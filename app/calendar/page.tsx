@@ -259,7 +259,7 @@ export default function CalendarPage() {
 
     const { data } = await supabase
       .from("profiles")
-      .select("*")
+      .select("id,email,full_name,role,manager_id,crm_environment,created_at,business_phone,can_view_lead_pool")
       .in("role", ["owner", "admin", "menadzer", "handlowiec", "ksiegowosc", "logistyk", "monter", "sales", "manager"])
       .eq("crm_environment", profile.crm_environment)
       .order("full_name", { ascending: true });

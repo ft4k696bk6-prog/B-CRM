@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { allowedOutcomes, type LeadOutcome, validateLeadOutcome } from "@/lib/lead-outcomes";
 import { canAccessLeadWithTeam, requireApiProfile } from "@/lib/server-auth";
+import { getMandatoryLeads } from "@/lib/server-lead-work";
 import type { Lead } from "@/lib/types";
 
 type OutcomeBody = {
@@ -43,6 +44,13 @@ export async function POST(request: Request) {
   const lead = data as Lead;
   if (!(await canAccessLeadWithTeam(auth.supabaseAdmin, auth.profile, lead))) {
     return NextResponse.json({ error: "Nie masz dostępu do tego leada." }, { status: 403 });
+  }
+
+  if (auth.profile.role === "handlowiec") {
+    const mandatory = await getMandatoryLeads(auth.supabaseAdmin, auth.profile);
+    if (mandatory.length > 0 && !mandatory.some((item) => item.id === lead.id)) {
+      return NextResponse.json({ error: "Najpierw obsłuż zaległy call-back lub spotkanie z obowiązkowej kolejki." }, { status: 423 });
+    }
   }
 
   const validationError = validateLeadOutcome(lead.status, outcome, { callbackAt, meetingAt, address, note }, new Date(), lead.meeting_at);

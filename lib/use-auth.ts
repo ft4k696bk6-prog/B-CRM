@@ -26,7 +26,7 @@ async function fetchAuthState(force = false): Promise<AuthState> {
     const session = sessionData.session;
     if (!session) return { loading: false, session: null, profile: null };
 
-    const { data: profile } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
+    const { data: profile } = await supabase.from("profiles").select("id,email,full_name,role,manager_id,crm_environment,created_at,business_phone,can_view_lead_pool").eq("id", session.user.id).single();
     if (!profile) return { loading: false, session, profile: null };
 
     return {

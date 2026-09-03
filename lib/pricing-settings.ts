@@ -21,7 +21,17 @@ export function usePricingSettings(profile?: Pick<Profile,"id"|"role"|"full_name
   useEffect(() => {
     const preferred = /krystian|wiktoria/i.test(profile?.full_name || "");
     setSettingsState({ adminMargin: profile?.company_margin_net ?? (preferred ? 5000 : DEFAULT_ADMIN_MARGIN_NET), salesMargin: profile?.sales_margin_net ?? (preferred ? 10000 : DEFAULT_SALES_MARGIN_NET) });
-  }, [profile?.company_margin_net, profile?.sales_margin_net, profile?.full_name]);
+    if (profile?.role === "owner" || profile?.role === "admin") {
+      void supabase.auth.getSession().then(async ({ data }) => {
+        if (!data.session?.access_token) return;
+        const response = await fetch("/api/pricing-settings", { headers: { Authorization: `Bearer ${data.session.access_token}` }, cache: "no-store" });
+        const body = await response.json().catch(() => ({})) as Partial<PricingSettings>;
+        if (response.ok && Number.isFinite(body.adminMargin) && Number.isFinite(body.salesMargin)) {
+          setSettingsState({ adminMargin: Number(body.adminMargin), salesMargin: Number(body.salesMargin) });
+        }
+      });
+    }
+  }, [profile?.company_margin_net, profile?.sales_margin_net, profile?.full_name, profile?.id, profile?.role]);
 
   function setSettings(next: PricingSettings) {
     if (profile?.role !== "owner" && profile?.role !== "admin") return;
@@ -30,7 +40,14 @@ export function usePricingSettings(profile?: Pick<Profile,"id"|"role"|"full_name
       salesMargin: Math.max(Number(next.salesMargin) || 0, 0)
     };
     setSettingsState(normalized);
-    if (profile?.id) void supabase.from("profiles").update({ company_margin_net: normalized.adminMargin, sales_margin_net: normalized.salesMargin }).eq("id", profile.id);
+    if (profile?.id) void supabase.auth.getSession().then(({ data }) => {
+      if (!data.session?.access_token) return;
+      return fetch("/api/pricing-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session.access_token}` },
+        body: JSON.stringify(normalized)
+      });
+    });
   }
 
   return { settings, setSettings };
