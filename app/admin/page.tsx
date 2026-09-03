@@ -15,6 +15,7 @@ import {
   PhoneCall,
   RefreshCw,
   Search,
+  Clock3,
   Trophy,
   UserCheck
 } from "lucide-react";
@@ -95,6 +96,8 @@ export default function AdminDashboardPage() {
   const [busy, setBusy] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
+  const [queuePauseBusyId, setQueuePauseBusyId] = useState("");
+  const [queuePauseNotice, setQueuePauseNotice] = useState("");
   const [stats, setStats] = useState({
     all: 0,
     unassigned: 0,
@@ -124,7 +127,7 @@ export default function AdminDashboardPage() {
 
     const query = supabase
       .from("profiles")
-      .select("*")
+      .select("id,email,full_name,role,manager_id,crm_environment,created_at,business_phone,can_view_lead_pool")
       .in("role", ["handlowiec", "sales", "menadzer"])
       .eq("crm_environment", crmEnvironment)
       .order("full_name", { ascending: true });
@@ -393,6 +396,22 @@ export default function AdminDashboardPage() {
     setBusy(false);
   }
 
+  async function pauseMandatoryQueue(salespersonId: string, salespersonName: string) {
+    if (!session?.access_token || queuePauseBusyId) return;
+    setQueuePauseBusyId(salespersonId);
+    setQueuePauseNotice("");
+    setError("");
+    const response = await fetch("/api/leads/mandatory-queue", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify({ salespersonId })
+    });
+    const result = (await response.json().catch(() => ({}))) as { error?: string };
+    if (!response.ok) setError(result.error || "Nie udało się wstrzymać kolejki.");
+    else setQueuePauseNotice(`Odblokowano CRM dla ${salespersonName} na 24 godziny.`);
+    setQueuePauseBusyId("");
+  }
+
   if (loading || !profile) return <LoadingScreen />;
 
   const dashboardCopy = isEnglish
@@ -565,6 +584,7 @@ export default function AdminDashboardPage() {
                         <th className="px-3 py-3">{dashboardCopy.contracts}</th>
                         <th className="px-3 py-3">{dashboardCopy.overdueCallbacks}</th>
                         <th className="px-3 py-3">{dashboardCopy.noAction}</th>
+                        {["owner", "admin"].includes(profile.role) ? <th className="px-3 py-3">Kolejka</th> : null}
                       </tr>
                     </thead>
                     <tbody>
@@ -576,6 +596,7 @@ export default function AdminDashboardPage() {
                           <td className="px-3 py-3 font-semibold text-leaf">{row.contracts}</td>
                           <td className="px-3 py-3 text-danger">{row.overdueCallbacks}</td>
                           <td className="px-3 py-3 text-warn">{row.noNextAction}</td>
+                          {["owner", "admin"].includes(profile.role) ? <td className="px-3 py-3"><button type="button" className="btn-secondary min-h-11 whitespace-nowrap" disabled={Boolean(queuePauseBusyId)} onClick={() => pauseMandatoryQueue(row.person.id, row.person.full_name)}><Clock3 className="h-4 w-4" aria-hidden="true" />{queuePauseBusyId === row.person.id ? "Odblokowuję…" : "Odblokuj na 24h"}</button></td> : null}
                         </tr>
                       ))}
                     </tbody>
@@ -603,6 +624,7 @@ export default function AdminDashboardPage() {
                           <div className="mt-1 font-black text-warn">{row.noNextAction}</div>
                         </div>
                       </div>
+                      {["owner", "admin"].includes(profile.role) ? <button type="button" className="btn-secondary mt-3 min-h-11 w-full" disabled={Boolean(queuePauseBusyId)} onClick={() => pauseMandatoryQueue(row.person.id, row.person.full_name)}><Clock3 className="h-4 w-4" aria-hidden="true" />{queuePauseBusyId === row.person.id ? "Odblokowuję…" : "Odblokuj kolejkę na 24h"}</button> : null}
                     </article>
                   ))}
                 </div>
@@ -819,6 +841,7 @@ export default function AdminDashboardPage() {
         </section>
         ) : null}
 
+        {queuePauseNotice ? <Alert tone="success">{queuePauseNotice}</Alert> : null}
         {error ? (
           <Alert tone="danger">{error}</Alert>
         ) : null}

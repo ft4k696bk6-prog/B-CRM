@@ -1,5 +1,6 @@
 import type { getServiceClient } from "@/lib/server-auth";
 import type { Lead } from "@/lib/types";
+import { isMandatoryLead } from "@/lib/lead-outcomes";
 
 const mandatoryLeadSelect = "id,full_name,phone,status,callback_at,meeting_at,meeting_address,address,assigned_to,crm_environment,created_at,updated_at,last_opened_at,source,postal_code,voivodeship,county,meeting_note,resignation_reason,contract_number";
 
@@ -20,20 +21,19 @@ export function wasCurrentScheduleSetAfterRollout(lead: Pick<Lead, "id" | "statu
   return history.some((entry) => entry.lead_id === lead.id && entry.created_at >= MANDATORY_QUEUE_ROLLOUT_AT && entry.new_value?.[field] === currentSchedule);
 }
 
-export async function getMandatoryLeads(
+export async function getScheduledLeadsSinceRollout(
   supabaseAdmin: ReturnType<typeof getServiceClient>,
-  profile: { id: string; crm_environment: string },
-  now = new Date()
+  profile: { id: string; crm_environment: string }
 ) {
-  const timestamp = now.toISOString();
-  const [callbacks, meetings] = await Promise.all([
-    supabaseAdmin.from("leads").select(mandatoryLeadSelect).eq("crm_environment", profile.crm_environment).eq("assigned_to", profile.id).eq("status", "Call back").lte("callback_at", timestamp),
-    supabaseAdmin.from("leads").select(mandatoryLeadSelect).eq("crm_environment", profile.crm_environment).eq("assigned_to", profile.id).eq("status", "Spotkanie").lte("meeting_at", timestamp)
-  ]);
-  if (callbacks.error) throw new Error(callbacks.error.message);
-  if (meetings.error) throw new Error(meetings.error.message);
-  const items = [...(callbacks.data || []), ...(meetings.data || [])] as unknown as Lead[];
-  const uniqueItems = [...new Map(items.map((lead) => [lead.id, lead])).values()];
+  const scheduled = await supabaseAdmin
+    .from("leads")
+    .select(mandatoryLeadSelect)
+    .eq("crm_environment", profile.crm_environment)
+    .eq("assigned_to", profile.id)
+    .in("status", ["Call back", "Spotkanie"])
+    .or("callback_at.not.is.null,meeting_at.not.is.null");
+  if (scheduled.error) throw new Error(scheduled.error.message);
+  const uniqueItems = [...new Map(((scheduled.data || []) as unknown as Lead[]).map((lead) => [lead.id, lead])).values()];
   if (!uniqueItems.length) return [];
   const historyResult = await supabaseAdmin
     .from("lead_history")
@@ -49,4 +49,12 @@ export async function getMandatoryLeads(
     const rightAt = right.callback_at || right.meeting_at || "";
     return leftAt.localeCompare(rightAt);
   });
+}
+
+export async function getMandatoryLeads(
+  supabaseAdmin: ReturnType<typeof getServiceClient>,
+  profile: { id: string; crm_environment: string },
+  now = new Date()
+) {
+  return (await getScheduledLeadsSinceRollout(supabaseAdmin, profile)).filter((lead) => isMandatoryLead(lead, now));
 }

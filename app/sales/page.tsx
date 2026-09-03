@@ -47,6 +47,7 @@ export default function SalesDashboardPage() {
   const [error, setError] = useState("");
   const [quickLead, setQuickLead] = useState<Lead | null>(null);
   const [contracts, setContracts] = useState<ContractRecord[]>([]);
+  const [scheduledLeadIds, setScheduledLeadIds] = useState<string[]>([]);
 
   const loadLeads = useCallback(async function loadLeads() {
     if (!profile) return;
@@ -92,51 +93,62 @@ export default function SalesDashboardPage() {
     if (response.ok) setContracts(result.contracts || []);
   }, [session?.access_token]);
 
+  const loadQueueScope = useCallback(async function loadQueueScope() {
+    if (!session?.access_token) return;
+    const response = await fetch("/api/leads/mandatory-queue", { headers: { Authorization: `Bearer ${session.access_token}` }, cache: "no-store" });
+    const result = (await response.json().catch(() => ({}))) as { scheduledLeadIds?: string[] };
+    if (response.ok) setScheduledLeadIds(result.scheduledLeadIds || []);
+  }, [session?.access_token]);
+
   useEffect(() => {
     if (!profile) return;
     loadLeads();
     loadContracts();
-  }, [profile, loadLeads, loadContracts]);
+    loadQueueScope();
+  }, [profile, loadLeads, loadContracts, loadQueueScope]);
+
+  const scheduledLeadIdSet = useMemo(() => new Set(scheduledLeadIds), [scheduledLeadIds]);
 
   useEffect(() => {
     function refreshLeads() {
       loadLeads();
+      loadQueueScope();
     }
 
     window.addEventListener("leads:changed", refreshLeads);
     return () => window.removeEventListener("leads:changed", refreshLeads);
-  }, [loadLeads]);
+  }, [loadLeads, loadQueueScope]);
 
   const overdueCallbacks = useMemo(
     () =>
       leads.filter(
-        (lead) => lead.status === "Call back" && lead.callback_at && isPast(lead.callback_at)
+        (lead) => scheduledLeadIdSet.has(lead.id) && lead.status === "Call back" && lead.callback_at && isPast(lead.callback_at)
       ),
-    [leads]
+    [leads, scheduledLeadIdSet]
   );
 
   const overdueMeetings = useMemo(
-    () => leads.filter((lead) => lead.status === "Spotkanie" && lead.meeting_at && isPast(lead.meeting_at)),
-    [leads]
+    () => leads.filter((lead) => scheduledLeadIdSet.has(lead.id) && lead.status === "Spotkanie" && lead.meeting_at && isPast(lead.meeting_at)),
+    [leads, scheduledLeadIdSet]
   );
   const mandatoryCount = overdueCallbacks.length + overdueMeetings.length;
 
   const upcomingCallbacks = useMemo(
     () =>
       leads.filter(
-        (lead) => lead.status === "Call back" && lead.callback_at && !isPast(lead.callback_at)
+        (lead) => scheduledLeadIdSet.has(lead.id) && lead.status === "Call back" && lead.callback_at && !isPast(lead.callback_at)
       ),
-    [leads]
+    [leads, scheduledLeadIdSet]
   );
 
   const todayCallbacks = useMemo(
-    () => leads.filter((lead) => lead.status === "Call back" && lead.callback_at && isToday(lead.callback_at)),
-    [leads]
+    () => leads.filter((lead) => scheduledLeadIdSet.has(lead.id) && lead.status === "Call back" && lead.callback_at && isToday(lead.callback_at)),
+    [leads, scheduledLeadIdSet]
   );
 
   const todayMeetings = useMemo(
-    () => leads.filter((lead) => lead.meeting_at && isToday(lead.meeting_at)),
-    [leads]
+    () => leads.filter((lead) => scheduledLeadIdSet.has(lead.id) && lead.meeting_at && isToday(lead.meeting_at)),
+    [leads, scheduledLeadIdSet]
   );
 
   const leadsWithoutNextAction = useMemo(
@@ -345,7 +357,7 @@ export default function SalesDashboardPage() {
           <LeadTable leads={leads} onQuickAction={setQuickLead} />
         </section> : null}
       </div>
-      <LeadQuickActionDialog lead={quickLead} accessToken={session?.access_token || ""} onClose={() => setQuickLead(null)} onCompleted={async () => { await Promise.all([loadLeads(), loadContracts()]); window.dispatchEvent(new Event("leads:changed")); }} />
+      <LeadQuickActionDialog lead={quickLead} accessToken={session?.access_token || ""} onClose={() => setQuickLead(null)} onCompleted={async () => { await Promise.all([loadLeads(), loadContracts(), loadQueueScope()]); window.dispatchEvent(new Event("leads:changed")); }} />
     </AppShell>
   );
 }
