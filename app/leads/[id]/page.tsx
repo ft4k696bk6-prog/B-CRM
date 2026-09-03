@@ -203,7 +203,7 @@ export default function LeadDetailsPage() {
 
     const patch: Partial<Lead> = { status };
     const isClosedLead = lead.status === "Umowa" || lead.status === "Rezygnacja";
-    const availableStatuses = isClosedLead ? [lead.status] : canManage ? LEAD_STATUSES : getSalesStatusPath(lead);
+    const availableStatuses = isClosedLead && !canManage ? [lead.status] : canManage ? LEAD_STATUSES : getSalesStatusPath(lead);
 
     if (!availableStatuses.includes(status)) {
       setError("Ten status nie jest dostępny na obecnym etapie leada.");
@@ -280,6 +280,7 @@ export default function LeadDetailsPage() {
         return;
       }
       patch.resignation_reason = resignationReason.trim();
+      patch.assigned_to = null;
     }
 
     if (status === "Umowa") {
@@ -434,7 +435,7 @@ export default function LeadDetailsPage() {
 
   if (loading || !profile) return <LoadingScreen />;
   const availableStatuses = lead
-    ? lead.status === "Umowa" || lead.status === "Rezygnacja"
+    ? (lead.status === "Umowa" || lead.status === "Rezygnacja") && !canManage
       ? [lead.status]
       : canManage
         ? LEAD_STATUSES
@@ -468,12 +469,11 @@ export default function LeadDetailsPage() {
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                   <h1 className="text-2xl font-bold text-ink">{lead.full_name}</h1>
-                  <div className="mt-2 flex flex-wrap gap-2 text-sm text-muted">
-                    <span>{formatPhoneReadable(lead.phone)}</span>
-                    <span>·</span>
-                    <span>{lead.postal_code || "brak kodu"}</span>
-                    <span>·</span>
-                    <span>{lead.source || "bez źródła"}</span>
+                  <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+                    <span className="font-semibold text-muted">{formatPhoneReadable(lead.phone)}</span>
+                    <span className="rounded-md border border-sky/20 bg-sky/10 px-2 py-1 font-bold text-sky">Źródło: {lead.source || "bez źródła"}</span>
+                    {lead.campaign ? <span className="rounded-md border border-solar/25 bg-solar/10 px-2 py-1 font-bold text-[#8a5a00]">Kampania: {lead.campaign}</span> : null}
+                    <span className="rounded-md border border-line bg-[#f8fafc] px-2 py-1 font-semibold text-muted">{lead.postal_code || "brak kodu"}</span>
                   </div>
                 </div>
               </div>
@@ -686,7 +686,7 @@ export default function LeadDetailsPage() {
                   <button
                     type="button"
                     onClick={returnLead}
-                    disabled={busy || !canEditLead || lead.status === "Umowa" || lead.status === "Rezygnacja"}
+                    disabled={busy || !canEditLead || (!canManage && (lead.status === "Umowa" || lead.status === "Rezygnacja"))}
                     className="btn-secondary"
                   >
                     <RotateCcw className="h-4 w-4" aria-hidden="true" />
@@ -750,7 +750,7 @@ export default function LeadDetailsPage() {
                     </label>
                     <button
                       type="submit"
-                      disabled={busy || lead.status === "Umowa" || lead.status === "Rezygnacja"}
+                      disabled={busy}
                       className="btn-primary mt-4"
                     >
                       <Check className="h-4 w-4" aria-hidden="true" />

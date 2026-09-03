@@ -223,6 +223,7 @@ export default function UsersPage() {
   const [password, setPassword] = useState("");
   const [phoneDrafts, setPhoneDrafts] = useState<Record<string, string>>({});
   const [passwordDrafts, setPasswordDrafts] = useState<Record<string, string>>({});
+  const [pricingDrafts, setPricingDrafts] = useState<Record<string, { company: string; sales: string; commission: string }>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -258,6 +259,28 @@ export default function UsersPage() {
       Object.fromEntries(nextUsers.map((user) => [user.id, user.business_phone || ""]))
     );
     setPasswordDrafts(Object.fromEntries(nextUsers.map((user) => [user.id, ""])));
+    setPricingDrafts(Object.fromEntries(nextUsers.map((user) => [user.id, {
+      company: String(user.company_margin_net ?? 10000),
+      sales: String(user.sales_margin_net ?? 5000),
+      commission: String(user.commission_percent ?? 0)
+    }])));
+  }
+
+  async function savePricing(person: Profile) {
+    if (!session || busy) return;
+    const draft = pricingDrafts[person.id];
+    if (!draft) return;
+    setBusy(true); setError(""); setSuccess("");
+    const response = await fetch("/api/admin/users", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify({ id: person.id, role: person.role, managerId: person.manager_id,
+        companyMarginNet: Number(draft.company), salesMarginNet: Number(draft.sales), commissionPercent: Number(draft.commission) })
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) setError(body.error || "Nie udało się zapisać rozliczeń użytkownika.");
+    else { setSuccess(`Zapisano marże i prowizję dla ${person.full_name}.`); await loadUsers(); }
+    setBusy(false);
   }
 
   useEffect(() => {
@@ -680,6 +703,26 @@ export default function UsersPage() {
               </button>
             </div>
           </form>
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          icon={Save}
+          title="Marże i prowizje użytkowników"
+          description="Domyślnie: marża firmy 10 000 zł i marża handlowca 5 000 zł. Wyjątki oraz procent prowizji ustawiasz indywidualnie."
+        >
+          <div className="grid gap-3">
+            {users.filter((person) => ["handlowiec", "menadzer"].includes(person.role)).map((person) => {
+              const draft = pricingDrafts[person.id] || { company: "10000", sales: "5000", commission: "0" };
+              const update = (key: "company" | "sales" | "commission", value: string) => setPricingDrafts((current) => ({ ...current, [person.id]: { ...draft, [key]: value } }));
+              return <article key={person.id} className="grid gap-3 rounded-lg border border-line bg-[#f9fbfd] p-4 lg:grid-cols-[minmax(180px,1fr)_160px_160px_150px_auto] lg:items-end">
+                <div><div className="font-black text-ink">{person.full_name}</div><div className="text-xs text-muted">{ROLE_LABELS[person.role]}</div></div>
+                <label><span className="label">Marża firmy netto</span><input className="field min-h-11" type="number" min="0" step="100" value={draft.company} onChange={(event) => update("company", event.target.value)} /></label>
+                <label><span className="label">Marża handlowca netto</span><input className="field min-h-11" type="number" min="0" step="100" value={draft.sales} onChange={(event) => update("sales", event.target.value)} /></label>
+                <label><span className="label">Prowizja %</span><input className="field min-h-11" type="number" min="0" max="100" step="0.1" value={draft.commission} onChange={(event) => update("commission", event.target.value)} /></label>
+                <button type="button" className="btn-primary min-h-11" disabled={busy} onClick={() => savePricing(person)}><Save className="h-4 w-4" />Zapisz</button>
+              </article>;
+            })}
+          </div>
         </CollapsibleSection>
 
         <CollapsibleSection

@@ -20,6 +20,9 @@ type UpdateUserBody = {
   managerId?: string | null;
   businessPhone?: string | null;
   password?: string | null;
+  companyMarginNet?: number;
+  salesMarginNet?: number;
+  commissionPercent?: number;
 };
 
 type DeleteUserBody = {
@@ -376,9 +379,17 @@ export async function PATCH(request: Request) {
       !businessPhoneProvided || body.businessPhone === null || body.businessPhone === ""
         ? null
         : normalizePhoneForDial(body.businessPhone);
+    const pricingProvided = ["companyMarginNet", "salesMarginNet", "commissionPercent"].some((key) => Object.prototype.hasOwnProperty.call(body, key));
+    const companyMarginNet = Number(body.companyMarginNet);
+    const salesMarginNet = Number(body.salesMarginNet);
+    const commissionPercent = Number(body.commissionPercent);
 
     if (!id || !role) {
       return NextResponse.json({ error: "Brak użytkownika lub roli." }, { status: 400 });
+    }
+
+    if (pricingProvided && (!Number.isFinite(companyMarginNet) || companyMarginNet < 0 || !Number.isFinite(salesMarginNet) || salesMarginNet < 0 || !Number.isFinite(commissionPercent) || commissionPercent < 0 || commissionPercent > 100)) {
+      return NextResponse.json({ error: "Marże muszą być nieujemne, a prowizja mieścić się w zakresie 0–100%." }, { status: 400 });
     }
 
     if (password && password.length < 8) {
@@ -461,6 +472,15 @@ export async function PATCH(request: Request) {
         .eq("crm_environment", targetScope);
     }
 
+    if (pricingProvided) {
+      const { error: pricingError } = await auth.supabaseAdmin.from("profiles").update({
+        company_margin_net: companyMarginNet,
+        sales_margin_net: salesMarginNet,
+        commission_percent: commissionPercent
+      }).eq("id", id).eq("crm_environment", targetScope);
+      if (pricingError) return NextResponse.json({ error: pricingError.message }, { status: 400 });
+    }
+
     const { error: authUpdateError } = await auth.supabaseAdmin.auth.admin.updateUserById(id, {
       ...(password ? { password } : {}),
       app_metadata: { ...(targetAuth.user?.app_metadata || {}), role, crm_environment: targetScope },
@@ -480,7 +500,8 @@ export async function PATCH(request: Request) {
         role,
         managerId,
         ...(businessPhoneProvided ? { businessPhone } : {}),
-        ...(password ? { passwordReset: true } : {})
+        ...(password ? { passwordReset: true } : {}),
+        ...(pricingProvided ? { companyMarginNet, salesMarginNet, commissionPercent } : {})
       },
       crm_environment: auth.requesterScope
     });
@@ -489,6 +510,7 @@ export async function PATCH(request: Request) {
       id,
       role,
       ...(businessPhoneProvided ? { business_phone: businessPhone } : {}),
+      ...(pricingProvided ? { company_margin_net: companyMarginNet, sales_margin_net: salesMarginNet, commission_percent: commissionPercent } : {}),
       crm_environment: targetScope
     });
   } catch (error) {

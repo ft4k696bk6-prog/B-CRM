@@ -157,7 +157,7 @@ export default function AdminDashboardPage() {
     let query = supabase
       .from("leads")
       .select(
-        "id,full_name,postal_code,phone,address,voivodeship,county,status,assigned_to,created_at,updated_at,last_opened_at,source,resignation_reason,callback_at,meeting_at,meeting_address,meeting_note,contract_number,crm_environment,assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)",
+        "id,full_name,postal_code,phone,address,voivodeship,county,status,assigned_to,created_at,updated_at,last_opened_at,source,campaign,resignation_reason,callback_at,meeting_at,meeting_address,meeting_note,contract_number,crm_environment,assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)",
         { count: "exact" }
       )
       .eq("crm_environment", crmEnvironment!)
@@ -650,14 +650,14 @@ export default function AdminDashboardPage() {
                 onClick={() => { setLeadBucket("resignations"); setFilters({ ...initialFilters, assignedTo: "" }); }}
                 className={leadBucket === "resignations" ? "btn-primary" : "btn-secondary"}
               >
-                Rezygnacje ({stats.resignations})
+                Koszyk rezygnacji ({stats.resignations})
               </button>
               <button
                 type="button"
                 onClick={() => { setLeadBucket("contracts"); setFilters({ ...initialFilters, assignedTo: "" }); }}
                 className={leadBucket === "contracts" ? "btn-primary" : "btn-secondary"}
               >
-                Umowy ({stats.contracts})
+                Koszyk umów ({stats.contracts})
               </button>
               <button
                 type="button"

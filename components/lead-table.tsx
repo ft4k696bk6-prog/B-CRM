@@ -168,8 +168,10 @@ export function LeadTable({
                   >
                     {lead.full_name}
                   </button>
-                  <div className="mt-1 text-xs text-muted">
-                    {formatSource(lead.source, language)} · {lead.postal_code || labels.noCode}
+                  <div className="mt-1 flex flex-wrap gap-1.5 text-xs font-bold">
+                    <span className="rounded border border-sky/20 bg-sky/10 px-1.5 py-0.5 text-sky">{formatSource(lead.source, language)}</span>
+                    {lead.campaign ? <span className="max-w-56 truncate rounded border border-solar/25 bg-solar/10 px-1.5 py-0.5 text-[#8a5a00]" title={lead.campaign}>{lead.campaign}</span> : null}
+                    <span className="px-1 py-0.5 font-semibold text-muted">{lead.postal_code || labels.noCode}</span>
                   </div>
                 </td>
                 <td className="px-2 py-3 align-top">
@@ -230,8 +232,10 @@ export function LeadTable({
                 <button type="button" onClick={() => setOpenLeadId(lead.id)} className="text-base font-black text-ink hover:text-sky">
                   {lead.full_name}
                 </button>
-                <div className="mt-1 text-xs font-semibold text-muted">
-                  {formatSource(lead.source, language)} · {lead.postal_code || labels.noCode}
+                <div className="mt-2 flex flex-wrap gap-1.5 text-xs font-bold">
+                  <span className="rounded border border-sky/20 bg-sky/10 px-1.5 py-0.5 text-sky">{formatSource(lead.source, language)}</span>
+                  {lead.campaign ? <span className="max-w-full truncate rounded border border-solar/25 bg-solar/10 px-1.5 py-0.5 text-[#8a5a00]">{lead.campaign}</span> : null}
+                  <span className="px-1 py-0.5 font-semibold text-muted">{lead.postal_code || labels.noCode}</span>
                 </div>
               </div>
               {selectable ? (

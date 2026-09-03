@@ -83,9 +83,9 @@ export async function POST(request: Request) {
       }
     }
 
-    const lockedContractLead = foundLeads.find(
+    const lockedContractLead = profile.role === "menadzer" ? foundLeads.find(
       (lead) => ["Umowa", "Rezygnacja"].includes(lead.status) && lead.assigned_to !== assignedTo
-    );
+    ) : null;
 
     if (lockedContractLead) {
       return NextResponse.json(
@@ -94,6 +94,12 @@ export async function POST(request: Request) {
       );
     }
 
+    const terminalIds = foundLeads.filter((lead) => ["Umowa", "Rezygnacja"].includes(lead.status)).map((lead) => lead.id);
+    const activeIds = foundLeads.filter((lead) => !["Umowa", "Rezygnacja"].includes(lead.status)).map((lead) => lead.id);
+    if (terminalIds.length > 0) {
+      const { error: terminalError } = await supabaseAdmin.from("leads").update({ assigned_to: assignedTo }).eq("crm_environment", profile.crm_environment).in("id", terminalIds);
+      if (terminalError) return NextResponse.json({ error: terminalError.message }, { status: 400 });
+    }
     const assignmentPatch = assignedTo
       ? { assigned_to: assignedTo }
       : {
@@ -108,11 +114,11 @@ export async function POST(request: Request) {
           last_opened_at: null
         };
 
-    const { error: updateError } = await supabaseAdmin
+    const { error: updateError } = activeIds.length > 0 ? await supabaseAdmin
       .from("leads")
       .update(assignmentPatch)
       .eq("crm_environment", profile.crm_environment)
-      .in("id", leadIds);
+      .in("id", activeIds) : { error: null };
 
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 400 });

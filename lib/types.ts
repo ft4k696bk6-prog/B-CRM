@@ -38,6 +38,7 @@ export type Profile = {
   business_phone: string | null;
   company_margin_net?: number;
   sales_margin_net?: number;
+  commission_percent?: number;
   crm_environment: CrmDataScope;
   created_at: string;
   manager_profile?: Pick<Profile, "id" | "email" | "full_name" | "role" | "crm_environment"> | null;
@@ -57,6 +58,7 @@ export type Lead = {
   updated_at: string;
   last_opened_at: string | null;
   source: string | null;
+  campaign?: string | null;
   resignation_reason: string | null;
   callback_at: string | null;
   meeting_at: string | null;

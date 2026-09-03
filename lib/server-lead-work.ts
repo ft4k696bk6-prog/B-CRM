@@ -2,7 +2,7 @@ import type { getServiceClient } from "@/lib/server-auth";
 import type { Lead } from "@/lib/types";
 import { isMandatoryLead } from "@/lib/lead-outcomes";
 
-const mandatoryLeadSelect = "id,full_name,phone,status,callback_at,meeting_at,meeting_address,address,assigned_to,crm_environment,created_at,updated_at,last_opened_at,source,postal_code,voivodeship,county,meeting_note,resignation_reason,contract_number";
+const mandatoryLeadSelect = "id,full_name,phone,status,callback_at,meeting_at,meeting_address,address,assigned_to,crm_environment,created_at,updated_at,last_opened_at,source,campaign,postal_code,voivodeship,county,meeting_note,resignation_reason,contract_number";
 
 // Existing overdue work is intentionally grandfathered. Only callbacks and
 // meetings scheduled from the rollout day onward can enter the blocking queue.

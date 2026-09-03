@@ -11,6 +11,7 @@ import {
   FileUp,
   FolderKanban,
   Landmark,
+  BookOpen,
   LogOut,
   Menu,
   MousePointerClick,
@@ -53,7 +54,8 @@ type NavigationLink = {
     | "navCalculators"
     | "navSettings"
     | "navImport"
-    | "navUsers";
+    | "navUsers"
+    | "navKnowledge";
   groupKey: "main" | "sales" | "operations" | "company";
   icon: LucideIcon;
   permissions?: Permission[];
@@ -123,6 +125,7 @@ const navigationLinks: NavigationLink[] = [
   },
   { href: "/calendar", labelKey: "navCalendar", groupKey: "company", icon: CalendarDays, permissions: ["calendar:view"] },
   { href: "/calculators", labelKey: "navCalculators", groupKey: "company", icon: Calculator, permissions: ["offers:calculate"], tourId: "tour-nav-calculators" },
+  { href: "/knowledge", labelKey: "navKnowledge", groupKey: "company", icon: BookOpen },
   { href: "/settings", labelKey: "navSettings", groupKey: "company", icon: Settings, permissions: ["settings:view"] },
   { href: "/admin/import", labelKey: "navImport", groupKey: "company", icon: FileUp, permissions: ["data:import"] },
   { href: "/admin/users", labelKey: "navUsers", groupKey: "company", icon: Landmark, permissions: ["users:manage"] }

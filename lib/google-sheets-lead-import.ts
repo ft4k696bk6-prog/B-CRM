@@ -22,6 +22,7 @@ type PreparedLead = {
   postal_code: string | null;
   voivodeship: string | null;
   source: "B2C";
+  campaign: string | null;
   status: "Nowy";
   assigned_to: null;
   crm_environment: CrmDataScope;
@@ -371,6 +372,7 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
         postal_code: postalCode,
         voivodeship,
         source: "B2C",
+        campaign: (typeof row.campaign_name === "string" ? row.campaign_name.trim() : "") || sheetName,
         status: "Nowy",
         assigned_to: null,
         crm_environment: crmEnvironment,

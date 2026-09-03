@@ -39,7 +39,7 @@ describe("pricing table", () => {
       referralReward: 500
     });
 
-    expect(PRICE_ROWS).toEqual([
+    expect(PRICE_ROWS.slice(0, 18)).toEqual([
       { panelCount: 4, kwp: 2, prices: { "pv-only": 36873, "me-5": 44556, "me-10": 46955, "me-16": 48889, "me-20": 53347, "me-23": 54077, "me-28": 56002 } },
       { panelCount: 5, kwp: 2.5, prices: { "pv-only": 37613, "me-5": 45296, "me-10": 47695, "me-16": 49629, "me-20": 54087, "me-23": 54817, "me-28": 56742 } },
       { panelCount: 6, kwp: 3, prices: { "pv-only": 38353, "me-5": 46036, "me-10": 48435, "me-16": 50369, "me-20": 54827, "me-23": 55557, "me-28": 57482 } },
@@ -59,5 +59,10 @@ describe("pricing table", () => {
       { panelCount: 20, kwp: 10, prices: { "pv-only": 51637, "me-5": 59320, "me-10": 61719, "me-16": 63653, "me-20": 68111, "me-23": 68841, "me-28": 70766 } },
       { panelCount: 21, kwp: 10.5, prices: { "pv-only": 52377, "me-5": 60060, "me-10": 62459, "me-16": 64393, "me-20": 68851, "me-23": 69581, "me-28": 71506 } }
     ]);
+    expect(PRICE_ROWS.at(-1)).toEqual({
+      panelCount: 40,
+      kwp: 20,
+      prices: { "pv-only": 66437, "me-5": 74120, "me-10": 76519, "me-16": 78453, "me-20": 82911, "me-23": 83641, "me-28": 85566 }
+    });
   });
 });

@@ -5,15 +5,16 @@ import { canManagePricing } from "@/lib/pricing-access";
 export async function GET(request: Request) {
   const auth = await requireApiProfile(request);
   if ("error" in auth) return auth.error;
-  if (!canManagePricing(auth.profile.role)) return NextResponse.json({ error: "Brak uprawnień." }, { status: 403 });
-
   const { data, error } = await auth.supabaseAdmin
     .from("profiles")
-    .select("company_margin_net,sales_margin_net")
+    .select("company_margin_net,sales_margin_net,commission_percent")
     .eq("id", auth.profile.id)
     .single();
   if (error || !data) return NextResponse.json({ error: error?.message || "Nie znaleziono ustawień." }, { status: 400 });
-  return NextResponse.json({ adminMargin: Number(data.company_margin_net), salesMargin: Number(data.sales_margin_net) });
+  if (!canManagePricing(auth.profile.role)) {
+    return NextResponse.json({ totalMarginNet: Number(data.company_margin_net) + Number(data.sales_margin_net) });
+  }
+  return NextResponse.json({ adminMargin: Number(data.company_margin_net), salesMargin: Number(data.sales_margin_net), commissionPercent: Number(data.commission_percent) });
 }
 
 export async function PATCH(request: Request) {

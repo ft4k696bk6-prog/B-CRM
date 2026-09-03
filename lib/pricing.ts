@@ -72,7 +72,7 @@ export const PACKAGE_OPTIONS: Array<{
   }
 ];
 
-export const PRICE_ROWS: PriceRow[] = [
+const PUBLISHED_PRICE_ROWS: PriceRow[] = [
   { panelCount: 4, kwp: 2, prices: { "pv-only": 36873, "me-5": 44556, "me-10": 46955, "me-16": 48889, "me-20": 53347, "me-23": 54077, "me-28": 56002 } },
   { panelCount: 5, kwp: 2.5, prices: { "pv-only": 37613, "me-5": 45296, "me-10": 47695, "me-16": 49629, "me-20": 54087, "me-23": 54817, "me-28": 56742 } },
   { panelCount: 6, kwp: 3, prices: { "pv-only": 38353, "me-5": 46036, "me-10": 48435, "me-16": 50369, "me-20": 54827, "me-23": 55557, "me-28": 57482 } },
@@ -92,6 +92,24 @@ export const PRICE_ROWS: PriceRow[] = [
   { panelCount: 20, kwp: 10, prices: { "pv-only": 51637, "me-5": 59320, "me-10": 61719, "me-16": 63653, "me-20": 68111, "me-23": 68841, "me-28": 70766 } },
   { panelCount: 21, kwp: 10.5, prices: { "pv-only": 52377, "me-5": 60060, "me-10": 62459, "me-16": 64393, "me-20": 68851, "me-23": 69581, "me-28": 71506 } }
 ];
+
+// Until the company supplies published rates above 10.5 kW, extend every
+// package by the last confirmed step: PLN 740 net per additional 0.5 kWp.
+// Keeping this explicit makes the temporary rule auditable and easy to replace.
+const FALLBACK_HALF_KWP_STEP_NET = 740;
+const publishedLastRow = PUBLISHED_PRICE_ROWS[PUBLISHED_PRICE_ROWS.length - 1];
+const FALLBACK_PRICE_ROWS: PriceRow[] = Array.from({ length: 19 }, (_, index) => {
+  const step = index + 1;
+  return {
+    panelCount: publishedLastRow.panelCount + step,
+    kwp: publishedLastRow.kwp + step * 0.5,
+    prices: Object.fromEntries(
+      Object.entries(publishedLastRow.prices).map(([packageId, price]) => [packageId, price + step * FALLBACK_HALF_KWP_STEP_NET])
+    ) as Record<PackageId, number>
+  };
+});
+
+export const PRICE_ROWS: PriceRow[] = [...PUBLISHED_PRICE_ROWS, ...FALLBACK_PRICE_ROWS];
 
 export const STORAGE_NET_PRICES = [
   { id: "kon-tec-5", brand: "Kon-TEC", label: "Kon-TEC ME 5,12 kWh", kwh: 5.12, net: 30683 },

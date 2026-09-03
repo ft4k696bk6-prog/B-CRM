@@ -63,7 +63,7 @@ export async function POST(request: Request) {
   if (outcome === "no_answer") patch = { ...clearSchedule, status: "Nie odebrał" };
   if (outcome === "return") patch = { ...clearSchedule, status: "Nowy", assigned_to: null, meeting_address: null, meeting_note: null, resignation_reason: null, contract_number: null, last_opened_at: null };
   if (outcome === "contract") patch = { ...clearSchedule, status: "Po spotkaniu", meeting_note: note.trim() };
-  if (outcome === "resignation") patch = { ...clearSchedule, status: "Rezygnacja", resignation_reason: note.trim() };
+  if (outcome === "resignation") patch = { ...clearSchedule, status: "Rezygnacja", assigned_to: null, resignation_reason: note.trim() };
 
   const { error: updateError } = await auth.supabaseAdmin.from("leads").update(patch).eq("id", lead.id).eq("crm_environment", auth.profile.crm_environment);
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 400 });
