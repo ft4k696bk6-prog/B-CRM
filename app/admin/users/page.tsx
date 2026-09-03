@@ -711,7 +711,7 @@ export default function UsersPage() {
           description="Domyślnie: marża firmy 10 000 zł i marża handlowca 5 000 zł. Wyjątki oraz procent prowizji ustawiasz indywidualnie."
         >
           <div className="grid gap-3">
-            {users.filter((person) => ["handlowiec", "menadzer"].includes(person.role)).map((person) => {
+            {users.map((person) => {
               const draft = pricingDrafts[person.id] || { company: "10000", sales: "5000", commission: "0" };
               const update = (key: "company" | "sales" | "commission", value: string) => setPricingDrafts((current) => ({ ...current, [person.id]: { ...draft, [key]: value } }));
               return <article key={person.id} className="grid gap-3 rounded-lg border border-line bg-[#f9fbfd] p-4 lg:grid-cols-[minmax(180px,1fr)_160px_160px_150px_auto] lg:items-end">
