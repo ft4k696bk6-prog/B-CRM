@@ -11,7 +11,7 @@ import {
   MessageSquarePlus,
   RotateCcw,
   Save,
-  UserCheck
+  UserCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
@@ -19,11 +19,21 @@ import { LoadingScreen } from "@/components/loading-screen";
 import { RegionFields } from "@/components/region-fields";
 import { StatusBadge } from "@/components/status-badge";
 import { Alert, EmptyState, SectionHeader } from "@/components/ui";
-import { ACTION_LABELS, LEAD_STATUSES, STATUS_LABELS, STATUS_TILE_TONES } from "@/lib/constants";
+import {
+  ACTION_LABELS,
+  LEAD_STATUSES,
+  STATUS_LABELS,
+  STATUS_TILE_TONES,
+} from "@/lib/constants";
 import { hasAnyPermission } from "@/lib/permissions";
 import { formatDateTime, toDatetimeLocalValue } from "@/lib/date";
 import { formatPhoneReadable } from "@/lib/phone";
-import { canManageLeads, homePathForRole, isManagerRole, isSalesRole } from "@/lib/roles";
+import {
+  canManageLeads,
+  homePathForRole,
+  isManagerRole,
+  isSalesRole,
+} from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { Lead, LeadHistory, LeadStatus, Profile } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
@@ -37,7 +47,7 @@ function getSalesStatusPath(lead: Lead): LeadStatus[] {
     "Nie odebrał",
     "Call back",
     "Spotkanie",
-    "Rezygnacja"
+    "Rezygnacja",
   ];
 
   if (lead.status === "Spotkanie") {
@@ -47,7 +57,7 @@ function getSalesStatusPath(lead: Lead): LeadStatus[] {
       "Umowa",
       "Call back",
       "Rezygnacja",
-      "Nie odebrał"
+      "Nie odebrał",
     ];
   }
 
@@ -87,7 +97,11 @@ export default function LeadDetailsPage() {
   const loggedLeadId = useRef<string | null>(null);
 
   const canManage = canManageLeads(profile?.role);
-  const canEditLead = hasAnyPermission(profile?.role, ["leads:edit:own", "leads:edit:team", "leads:edit:all"]);
+  const canEditLead = hasAnyPermission(profile?.role, [
+    "leads:edit:own",
+    "leads:edit:team",
+    "leads:edit:all",
+  ]);
   const isManager = isManagerRole(profile?.role);
   const backHref = homePathForRole(profile?.role);
 
@@ -99,7 +113,9 @@ export default function LeadDetailsPage() {
 
     const { data, error: leadError } = await supabase
       .from("leads")
-      .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)")
+      .select(
+        "*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)",
+      )
       .eq("id", params.id)
       .eq("crm_environment", profile.crm_environment)
       .single();
@@ -138,7 +154,7 @@ export default function LeadDetailsPage() {
         lead_id: nextLead.id,
         user_id: profile.id,
         action_type: "lead_opened",
-        description: "Otwarto szczegóły leada."
+        description: "Otwarto szczegóły leada.",
       });
     }
 
@@ -150,7 +166,9 @@ export default function LeadDetailsPage() {
 
     const { data } = await supabase
       .from("lead_history")
-      .select("*, user_profile:profiles!lead_history_user_id_fkey(id,email,full_name,role)")
+      .select(
+        "*, user_profile:profiles!lead_history_user_id_fkey(id,email,full_name,role)",
+      )
       .eq("lead_id", params.id)
       .neq("action_type", "lead_opened")
       .order("created_at", { ascending: false })
@@ -164,19 +182,25 @@ export default function LeadDetailsPage() {
 
     const query = supabase
       .from("profiles")
-      .select("id,email,full_name,role,manager_id,crm_environment,created_at,business_phone,can_view_lead_pool")
+      .select(
+        "id,email,full_name,role,manager_id,crm_environment,created_at,business_phone,can_view_lead_pool",
+      )
       .in("role", ["handlowiec", "sales", "menadzer"])
       .eq("crm_environment", profile.crm_environment)
       .order("full_name", { ascending: true });
 
     const { data } = await query;
-    const assignablePeople =
-      isManager
-        ? ((data || []) as Profile[]).filter((person) => person.id === profile.id || person.manager_id === profile.id)
-        : ((data || []) as Profile[]);
+    const assignablePeople = isManager
+      ? ((data || []) as Profile[]).filter(
+          (person) =>
+            person.id === profile.id || person.manager_id === profile.id,
+        )
+      : ((data || []) as Profile[]);
     const peopleWithManager =
       isManager && !assignablePeople.some((person) => person.id === profile.id)
-        ? [...assignablePeople, profile].sort((a, b) => a.full_name.localeCompare(b.full_name, "pl"))
+        ? [...assignablePeople, profile].sort((a, b) =>
+            a.full_name.localeCompare(b.full_name, "pl"),
+          )
         : assignablePeople;
 
     setSalespeople(peopleWithManager);
@@ -191,7 +215,11 @@ export default function LeadDetailsPage() {
 
   async function refresh() {
     await Promise.all([loadLead(), loadHistory()]);
-    if (embedded && window.parent !== window) window.parent.postMessage({ type: "bcrm:lead-updated", leadId: params.id }, window.location.origin);
+    if (embedded && window.parent !== window)
+      window.parent.postMessage(
+        { type: "bcrm:lead-updated", leadId: params.id },
+        window.location.origin,
+      );
   }
 
   async function saveStatus(event: FormEvent<HTMLFormElement>) {
@@ -202,8 +230,14 @@ export default function LeadDetailsPage() {
     setError("");
 
     const patch: Partial<Lead> = { status };
-    const isClosedLead = lead.status === "Umowa" || lead.status === "Rezygnacja";
-    const availableStatuses = isClosedLead && !canManage ? [lead.status] : canManage ? LEAD_STATUSES : getSalesStatusPath(lead);
+    const isClosedLead =
+      lead.status === "Umowa" || lead.status === "Rezygnacja";
+    const availableStatuses =
+      isClosedLead && !canManage
+        ? [lead.status]
+        : canManage
+          ? LEAD_STATUSES
+          : getSalesStatusPath(lead);
 
     if (!availableStatuses.includes(status)) {
       setError("Ten status nie jest dostępny na obecnym etapie leada.");
@@ -211,13 +245,31 @@ export default function LeadDetailsPage() {
       return;
     }
 
-    if (profile.role === "handlowiec" && status !== "Po spotkaniu" && (status !== lead.status || status === "Call back" || status === "Spotkanie")) {
+    if (
+      status === "Rezygnacja" ||
+      (profile.role === "handlowiec" &&
+        status !== "Po spotkaniu" &&
+        (status !== lead.status ||
+          status === "Call back" ||
+          status === "Spotkanie"))
+    ) {
       if (!session?.access_token) {
         setError("Sesja wygasła. Zaloguj się ponownie.");
         setBusy(false);
         return;
       }
-      const outcome = status === "Call back" ? "callback" : status === "Spotkanie" ? "meeting" : status === "Nie odebrał" ? "no_answer" : status === "Rezygnacja" ? "resignation" : status === "Umowa" ? "contract" : null;
+      const outcome =
+        status === "Call back"
+          ? "callback"
+          : status === "Spotkanie"
+            ? "meeting"
+            : status === "Nie odebrał"
+              ? "no_answer"
+              : status === "Rezygnacja"
+                ? "resignation"
+                : status === "Umowa"
+                  ? "contract"
+                  : null;
       if (!outcome) {
         setError("Ta zmiana nie jest dostępna na obecnym etapie leada.");
         setBusy(false);
@@ -225,10 +277,23 @@ export default function LeadDetailsPage() {
       }
       const response = await fetch("/api/leads/outcome", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
-        body: JSON.stringify({ leadId: lead.id, outcome, callbackAt, meetingAt, address: meetingAddress, note: outcome === "resignation" ? resignationReason : meetingNote })
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          leadId: lead.id,
+          outcome,
+          callbackAt,
+          meetingAt,
+          address: meetingAddress,
+          note: outcome === "resignation" ? resignationReason : meetingNote,
+        }),
       });
-      const result = (await response.json().catch(() => ({}))) as { error?: string; redirect?: string };
+      const result = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        redirect?: string;
+      };
       if (!response.ok) {
         setError(result.error || "Nie udało się zapisać wyniku.");
         setBusy(false);
@@ -269,18 +334,12 @@ export default function LeadDetailsPage() {
       }
       patch.meeting_note = [
         meetingNote.trim(),
-        soldScope.trim() ? `Sprzedano / zakres oferty: ${soldScope.trim()}` : ""
-      ].filter(Boolean).join("\n\n");
-    }
-
-    if (status === "Rezygnacja") {
-      if (!resignationReason.trim()) {
-        setError("Wpisz powód rezygnacji.");
-        setBusy(false);
-        return;
-      }
-      patch.resignation_reason = resignationReason.trim();
-      patch.assigned_to = null;
+        soldScope.trim()
+          ? `Sprzedano / zakres oferty: ${soldScope.trim()}`
+          : "",
+      ]
+        .filter(Boolean)
+        .join("\n\n");
     }
 
     if (status === "Umowa") {
@@ -327,7 +386,7 @@ export default function LeadDetailsPage() {
       lead_id: lead.id,
       user_id: profile.id,
       action_type: "comment",
-      description: comment.trim()
+      description: comment.trim(),
     });
 
     if (commentError) {
@@ -353,7 +412,7 @@ export default function LeadDetailsPage() {
         postal_code: postalCode.trim() || null,
         address: address.trim() || null,
         voivodeship: voivodeship || null,
-        county: county || null
+        county: county || null,
       })
       .eq("id", lead.id)
       .eq("crm_environment", profile.crm_environment);
@@ -378,16 +437,25 @@ export default function LeadDetailsPage() {
       setBusy(false);
       return;
     }
-    const response = await fetch(isSalesRole(profile.role) ? "/api/leads/outcome" : "/api/leads/return", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`
+    const response = await fetch(
+      isSalesRole(profile.role) ? "/api/leads/outcome" : "/api/leads/return",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(
+          isSalesRole(profile.role)
+            ? { leadId: lead.id, outcome: "return", note: returnNote.trim() }
+            : { leadIds: [lead.id] },
+        ),
       },
-      body: JSON.stringify(isSalesRole(profile.role) ? { leadId: lead.id, outcome: "return", note: returnNote.trim() } : { leadIds: [lead.id] })
-    });
+    );
 
-    const result = (await response.json().catch(() => ({}))) as { error?: string };
+    const result = (await response.json().catch(() => ({}))) as {
+      error?: string;
+    };
 
     if (!response.ok) {
       setError(result.error || "Nie udało się zwrócić leada.");
@@ -414,15 +482,17 @@ export default function LeadDetailsPage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`
+        Authorization: `Bearer ${session.access_token}`,
       },
       body: JSON.stringify({
         leadIds: [lead.id],
-        assignedTo: selectedAssignee || null
-      })
+        assignedTo: selectedAssignee || null,
+      }),
     });
 
-    const result = (await response.json().catch(() => ({}))) as { error?: string };
+    const result = (await response.json().catch(() => ({}))) as {
+      error?: string;
+    };
 
     if (!response.ok) {
       setError(result.error || "Nie udało się zapisać przypisania.");
@@ -448,18 +518,18 @@ export default function LeadDetailsPage() {
     <AppShell profile={profile} embedded={embedded}>
       <div className="grid gap-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          {!embedded ? <Link href={backHref} className="btn-secondary w-fit">
-            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-            Wróć
-          </Link> : <span />}
+          {!embedded ? (
+            <Link href={backHref} className="btn-secondary w-fit">
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              Wróć
+            </Link>
+          ) : (
+            <span />
+          )}
           {lead ? <StatusBadge status={lead.status} /> : null}
         </div>
 
-        {error ? (
-          <Alert tone="danger">
-            {error}
-          </Alert>
-        ) : null}
+        {error ? <Alert tone="danger">{error}</Alert> : null}
 
         {!lead ? (
           <LoadingScreen label={busy ? "Ładowanie leada" : "Brak danych"} />
@@ -468,12 +538,24 @@ export default function LeadDetailsPage() {
             <section className="app-card">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold text-ink">{lead.full_name}</h1>
+                  <h1 className="text-2xl font-bold text-ink">
+                    {lead.full_name}
+                  </h1>
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-                    <span className="font-semibold text-muted">{formatPhoneReadable(lead.phone)}</span>
-                    <span className="rounded-md border border-sky/20 bg-sky/10 px-2 py-1 font-bold text-sky">Źródło: {lead.source || "bez źródła"}</span>
-                    {lead.campaign ? <span className="rounded-md border border-solar/25 bg-solar/10 px-2 py-1 font-bold text-[#8a5a00]">Kampania: {lead.campaign}</span> : null}
-                    <span className="rounded-md border border-line bg-[#f8fafc] px-2 py-1 font-semibold text-muted">{lead.postal_code || "brak kodu"}</span>
+                    <span className="font-semibold text-muted">
+                      {formatPhoneReadable(lead.phone)}
+                    </span>
+                    <span className="rounded-md border border-sky/20 bg-sky/10 px-2 py-1 font-bold text-sky">
+                      Źródło: {lead.source || "bez źródła"}
+                    </span>
+                    {lead.campaign ? (
+                      <span className="rounded-md border border-solar/25 bg-solar/10 px-2 py-1 font-bold text-[#8a5a00]">
+                        Kampania: {lead.campaign}
+                      </span>
+                    ) : null}
+                    <span className="rounded-md border border-line bg-[#f8fafc] px-2 py-1 font-semibold text-muted">
+                      {lead.postal_code || "brak kodu"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -485,7 +567,9 @@ export default function LeadDetailsPage() {
                       <FileSignature className="h-5 w-5" aria-hidden="true" />
                     </span>
                     <div>
-                      <div className="text-sm font-bold uppercase tracking-wide">Umowa</div>
+                      <div className="text-sm font-bold uppercase tracking-wide">
+                        Umowa
+                      </div>
                       <div className="text-lg font-black">
                         {lead.contract_number || "Brak numeru umowy"}
                       </div>
@@ -497,7 +581,9 @@ export default function LeadDetailsPage() {
               <dl className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
                   <dt className="label">Adres</dt>
-                  <dd className="text-sm font-semibold text-ink">{lead.address || "—"}</dd>
+                  <dd className="text-sm font-semibold text-ink">
+                    {lead.address || "—"}
+                  </dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
                   <dt className="label">Region</dt>
@@ -519,34 +605,51 @@ export default function LeadDetailsPage() {
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
                   <dt className="label">Dodany</dt>
-                  <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.created_at)}</dd>
+                  <dd className="text-sm font-semibold text-ink">
+                    {formatDateTime(lead.created_at)}
+                  </dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
                   <dt className="label">Modyfikacja</dt>
-                  <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.updated_at)}</dd>
+                  <dd className="text-sm font-semibold text-ink">
+                    {formatDateTime(lead.updated_at)}
+                  </dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
                   <dt className="label">Call-back</dt>
-                  <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.callback_at)}</dd>
+                  <dd className="text-sm font-semibold text-ink">
+                    {formatDateTime(lead.callback_at)}
+                  </dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
                   <dt className="label">Spotkanie</dt>
-                  <dd className="text-sm font-semibold text-ink">{formatDateTime(lead.meeting_at)}</dd>
+                  <dd className="text-sm font-semibold text-ink">
+                    {formatDateTime(lead.meeting_at)}
+                  </dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3">
                   <dt className="label">Numer umowy</dt>
-                  <dd className="text-sm font-semibold text-ink">{lead.contract_number || "—"}</dd>
+                  <dd className="text-sm font-semibold text-ink">
+                    {lead.contract_number || "—"}
+                  </dd>
                 </div>
                 <div className="rounded-md border border-line bg-[#f9fbfd] p-3 sm:col-span-2 xl:col-span-3">
                   <dt className="label">Notatka po spotkaniu</dt>
-                  <dd className="text-sm font-semibold text-ink">{lead.meeting_note || "—"}</dd>
+                  <dd className="text-sm font-semibold text-ink">
+                    {lead.meeting_note || "—"}
+                  </dd>
                 </div>
               </dl>
             </section>
 
             <section className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
               <form onSubmit={saveStatus} className="app-card">
-                <SectionHeader icon={CalendarClock} title="Status i terminy" tone="sky" className="mb-4" />
+                <SectionHeader
+                  icon={CalendarClock}
+                  title="Status i terminy"
+                  tone="sky"
+                  className="mb-4"
+                />
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="sm:col-span-2">
@@ -565,7 +668,9 @@ export default function LeadDetailsPage() {
                               STATUS_TILE_TONES[item]
                             } ${active ? "ring-2 ring-ink ring-offset-2" : ""}`}
                           >
-                            <span className="block text-sm font-black">{STATUS_LABELS[item]}</span>
+                            <span className="block text-sm font-black">
+                              {STATUS_LABELS[item]}
+                            </span>
                             <span className="mt-1 block text-xs opacity-80">
                               {item === "Call back"
                                 ? "Ustaw termin kontaktu"
@@ -575,9 +680,9 @@ export default function LeadDetailsPage() {
                                     ? "Wymaga notatki"
                                     : item === "Umowa"
                                       ? "Wymaga numeru umowy"
-                                    : item === "Rezygnacja"
-                                          ? "Wymaga powodu"
-                                          : "Zmień etap leada"}
+                                      : item === "Rezygnacja"
+                                        ? "Wymaga powodu"
+                                        : "Zmień etap leada"}
                             </span>
                           </button>
                         );
@@ -588,7 +693,8 @@ export default function LeadDetailsPage() {
                     lead.status !== "Po spotkaniu" &&
                     lead.status !== "Umowa" ? (
                       <p className="mt-2 text-xs font-semibold text-muted">
-                        Status Umowa pojawi się dopiero po zapisaniu statusu Spotkanie.
+                        Status Umowa pojawi się dopiero po zapisaniu statusu
+                        Spotkanie.
                       </p>
                     ) : null}
                   </div>
@@ -621,7 +727,9 @@ export default function LeadDetailsPage() {
                         <input
                           className="field"
                           value={meetingAddress}
-                          onChange={(event) => setMeetingAddress(event.target.value)}
+                          onChange={(event) =>
+                            setMeetingAddress(event.target.value)
+                          }
                         />
                       </label>
                     </>
@@ -633,7 +741,9 @@ export default function LeadDetailsPage() {
                       <textarea
                         className="field min-h-24"
                         value={resignationReason}
-                        onChange={(event) => setResignationReason(event.target.value)}
+                        onChange={(event) =>
+                          setResignationReason(event.target.value)
+                        }
                       />
                     </label>
                   ) : null}
@@ -645,12 +755,16 @@ export default function LeadDetailsPage() {
                         <textarea
                           className="field min-h-28"
                           value={meetingNote}
-                          onChange={(event) => setMeetingNote(event.target.value)}
+                          onChange={(event) =>
+                            setMeetingNote(event.target.value)
+                          }
                           placeholder="Co ustalono, jaki kolejny krok, uwagi klienta"
                         />
                       </label>
                       <label className="sm:col-span-2">
-                        <span className="label">Co sprzedano / zakres oferty</span>
+                        <span className="label">
+                          Co sprzedano / zakres oferty
+                        </span>
                         <textarea
                           className="field min-h-24"
                           value={soldScope}
@@ -659,7 +773,9 @@ export default function LeadDetailsPage() {
                         />
                       </label>
                       <div className="sm:col-span-2 rounded-md border border-sky/20 bg-sky/10 p-3 text-sm font-semibold text-sky">
-                        Po wybraniu „Umowa” otworzy się wersja robocza. Lead trafi do realizacji dopiero po dodaniu PDF-u, zdjęcia i użyciu „Wyślij komplet”.
+                        Po wybraniu „Umowa” otworzy się wersja robocza. Lead
+                        trafi do realizacji dopiero po dodaniu PDF-u, zdjęcia i
+                        użyciu „Wyślij komplet”.
                       </div>
                     </>
                   ) : null}
@@ -670,7 +786,9 @@ export default function LeadDetailsPage() {
                       <input
                         className="field border-[#9bd7a1] bg-[#f3fbf4] font-bold text-[#23682e]"
                         value={contractNumber}
-                        onChange={(event) => setContractNumber(event.target.value)}
+                        onChange={(event) =>
+                          setContractNumber(event.target.value)
+                        }
                         placeholder="np. B/2026/001"
                       />
                     </label>
@@ -678,15 +796,37 @@ export default function LeadDetailsPage() {
                 </div>
 
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <button type="submit" disabled={busy || !canEditLead} className="btn-primary">
+                  <button
+                    type="submit"
+                    disabled={busy || !canEditLead}
+                    className="btn-primary"
+                  >
                     <Save className="h-4 w-4" aria-hidden="true" />
                     Zapisz
                   </button>
-                  {isSalesRole(profile.role) ? <label className="basis-full"><span className="label">Notatka wymagana przy zwrocie</span><textarea className="field min-h-20" value={returnNote} onChange={(event) => setReturnNote(event.target.value)} placeholder="Dlaczego lead wraca do puli?" /></label> : null}
+                  {isSalesRole(profile.role) ? (
+                    <label className="basis-full">
+                      <span className="label">
+                        Notatka wymagana przy zwrocie
+                      </span>
+                      <textarea
+                        className="field min-h-20"
+                        value={returnNote}
+                        onChange={(event) => setReturnNote(event.target.value)}
+                        placeholder="Dlaczego lead wraca do puli?"
+                      />
+                    </label>
+                  ) : null}
                   <button
                     type="button"
                     onClick={returnLead}
-                    disabled={busy || !canEditLead || (!canManage && (lead.status === "Umowa" || lead.status === "Rezygnacja"))}
+                    disabled={
+                      busy ||
+                      !canEditLead ||
+                      (!canManage &&
+                        (lead.status === "Umowa" ||
+                          lead.status === "Rezygnacja"))
+                    }
                     className="btn-secondary"
                   >
                     <RotateCcw className="h-4 w-4" aria-hidden="true" />
@@ -697,7 +837,12 @@ export default function LeadDetailsPage() {
 
               <div className="grid gap-5">
                 <form onSubmit={saveLeadData} className="app-card">
-                  <SectionHeader icon={MapPin} title="Dane adresowe" tone="sky" className="mb-4" />
+                  <SectionHeader
+                    icon={MapPin}
+                    title="Dane adresowe"
+                    tone="sky"
+                    className="mb-4"
+                  />
                   <div className="grid gap-3">
                     <label>
                       <span className="label">Kod pocztowy</span>
@@ -724,7 +869,11 @@ export default function LeadDetailsPage() {
                       onCountyChange={setCounty}
                     />
                   </div>
-                  <button type="submit" disabled={busy || !canEditLead} className="btn-primary mt-4">
+                  <button
+                    type="submit"
+                    disabled={busy || !canEditLead}
+                    className="btn-primary mt-4"
+                  >
                     <Save className="h-4 w-4" aria-hidden="true" />
                     Zapisz dane
                   </button>
@@ -732,13 +881,20 @@ export default function LeadDetailsPage() {
 
                 {canManage ? (
                   <form onSubmit={assignLead} className="app-card">
-                    <SectionHeader icon={UserCheck} title="Przypisanie" tone="leaf" className="mb-4" />
+                    <SectionHeader
+                      icon={UserCheck}
+                      title="Przypisanie"
+                      tone="leaf"
+                      className="mb-4"
+                    />
                     <label>
                       <span className="label">Handlowiec</span>
                       <select
                         className="field"
                         value={selectedAssignee}
-                        onChange={(event) => setSelectedAssignee(event.target.value)}
+                        onChange={(event) =>
+                          setSelectedAssignee(event.target.value)
+                        }
                       >
                         <option value="">Nieprzypisany</option>
                         {salespeople.map((person) => (
@@ -758,7 +914,6 @@ export default function LeadDetailsPage() {
                     </button>
                   </form>
                 ) : null}
-
               </div>
             </section>
 
@@ -767,40 +922,64 @@ export default function LeadDetailsPage() {
                 <h2 className="text-base font-bold text-ink">Historia leada</h2>
                 <div className="mt-4 grid max-h-[680px] gap-3 overflow-y-auto pr-1">
                   {history.map((item) => (
-                    <div key={item.id} className="rounded-md border border-line bg-[#f9fbfd] p-3">
+                    <div
+                      key={item.id}
+                      className="rounded-md border border-line bg-[#f9fbfd] p-3"
+                    >
                       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                         <div className="font-semibold text-ink">
                           {ACTION_LABELS[item.action_type] || item.action_type}
                         </div>
-                        <div className="text-xs text-muted">{formatDateTime(item.created_at)}</div>
+                        <div className="text-xs text-muted">
+                          {formatDateTime(item.created_at)}
+                        </div>
                       </div>
-                      <p className="mt-2 text-sm text-muted">{item.description}</p>
+                      <p className="mt-2 text-sm text-muted">
+                        {item.description}
+                      </p>
                       <div className="mt-2 text-xs text-muted">
                         {item.user_profile?.full_name || "System"}
                       </div>
                     </div>
                   ))}
                   {history.length === 0 ? (
-                    <EmptyState title="Brak historii" description="Historia pojawi się po pierwszej zmianie lub komentarzu." />
+                    <EmptyState
+                      title="Brak historii"
+                      description="Historia pojawi się po pierwszej zmianie lub komentarzu."
+                    />
                   ) : null}
                 </div>
               </div>
 
               {canEditLead ? (
-                <form onSubmit={addComment} className="app-card h-fit xl:sticky xl:top-20">
-                  <SectionHeader icon={MessageSquarePlus} title="Komentarze" tone="solar" className="mb-4" />
+                <form
+                  onSubmit={addComment}
+                  className="app-card h-fit xl:sticky xl:top-20"
+                >
+                  <SectionHeader
+                    icon={MessageSquarePlus}
+                    title="Komentarze"
+                    tone="solar"
+                    className="mb-4"
+                  />
                   <textarea
                     className="field min-h-40"
                     value={comment}
                     onChange={(event) => setComment(event.target.value)}
                     placeholder="Dodaj ustalenia z rozmowy lub ważną informację…"
                   />
-                  <button type="submit" disabled={busy || !comment.trim()} className="btn-primary mt-4 w-full">
+                  <button
+                    type="submit"
+                    disabled={busy || !comment.trim()}
+                    className="btn-primary mt-4 w-full"
+                  >
                     Dodaj komentarz
                   </button>
                 </form>
               ) : (
-                <Alert tone="info">Komentarze są dostępne tylko dla osób z prawem edycji leada.</Alert>
+                <Alert tone="info">
+                  Komentarze są dostępne tylko dla osób z prawem edycji leada.
+                </Alert>
               )}
             </section>
           </>
