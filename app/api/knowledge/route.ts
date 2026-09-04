@@ -1,14 +1,26 @@
 import { NextResponse } from "next/server";
 import { requireApiProfile } from "@/lib/server-auth";
+import { BUILT_IN_KNOWLEDGE, filterKnowledge, knowledgeCategories, type KnowledgeArticle } from "@/lib/knowledge-catalog";
 
 export async function GET(request: Request) {
   const auth = await requireApiProfile(request); if ("error" in auth) return auth.error;
-  const search = new URL(request.url).searchParams.get("q")?.trim() || "";
-  let query = auth.supabaseAdmin.from("knowledge_articles").select("*").eq("crm_environment", auth.profile.crm_environment).order("updated_at", { ascending: false });
-  if (search) query = query.or(`title.ilike.%${search.replace(/[,%]/g, " ")}%,content.ilike.%${search.replace(/[,%]/g, " ")}%,category.ilike.%${search.replace(/[,%]/g, " ")}%`);
+  const params = new URL(request.url).searchParams;
+  const search = params.get("q")?.trim() || "";
+  const category = params.get("category")?.trim() || "";
+  if (params.get("categories") === "1") {
+    const { data, error } = await auth.supabaseAdmin.from("knowledge_articles").select("category").eq("crm_environment", auth.profile.crm_environment).limit(500);
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ categories: knowledgeCategories([...(data || []).map((item) => ({ ...BUILT_IN_KNOWLEDGE[0], id: `category-${item.category}`, category: item.category })), ...BUILT_IN_KNOWLEDGE]) });
+  }
+  const query = auth.supabaseAdmin.from("knowledge_articles").select("*").eq("crm_environment", auth.profile.crm_environment).order("updated_at", { ascending: false });
   const { data, error } = await query.limit(200);
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-  return NextResponse.json({ articles: data || [] });
+  const databaseArticles = (data || []) as KnowledgeArticle[];
+  const allArticles = [...databaseArticles, ...BUILT_IN_KNOWLEDGE];
+  return NextResponse.json({
+    articles: filterKnowledge(allArticles, search, category),
+    categories: knowledgeCategories(allArticles),
+  });
 }
 
 export async function POST(request: Request) {
