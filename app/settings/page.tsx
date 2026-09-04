@@ -17,6 +17,9 @@ export default function SettingsPage() {
   const { settings, setSettings } = usePricingSettings(profile);
   const [adminMargin, setAdminMargin] = useState(settings.adminMargin);
   const [salesMargin, setSalesMargin] = useState(settings.salesMargin);
+  const [commissionPercent, setCommissionPercent] = useState(
+    settings.commissionPercent,
+  );
   const [businessPhone, setBusinessPhone] = useState("");
   const [saved, setSaved] = useState(false);
   const [phoneSaved, setPhoneSaved] = useState(false);
@@ -30,7 +33,8 @@ export default function SettingsPage() {
   useEffect(() => {
     setAdminMargin(settings.adminMargin);
     setSalesMargin(settings.salesMargin);
-  }, [settings.adminMargin, settings.salesMargin]);
+    setCommissionPercent(settings.commissionPercent);
+  }, [settings.adminMargin, settings.salesMargin, settings.commissionPercent]);
 
   useEffect(() => {
     setBusinessPhone(profile?.business_phone || "");
@@ -42,12 +46,12 @@ export default function SettingsPage() {
     event.preventDefault();
     setSettings({
       adminMargin,
-      salesMargin
+      salesMargin,
+      commissionPercent,
     });
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2500);
   }
-
 
   async function changePassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -68,7 +72,7 @@ export default function SettingsPage() {
 
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email: session.user.email,
-      password: currentPassword
+      password: currentPassword,
     });
 
     if (signInError) {
@@ -101,9 +105,9 @@ export default function SettingsPage() {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`
+        Authorization: `Bearer ${session.access_token}`,
       },
-      body: JSON.stringify({ businessPhone })
+      body: JSON.stringify({ businessPhone }),
     });
     const body = await response.json();
 
@@ -152,7 +156,9 @@ export default function SettingsPage() {
                   <span className="h-4 w-4 rounded-full bg-leaf" />
                 </div>
                 <div className="text-sm font-bold">{pack.name}</div>
-                <div className={`mt-1 text-sm ${theme === pack.id ? "text-white/72" : "text-muted"}`}>
+                <div
+                  className={`mt-1 text-sm ${theme === pack.id ? "text-white/72" : "text-muted"}`}
+                >
                   {pack.description}
                 </div>
               </button>
@@ -262,50 +268,75 @@ export default function SettingsPage() {
           </button>
         </form>
 
-        {profile.role === "owner" || profile.role === "admin" ? <form onSubmit={save} className="app-card max-w-2xl">
-          <SectionHeader
-            icon={Settings}
-            title="Ustawienia oferty"
-            description="Wartości techniczne nie są widoczne w ofercie dla klienta."
-            tone="ink"
-            className="mb-4"
-          />
+        {profile.role === "owner" || profile.role === "admin" ? (
+          <form onSubmit={save} className="app-card max-w-2xl">
+            <SectionHeader
+              icon={Settings}
+              title="Ustawienia oferty"
+              description="Wartości techniczne nie są widoczne w ofercie dla klienta."
+              tone="ink"
+              className="mb-4"
+            />
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <label>
                 <span className="label">Marża bazowa firmy netto</span>
                 <input
                   className="field"
                   type="number"
                   value={adminMargin}
                   min={0}
-                  onChange={(event) => setAdminMargin(Number(event.target.value))}
+                  onChange={(event) =>
+                    setAdminMargin(Number(event.target.value))
+                  }
                 />
-            </label>
+              </label>
 
-            <label>
-              <span className="label">Moja marża ofertowa netto</span>
-              <input
-                className="field"
-                type="number"
-                value={salesMargin}
-                min={0}
-                onChange={(event) => setSalesMargin(Number(event.target.value))}
-              />
-            </label>
-          </div>
+              <label>
+                <span className="label">Moja marża ofertowa netto</span>
+                <input
+                  className="field"
+                  type="number"
+                  value={salesMargin}
+                  min={0}
+                  onChange={(event) =>
+                    setSalesMargin(Number(event.target.value))
+                  }
+                />
+              </label>
 
-          {saved ? (
-            <Alert tone="success" className="mt-4">
-              Zapisano ustawienia.
-            </Alert>
-          ) : null}
+              <label>
+                <span className="label">Prowizja z marży handlowca (%)</span>
+                <input
+                  className="field"
+                  type="number"
+                  value={commissionPercent}
+                  min={0}
+                  max={100}
+                  step={0.1}
+                  onChange={(event) =>
+                    setCommissionPercent(Number(event.target.value))
+                  }
+                />
+                <span className="mt-1 block text-xs text-muted">
+                  Ten procent marży ofertowej netto jest finalną prowizją do
+                  wypłaty.
+                </span>
+              </label>
+            </div>
 
-          <button type="submit" className="btn-primary mt-4">
-            <Save className="h-4 w-4" aria-hidden="true" />
-            Zapisz
-          </button>
-        </form> : null}
+            {saved ? (
+              <Alert tone="success" className="mt-4">
+                Zapisano ustawienia.
+              </Alert>
+            ) : null}
+
+            <button type="submit" className="btn-primary mt-4">
+              <Save className="h-4 w-4" aria-hidden="true" />
+              Zapisz
+            </button>
+          </form>
+        ) : null}
       </div>
     </AppShell>
   );
