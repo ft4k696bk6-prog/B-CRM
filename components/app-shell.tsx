@@ -107,7 +107,7 @@ const navigationLinks: NavigationLink[] = [
     tourId: "tour-nav-new-lead"
   },
   {
-    href: "/realizacja",
+    href: "/realizacja/umowy",
     labelKey: "navOperations",
     groupKey: "operations",
     icon: FolderKanban,
