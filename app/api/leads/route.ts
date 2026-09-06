@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { LEAD_SOURCES } from "@/lib/lead-sources";
+import { normalizePhoneE164 } from "@/lib/phone";
 import { canCreateManualLead, canManageLeads, normalizeRole } from "@/lib/roles";
 import { normalizeCrmScope } from "@/lib/scope";
 
@@ -69,11 +70,19 @@ export async function POST(request: Request) {
 
     const body = (await request.json()) as CreateLeadBody;
     const fullName = text(body.full_name, 180);
-    const phone = text(body.phone, 60);
+    const rawPhone = text(body.phone, 60);
+    const phone = normalizePhoneE164(rawPhone);
     const source = text(body.source, 40);
 
-    if (!fullName || !phone) {
+    if (!fullName || !rawPhone) {
       return NextResponse.json({ error: "Wpisz imię i nazwisko oraz numer telefonu." }, { status: 400 });
+    }
+
+    if (!phone) {
+      return NextResponse.json(
+        { error: "Niepoprawny numer telefonu. Wpisz 9-cyfrowy numer PL albo pełny numer międzynarodowy, np. +48600123456." },
+        { status: 400 }
+      );
     }
 
     if (!LEAD_SOURCES.includes(source as (typeof LEAD_SOURCES)[number])) {
