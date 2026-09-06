@@ -4,6 +4,7 @@ import {
   type LeadOutcome,
   validateLeadOutcome,
 } from "@/lib/lead-outcomes";
+import { hasAnyPermission } from "@/lib/permissions";
 import { canAccessLeadWithTeam, requireApiProfile } from "@/lib/server-auth";
 import { getMandatoryLeads } from "@/lib/server-lead-work";
 import type { Lead } from "@/lib/types";
@@ -26,16 +27,39 @@ const outcomeLabels: Record<LeadOutcome, string> = {
   resignation: "Zapisano rezygnację klienta.",
 };
 
+const commentTitles: Record<LeadOutcome, string> = {
+  callback: "Komentarz przy call-backu",
+  meeting: "Komentarz przy spotkaniu",
+  no_answer: "Komentarz po próbie kontaktu",
+  return: "Komentarz przy zwrocie leada",
+  contract: "Notatka po spotkaniu",
+  resignation: "Powód rezygnacji",
+};
+
 export async function POST(request: Request) {
   const auth = await requireApiProfile(request);
   if ("error" in auth) return auth.error;
+
+  if (
+    !hasAnyPermission(auth.profile.role, [
+      "leads:edit:own",
+      "leads:edit:team",
+      "leads:edit:all",
+    ])
+  ) {
+    return NextResponse.json(
+      { error: "Twoja rola nie może zmieniać wyniku kontaktu." },
+      { status: 403 },
+    );
+  }
+
   const body = (await request.json()) as OutcomeBody;
   const leadId = typeof body.leadId === "string" ? body.leadId.trim() : "";
   const outcome = body.outcome as LeadOutcome;
   const callbackAt = typeof body.callbackAt === "string" ? body.callbackAt : "";
   const meetingAt = typeof body.meetingAt === "string" ? body.meetingAt : "";
   const address = typeof body.address === "string" ? body.address : "";
-  const note = typeof body.note === "string" ? body.note : "";
+  const note = typeof body.note === "string" ? body.note.trim() : "";
   if (!leadId)
     return NextResponse.json({ error: "Brak leada." }, { status: 400 });
 
@@ -123,15 +147,13 @@ export async function POST(request: Request) {
     patch = {
       ...clearSchedule,
       status: "Po spotkaniu",
-      meeting_note: note.trim(),
+      meeting_note: note,
     };
-  // A resignation is an outcome, not an assignment change. Keeping the owner
-  // also preserves an unambiguous audit and settlement trail.
   if (outcome === "resignation")
     patch = {
       ...clearSchedule,
       status: "Rezygnacja",
-      resignation_reason: note.trim(),
+      resignation_reason: note,
     };
 
   const { error: updateError } = await auth.supabaseAdmin
@@ -142,12 +164,12 @@ export async function POST(request: Request) {
   if (updateError)
     return NextResponse.json({ error: updateError.message }, { status: 400 });
 
-  await auth.supabaseAdmin.from("lead_history").insert({
+  const historyInsert = auth.supabaseAdmin.from("lead_history").insert({
     lead_id: lead.id,
     user_id: auth.profile.id,
     action_type: outcome === "return" ? "return" : "status_change",
-    description: note.trim()
-      ? `${outcomeLabels[outcome]} ${note.trim()}`
+    description: note
+      ? `${outcomeLabels[outcome]} ${note}`
       : outcomeLabels[outcome],
     old_value: {
       status: lead.status,
@@ -157,6 +179,33 @@ export async function POST(request: Request) {
     },
     new_value: patch,
   });
+
+  const commentInsert = note
+    ? auth.supabaseAdmin.from("lead_activities").insert({
+        lead_id: lead.id,
+        user_id: auth.profile.id,
+        activity_type: "comment",
+        title: commentTitles[outcome],
+        description: note,
+        old_value: null,
+        new_value: null,
+        metadata: { outcome },
+      })
+    : Promise.resolve({ error: null });
+
+  const [historyResult, commentResult] = await Promise.all([
+    historyInsert,
+    commentInsert,
+  ]);
+
+  if (historyResult.error || commentResult.error) {
+    console.error("Lead outcome audit write failed", {
+      history: historyResult.error?.message,
+      comment: commentResult.error?.message,
+      leadId: lead.id,
+      outcome,
+    });
+  }
 
   return NextResponse.json({
     lead: { ...lead, ...patch },
