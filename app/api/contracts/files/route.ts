@@ -116,7 +116,7 @@ export async function POST(request: Request) {
     auth.supabaseAdmin
       .from("contracts")
       .select(
-        "id,lead_id,created_by,process_status,submission_status,creator:profiles!contracts_created_by_fkey(manager_id)"
+        "id,lead_id,created_by,process_status,submission_status,signed_at,creator:profiles!contracts_created_by_fkey(manager_id)"
       )
       .eq("id", contractId)
       .eq("lead_id", leadId)
@@ -210,6 +210,7 @@ export async function POST(request: Request) {
       leadId,
       contractId,
       customerName: lead.full_name,
+      signedAt: contract.signed_at,
       fileName,
       mimeType: mime,
       bytes: await download.data.arrayBuffer()
