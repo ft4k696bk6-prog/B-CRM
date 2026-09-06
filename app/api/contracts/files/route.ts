@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { canViewContractForRole } from "@/lib/contracts";
 import { requireApiProfile } from "@/lib/server-auth";
 
 export const runtime = "nodejs";
@@ -6,7 +7,9 @@ export const maxDuration = 300;
 
 const CONTRACT_FILES_BUCKET = "contract-files";
 
-async function ensureContractFilesBucket(storage: ReturnType<typeof import("@/lib/server-auth").getServiceClient>["storage"]) {
+async function ensureContractFilesBucket(
+  storage: ReturnType<typeof import("@/lib/server-auth").getServiceClient>["storage"]
+) {
   const { data: existing } = await storage.getBucket(CONTRACT_FILES_BUCKET);
   if (existing) return null;
 
@@ -18,11 +21,63 @@ async function ensureContractFilesBucket(storage: ReturnType<typeof import("@/li
   return null;
 }
 
-export async function GET(request:Request){const auth=await requireApiProfile(request);if("error"in auth)return auth.error;const path=new URL(request.url).searchParams.get("path");if(!path)return NextResponse.json({error:"Brak pliku."},{status:400});if(!path.startsWith(`${auth.profile.crm_environment}/`))return NextResponse.json({error:"Brak dostępu do pliku."},{status:403});const{data:file}=await auth.supabaseAdmin.from("contract_files").select("contract:contracts!inner(created_by,crm_environment,submission_status,creator:profiles!contracts_created_by_fkey(manager_id))").eq("file_path",path).maybeSingle();const rawContract=file?.contract;const contract=Array.isArray(rawContract)?rawContract[0]:rawContract;const rawCreator=contract?.creator;const creator=Array.isArray(rawCreator)?rawCreator[0]:rawCreator;const allowed=contract?.crm_environment===auth.profile.crm_environment&&(["owner","admin"].includes(auth.profile.role)||contract.created_by===auth.profile.id||(auth.profile.role==="menadzer"&&contract.submission_status==="submitted"&&creator?.manager_id===auth.profile.id));if(!allowed)return NextResponse.json({error:"Brak dostępu do pliku."},{status:403});const bucketError=await ensureContractFilesBucket(auth.supabaseAdmin.storage);if(bucketError)return NextResponse.json({error:`Nie udało się przygotować magazynu plików: ${bucketError}`},{status:500});const{data,error}=await auth.supabaseAdmin.storage.from(CONTRACT_FILES_BUCKET).createSignedUrl(path,300);if(error)return NextResponse.json({error:error.message},{status:400});return NextResponse.json({url:data.signedUrl});}
+export async function GET(request: Request) {
+  const auth = await requireApiProfile(request);
+  if ("error" in auth) return auth.error;
+
+  const path = new URL(request.url).searchParams.get("path");
+  if (!path) return NextResponse.json({ error: "Brak pliku." }, { status: 400 });
+  if (!path.startsWith(`${auth.profile.crm_environment}/`)) {
+    return NextResponse.json({ error: "Brak dostępu do pliku." }, { status: 403 });
+  }
+
+  const { data: file } = await auth.supabaseAdmin
+    .from("contract_files")
+    .select(
+      "contract:contracts!inner(created_by,crm_environment,submission_status,creator:profiles!contracts_created_by_fkey(manager_id))"
+    )
+    .eq("file_path", path)
+    .maybeSingle();
+
+  const rawContract = file?.contract;
+  const contract = Array.isArray(rawContract) ? rawContract[0] : rawContract;
+  const rawCreator = contract?.creator;
+  const creator = Array.isArray(rawCreator) ? rawCreator[0] : rawCreator;
+  const allowed = Boolean(
+    contract &&
+      contract.crm_environment === auth.profile.crm_environment &&
+      canViewContractForRole({
+        role: auth.profile.role,
+        profileId: auth.profile.id,
+        createdBy: contract.created_by,
+        creatorManagerId: creator?.manager_id || null,
+        submissionStatus: contract.submission_status === "draft" ? "draft" : "submitted"
+      })
+  );
+
+  if (!allowed) {
+    return NextResponse.json({ error: "Brak dostępu do pliku." }, { status: 403 });
+  }
+
+  const bucketError = await ensureContractFilesBucket(auth.supabaseAdmin.storage);
+  if (bucketError) {
+    return NextResponse.json(
+      { error: `Nie udało się przygotować magazynu plików: ${bucketError}` },
+      { status: 500 }
+    );
+  }
+
+  const { data, error } = await auth.supabaseAdmin.storage
+    .from(CONTRACT_FILES_BUCKET)
+    .createSignedUrl(path, 300);
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  return NextResponse.json({ url: data.signedUrl });
+}
 
 export async function POST(request: Request) {
-  const auth = await requireApiProfile(request); if ("error" in auth) return auth.error;
-  const body = await request.json() as Record<string, unknown>;
+  const auth = await requireApiProfile(request);
+  if ("error" in auth) return auth.error;
+  const body = (await request.json()) as Record<string, unknown>;
   const action = String(body.action || "");
   const leadId = String(body.lead_id || "");
   const contractId = String(body.contract_id || "");
@@ -30,37 +85,126 @@ export async function POST(request: Request) {
   const fileName = String(body.file_name || "");
   const mime = String(body.mime || "application/octet-stream");
   const size = Number(body.size || 0);
-  if (!leadId || !contractId || !fileName || !["contract_pdf","photo","video"].includes(kind)) return NextResponse.json({error:"Niepoprawny plik."},{status:400});
-  const limits:Record<string,number>={contract_pdf:25,photo:15,video:50};
-  if(!Number.isFinite(size)||size<=0||size>limits[kind]*1024*1024)return NextResponse.json({error:`Plik przekracza limit ${limits[kind]} MB albo jest pusty.`},{status:400});
-  if(kind==="contract_pdf"&&mime!=="application/pdf")return NextResponse.json({error:"Umowa musi być plikiem PDF."},{status:400});
-  if(kind==="photo"&&!mime.startsWith("image/"))return NextResponse.json({error:"Wybierz zdjęcie."},{status:400});
-  if(kind==="video"&&!mime.startsWith("video/"))return NextResponse.json({error:"Wybierz plik wideo."},{status:400});
-  const [{data:lead},{data:contract}]=await Promise.all([
-    auth.supabaseAdmin.from("leads").select("id").eq("id",leadId).eq("crm_environment",auth.profile.crm_environment).single(),
-    auth.supabaseAdmin.from("contracts").select("id,lead_id,created_by,process_status,submission_status,creator:profiles!contracts_created_by_fkey(manager_id)").eq("id",contractId).eq("lead_id",leadId).eq("crm_environment",auth.profile.crm_environment).maybeSingle()
-  ]);
-  if(!lead)return NextResponse.json({error:"Brak dostępu."},{status:403});
-  if(!contract)return NextResponse.json({error:"Nie znaleziono umowy."},{status:404});
-  const creator = Array.isArray(contract.creator) ? contract.creator[0] : contract.creator;
-  const allowed = ["owner","admin"].includes(auth.profile.role) || (contract.created_by===auth.profile.id && contract.submission_status==="draft") || (auth.profile.role==="menadzer"&&creator?.manager_id===auth.profile.id&&contract.submission_status!=="draft");
-  if(!allowed)return NextResponse.json({error:contract.created_by===auth.profile.id?"Po wysłaniu kompletu nie można już dodawać załączników.":"Brak dostępu do tej umowy."},{status:403});
-
-  const bucketError=await ensureContractFilesBucket(auth.supabaseAdmin.storage);
-  if(bucketError)return NextResponse.json({error:`Nie udało się utworzyć miejsca na załączniki: ${bucketError}`},{status:500});
-  const prefix=`${auth.profile.crm_environment}/${leadId}/`;
-  if(action==="prepare"){
-    const path=`${prefix}${crypto.randomUUID()}-${fileName.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
-    const {data,error}=await auth.supabaseAdmin.storage.from(CONTRACT_FILES_BUCKET).createSignedUploadUrl(path);
-    if(error)return NextResponse.json({error:error.message},{status:400});
-    return NextResponse.json({path,token:data.token});
+  if (!leadId || !contractId || !fileName || !["contract_pdf", "photo", "video"].includes(kind)) {
+    return NextResponse.json({ error: "Niepoprawny plik." }, { status: 400 });
   }
-  if(action!=="finalize")return NextResponse.json({error:"Niepoprawna operacja przesyłania."},{status:400});
-  const path=String(body.path||"");
-  if(!path.startsWith(prefix))return NextResponse.json({error:"Niepoprawna ścieżka pliku."},{status:400});
-  const record={id:crypto.randomUUID(),name:fileName,kind,path,mime,size,created_at:new Date().toISOString()};
-  const fileResult=await auth.supabaseAdmin.from("contract_files").insert({id:record.id,contract_id:contractId,uploaded_by:auth.profile.id,kind,file_name:fileName,file_path:path,mime_type:mime,file_size:size});
-  if(fileResult.error){await auth.supabaseAdmin.storage.from(CONTRACT_FILES_BUCKET).remove([path]);return NextResponse.json({error:"Nie udało się zapisać informacji o załączniku."},{status:400});}
-  await auth.supabaseAdmin.from("lead_history").insert({lead_id:leadId,user_id:auth.profile.id,action_type:"contract_file",description:`Dodano załącznik: ${fileName}`,new_value:record});
-  return NextResponse.json({file:record});
+  const limits: Record<string, number> = { contract_pdf: 25, photo: 15, video: 50 };
+  if (!Number.isFinite(size) || size <= 0 || size > limits[kind] * 1024 * 1024) {
+    return NextResponse.json(
+      { error: `Plik przekracza limit ${limits[kind]} MB albo jest pusty.` },
+      { status: 400 }
+    );
+  }
+  if (kind === "contract_pdf" && mime !== "application/pdf") {
+    return NextResponse.json({ error: "Umowa musi być plikiem PDF." }, { status: 400 });
+  }
+  if (kind === "photo" && !mime.startsWith("image/")) {
+    return NextResponse.json({ error: "Wybierz zdjęcie." }, { status: 400 });
+  }
+  if (kind === "video" && !mime.startsWith("video/")) {
+    return NextResponse.json({ error: "Wybierz plik wideo." }, { status: 400 });
+  }
+
+  const [{ data: lead }, { data: contract }] = await Promise.all([
+    auth.supabaseAdmin
+      .from("leads")
+      .select("id")
+      .eq("id", leadId)
+      .eq("crm_environment", auth.profile.crm_environment)
+      .single(),
+    auth.supabaseAdmin
+      .from("contracts")
+      .select(
+        "id,lead_id,created_by,process_status,submission_status,creator:profiles!contracts_created_by_fkey(manager_id)"
+      )
+      .eq("id", contractId)
+      .eq("lead_id", leadId)
+      .eq("crm_environment", auth.profile.crm_environment)
+      .maybeSingle()
+  ]);
+
+  if (!lead) return NextResponse.json({ error: "Brak dostępu." }, { status: 403 });
+  if (!contract) return NextResponse.json({ error: "Nie znaleziono umowy." }, { status: 404 });
+
+  const creator = Array.isArray(contract.creator) ? contract.creator[0] : contract.creator;
+  const allowed =
+    ["owner", "admin"].includes(auth.profile.role) ||
+    (contract.created_by === auth.profile.id && contract.submission_status === "draft") ||
+    (auth.profile.role === "menadzer" &&
+      creator?.manager_id === auth.profile.id &&
+      contract.submission_status !== "draft");
+  if (!allowed) {
+    return NextResponse.json(
+      {
+        error:
+          contract.created_by === auth.profile.id
+            ? "Po wysłaniu kompletu nie można już dodawać załączników."
+            : "Brak dostępu do tej umowy."
+      },
+      { status: 403 }
+    );
+  }
+
+  const bucketError = await ensureContractFilesBucket(auth.supabaseAdmin.storage);
+  if (bucketError) {
+    return NextResponse.json(
+      { error: `Nie udało się utworzyć miejsca na załączniki: ${bucketError}` },
+      { status: 500 }
+    );
+  }
+
+  const prefix = `${auth.profile.crm_environment}/${leadId}/`;
+  if (action === "prepare") {
+    const path = `${prefix}${crypto.randomUUID()}-${fileName.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    const { data, error } = await auth.supabaseAdmin.storage
+      .from(CONTRACT_FILES_BUCKET)
+      .createSignedUploadUrl(path);
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ path, token: data.token });
+  }
+
+  if (action !== "finalize") {
+    return NextResponse.json({ error: "Niepoprawna operacja przesyłania." }, { status: 400 });
+  }
+
+  const path = String(body.path || "");
+  if (!path.startsWith(prefix)) {
+    return NextResponse.json({ error: "Niepoprawna ścieżka pliku." }, { status: 400 });
+  }
+
+  const record = {
+    id: crypto.randomUUID(),
+    name: fileName,
+    kind,
+    path,
+    mime,
+    size,
+    created_at: new Date().toISOString()
+  };
+  const fileResult = await auth.supabaseAdmin.from("contract_files").insert({
+    id: record.id,
+    contract_id: contractId,
+    uploaded_by: auth.profile.id,
+    kind,
+    file_name: fileName,
+    file_path: path,
+    mime_type: mime,
+    file_size: size
+  });
+  if (fileResult.error) {
+    await auth.supabaseAdmin.storage.from(CONTRACT_FILES_BUCKET).remove([path]);
+    return NextResponse.json(
+      { error: "Nie udało się zapisać informacji o załączniku." },
+      { status: 400 }
+    );
+  }
+
+  await auth.supabaseAdmin.from("lead_history").insert({
+    lead_id: leadId,
+    user_id: auth.profile.id,
+    action_type: "contract_file",
+    description: `Dodano załącznik: ${fileName}`,
+    new_value: record
+  });
+  return NextResponse.json({ file: record });
 }
