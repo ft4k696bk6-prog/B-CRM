@@ -52,6 +52,7 @@ export function LeadCommentsDialog({
   }, [loadComments]);
 
   if (!lead) return null;
+  const currentLead = lead;
 
   async function addComment(event: FormEvent) {
     event.preventDefault();
@@ -66,7 +67,7 @@ export function LeadCommentsDialog({
         Authorization: `Bearer ${accessToken}`
       },
       body: JSON.stringify({
-        lead_id: lead.id,
+        lead_id: currentLead.id,
         activity_type: "comment",
         title: "Komentarz",
         description
@@ -88,7 +89,7 @@ export function LeadCommentsDialog({
     <ModalShell
       open
       onClose={() => !saving && onClose()}
-      title={`Komentarze · ${lead.full_name}`}
+      title={`Komentarze · ${currentLead.full_name}`}
       description="Tylko notatki do leada, bez pozostałej historii zmian."
       size="sm"
     >
