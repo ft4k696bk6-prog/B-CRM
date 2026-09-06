@@ -80,10 +80,7 @@ export async function POST(request: Request) {
 
     if (!phone) {
       return NextResponse.json(
-        {
-          error:
-            "Niepoprawny numer telefonu. Polski numer wpisz jako 600123456 lub +48600123456. Numer zagraniczny podaj z kodem kraju, np. +49…"
-        },
+        { error: "Niepoprawny numer telefonu. Wpisz 9-cyfrowy numer PL albo pełny numer międzynarodowy, np. +48600123456." },
         { status: 400 }
       );
     }
