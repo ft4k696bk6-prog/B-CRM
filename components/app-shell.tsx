@@ -10,6 +10,7 @@ import {
   CalendarDays,
   FileUp,
   FolderKanban,
+  Gauge,
   Landmark,
   BookOpen,
   LogOut,
@@ -348,6 +349,16 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
               <div className="text-sm font-semibold">{profile.full_name}</div>
               <div className="text-xs text-muted">{profile.email}</div>
             </div>
+            {isSystemAdminRole(profile.role) ? (
+              <Link
+                href="/admin/control"
+                className="btn-secondary h-11 w-11 px-0 sm:w-auto sm:px-3"
+                title={language === "en" ? "Control" : "Kontrola"}
+              >
+                <Gauge className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden sm:inline">{language === "en" ? "Control" : "Kontrola"}</span>
+              </Link>
+            ) : null}
             {isSalesRole(profile.role) && !mandatoryLoading && mandatoryLeadIds.length === 0 ? (
               <button
                 type="button"
