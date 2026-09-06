@@ -1,1 +1,1 @@
-export { LeadTable } from "@/components/lead-table-v2";
+export { LeadTable } from "@/components/lead-table-smart";
