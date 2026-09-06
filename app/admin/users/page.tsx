@@ -55,6 +55,14 @@ function activityRange(days: number) {
   return { from: isoDate(from), to: isoDate(to) };
 }
 
+function formatMoney(value: number) {
+  return new Intl.NumberFormat("pl-PL", {
+    style: "currency",
+    currency: "PLN",
+    maximumFractionDigits: 2
+  }).format(value);
+}
+
 const roleToneClasses: Record<UserRole, string> = {
   owner: "border-ink/15 bg-ink text-white",
   admin: "border-sky/20 bg-sky/10 text-sky",
@@ -707,19 +715,27 @@ export default function UsersPage() {
 
         <CollapsibleSection
           icon={Save}
-          title="Marże i prowizje użytkowników"
-          description="Domyślnie: marża firmy 10 000 zł i marża handlowca 5 000 zł. Wyjątki oraz procent prowizji ustawiasz indywidualnie."
+          title="Indywidualna marża i prowizja"
+          description="Dla każdego użytkownika ustawiasz osobno marżę firmy, marżę handlowca i procent prowizji naliczany od marży handlowca. Te wartości są zapisywane na nowej umowie jako rozliczenie z chwili sprzedaży."
+          defaultOpen
         >
           <div className="grid gap-3">
             {users.map((person) => {
               const draft = pricingDrafts[person.id] || { company: "10000", sales: "5000", commission: "0" };
               const update = (key: "company" | "sales" | "commission", value: string) => setPricingDrafts((current) => ({ ...current, [person.id]: { ...draft, [key]: value } }));
-              return <article key={person.id} className="grid gap-3 rounded-lg border border-line bg-[#f9fbfd] p-4 lg:grid-cols-[minmax(180px,1fr)_160px_160px_150px_auto] lg:items-end">
-                <div><div className="font-black text-ink">{person.full_name}</div><div className="text-xs text-muted">{ROLE_LABELS[person.role]}</div></div>
+              const salesMargin = Math.max(0, Number(draft.sales) || 0);
+              const commissionPercent = Math.min(100, Math.max(0, Number(draft.commission) || 0));
+              const commissionAmount = Math.round(salesMargin * commissionPercent) / 100;
+              return <article key={person.id} className="grid gap-3 rounded-lg border border-line bg-[#f9fbfd] p-4 lg:grid-cols-[minmax(220px,1fr)_160px_160px_180px_auto] lg:items-end">
+                <div>
+                  <div className="font-black text-ink">{person.full_name}</div>
+                  <div className="text-xs text-muted">{ROLE_LABELS[person.role]}</div>
+                  <div className="mt-2 text-xs font-bold text-leaf">Prowizja przy tych ustawieniach: {formatMoney(commissionAmount)} netto / umowę</div>
+                </div>
                 <label><span className="label">Marża firmy netto</span><input className="field min-h-11" type="number" min="0" step="100" value={draft.company} onChange={(event) => update("company", event.target.value)} /></label>
                 <label><span className="label">Marża handlowca netto</span><input className="field min-h-11" type="number" min="0" step="100" value={draft.sales} onChange={(event) => update("sales", event.target.value)} /></label>
-                <label><span className="label">Prowizja %</span><input className="field min-h-11" type="number" min="0" max="100" step="0.1" value={draft.commission} onChange={(event) => update("commission", event.target.value)} /></label>
-                <button type="button" className="btn-primary min-h-11" disabled={busy} onClick={() => savePricing(person)}><Save className="h-4 w-4" />Zapisz</button>
+                <label><span className="label">Prowizja od marży handlowca (%)</span><input className="field min-h-11" type="number" min="0" max="100" step="0.1" value={draft.commission} onChange={(event) => update("commission", event.target.value)} /></label>
+                <button type="button" className="btn-primary min-h-11" disabled={busy} onClick={() => savePricing(person)}><Save className="h-4 w-4" />Zapisz rozliczenia</button>
               </article>;
             })}
           </div>
