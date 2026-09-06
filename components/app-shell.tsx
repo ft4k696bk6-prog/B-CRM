@@ -18,8 +18,8 @@ import {
   PanelLeft,
   RotateCcw,
   Settings,
+  SlidersHorizontal,
   UserPlus,
-  Warehouse,
   X,
   type LucideIcon
 } from "lucide-react";
@@ -56,6 +56,7 @@ type NavigationLink = {
     | "navImport"
     | "navUsers"
     | "navKnowledge";
+  customLabel?: { pl: string; en: string };
   groupKey: "main" | "sales" | "operations" | "company";
   icon: LucideIcon;
   permissions?: Permission[];
@@ -66,13 +67,6 @@ type NavigationLink = {
 };
 
 const navigationLinks: NavigationLink[] = [
-  {
-    href: "/panel",
-    labelKey: "navWorkPanel",
-    groupKey: "main",
-    icon: MousePointerClick,
-    permissions: ["operations:view"]
-  },
   {
     href: "/admin",
     labelKey: "navDashboard",
@@ -89,6 +83,14 @@ const navigationLinks: NavigationLink[] = [
     permissions: ["dashboard:view:team"],
     hideWhenAnyPermission: ["dashboard:view:all"],
     tourId: "tour-nav-dashboard"
+  },
+  {
+    href: "/admin/control",
+    labelKey: "navSettings",
+    customLabel: { pl: "Kontrola", en: "Control" },
+    groupKey: "main",
+    icon: SlidersHorizontal,
+    allowedRoles: ["owner", "admin"]
   },
   {
     href: "/sales",
@@ -112,16 +114,8 @@ const navigationLinks: NavigationLink[] = [
     groupKey: "operations",
     icon: FolderKanban,
     permissions: ["operations:view"],
-    allowedRoles: ["owner", "admin", "menadzer", "finance", "viewer", "ksiegowosc", "logistyk", "monter"],
+    allowedRoles: ["owner", "admin", "menadzer", "finance", "viewer"],
     tourId: "tour-nav-process"
-  },
-  {
-    href: "/equipment",
-    labelKey: "navEquipment",
-    groupKey: "operations",
-    icon: Warehouse,
-    allowedRoles: ["owner", "admin", "logistyk"],
-    tourId: "tour-nav-equipment"
   },
   { href: "/calendar", labelKey: "navCalendar", groupKey: "company", icon: CalendarDays, permissions: ["calendar:view"] },
   { href: "/calculators", labelKey: "navCalculators", groupKey: "company", icon: Calculator, permissions: ["offers:calculate"], tourId: "tour-nav-calculators" },
@@ -283,6 +277,7 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
               {groupLinks.map((link) => {
                 const Icon = link.icon;
                 const active = pathname === link.href;
+                const label = link.customLabel ? (language === "en" ? link.customLabel.en : link.customLabel.pl) : t(link.labelKey);
 
                 return (
                   <a
@@ -301,7 +296,7 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
                     }`}
                   >
                     <Icon className="h-4 w-4" aria-hidden="true" />
-                    {t(link.labelKey)}
+                    {label}
                   </a>
                 );
               })}
