@@ -36,6 +36,69 @@ alter table public.lead_routing_rules enable row level security;
 -- These tables are intentionally server/API-managed. No direct authenticated
 -- policies are added; the service-role API is the only mutation path.
 
+create or replace function public.replace_lead_routing_rules(
+  p_environment text,
+  p_voivodeship text,
+  p_rules jsonb
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if p_environment not in ('production', 'demo') then
+    raise exception 'Invalid CRM environment';
+  end if;
+
+  if coalesce(trim(p_voivodeship), '') = '' then
+    raise exception 'Voivodeship is required';
+  end if;
+
+  if jsonb_typeof(coalesce(p_rules, '[]'::jsonb)) <> 'array' then
+    raise exception 'Rules must be an array';
+  end if;
+
+  if exists (
+    select 1
+    from jsonb_array_elements(coalesce(p_rules, '[]'::jsonb)) item
+    left join public.profiles p
+      on p.id = (item->>'salespersonId')::uuid
+     and p.crm_environment = p_environment
+     and p.role in ('handlowiec', 'sales')
+    where p.id is null
+      or coalesce((item->>'weight')::integer, 0) < 1
+      or coalesce((item->>'weight')::integer, 0) > 10000
+  ) then
+    raise exception 'Invalid salesperson or weight';
+  end if;
+
+  delete from public.lead_routing_rules
+  where crm_environment = p_environment
+    and lower(trim(voivodeship)) = lower(trim(p_voivodeship));
+
+  insert into public.lead_routing_rules (
+    crm_environment,
+    voivodeship,
+    salesperson_id,
+    weight,
+    active
+  )
+  select
+    p_environment,
+    lower(trim(p_voivodeship)),
+    (item->>'salespersonId')::uuid,
+    (item->>'weight')::integer,
+    true
+  from jsonb_array_elements(coalesce(p_rules, '[]'::jsonb)) item;
+end;
+$$;
+
+revoke all on function public.replace_lead_routing_rules(text, text, jsonb) from public;
+revoke all on function public.replace_lead_routing_rules(text, text, jsonb) from anon;
+revoke all on function public.replace_lead_routing_rules(text, text, jsonb) from authenticated;
+grant execute on function public.replace_lead_routing_rules(text, text, jsonb) to service_role;
+
 create or replace function public.assign_lead_by_voivodeship()
 returns trigger
 language plpgsql
@@ -65,8 +128,8 @@ begin
     return new;
   end if;
 
-  -- Stable weighted selection based on lead UUID. This avoids a mutable
-  -- round-robin cursor and remains concurrency-safe when many leads arrive at once.
+  -- Stable weighted selection based on the lead UUID. This avoids a mutable
+  -- round-robin cursor and stays concurrency-safe when many leads arrive at once.
   v_slot := mod(
     abs(hashtextextended(coalesce(new.id::text, gen_random_uuid()::text), 0))::numeric,
     v_total::numeric
