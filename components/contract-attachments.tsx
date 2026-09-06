@@ -68,48 +68,104 @@ export function ContractAttachments({
   async function upload(kind: string) {
     const chosen = selectedFiles[kind] || [];
     if (!chosen.length) return;
-    setUploading(kind); setProgress(`0 / ${chosen.length}`); setError(""); setMessage("");
-    const uploaded: ContractFile[] = []; const failed: string[] = []; let cursor = 0; let completed = 0;
+    setUploading(kind);
+    setProgress(`0 / ${chosen.length}`);
+    setError("");
+    setMessage("");
+    const uploaded: ContractFile[] = [];
+    const failed: string[] = [];
+    const driveWarnings: string[] = [];
+    let cursor = 0;
+    let completed = 0;
+
     async function uploadOne(file: File) {
-      const metadata = { lead_id: contract.lead_id, contract_id: contract.id, kind, file_name: file.name, mime: file.type || "application/octet-stream", size: file.size };
+      const metadata = {
+        lead_id: contract.lead_id,
+        contract_id: contract.id,
+        kind,
+        file_name: file.name,
+        mime: file.type || "application/octet-stream",
+        size: file.size
+      };
       try {
-        const prepareResponse = await fetch("/api/contracts/files", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` }, body: JSON.stringify({ action: "prepare", ...metadata }) });
+        const prepareResponse = await fetch("/api/contracts/files", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+          body: JSON.stringify({ action: "prepare", ...metadata })
+        });
         const prepared = await prepareResponse.json();
         if (!prepareResponse.ok) throw new Error(prepared.error || "Nie udało się przygotować przesyłania.");
-        const { error: uploadError } = await supabase.storage.from("contract-files").uploadToSignedUrl(prepared.path, prepared.token, file, { contentType: metadata.mime });
+
+        const { error: uploadError } = await supabase.storage
+          .from("contract-files")
+          .uploadToSignedUrl(prepared.path, prepared.token, file, { contentType: metadata.mime });
         if (uploadError) throw uploadError;
-        const finalizeResponse = await fetch("/api/contracts/files", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` }, body: JSON.stringify({ action: "finalize", path: prepared.path, ...metadata }) });
+
+        const finalizeResponse = await fetch("/api/contracts/files", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+          body: JSON.stringify({ action: "finalize", path: prepared.path, ...metadata })
+        });
         const finalized = await finalizeResponse.json();
         if (!finalizeResponse.ok) throw new Error(finalized.error || "Nie udało się zapisać załącznika.");
         uploaded.push(finalized.file);
+        if (finalized.driveWarning) driveWarnings.push(`${file.name}: ${finalized.driveWarning}`);
       } catch (uploadError) {
         failed.push(`${file.name}: ${uploadError instanceof Error ? uploadError.message : "błąd przesyłania"}`);
       } finally {
-        completed += 1; setProgress(`${completed} / ${chosen.length}`);
+        completed += 1;
+        setProgress(`${completed} / ${chosen.length}`);
       }
     }
-    async function worker() { while (cursor < chosen.length) { const index = cursor++; await uploadOne(chosen[index]); } }
+
+    async function worker() {
+      while (cursor < chosen.length) {
+        const index = cursor++;
+        await uploadOne(chosen[index]);
+      }
+    }
+
     try {
       await Promise.all(Array.from({ length: Math.min(3, chosen.length) }, () => worker()));
       if (uploaded.length) {
         onUploaded?.(uploaded);
-        setMessage(`Przesłano i zapisano ${uploaded.length} ${uploaded.length === 1 ? "plik" : uploaded.length < 5 ? "pliki" : "plików"}.`);
+        setMessage(
+          driveWarnings.length
+            ? `Zapisano w CRM: ${uploaded.length}. Część plików wymaga ponownej synchronizacji z Google Drive.`
+            : `Przesłano ${uploaded.length} ${uploaded.length === 1 ? "plik" : uploaded.length < 5 ? "pliki" : "plików"}. Zapisano w CRM i na Google Drive.`
+        );
       }
       const failedNames = new Set(failed.map((item) => item.split(":")[0]));
       setSelectedFiles((current) => ({ ...current, [kind]: chosen.filter((file) => failedNames.has(file.name)) }));
-      if (failed.length) setError(`Nie udało się przesłać ${failed.length} plików. ${failed.join(" | ")}`);
-    } finally { setUploading(""); setProgress(""); }
+      const problems = [
+        ...(failed.length ? [`Nie udało się przesłać ${failed.length} plików: ${failed.join(" | ")}`] : []),
+        ...(driveWarnings.length ? [`Google Drive: ${driveWarnings.join(" | ")}`] : [])
+      ];
+      if (problems.length) setError(problems.join(" "));
+    } finally {
+      setUploading("");
+      setProgress("");
+    }
   }
 
   if (mode === "manage") return (
     <div className="grid gap-4">
       {message ? <Alert tone="success">{message}</Alert> : null}
       {error ? <Alert tone="danger">{error}</Alert> : null}
+      <div className="rounded-xl border border-leaf/20 bg-leaf/10 p-3 text-sm font-semibold text-ink">
+        Każdy dodany PDF, zdjęcie i wideo jest zapisywany w CRM oraz automatycznie kopiowany na Google Drive do folderu <b>Klienci CRM / {contract.customer_name}</b>.
+      </div>
       <div className="grid gap-3 md:grid-cols-3">
         {[["contract_pdf", "PDF umowy (25 MB)", "application/pdf"], ["photo", "Zdjęcia (15 MB każde)", "image/*"], ["video", "Wideo (50 MB)", "video/*"]].map(([kind, label, accept]) => (
           <div key={kind} className="rounded-lg border border-line p-3">
-            <label><span className="label">{label}</span><input className="field" type="file" accept={accept} multiple={kind === "photo"} onChange={(event) => setSelectedFiles((current) => ({ ...current, [kind]: Array.from(event.target.files || []) }))} /></label>
-            <button type="button" className="btn-primary mt-3 w-full" disabled={!selectedFiles[kind]?.length || Boolean(uploading)} onClick={() => upload(kind)}><Upload className="h-4 w-4" />{uploading === kind ? `Przesyłanie ${progress}` : selectedFiles[kind]?.length > 1 ? `Prześlij ${selectedFiles[kind].length} plików` : "Prześlij plik"}</button>
+            <label>
+              <span className="label">{label}</span>
+              <input className="field" type="file" accept={accept} multiple={kind === "photo"} onChange={(event) => setSelectedFiles((current) => ({ ...current, [kind]: Array.from(event.target.files || []) }))} />
+            </label>
+            <button type="button" className="btn-primary mt-3 w-full" disabled={!selectedFiles[kind]?.length || Boolean(uploading)} onClick={() => upload(kind)}>
+              <Upload className="h-4 w-4" />
+              {uploading === kind ? `Przesyłanie ${progress}` : selectedFiles[kind]?.length > 1 ? `Prześlij ${selectedFiles[kind].length} plików` : "Prześlij plik"}
+            </button>
           </div>
         ))}
       </div>

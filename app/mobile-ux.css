@@ -24,14 +24,6 @@ iframe {
   max-width: 100%;
 }
 
-/* Backoffice modules are intentionally hidden from navigation for the current sales-first release. */
-.app-sidebar a[href="/panel"],
-.app-sidebar a[href="/equipment"],
-.mobile-menu-panel a[href="/panel"],
-.mobile-menu-panel a[href="/equipment"] {
-  display: none !important;
-}
-
 @media (max-width: 1279px) {
   .app-layout {
     width: 100%;

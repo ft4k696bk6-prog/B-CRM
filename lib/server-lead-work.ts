@@ -51,10 +51,28 @@ export async function getScheduledLeadsSinceRollout(
   });
 }
 
+export async function isMandatoryQueueSnoozed(
+  supabaseAdmin: ReturnType<typeof getServiceClient>,
+  profile: { id: string; crm_environment: string },
+  now = new Date()
+) {
+  const { data, error } = await supabaseAdmin
+    .from("profiles")
+    .select("mandatory_queue_snoozed_until")
+    .eq("id", profile.id)
+    .eq("crm_environment", profile.crm_environment)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  const until = data?.mandatory_queue_snoozed_until;
+  return Boolean(until && new Date(until).getTime() > now.getTime());
+}
+
 export async function getMandatoryLeads(
   supabaseAdmin: ReturnType<typeof getServiceClient>,
   profile: { id: string; crm_environment: string },
   now = new Date()
 ) {
+  if (await isMandatoryQueueSnoozed(supabaseAdmin, profile, now)) return [];
   return (await getScheduledLeadsSinceRollout(supabaseAdmin, profile)).filter((lead) => isMandatoryLead(lead, now));
 }

@@ -1,6 +1,5 @@
-import { DepartmentWorkspacePage } from "@/components/department-workspace-page";
+import { redirect } from "next/navigation";
 
 export default function InstallationPage() {
-  return <DepartmentWorkspacePage kind="installation" />;
+  redirect("/realizacja/umowy");
 }
-

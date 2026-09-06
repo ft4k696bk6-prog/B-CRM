@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CalendarClock, Columns3, ExternalLink, List, Phone, Zap, X } from "lucide-react";
+import { CalendarClock, ChevronDown, Columns3, List, Phone, Zap, X } from "lucide-react";
 import { LeadCommentsDialog } from "@/components/lead-comments-dialog";
 import { LeadFastActions } from "@/components/lead-fast-actions";
+import { LeadInlineActions } from "@/components/lead-inline-actions";
 import { LeadQuickActionDialog } from "@/components/lead-quick-action-dialog";
 import { StatusBadge } from "@/components/status-badge";
 import { EmptyState } from "@/components/ui";
@@ -72,6 +73,7 @@ export function LeadTable({
 }: LeadTableProps) {
   const { language } = useLanguage();
   const [openLeadId, setOpenLeadId] = useState<string | null>(null);
+  const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<LeadViewMode>("table");
   const [presetAction, setPresetAction] = useState<PresetAction>(null);
   const [commentsLead, setCommentsLead] = useState<Lead | null>(null);
@@ -98,13 +100,15 @@ export function LeadTable({
         view: "Lead view", tableView: "List", pipelineView: "Pipeline", selectAll: "Select all",
         selectAllLeads: "Select all leads", selectLead: "Select", phone: "Phone", region: "Region",
         salesperson: "Salesperson", unassigned: "Unassigned", openLeadCard: "Open lead card", openCard: "Details",
-        quickAction: "Quick action", noLeads: "No leads", noLeadsDescription: "No records for the selected filters.", emptyStage: "No leads at this stage"
+        quickAction: "Quick action", noLeads: "No leads", noLeadsDescription: "No records for the selected filters.", emptyStage: "No leads at this stage",
+        expandActions: "Expand actions and note", collapseActions: "Collapse actions"
       }
     : {
         view: "Widok leadów", tableView: "Lista", pipelineView: "Lejek", selectAll: "Zaznacz wszystkie",
         selectAllLeads: "Zaznacz wszystkie leady", selectLead: "Zaznacz", phone: "Telefon", region: "Region",
         salesperson: "Handlowiec", unassigned: "Nieprzypisany", openLeadCard: "Otwórz kartę leada", openCard: "Szczegóły",
-        quickAction: "Szybka akcja", noLeads: "Brak leadów", noLeadsDescription: "Brak rekordów dla wybranych filtrów.", emptyStage: "Brak leadów na tym etapie"
+        quickAction: "Szybka akcja", noLeads: "Brak leadów", noLeadsDescription: "Brak rekordów dla wybranych filtrów.", emptyStage: "Brak leadów na tym etapie",
+        expandActions: "Rozwiń szybkie akcje i notatkę", collapseActions: "Zwiń szybkie akcje"
       };
 
   function changeView(next: LeadViewMode) {
@@ -146,6 +150,10 @@ export function LeadTable({
         <Zap className="h-4 w-4" aria-hidden="true" />{labels.quickAction}
       </button>
     );
+  }
+
+  function toggleExpanded(leadId: string) {
+    setExpandedLeadId((current) => current === leadId ? null : leadId);
   }
 
   return (
@@ -229,35 +237,66 @@ export function LeadTable({
           </div>
 
           <div className="grid min-w-0 gap-2 bg-[#f8fafc] p-2.5 xl:hidden">
-            {leads.map((lead) => (
-              <article key={lead.id} className="min-w-0 overflow-hidden rounded-2xl border border-line bg-white p-3 shadow-sm">
-                <div className="flex min-w-0 items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <button type="button" onClick={() => setOpenLeadId(lead.id)} className="block max-w-full truncate text-left text-base font-black text-ink hover:text-sky">{lead.full_name}</button>
-                    <div className="mt-1.5 flex min-w-0 flex-wrap items-center gap-1.5 text-[11px] font-bold">
-                      <span className="rounded-md border border-sky/20 bg-sky/10 px-1.5 py-0.5 text-sky">{formatSource(lead.source, language)}</span>
-                      {lead.campaign ? <span className="max-w-[min(58vw,260px)] truncate rounded-md border border-solar/25 bg-solar/10 px-1.5 py-0.5 text-[#8a5a00]" title={lead.campaign}>{lead.campaign}</span> : null}
-                      <span className="text-muted">{lead.postal_code || "—"}</span>
+            {leads.map((lead) => {
+              const expanded = expandedLeadId === lead.id;
+              return (
+                <article key={lead.id} className={`min-w-0 overflow-hidden rounded-2xl border bg-white p-3 shadow-sm transition ${expanded ? "border-sky/40 shadow-md" : "border-line"}`}>
+                  <div className="flex min-w-0 items-start justify-between gap-2">
+                    <button type="button" onClick={() => toggleExpanded(lead.id)} className="min-w-0 flex-1 text-left" aria-expanded={expanded}>
+                      <span className="block max-w-full truncate text-base font-black text-ink">{lead.full_name}</span>
+                      <span className="mt-1.5 flex min-w-0 flex-wrap items-center gap-1.5 text-[11px] font-bold">
+                        <span className="rounded-md border border-sky/20 bg-sky/10 px-1.5 py-0.5 text-sky">{formatSource(lead.source, language)}</span>
+                        {lead.campaign ? <span className="max-w-[min(58vw,260px)] truncate rounded-md border border-solar/25 bg-solar/10 px-1.5 py-0.5 text-[#8a5a00]" title={lead.campaign}>{lead.campaign}</span> : null}
+                        <span className="text-muted">{lead.postal_code || "—"}</span>
+                      </span>
+                    </button>
+                    <div className="flex flex-none items-center gap-1.5">
+                      {selectable ? <input type="checkbox" checked={selectedIds.includes(lead.id)} onChange={() => onToggle?.(lead.id)} className="h-5 w-5 rounded border-line text-ink focus:ring-ink" aria-label={`${labels.selectLead} ${lead.full_name}`} /> : null}
+                      <button
+                        type="button"
+                        onClick={() => toggleExpanded(lead.id)}
+                        className={`inline-flex h-10 w-10 items-center justify-center rounded-xl border shadow-sm transition ${expanded ? "border-sky/30 bg-sky/10 text-sky" : "border-line bg-white text-muted"}`}
+                        aria-label={expanded ? labels.collapseActions : labels.expandActions}
+                        aria-expanded={expanded}
+                      >
+                        <ChevronDown className={`h-5 w-5 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} />
+                      </button>
                     </div>
                   </div>
-                  <div className="flex flex-none items-center gap-1.5">
-                    {selectable ? <input type="checkbox" checked={selectedIds.includes(lead.id)} onChange={() => onToggle?.(lead.id)} className="h-5 w-5 rounded border-line text-ink focus:ring-ink" aria-label={`${labels.selectLead} ${lead.full_name}`} /> : null}
-                    <button type="button" onClick={() => setOpenLeadId(lead.id)} className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-line bg-white text-muted shadow-sm" aria-label={`${labels.openLeadCard}: ${lead.full_name}`}><ExternalLink className="h-4 w-4" /></button>
+
+                  <div className="mt-2.5 flex min-w-0 flex-wrap items-center gap-2">
+                    <StatusBadge status={lead.status} />
+                    <a href={dialHref(lead.phone)} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-1 text-sm font-black text-ink"><Phone className="h-4 w-4 text-muted" />{formatPhoneReadable(lead.phone)}</a>
                   </div>
-                </div>
 
-                <div className="mt-2.5 flex min-w-0 flex-wrap items-center gap-2">
-                  <StatusBadge status={lead.status} />
-                  <a href={dialHref(lead.phone)} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-1 text-sm font-black text-ink"><Phone className="h-4 w-4 text-muted" />{formatPhoneReadable(lead.phone)}</a>
-                </div>
+                  <div className="mt-2.5 border-t border-line/70 pt-2.5">
+                    <MetaLine lead={lead} showAssignee={showAssignee} labels={labels} />
+                  </div>
 
-                <div className="mt-2.5 border-t border-line/70 pt-2.5">
-                  <MetaLine lead={lead} showAssignee={showAssignee} labels={labels} />
-                </div>
-
-                {(accessToken || onQuickAction) ? <div className="mt-3 border-t border-line/70 pt-3">{fastActions(lead)}</div> : null}
-              </article>
-            ))}
+                  {(accessToken || onQuickAction) ? (
+                    expanded ? (
+                      <div className="mt-3 border-t border-line/70 pt-3">
+                        {accessToken ? (
+                          <LeadInlineActions
+                            lead={lead}
+                            accessToken={accessToken}
+                            onPreset={openPreset}
+                            onComments={setCommentsLead}
+                            onChanged={changed}
+                            onOpenDetails={(item) => setOpenLeadId(item.id)}
+                          />
+                        ) : fastActions(lead)}
+                      </div>
+                    ) : (
+                      <button type="button" onClick={() => toggleExpanded(lead.id)} className="mt-3 flex min-h-11 w-full items-center justify-between rounded-xl border border-line bg-[#f8fafc] px-3 text-sm font-black text-ink transition active:scale-[.99]" aria-expanded={false}>
+                        <span>{labels.expandActions}</span>
+                        <ChevronDown className="h-4 w-4 text-muted" />
+                      </button>
+                    )
+                  ) : null}
+                </article>
+              );
+            })}
           </div>
         </>
       ) : (

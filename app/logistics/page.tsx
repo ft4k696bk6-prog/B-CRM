@@ -1,6 +1,5 @@
-import { DepartmentWorkspacePage } from "@/components/department-workspace-page";
+import { redirect } from "next/navigation";
 
 export default function LogisticsPage() {
-  return <DepartmentWorkspacePage kind="logistics" />;
+  redirect("/realizacja/umowy");
 }
-
