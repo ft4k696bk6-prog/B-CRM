@@ -22,7 +22,7 @@ type ControlPatchBody =
 function migrationRequired(message?: string) {
   return NextResponse.json(
     {
-      error: "Panel Kontrola wymaga migracji Supabase 24_control_center_routing.sql.",
+      error: "Panel Kontrola wymaga migracji Supabase 25_control_center_routing.sql.",
       code: "CONTROL_CENTER_MIGRATION_REQUIRED",
       details: message || null,
     },
