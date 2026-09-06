@@ -205,7 +205,7 @@ export default function SalesDashboardPage() {
             tone="leaf"
           />
           <StatTile
-            label="Zaległe call-backi"
+            label="Zaległe zadania"
             value={busy ? "—" : overdueCallbacks.length + overdueMeetings.length}
             icon={AlertTriangle}
             tone="danger"
