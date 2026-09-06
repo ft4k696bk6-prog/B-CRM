@@ -7,9 +7,23 @@ export const maxDuration = 60;
 
 const DEFAULT_PH_MATERIALS_FOLDER_ID = "1WVX8mi_q9K8rQYjJrLO6kVjVlZsX4YxU";
 const FOLDER_MIME = "application/vnd.google-apps.folder";
+const GOOGLE_DOCUMENT_MIMES = new Set([
+  "application/vnd.google-apps.document",
+  "application/vnd.google-apps.spreadsheet",
+  "application/vnd.google-apps.presentation",
+  "application/vnd.google-apps.drawing"
+]);
 
 function rootFolderId() {
   return process.env.GOOGLE_PH_MATERIALS_FOLDER_ID?.trim() || DEFAULT_PH_MATERIALS_FOLDER_ID;
+}
+
+async function phDriveToken() {
+  const delegatedUser = process.env.GOOGLE_WORKSPACE_DELEGATED_USER?.trim();
+  return googleWorkspaceToken(
+    ["https://www.googleapis.com/auth/drive.readonly"],
+    delegatedUser || undefined
+  );
 }
 
 async function driveFetch(token: string, url: string) {
@@ -22,7 +36,7 @@ async function driveFetch(token: string, url: string) {
 async function itemMeta(token: string, id: string) {
   const response = await driveFetch(
     token,
-    `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,name,mimeType,parents,size,webViewLink,modifiedTime`
+    `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,name,mimeType,parents,size,modifiedTime`
   );
   if (!response.ok) return null;
   return response.json() as Promise<{
@@ -31,7 +45,6 @@ async function itemMeta(token: string, id: string) {
     mimeType: string;
     parents?: string[];
     size?: string;
-    webViewLink?: string;
     modifiedTime?: string;
   }>;
 }
@@ -57,40 +70,54 @@ async function isWithinRoot(token: string, itemId: string, rootId: string) {
   return false;
 }
 
+function inlineName(name: string, pdf = false) {
+  const finalName = pdf && !name.toLowerCase().endsWith(".pdf") ? `${name}.pdf` : name;
+  return `inline; filename*=UTF-8''${encodeURIComponent(finalName)}`;
+}
+
 export async function GET(request: Request) {
   const auth = await requireApiProfile(request);
   if ("error" in auth) return auth.error;
 
   try {
-    const token = await googleWorkspaceToken(["https://www.googleapis.com/auth/drive.readonly"]);
+    const token = await phDriveToken();
     const rootId = rootFolderId();
     const url = new URL(request.url);
     const fileId = url.searchParams.get("file_id")?.trim() || "";
 
     if (fileId) {
       if (!(await isWithinRoot(token, fileId, rootId))) {
-        return NextResponse.json({ error: "Plik nie należy do Materiałów PH." }, { status: 403 });
+        return NextResponse.json({ error: "Plik nie należy do Skarbnicy wiedzy." }, { status: 403 });
       }
       const meta = await itemMeta(token, fileId);
       if (!meta || meta.mimeType === FOLDER_MIME) {
         return NextResponse.json({ error: "Nie znaleziono pliku." }, { status: 404 });
       }
+
+      const isGoogleDocument = GOOGLE_DOCUMENT_MIMES.has(meta.mimeType);
       const size = Number(meta.size || 0);
-      if (Number.isFinite(size) && size > 30 * 1024 * 1024) {
-        return NextResponse.json({ error: "Podgląd plików powyżej 30 MB otwieraj bezpośrednio w Google Drive." }, { status: 413 });
+      if (!isGoogleDocument && Number.isFinite(size) && size > 50 * 1024 * 1024) {
+        return NextResponse.json(
+          { error: "Plik jest zbyt duży do otwarcia bezpośrednio w CRM." },
+          { status: 413 }
+        );
       }
-      const media = await driveFetch(
-        token,
-        `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media`
-      );
+
+      const mediaUrl = isGoogleDocument
+        ? `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}/export?mimeType=${encodeURIComponent("application/pdf")}`
+        : `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media`;
+      const media = await driveFetch(token, mediaUrl);
       if (!media.ok) {
-        return NextResponse.json({ error: "Nie udało się pobrać podglądu pliku." }, { status: 502 });
+        return NextResponse.json({ error: "Nie udało się otworzyć pliku w CRM." }, { status: 502 });
       }
+
       const buffer = await media.arrayBuffer();
       return new Response(buffer, {
         headers: {
-          "Content-Type": meta.mimeType || media.headers.get("content-type") || "application/octet-stream",
-          "Content-Disposition": `inline; filename*=UTF-8''${encodeURIComponent(meta.name)}`,
+          "Content-Type": isGoogleDocument
+            ? "application/pdf"
+            : meta.mimeType || media.headers.get("content-type") || "application/octet-stream",
+          "Content-Disposition": inlineName(meta.name, isGoogleDocument),
           "Cache-Control": "private, max-age=300"
         }
       });
@@ -98,7 +125,7 @@ export async function GET(request: Request) {
 
     const folderId = url.searchParams.get("folder_id")?.trim() || rootId;
     if (!(await isWithinRoot(token, folderId, rootId))) {
-      return NextResponse.json({ error: "Folder nie należy do Materiałów PH." }, { status: 403 });
+      return NextResponse.json({ error: "Folder nie należy do Skarbnicy wiedzy." }, { status: 403 });
     }
 
     const current = await itemMeta(token, folderId);
@@ -109,7 +136,7 @@ export async function GET(request: Request) {
     const params = new URLSearchParams({
       pageSize: "1000",
       orderBy: "name_natural",
-      fields: "files(id,name,mimeType,modifiedTime,webViewLink,size,parents)"
+      fields: "files(id,name,mimeType,modifiedTime,size,parents)"
     });
     params.set("q", `'${folderId.replace(/'/g, "\\'")}' in parents and trashed=false`);
     const response = await driveFetch(token, `https://www.googleapis.com/drive/v3/files?${params}`);
@@ -119,14 +146,13 @@ export async function GET(request: Request) {
         name: string;
         mimeType: string;
         modifiedTime?: string;
-        webViewLink?: string;
         size?: string;
         parents?: string[];
       }>;
       error?: { message?: string };
     };
     if (!response.ok) {
-      throw new Error(body.error?.message || "Nie udało się pobrać Materiałów PH.");
+      throw new Error(body.error?.message || "Nie udało się pobrać materiałów.");
     }
 
     const items = (body.files || []).sort((left, right) => {
@@ -143,7 +169,7 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Błąd Google Drive." },
+      { error: error instanceof Error ? error.message : "Błąd Skarbnicy wiedzy." },
       { status: 503 }
     );
   }
