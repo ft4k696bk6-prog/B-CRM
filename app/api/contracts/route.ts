@@ -64,6 +64,11 @@ function normalizeContract(contract: ContractRow): ContractRow {
   };
 }
 
+/**
+ * Emergency compatibility path for installations that still have historical
+ * contract snapshots in lead_history. Production contract data itself must
+ * come from the contracts table; no client-name based synthesis is allowed.
+ */
 async function fallbackContracts(
   supabaseAdmin: ReturnType<
     typeof import("@/lib/server-auth").getServiceClient
@@ -121,115 +126,6 @@ async function fallbackContracts(
   );
 }
 
-async function legacyLeadContracts(
-  supabaseAdmin: ReturnType<
-    typeof import("@/lib/server-auth").getServiceClient
-  >,
-  environment: string,
-): Promise<ContractRow[]> {
-  const { data: leads } = await supabaseAdmin
-    .from("leads")
-    .select(
-      "id,full_name,phone,postal_code,address,contract_number,created_at,updated_at,assigned_to,source",
-    )
-    .eq("crm_environment", environment)
-    .or(
-      "status.eq.Umowa,full_name.ilike.%Kazimiera%Napora%,full_name.ilike.%Marian%Maksymiec%,full_name.ilike.%Watrach%,full_name.ilike.%Antoni%Kisiel%,full_name.ilike.%Irena%Wielgos%",
-    )
-    .order("updated_at", { ascending: false });
-  const leadIds = (leads || []).map((lead) => lead.id);
-  const { data: ownershipHistory } = leadIds.length
-    ? await supabaseAdmin
-        .from("lead_history")
-        .select("lead_id,old_value,created_at")
-        .in("lead_id", leadIds)
-        .in("action_type", ["return", "assignment"])
-        .order("created_at", { ascending: false })
-    : { data: [] };
-  const previousOwners = new Map<string, string>();
-  for (const row of ownershipHistory || []) {
-    const owner =
-      typeof row.old_value?.assigned_to === "string"
-        ? row.old_value.assigned_to
-        : null;
-    if (owner && !previousOwners.has(row.lead_id))
-      previousOwners.set(row.lead_id, owner);
-  }
-  const ownerIds = [
-    ...new Set(
-      (leads || [])
-        .map((lead) => lead.assigned_to || previousOwners.get(lead.id))
-        .filter(Boolean),
-    ),
-  ] as string[];
-  const { data: creators } = ownerIds.length
-    ? await supabaseAdmin
-        .from("profiles")
-        .select("id,full_name,email,manager_id")
-        .in("id", ownerIds)
-    : { data: [] };
-  return (leads || []).map((lead) => {
-    const createdBy = lead.assigned_to || previousOwners.get(lead.id) || "";
-    const name = lead.full_name.toLocaleLowerCase("pl");
-    const montage =
-      (name.includes("antoni") && name.includes("kisiel")) ||
-      (name.includes("kazimiera") && name.includes("napora"));
-    const schedule =
-      (name.includes("irena") && name.includes("wielgos")) ||
-      (name.includes("marian") && name.includes("maksymiec"));
-    const processStatus: ContractStatus = montage
-      ? "installation_scheduled"
-      : schedule
-        ? "installation_to_schedule"
-        : name.includes("watrach")
-          ? "equipment_to_order"
-          : "paused";
-    return {
-      id: lead.id,
-      lead_id: lead.id,
-      contract_number: lead.contract_number || `UMOWA-${lead.id.slice(0, 8)}`,
-      signed_at: lead.updated_at.slice(0, 10),
-      customer_name: lead.full_name,
-      phone: lead.phone,
-      email: "",
-      postal_code: lead.postal_code || "",
-      city: "",
-      street: lead.address || "",
-      house_number: "",
-      financing: "gotowka",
-      credit_amount: null,
-      product_type: "ME",
-      pv_power_kwp: null,
-      storage_capacity_kwh: null,
-      panel_power_wp: null,
-      panels_count: null,
-      has_inverter: false,
-      inverter_power_kw: null,
-      mounting_locations: [],
-      multiple_mounting_locations: false,
-      gross_amount: 0,
-      backup_power: false,
-      optimizer_count: 0,
-      surge_protection: false,
-      grounding: false,
-      additional_notes: lead.source ? `Źródło: ${lead.source}` : null,
-      installation_at: montage ? "2026-08-06T08:00:00.000Z" : null,
-      created_by: createdBy,
-      crm_environment: environment,
-      created_at: lead.created_at,
-      updated_at: lead.updated_at,
-      legacy: true,
-      tasks: [],
-      process_status: processStatus,
-      is_process_visible: processStatus !== "paused",
-      management_notes: [],
-      files: [],
-      creator:
-        (creators || []).find((person) => person.id === createdBy) || null,
-    } as ContractRow;
-  });
-}
-
 function visibleContractsFor(
   profile: { id: string; role: string },
   contracts: ContractRow[],
@@ -268,16 +164,10 @@ export async function GET(request: Request) {
   }
   const { data, error } = await query.order("updated_at", { ascending: false });
   if (error?.message?.includes("contracts")) {
-    const [legacy, overlays] = await Promise.all([
-      legacyLeadContracts(supabaseAdmin, profile.crm_environment),
-      fallbackContracts(supabaseAdmin, profile.crm_environment),
-    ]);
-    let contracts = [...legacy, ...overlays];
-    contracts = [
-      ...new Map(
-        contracts.map((contract) => [contract.lead_id, contract]),
-      ).values(),
-    ];
+    let contracts = await fallbackContracts(
+      supabaseAdmin,
+      profile.crm_environment,
+    );
     contracts = visibleContractsFor(profile, contracts, teamIds);
     if (id) contracts = contracts.filter((contract) => contract.id === id);
     contracts = contracts.map(normalizeContract);
@@ -287,17 +177,19 @@ export async function GET(request: Request) {
   }
   if (error)
     return NextResponse.json({ error: error.message }, { status: 400 });
+
   let contracts = [...((data || []) as ContractRow[])];
-  if (!id)
-    contracts = [
-      ...(await legacyLeadContracts(supabaseAdmin, profile.crm_environment)),
-      ...contracts,
-    ];
-  if (id && contracts.length === 0)
-    contracts = [
-      ...(await legacyLeadContracts(supabaseAdmin, profile.crm_environment)),
-      ...(await fallbackContracts(supabaseAdmin, profile.crm_environment)),
-    ].filter((contract) => contract.id === id);
+
+  // An id miss may still be recoverable from a historical snapshot on an
+  // installation that predates the contracts table migration. Lists on a
+  // healthy installation always come exclusively from contracts.
+  if (id && contracts.length === 0) {
+    contracts = (await fallbackContracts(
+      supabaseAdmin,
+      profile.crm_environment,
+    )).filter((contract) => contract.id === id);
+  }
+
   contracts = [
     ...new Map(
       contracts.map((contract) => [contract.lead_id, contract]),
@@ -523,14 +415,11 @@ export async function PATCH(request: Request) {
   let contract = dbResult.data as ContractRow | null;
   let fallbackMode = Boolean(dbResult.error?.message?.includes("contracts"));
   if (!contract) {
-    const [historyContracts, legacyContracts] = await Promise.all([
-      fallbackContracts(supabaseAdmin, profile.crm_environment),
-      legacyLeadContracts(supabaseAdmin, profile.crm_environment),
-    ]);
-    contract =
-      [...historyContracts, ...legacyContracts].find(
-        (item) => item.id === id,
-      ) || null;
+    const historyContracts = await fallbackContracts(
+      supabaseAdmin,
+      profile.crm_environment,
+    );
+    contract = historyContracts.find((item) => item.id === id) || null;
     fallbackMode = Boolean(contract);
   }
   if (!contract)
