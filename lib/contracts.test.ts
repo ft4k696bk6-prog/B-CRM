@@ -55,6 +55,20 @@ describe("contract visibility", () => {
     expect(canViewContractForRole({ ...base, role: "admin" })).toBe(true);
   });
 
+  it.each(["finance", "viewer", "ksiegowosc", "logistyk", "monter"])(
+    "lets %s read submitted contracts but not drafts",
+    (role) => {
+      expect(
+        canViewContractForRole({
+          ...base,
+          role,
+          submissionStatus: "submitted",
+        }),
+      ).toBe(true);
+      expect(canViewContractForRole({ ...base, role })).toBe(false);
+    },
+  );
+
   it("shows draft separately from process status", () => {
     expect(
       contractDisplayStatus({
