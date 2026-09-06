@@ -6,6 +6,7 @@ import { FileUp, UploadCloud } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { Alert, PageHeader } from "@/components/ui";
+import { normalizePhoneE164 } from "@/lib/phone";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/use-auth";
 
@@ -52,17 +53,30 @@ export default function ImportPage() {
           return;
         }
 
+        const invalidPhoneRows: number[] = [];
         const cleaned = result.data
-          .map((row) => ({
-            full_name: row.full_name?.trim(),
-            phone: row.phone?.trim(),
-            postal_code: row.postal_code?.trim(),
-            source: row.source?.trim(),
-            address: row.address?.trim() || null,
-            voivodeship: row.voivodeship?.trim() || null,
-            county: row.county?.trim() || null
-          }))
+          .map((row, index) => {
+            const rawPhone = row.phone?.trim() || "";
+            const phone = normalizePhoneE164(rawPhone);
+            if (rawPhone && !phone) invalidPhoneRows.push(index + 2);
+            return {
+              full_name: row.full_name?.trim(),
+              phone: phone || undefined,
+              postal_code: row.postal_code?.trim(),
+              source: row.source?.trim(),
+              address: row.address?.trim() || null,
+              voivodeship: row.voivodeship?.trim() || null,
+              county: row.county?.trim() || null
+            };
+          })
           .filter((row) => row.full_name && row.phone && row.postal_code && row.source);
+
+        if (invalidPhoneRows.length > 0) {
+          const preview = invalidPhoneRows.slice(0, 12).join(", ");
+          const rest = invalidPhoneRows.length > 12 ? ` i ${invalidPhoneRows.length - 12} kolejnych` : "";
+          setError(`Import zatrzymany. Niepoprawny numer telefonu w wierszach: ${preview}${rest}. Popraw plik i wczytaj go ponownie.`);
+          return;
+        }
 
         if (cleaned.length === 0) {
           setError("Plik nie zawiera poprawnych leadów.");
@@ -100,7 +114,7 @@ export default function ImportPage() {
     if (importError) {
       setError(importError.message);
     } else {
-      setSuccess(`Zaimportowano leady: ${rows.length}`);
+      setSuccess(`Zaimportowano leady: ${rows.length}. Numery zapisano w jednolitym formacie E.164.`);
       setRows([]);
       setFileName("");
     }
@@ -115,7 +129,7 @@ export default function ImportPage() {
       <div className="grid gap-5">
         <PageHeader
           title="Import CSV"
-          description="Wymagane kolumny: full_name, phone, postal_code, source."
+          description="Wymagane kolumny: full_name, phone, postal_code, source. Numery telefonu są walidowane i zapisywane jako E.164, np. +48600123456."
         />
 
         <section className="app-card">
