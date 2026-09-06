@@ -14,6 +14,22 @@ type ScheduleHistory = {
   new_value: Record<string, unknown> | null;
 };
 
+export async function isMandatoryQueueEnabled(
+  supabaseAdmin: ReturnType<typeof getServiceClient>,
+  environment: string,
+) {
+  const { data, error } = await supabaseAdmin
+    .from("crm_settings")
+    .select("mandatory_queue_enabled")
+    .eq("crm_environment", environment)
+    .maybeSingle();
+
+  // Migration 24 may not exist yet during a rolling deployment. Defaulting to
+  // enabled preserves the existing safety behaviour instead of silently removing it.
+  if (error) return true;
+  return data?.mandatory_queue_enabled !== false;
+}
+
 export function wasCurrentScheduleSetAfterRollout(lead: Pick<Lead, "id" | "status" | "callback_at" | "meeting_at">, history: ScheduleHistory[]) {
   const field = lead.status === "Call back" ? "callback_at" : lead.status === "Spotkanie" ? "meeting_at" : null;
   const currentSchedule = field ? lead[field] : null;
@@ -25,6 +41,8 @@ export async function getScheduledLeadsSinceRollout(
   supabaseAdmin: ReturnType<typeof getServiceClient>,
   profile: { id: string; crm_environment: string }
 ) {
+  if (!(await isMandatoryQueueEnabled(supabaseAdmin, profile.crm_environment))) return [];
+
   const scheduled = await supabaseAdmin
     .from("leads")
     .select(mandatoryLeadSelect)
