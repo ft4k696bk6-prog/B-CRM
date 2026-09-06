@@ -6,6 +6,7 @@ import { GoogleAnalytics } from "@/components/google-analytics";
 import { LanguageProvider } from "@/components/language-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
+import "./mobile-ux.css";
 
 export const metadata: Metadata = {
   title: "B-CRM",

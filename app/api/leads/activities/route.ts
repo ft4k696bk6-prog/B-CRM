@@ -24,6 +24,23 @@ type CreateActivityBody = {
   metadata?: Record<string, unknown>;
 };
 
+const activityTypes = [
+  "comment",
+  "status_change",
+  "callback_scheduled",
+  "meeting_scheduled",
+  "meeting_address_changed",
+  "contract_number_set",
+  "resignation_recorded",
+  "file_uploaded",
+  "file_deleted",
+  "assigned",
+  "unassigned",
+  "lead_created"
+] as const;
+
+type ActivityType = (typeof activityTypes)[number];
+
 function getSupabaseClient(token: string) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -54,14 +71,19 @@ export async function GET(request: Request) {
 
     const url = new URL(request.url);
     const leadId = url.searchParams.get("lead_id");
+    const typeParam = url.searchParams.get("type");
 
     if (!leadId) {
       return NextResponse.json({ error: "Brak lead_id" }, { status: 400 });
     }
 
+    if (typeParam && !activityTypes.includes(typeParam as ActivityType)) {
+      return NextResponse.json({ error: "Niepoprawny typ aktywności." }, { status: 400 });
+    }
+
     const supabase = getSupabaseClient(token);
 
-    const { data: activities, error } = await supabase
+    let query = supabase
       .from("lead_activities")
       .select(
         `
@@ -71,6 +93,10 @@ export async function GET(request: Request) {
       )
       .eq("lead_id", leadId)
       .order("created_at", { ascending: false });
+
+    if (typeParam) query = query.eq("activity_type", typeParam);
+
+    const { data: activities, error } = await query;
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
@@ -106,7 +132,7 @@ export async function POST(request: Request) {
 
     const body = (await request.json()) as CreateActivityBody;
     const leadId = uuidString(body.lead_id, "lead_id");
-    const type = enumValue(body.activity_type, "activity_type", ["comment", "status_change", "callback_scheduled", "meeting_scheduled", "meeting_address_changed", "contract_number_set", "resignation_recorded", "file_uploaded", "file_deleted", "assigned", "unassigned", "lead_created"] as const);
+    const type = enumValue(body.activity_type, "activity_type", activityTypes);
     const title = requiredString(body.title, "title", 160);
     const description = optionalString(body.description, "description", 4000);
     const oldValue = optionalRecord(body.old_value, "old_value");

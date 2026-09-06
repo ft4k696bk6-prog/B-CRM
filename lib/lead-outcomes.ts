@@ -10,7 +10,7 @@ export function isAfterMeeting(status: LeadStatus, meetingAt?: string | null, no
 export function allowedOutcomes(status: LeadStatus, meetingAt?: string | null, now = new Date()): LeadOutcome[] {
   if (status === "Umowa" || status === "Rezygnacja") return [];
   if (isAfterMeeting(status, meetingAt, now)) return ["contract", "resignation", "callback", "return"];
-  return ["callback", "meeting", "no_answer", "return"];
+  return ["callback", "meeting", "no_answer", "resignation", "return"];
 }
 
 export function validateLeadOutcome(

@@ -1,0 +1,88 @@
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body,
+.app-layout,
+.app-card,
+.app-muted-panel,
+main,
+section,
+article,
+form,
+label {
+  min-width: 0;
+}
+
+img,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+}
+
+/* Backoffice modules are intentionally hidden from navigation for the current sales-first release. */
+.app-sidebar a[href="/panel"],
+.app-sidebar a[href="/equipment"],
+.mobile-menu-panel a[href="/panel"],
+.mobile-menu-panel a[href="/equipment"] {
+  display: none !important;
+}
+
+@media (max-width: 1279px) {
+  .app-layout {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 639px) {
+  .app-layout {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    padding-top: 0.75rem !important;
+    gap: 0.75rem !important;
+  }
+
+  .app-card {
+    border-radius: 1rem;
+    padding: 0.875rem;
+  }
+
+  .app-muted-panel {
+    border-radius: 0.875rem;
+    padding: 0.75rem;
+  }
+
+  .field,
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger,
+  .btn-ghost,
+  .btn-icon {
+    border-radius: 0.75rem;
+  }
+
+  .section-title {
+    font-size: 1.35rem;
+    line-height: 1.65rem;
+  }
+
+  header .max-w-7xl {
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 540px) {
+  header {
+    position: sticky;
+  }
+
+  .app-layout {
+    padding-top: 0.5rem !important;
+  }
+}
