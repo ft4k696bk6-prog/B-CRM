@@ -1,7 +1,7 @@
 import { googleWorkspaceToken } from "@/lib/google-workspace";
 
 const FOLDER_MIME = "application/vnd.google-apps.folder";
-const DEFAULT_CONTRACTS_ROOT_FOLDER_ID = "1XT4Bw7YTPiHdeIz1w7mcIU1dC5TYkdeh";
+const DEFAULT_CONTRACTS_ROOT_FOLDER_ID = "1N3x3PXTPRNNQPD4cr4DpjqJVCd7tl2OM";
 const MONTHS_PL = [
   "styczeń",
   "luty",
