@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { canViewContractForRole } from "@/lib/contracts";
+import { uploadClientAttachmentToDrive } from "@/lib/google-drive-client-files";
 import { requireApiProfile } from "@/lib/server-auth";
 
 export const runtime = "nodejs";
@@ -108,7 +109,7 @@ export async function POST(request: Request) {
   const [{ data: lead }, { data: contract }] = await Promise.all([
     auth.supabaseAdmin
       .from("leads")
-      .select("id")
+      .select("id,full_name")
       .eq("id", leadId)
       .eq("crm_environment", auth.profile.crm_environment)
       .single(),
@@ -172,7 +173,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Niepoprawna ścieżka pliku." }, { status: 400 });
   }
 
-  const record = {
+  const record: Record<string, unknown> = {
     id: crypto.randomUUID(),
     name: fileName,
     kind,
@@ -199,12 +200,55 @@ export async function POST(request: Request) {
     );
   }
 
+  let driveWarning = "";
+  try {
+    const download = await auth.supabaseAdmin.storage.from(CONTRACT_FILES_BUCKET).download(path);
+    if (download.error || !download.data) {
+      throw new Error(download.error?.message || "Nie udało się odczytać pliku po wysłaniu.");
+    }
+    const driveFile = await uploadClientAttachmentToDrive({
+      leadId,
+      contractId,
+      customerName: lead.full_name,
+      fileName,
+      mimeType: mime,
+      bytes: await download.data.arrayBuffer()
+    });
+    const driveSyncedAt = new Date().toISOString();
+    const drivePatch = {
+      drive_file_id: driveFile.id,
+      drive_folder_id: driveFile.folderId,
+      drive_web_view_link: driveFile.webViewLink || null,
+      drive_sync_error: null,
+      drive_synced_at: driveSyncedAt
+    };
+    const { error: driveDbError } = await auth.supabaseAdmin
+      .from("contract_files")
+      .update(drivePatch)
+      .eq("id", String(record.id));
+    if (driveDbError) throw new Error(`Plik jest na Drive, ale CRM nie zapisał linku: ${driveDbError.message}`);
+    Object.assign(record, drivePatch);
+  } catch (error) {
+    driveWarning = error instanceof Error ? error.message : "Nie udało się zsynchronizować pliku z Google Drive.";
+    await auth.supabaseAdmin
+      .from("contract_files")
+      .update({ drive_sync_error: driveWarning })
+      .eq("id", String(record.id));
+  }
+
   await auth.supabaseAdmin.from("lead_history").insert({
     lead_id: leadId,
     user_id: auth.profile.id,
     action_type: "contract_file",
-    description: `Dodano załącznik: ${fileName}`,
+    description: driveWarning
+      ? `Dodano załącznik: ${fileName}. Synchronizacja Google Drive wymaga ponowienia.`
+      : `Dodano załącznik: ${fileName}. Zapisano również na Google Drive.`,
     new_value: record
   });
-  return NextResponse.json({ file: record });
+
+  return NextResponse.json({
+    file: record,
+    driveSynced: !driveWarning,
+    ...(driveWarning ? { driveWarning } : {})
+  });
 }
