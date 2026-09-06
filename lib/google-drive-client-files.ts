@@ -1,6 +1,27 @@
 import { googleWorkspaceToken } from "@/lib/google-workspace";
 
 const FOLDER_MIME = "application/vnd.google-apps.folder";
+const DEFAULT_CONTRACTS_ROOT_FOLDER_ID = "1XT4Bw7YTPiHdeIz1w7mcIU1dC5TYkdeh";
+const MONTHS_PL = [
+  "styczeń",
+  "luty",
+  "marzec",
+  "kwiecień",
+  "maj",
+  "czerwiec",
+  "lipiec",
+  "sierpień",
+  "wrzesień",
+  "październik",
+  "listopad",
+  "grudzień"
+];
+
+type DriveFolder = {
+  id: string;
+  name: string;
+  webViewLink?: string;
+};
 
 type DriveFileResult = {
   id: string;
@@ -9,8 +30,8 @@ type DriveFileResult = {
   folderId: string;
 };
 
-function driveParentId() {
-  return process.env.GOOGLE_CLIENT_FILES_FOLDER_ID?.trim() || process.env.GOOGLE_DRIVE_FOLDER_ID?.trim() || "";
+function driveContractsRootId() {
+  return process.env.GOOGLE_CONTRACTS_FOLDER_ID?.trim() || DEFAULT_CONTRACTS_ROOT_FOLDER_ID;
 }
 
 function escapeDriveQuery(value: string) {
@@ -45,7 +66,7 @@ async function findFolder(token: string, parentId: string, queryExtra: string) {
     "q",
     `'${escapeDriveQuery(parentId)}' in parents and mimeType='${FOLDER_MIME}' and trashed=false and ${queryExtra}`
   );
-  const result = await driveJson<{ files?: Array<{ id: string; name: string; webViewLink?: string }> }>(
+  const result = await driveJson<{ files?: DriveFolder[] }>(
     token,
     `https://www.googleapis.com/drive/v3/files?${params}`
   );
@@ -58,7 +79,7 @@ async function createFolder(
   name: string,
   appProperties: Record<string, string>
 ) {
-  return driveJson<{ id: string; name: string; webViewLink?: string }>(
+  return driveJson<DriveFolder>(
     token,
     "https://www.googleapis.com/drive/v3/files?fields=id,name,webViewLink",
     {
@@ -74,29 +95,59 @@ async function createFolder(
   );
 }
 
-async function ensureClientFolder(token: string, leadId: string, customerName: string) {
-  const parentId = driveParentId();
-  if (!parentId) {
-    throw new Error("Brakuje GOOGLE_CLIENT_FILES_FOLDER_ID lub GOOGLE_DRIVE_FOLDER_ID dla załączników klientów.");
+async function ensureNamedFolder(
+  token: string,
+  parentId: string,
+  name: string,
+  appProperties: Record<string, string>
+) {
+  const existing = await findFolder(token, parentId, `name='${escapeDriveQuery(name)}'`);
+  return existing || createFolder(token, parentId, name, appProperties);
+}
+
+function periodForContract(signedAt?: string | null) {
+  const simpleDate = signedAt?.match(/^(\d{4})-(\d{2})/);
+  if (simpleDate) {
+    const year = Number(simpleDate[1]);
+    const monthIndex = Number(simpleDate[2]) - 1;
+    if (year >= 2000 && monthIndex >= 0 && monthIndex < 12) {
+      return { year: String(year), month: `${MONTHS_PL[monthIndex]} ${year}` };
+    }
   }
 
-  let clientsRoot = await findFolder(
-    token,
-    parentId,
-    "appProperties has { key='bcrm_folder' and value='clients_root' }"
-  );
-  if (!clientsRoot) {
-    clientsRoot = await createFolder(token, parentId, "Klienci CRM", { bcrm_folder: "clients_root" });
-  }
+  const parsed = signedAt ? new Date(signedAt) : new Date();
+  const safeDate = Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+  const year = safeDate.getFullYear();
+  return { year: String(year), month: `${MONTHS_PL[safeDate.getMonth()]} ${year}` };
+}
+
+async function ensureClientFolder(
+  token: string,
+  leadId: string,
+  customerName: string,
+  signedAt?: string | null
+) {
+  const rootId = driveContractsRootId();
+  if (!rootId) throw new Error("Brakuje folderu docelowego dla umów.");
+
+  const period = periodForContract(signedAt);
+  const yearFolder = await ensureNamedFolder(token, rootId, period.year, {
+    bcrm_folder: "contracts_year",
+    bcrm_year: period.year
+  });
+  const monthFolder = await ensureNamedFolder(token, yearFolder.id, period.month, {
+    bcrm_folder: "contracts_month",
+    bcrm_month: period.month
+  });
 
   const safeLeadId = escapeDriveQuery(leadId);
   let clientFolder = await findFolder(
     token,
-    clientsRoot.id,
+    monthFolder.id,
     `appProperties has { key='bcrm_lead_id' and value='${safeLeadId}' }`
   );
   if (!clientFolder) {
-    clientFolder = await createFolder(token, clientsRoot.id, customerName.trim() || "Klient", {
+    clientFolder = await createFolder(token, monthFolder.id, customerName.trim() || "Klient", {
       bcrm_folder: "client",
       bcrm_lead_id: leadId
     });
@@ -108,6 +159,7 @@ export async function uploadClientAttachmentToDrive({
   leadId,
   contractId,
   customerName,
+  signedAt,
   fileName,
   mimeType,
   bytes
@@ -115,12 +167,13 @@ export async function uploadClientAttachmentToDrive({
   leadId: string;
   contractId: string;
   customerName: string;
+  signedAt?: string | null;
   fileName: string;
   mimeType: string;
   bytes: ArrayBuffer;
 }): Promise<DriveFileResult> {
   const token = await driveToken();
-  const folder = await ensureClientFolder(token, leadId, customerName);
+  const folder = await ensureClientFolder(token, leadId, customerName, signedAt);
   const boundary = `bcrm_${crypto.randomUUID().replace(/-/g, "")}`;
   const metadata = JSON.stringify({
     name: fileName,
