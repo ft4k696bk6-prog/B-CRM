@@ -27,7 +27,7 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
   owner: "Pełna kontrola nad CRM, rolami, danymi, ustawieniami i eksportem.",
   admin: "Zarządza operacyjnie CRM, użytkownikami, importem, leadami i ustawieniami.",
-  menadzer: "Prowadzi zespół handlowców, rozdziela leady i kontroluje wyniki zespołu.",
+  menadzer: "Pracuje na własnych leadach jak handlowiec oraz zarządza zespołem, rozdziela leady i kontroluje wyniki.",
   handlowiec: "Pracuje na własnych leadach, zadaniach, spotkaniach, ofertach i aktywnościach.",
   finance: "Widok finansowy: umowy, raporty i dane potrzebne do rozliczeń.",
   viewer: "Bezpieczny tryb tylko do odczytu dla audytu, zarządu lub obserwatorów.",
@@ -124,7 +124,12 @@ export function isManagerRole(role?: RoleInput | null) {
 }
 
 export function isSalesRole(role?: RoleInput | null) {
-  return normalizeRole(role) === "handlowiec";
+  const normalized = normalizeRole(role);
+  return normalized === "handlowiec" || normalized === "menadzer";
+}
+
+export function isSalesWorkerRole(role?: RoleInput | null) {
+  return isSalesRole(role);
 }
 
 export function isFinanceRole(role?: RoleInput | null) {

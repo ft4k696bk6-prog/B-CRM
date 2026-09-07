@@ -1,11 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import type { Profile, UserRole } from "@/lib/types";
-import { homePathForRole, normalizeRole } from "@/lib/roles";
+import { homePathForRole, isSalesRole, normalizeRole } from "@/lib/roles";
 import { normalizeCrmScope } from "@/lib/scope";
 
 type AuthState = {
@@ -49,6 +49,7 @@ async function fetchAuthState(force = false): Promise<AuthState> {
 
 export function useAuth(requiredRole?: UserRole | UserRole[]) {
   const router = useRouter();
+  const pathname = usePathname();
   const requiredRoleKey = Array.isArray(requiredRole) ? requiredRole.join("|") : requiredRole || "";
   const [state, setState] = useState<AuthState>(() => authCache || { loading: true, session: null, profile: null });
 
@@ -71,10 +72,25 @@ export function useAuth(requiredRole?: UserRole | UserRole[]) {
       }
 
       const allowedRoles = requiredRoleKey ? (requiredRoleKey.split("|") as UserRole[]) : [];
+      const salespersonCompatible = allowedRoles.includes("handlowiec") && isSalesRole(profile.role);
 
-      if (allowedRoles.length > 0 && !allowedRoles.includes(profile.role)) {
+      if (allowedRoles.length > 0 && !allowedRoles.includes(profile.role) && !salespersonCompatible) {
         router.replace(homePathForRole(profile.role));
         return;
+      }
+
+      if (isSalesRole(profile.role)) {
+        const queueResponse = await fetch("/api/leads/mandatory-queue", {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+          cache: "no-store"
+        });
+        const queueBody = (await queueResponse.json().catch(() => ({}))) as { leads?: Array<{ id: string }> };
+        const mandatoryIds = queueResponse.ok ? (queueBody.leads || []).map((lead) => lead.id) : [];
+        const allowedMandatoryPath = pathname === "/sales" || mandatoryIds.some((id) => pathname === `/leads/${id}`);
+        if (mandatoryIds.length > 0 && !allowedMandatoryPath) {
+          router.replace("/sales");
+          return;
+        }
       }
 
       if (mounted) setState({ loading: false, session, profile });
@@ -92,7 +108,7 @@ export function useAuth(requiredRole?: UserRole | UserRole[]) {
       mounted = false;
       listener.subscription.unsubscribe();
     };
-  }, [requiredRoleKey, router]);
+  }, [pathname, requiredRoleKey, router]);
 
   return { ...state, loading: state.loading };
 }
