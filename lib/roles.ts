@@ -124,12 +124,12 @@ export function isManagerRole(role?: RoleInput | null) {
 }
 
 export function isSalesRole(role?: RoleInput | null) {
-  return normalizeRole(role) === "handlowiec";
+  const normalized = normalizeRole(role);
+  return normalized === "handlowiec" || normalized === "menadzer";
 }
 
 export function isSalesWorkerRole(role?: RoleInput | null) {
-  const normalized = normalizeRole(role);
-  return normalized === "handlowiec" || normalized === "menadzer";
+  return isSalesRole(role);
 }
 
 export function isFinanceRole(role?: RoleInput | null) {
