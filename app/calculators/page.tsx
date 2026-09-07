@@ -31,7 +31,6 @@ type CalculatorTab = "offer" | "profitability";
 const NO_INVERTER_LABEL = "Bez falownika";
 const NO_INVERTER_KW = 0;
 const DEFAULT_STORAGE_INVERTER_KW = 8;
-const EMS_NET_PRICE = 3000;
 const INCLUDED_CABLE_METERS = 8;
 
 const COMPANY_NIP = "9462741793";
@@ -271,7 +270,6 @@ export default function CalculatorsPage() {
       pvExtras +
       boilerNet +
       (backup ? EXTRA_NET_PRICES.backup : 0) +
-      (ems ? EMS_NET_PRICE : 0) +
       chargeableCableMeters * EXTRA_NET_PRICES.cablePerMeterAbove8m +
       manualAdjustment;
     const finalNet = Math.max(baseNet + settings.adminMargin + settings.salesMargin + extrasNet, 0);
@@ -521,7 +519,7 @@ export default function CalculatorsPage() {
                     </label>
                   ) : null}
                   <Toggle label="Backup" checked={backup} onChange={setBackup} />
-                  <Toggle label="EMS (+3 000 zł netto)" checked={ems} onChange={setEms} />
+                  <Toggle label="EMS" checked={ems} onChange={setEms} />
                   <NumberField label={copy.cable} value={cableLengthMeters} min={0} onChange={setCableLengthMeters} />
                   <NumberField label={copy.adjustment} value={manualAdjustment} onChange={setManualAdjustment} />
                 </div>
