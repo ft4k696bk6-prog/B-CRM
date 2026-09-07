@@ -20,6 +20,7 @@ export default function SettingsPage() {
   const [commissionPercent, setCommissionPercent] = useState(
     settings.commissionPercent,
   );
+  const [loanRate, setLoanRate] = useState(settings.loanRate);
   const [businessPhone, setBusinessPhone] = useState("");
   const [saved, setSaved] = useState(false);
   const [phoneSaved, setPhoneSaved] = useState(false);
@@ -34,7 +35,8 @@ export default function SettingsPage() {
     setAdminMargin(settings.adminMargin);
     setSalesMargin(settings.salesMargin);
     setCommissionPercent(settings.commissionPercent);
-  }, [settings.adminMargin, settings.salesMargin, settings.commissionPercent]);
+    setLoanRate(settings.loanRate);
+  }, [settings.adminMargin, settings.salesMargin, settings.commissionPercent, settings.loanRate]);
 
   useEffect(() => {
     setBusinessPhone(profile?.business_phone || "");
@@ -48,6 +50,7 @@ export default function SettingsPage() {
       adminMargin,
       salesMargin,
       commissionPercent,
+      loanRate,
     });
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2500);
@@ -278,7 +281,7 @@ export default function SettingsPage() {
               className="mb-4"
             />
 
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2">
               <label>
                 <span className="label">Marża bazowa firmy netto</span>
                 <input
@@ -323,6 +326,24 @@ export default function SettingsPage() {
                   wypłaty.
                 </span>
               </label>
+
+              {profile.role === "owner" ? (
+                <label>
+                  <span className="label">Oprocentowanie rat rocznie (%)</span>
+                  <input
+                    className="field"
+                    type="number"
+                    value={loanRate}
+                    min={0}
+                    max={100}
+                    step={0.1}
+                    onChange={(event) => setLoanRate(Number(event.target.value))}
+                  />
+                  <span className="mt-1 block text-xs text-muted">
+                    Ta stawka jest używana w kalkulatorze rat dla wszystkich handlowców. Tylko właściciel może ją zmienić.
+                  </span>
+                </label>
+              ) : null}
             </div>
 
             {saved ? (
