@@ -122,7 +122,7 @@ function clusterPopup(leads: LeadMapPoint[]) {
   const postal = leads.map((lead) => lead.postalCode).find(Boolean) || "";
   const shown = leads.slice(0, 40);
   const rows = shown.map((lead) =>
-    `<a href="/leads/${encodeURIComponent(lead.id)}" style="display:block;padding:7px 0;border-top:1px solid #e5e7eb;text-decoration:none;color:#111827">` +
+    `<a href="/leads/${encodeURIComponent(lead.id)}" data-bcrm-map-lead="${escapeHtml(lead.id)}" style="display:block;padding:7px 0;border-top:1px solid #e5e7eb;text-decoration:none;color:#111827">` +
       `<strong>${escapeHtml(lead.name)}</strong>` +
       `<span style="display:block;font-size:12px;color:#667085;margin-top:2px">${escapeHtml(lead.status)}</span>` +
     `</a>`
@@ -141,6 +141,43 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const [error, setError] = useState("");
+  const [openLeadId, setOpenLeadId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    function interceptLeadOpen(event: MouseEvent) {
+      const target = event.target as Element | null;
+      const link = target?.closest?.("a[data-bcrm-map-lead]") as HTMLAnchorElement | null;
+      if (!link) return;
+      const leadId = link.dataset.bcrmMapLead;
+      if (!leadId) return;
+      event.preventDefault();
+      event.stopPropagation();
+      setOpenLeadId(leadId);
+    }
+
+    container.addEventListener("click", interceptLeadOpen);
+    return () => container.removeEventListener("click", interceptLeadOpen);
+  }, []);
+
+  useEffect(() => {
+    if (!openLeadId) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpenLeadId(null);
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [openLeadId]);
 
   useEffect(() => {
     let active = true;
@@ -198,7 +235,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
               `<strong>${escapeHtml(lead.name)}</strong><br>` +
               `<span>${escapeHtml(lead.status)}</span><br>` +
               `<span style="color:#667085">${escapeHtml(lead.address || lead.postalCode || "Brak dokładnego adresu")}</span><br>` +
-              `<a href="/leads/${encodeURIComponent(lead.id)}" style="display:inline-block;margin-top:8px;font-weight:700">Otwórz lead →</a>` +
+              `<a href="/leads/${encodeURIComponent(lead.id)}" data-bcrm-map-lead="${escapeHtml(lead.id)}" style="display:inline-block;margin-top:8px;font-weight:700">Otwórz lead →</a>` +
             `</div>`
           );
         }
@@ -218,7 +255,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
             `<div style="min-width:210px;font-family:system-ui,sans-serif">` +
               `<strong>${meeting.order}. ${time} · ${escapeHtml(meeting.name)}</strong><br>` +
               `<span style="color:#667085">${escapeHtml(meeting.address)}</span><br>` +
-              `<a href="/leads/${encodeURIComponent(meeting.id)}" style="display:inline-block;margin-top:8px;font-weight:700">Otwórz spotkanie →</a>` +
+              `<a href="/leads/${encodeURIComponent(meeting.id)}" data-bcrm-map-lead="${escapeHtml(meeting.id)}" style="display:inline-block;margin-top:8px;font-weight:700">Otwórz spotkanie →</a>` +
             `</div>`
           );
         }
@@ -261,5 +298,50 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
     return <div className="flex min-h-[58vh] items-center justify-center rounded-xl border border-line bg-panel p-6 text-sm font-semibold text-red-700">{error}</div>;
   }
 
-  return <div ref={containerRef} className="h-[64dvh] min-h-[520px] w-full overflow-hidden rounded-xl border border-line bg-[#eef2f6] shadow-sm" />;
+  return (
+    <>
+      <div ref={containerRef} className="h-[64dvh] min-h-[520px] w-full overflow-hidden rounded-xl border border-line bg-[#eef2f6] shadow-sm" />
+
+      {openLeadId ? (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-2 sm:p-4" role="dialog" aria-modal="true" aria-label="Szczegóły leada">
+          <button
+            type="button"
+            className="absolute inset-0 bg-ink/55 backdrop-blur-[2px]"
+            aria-label="Zamknij szczegóły leada"
+            onClick={() => setOpenLeadId(null)}
+          />
+          <div className="relative z-10 flex h-[94dvh] w-full max-w-6xl flex-col overflow-hidden rounded-xl border border-line bg-white shadow-2xl">
+            <div className="flex min-h-12 items-center justify-between border-b border-line bg-white px-3 sm:px-4">
+              <div className="text-sm font-black text-ink">Szczegóły leada</div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={`/leads/${encodeURIComponent(openLeadId)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary min-h-9 px-3 text-xs"
+                >
+                  Otwórz osobno
+                </a>
+                <button
+                  type="button"
+                  className="btn-icon h-9 w-9"
+                  onClick={() => setOpenLeadId(null)}
+                  aria-label="Zamknij"
+                  title="Zamknij"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+            <iframe
+              key={openLeadId}
+              src={`/leads/${encodeURIComponent(openLeadId)}?embedded=1`}
+              title="Szczegóły leada"
+              className="min-h-0 flex-1 border-0 bg-[#f5f7fa]"
+            />
+          </div>
+        </div>
+      ) : null}
+    </>
+  );
 }
