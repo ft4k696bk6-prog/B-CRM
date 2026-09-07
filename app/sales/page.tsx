@@ -42,12 +42,36 @@ export default function SalesDashboardPage() {
   const [postalCode, setPostalCode] = useState("");
   const [voivodeship, setVoivodeship] = useState("");
   const [county, setCounty] = useState("");
+  const [campaign, setCampaign] = useState("");
+  const [campaignOptions, setCampaignOptions] = useState<string[]>([]);
   const [sort, setSort] = useState<SortOption>({ column: "created_at", direction: "desc" });
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
   const [quickLead, setQuickLead] = useState<Lead | null>(null);
   const [contracts, setContracts] = useState<ContractRecord[]>([]);
   const [scheduledLeadIds, setScheduledLeadIds] = useState<string[]>([]);
+
+  const loadCampaignOptions = useCallback(async function loadCampaignOptions() {
+    if (!profile) return;
+
+    const { data } = await supabase
+      .from("leads")
+      .select("campaign")
+      .eq("crm_environment", profile.crm_environment)
+      .eq("assigned_to", profile.id)
+      .not("campaign", "is", null)
+      .limit(1000);
+
+    const options = Array.from(
+      new Set(
+        (data || [])
+          .map((row) => String(row.campaign || "").trim())
+          .filter((value) => value.length > 0 && value.length <= 160)
+      )
+    ).sort((a, b) => a.localeCompare(b, "pl", { sensitivity: "base" }));
+
+    setCampaignOptions(options);
+  }, [profile]);
 
   const loadLeads = useCallback(async function loadLeads() {
     if (!profile) return;
@@ -66,7 +90,7 @@ export default function SalesDashboardPage() {
 
     if (search.trim()) {
       const cleanSearch = search.trim().replace(/[,%]/g, " ");
-      query = query.or(`full_name.ilike.%${cleanSearch}%,phone.ilike.%${cleanSearch}%,address.ilike.%${cleanSearch}%,meeting_address.ilike.%${cleanSearch}%`);
+      query = query.or(`full_name.ilike.%${cleanSearch}%,phone.ilike.%${cleanSearch}%,address.ilike.%${cleanSearch}%,meeting_address.ilike.%${cleanSearch}%,campaign.ilike.%${cleanSearch}%`);
     }
     if (statusFilter) query = query.eq("status", statusFilter);
     if (createdFrom) query = query.gte("created_at", startOfDay(createdFrom));
@@ -74,6 +98,7 @@ export default function SalesDashboardPage() {
     if (postalCode.trim()) query = query.ilike("postal_code", `%${postalCode.trim()}%`);
     if (voivodeship) query = query.eq("voivodeship", voivodeship);
     if (county) query = query.eq("county", county);
+    if (campaign) query = query.eq("campaign", campaign);
 
     const { data, error: leadsError } = await query;
 
@@ -84,7 +109,7 @@ export default function SalesDashboardPage() {
     }
 
     setBusy(false);
-  }, [profile, search, statusFilter, createdFrom, createdTo, postalCode, voivodeship, county, sort]);
+  }, [profile, search, statusFilter, createdFrom, createdTo, postalCode, voivodeship, county, campaign, sort]);
 
   const loadContracts = useCallback(async function loadContracts() {
     if (!session?.access_token) return;
@@ -103,21 +128,23 @@ export default function SalesDashboardPage() {
   useEffect(() => {
     if (!profile) return;
     loadLeads();
+    loadCampaignOptions();
     loadContracts();
     loadQueueScope();
-  }, [profile, loadLeads, loadContracts, loadQueueScope]);
+  }, [profile, loadLeads, loadCampaignOptions, loadContracts, loadQueueScope]);
 
   const scheduledLeadIdSet = useMemo(() => new Set(scheduledLeadIds), [scheduledLeadIds]);
 
   useEffect(() => {
     function refreshLeads() {
       loadLeads();
+      loadCampaignOptions();
       loadQueueScope();
     }
 
     window.addEventListener("leads:changed", refreshLeads);
     return () => window.removeEventListener("leads:changed", refreshLeads);
-  }, [loadLeads, loadQueueScope]);
+  }, [loadCampaignOptions, loadLeads, loadQueueScope]);
 
   const overdueCallbacks = useMemo(
     () =>
@@ -272,6 +299,7 @@ export default function SalesDashboardPage() {
                 setPostalCode("");
                 setVoivodeship("");
                 setCounty("");
+                setCampaign("");
                 setSort({ column: "created_at", direction: "desc" });
               }}
             >
@@ -285,7 +313,7 @@ export default function SalesDashboardPage() {
                 className="field"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Imię i nazwisko, telefon albo adres"
+                placeholder="Imię i nazwisko, telefon, adres albo kampania"
               />
             </label>
             <label>
@@ -299,6 +327,15 @@ export default function SalesDashboardPage() {
             <label>
               <span className="label">Kod pocztowy</span>
               <input className="field" value={postalCode} onChange={(event) => setPostalCode(event.target.value)} placeholder="np. 20-001" />
+            </label>
+            <label>
+              <span className="label">Kampania</span>
+              <select className="field" value={campaign} onChange={(event) => setCampaign(event.target.value)}>
+                <option value="">Wszystkie kampanie</option>
+                {campaignOptions.map((option) => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
+              </select>
             </label>
             <label>
               <span className="label">Status</span>
