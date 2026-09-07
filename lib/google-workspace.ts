@@ -7,13 +7,25 @@ function base64Url(value: string) {
 function normalizePrivateKey(value: string) {
   let key = value.trim();
 
-  // Accept either the private_key value itself or, defensively, a full service-account JSON.
+  // Accept either the private_key value itself, a full service-account JSON,
+  // or a copied JSON property snippet such as: "private_key": "...".
   if (key.startsWith("{")) {
     try {
       const parsed = JSON.parse(key) as { private_key?: string };
       if (parsed.private_key) key = parsed.private_key;
     } catch {
-      // Fall through to the validation below so the caller gets a clear error.
+      // Fall through to the snippet/value handling below.
+    }
+  }
+
+  if (key.includes('"private_key"')) {
+    const match = key.match(/"private_key"\s*:\s*"((?:\\.|[^"\\])*)"/s);
+    if (match?.[1]) {
+      try {
+        key = JSON.parse(`"${match[1]}"`) as string;
+      } catch {
+        key = match[1];
+      }
     }
   }
 
