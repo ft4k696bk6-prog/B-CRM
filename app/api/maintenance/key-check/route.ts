@@ -10,6 +10,9 @@ export async function GET() {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || "";
   const key = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY || "";
   const delegatedUser = process.env.GOOGLE_WORKSPACE_DELEGATED_USER || "";
+  const oauthClientId = process.env.GOOGLE_OAUTH_CLIENT_ID || "";
+  const oauthClientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET || "";
+  const oauthRefreshToken = process.env.GOOGLE_OAUTH_REFRESH_TOKEN || "";
   const trimmed = key.trim();
 
   return NextResponse.json({
@@ -17,6 +20,9 @@ export async function GET() {
     hasKey: Boolean(key),
     hasDelegatedUser: Boolean(delegatedUser.trim()),
     delegatedUserDomain: delegatedUser.includes("@") ? delegatedUser.split("@").at(-1) : null,
+    hasOAuthClientId: Boolean(oauthClientId.trim()),
+    hasOAuthClientSecret: Boolean(oauthClientSecret.trim()),
+    hasOAuthRefreshToken: Boolean(oauthRefreshToken.trim()),
     keyLength: key.length,
     startsJson: trimmed.startsWith("{"),
     containsPrivateKeyLabel: trimmed.includes('"private_key"'),
