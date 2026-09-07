@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Banknote, BatteryCharging, Calculator, Minus, Percent, Plus, Printer, Zap } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { useLanguage } from "@/components/language-provider";
@@ -18,7 +18,6 @@ import {
   type BoilerLayout,
   type OfferMode,
   type PackageId,
-  type RainwaterSystem,
   getPriceRowByPanelCount,
   recommendedInverter
 } from "@/lib/pricing";
@@ -32,6 +31,8 @@ type CalculatorTab = "offer" | "profitability";
 const NO_INVERTER_LABEL = "Bez falownika";
 const NO_INVERTER_KW = 0;
 const DEFAULT_STORAGE_INVERTER_KW = 8;
+const EMS_NET_PRICE = 3000;
+const INCLUDED_CABLE_METERS = 8;
 
 const COMPANY_NIP = "9462741793";
 const packageChoices = PACKAGE_OPTIONS.filter((item) => item.id !== "pv-only");
@@ -82,14 +83,11 @@ const calculatorCopy = {
     boilerLayout: "Układ bojlera",
     vertical: "Pionowy",
     horizontal: "Poziomy",
-    rainwater: "System magazynowania deszczówki",
-    rainwaterNone: "Bez systemu",
-    cable: "Kabel powyżej 8 m",
+    cable: "Długość kabla (m)",
     adjustment: "Korekta ręczna",
     financing: "Finansowanie",
     subsidy: "Dotacja / wpłata",
     months: "Liczba miesięcy",
-    annualRate: "Oprocentowanie roczne %",
     print: "Drukuj / zapisz PDF",
     clientData: "Dane klienta",
     monthlyBill: "Rachunek miesięczny",
@@ -137,14 +135,11 @@ const calculatorCopy = {
     boilerLayout: "Boiler layout",
     vertical: "Vertical",
     horizontal: "Horizontal",
-    rainwater: "Rainwater storage system",
-    rainwaterNone: "No system",
-    cable: "Cable above 8 m",
+    cable: "Cable length (m)",
     adjustment: "Manual adjustment",
     financing: "Financing",
     subsidy: "Subsidy / own payment",
     months: "Months",
-    annualRate: "Annual interest %",
     print: "Print / save PDF",
     clientData: "Client data",
     monthlyBill: "Monthly bill",
@@ -213,22 +208,25 @@ export default function CalculatorsPage() {
   const [triangles, setTriangles] = useState(false);
   const [boiler, setBoiler] = useState<BoilerCapacity>("none");
   const [boilerLayout, setBoilerLayout] = useState<BoilerLayout>("vertical");
-  const [rainwater, setRainwater] = useState<RainwaterSystem>("none");
   const [backup, setBackup] = useState(false);
-  const [extraCableMeters, setExtraCableMeters] = useState(0);
+  const [ems, setEms] = useState(false);
+  const [cableLengthMeters, setCableLengthMeters] = useState(INCLUDED_CABLE_METERS);
   const [manualAdjustment, setManualAdjustment] = useState(0);
   const [subsidy, setSubsidy] = useState(0);
   const [loanMonths, setLoanMonths] = useState(120);
-  const [loanRate, setLoanRate] = useState(6);
 
   const row = getPriceRowByPanelCount(panelCount);
+  const recommendedPvInverter = recommendedInverter(row.kwp);
   const storageProduct = STORAGE_NET_PRICES.find((item) => item.id === storageProductId) || STORAGE_NET_PRICES[1];
   const inverter =
-    offerMode === "storage"
-      ? INVERTER_NET_PRICES.find((item) => item.kw === inverterKw) || INVERTER_NET_PRICES[2]
-      : recommendedInverter(row.kwp);
+    INVERTER_NET_PRICES.find((item) => item.kw === inverterKw) ||
+    (offerMode === "storage" ? INVERTER_NET_PRICES[2] : recommendedPvInverter);
   const currentStorageKwh =
     offerMode === "pv-storage" ? selectedPackageInfo.storageKwh : offerMode === "storage" ? storageProduct.kwh : 0;
+
+  useEffect(() => {
+    if (offerMode !== "storage") setInverterKw(recommendedPvInverter.kw);
+  }, [offerMode, recommendedPvInverter.kw]);
 
   const profitability = useMemo(() => {
     const annualProduction = row.kwp * productionPerKw;
@@ -260,25 +258,21 @@ export default function CalculatorsPage() {
         : offerMode === "pv"
           ? row.prices["pv-only"]
           : row.prices[selectedPackage];
-    const baseNet = Math.max(cennikNet - INCLUDED_TOTAL_MARGIN_NET, 0);
+    const inverterAdjustmentNet = offerMode === "storage" ? 0 : inverter.net - recommendedPvInverter.net;
+    const baseNet = Math.max(cennikNet + inverterAdjustmentNet - INCLUDED_TOTAL_MARGIN_NET, 0);
     const pvExtras =
       offerMode === "storage"
         ? 0
         : (groundMount ? row.kwp * EXTRA_NET_PRICES.groundPerKw : 0) +
           (triangles ? row.kwp * EXTRA_NET_PRICES.ekierkiPerKw : 0);
     const boilerNet = boiler === "80" ? EXTRA_NET_PRICES.boiler80 : boiler === "150" ? EXTRA_NET_PRICES.boiler150 : 0;
-    const rainwaterNet =
-      rainwater === "above-2000"
-        ? EXTRA_NET_PRICES.rainwaterAbove2000
-        : rainwater === "underground-2000"
-          ? EXTRA_NET_PRICES.rainwaterUnderground2000
-          : 0;
+    const chargeableCableMeters = Math.max(cableLengthMeters - INCLUDED_CABLE_METERS, 0);
     const extrasNet =
       pvExtras +
       boilerNet +
-      rainwaterNet +
       (backup ? EXTRA_NET_PRICES.backup : 0) +
-      extraCableMeters * EXTRA_NET_PRICES.cablePerMeterAbove8m +
+      (ems ? EMS_NET_PRICE : 0) +
+      chargeableCableMeters * EXTRA_NET_PRICES.cablePerMeterAbove8m +
       manualAdjustment;
     const finalNet = Math.max(baseNet + settings.adminMargin + settings.salesMargin + extrasNet, 0);
     const finalGross = gross(finalNet, vatRate);
@@ -288,23 +282,24 @@ export default function CalculatorsPage() {
       extrasNet,
       finalNet,
       finalGross,
-      installmentBeforeSubsidy: simpleInstallment(finalGross, loanMonths, loanRate),
-      installmentAfterSubsidy: simpleInstallment(creditAfterSubsidy, loanMonths, loanRate)
+      installmentBeforeSubsidy: simpleInstallment(finalGross, loanMonths, settings.loanRate),
+      installmentAfterSubsidy: simpleInstallment(creditAfterSubsidy, loanMonths, settings.loanRate)
     };
   }, [
     backup,
     boiler,
-    extraCableMeters,
+    cableLengthMeters,
+    ems,
     groundMount,
     inverter.net,
     loanMonths,
-    loanRate,
     manualAdjustment,
     offerMode,
-    rainwater,
+    recommendedPvInverter.net,
     row,
     selectedPackage,
     settings.adminMargin,
+    settings.loanRate,
     settings.salesMargin,
     storageProduct.net,
     subsidy,
@@ -336,12 +331,6 @@ export default function CalculatorsPage() {
         ? storageImageFor(storageProduct.label)
         : undefined;
   const boilerLabel = boiler === "none" ? "" : `Bojler ${boiler}L ${boilerLayout === "vertical" ? "pionowy" : "poziomy"}`;
-  const rainwaterLabel =
-    rainwater === "above-2000"
-      ? "Naziemny system magazynowania deszczówki 2000L"
-      : rainwater === "underground-2000"
-        ? "Podziemny betonowy system magazynowania deszczówki 2000L"
-        : "";
 
   function printOffer() {
     const previousTitle = document.title;
@@ -357,7 +346,6 @@ export default function CalculatorsPage() {
     setCustomerPhone(demoContractData.phone);
     setSubsidy(5000);
     setLoanMonths(120);
-    setLoanRate(6.5);
   }
 
   return (
@@ -450,6 +438,17 @@ export default function CalculatorsPage() {
                     </div>
                   ) : null}
 
+                  {offerMode !== "storage" ? (
+                    <label>
+                      <span className="label">{copy.inverterPower}</span>
+                      <select className="field" value={inverterKw} onChange={(event) => setInverterKw(Number(event.target.value))}>
+                        {INVERTER_NET_PRICES.filter((item) => item.kw > 0).map((item) => (
+                          <option key={item.kw} value={item.kw}>{item.kw} kW</option>
+                        ))}
+                      </select>
+                    </label>
+                  ) : null}
+
                   {offerMode === "pv-storage" ? (
                     <>
                       <div>
@@ -521,26 +520,19 @@ export default function CalculatorsPage() {
                       </select>
                     </label>
                   ) : null}
-                  <label>
-                    <span className="label">{copy.rainwater}</span>
-                    <select className="field" value={rainwater} onChange={(event) => setRainwater(event.target.value as RainwaterSystem)}>
-                      <option value="none">{copy.rainwaterNone}</option>
-                      <option value="above-2000">Naziemny 2000L</option>
-                      <option value="underground-2000">Podziemny betonowy 2000L</option>
-                    </select>
-                  </label>
                   <Toggle label="Backup" checked={backup} onChange={setBackup} />
-                  <NumberField label={copy.cable} value={extraCableMeters} min={0} onChange={setExtraCableMeters} />
+                  <Toggle label="EMS (+3 000 zł netto)" checked={ems} onChange={setEms} />
+                  <NumberField label={copy.cable} value={cableLengthMeters} min={0} onChange={setCableLengthMeters} />
                   <NumberField label={copy.adjustment} value={manualAdjustment} onChange={setManualAdjustment} />
                 </div>
+                <p className="mt-3 text-xs font-semibold text-muted">Pierwsze {INCLUDED_CABLE_METERS} m kabla jest w cenie. Dopłata nalicza się automatycznie tylko za nadwyżkę.</p>
               </section>
 
               <section className="app-card">
                 <h2 className="mb-4 text-base font-bold text-ink">{copy.financing}</h2>
-                <div className="grid gap-3 sm:grid-cols-3">
+                <div className="grid gap-3 sm:grid-cols-2">
                   <NumberField label={copy.subsidy} value={subsidy} min={0} onChange={setSubsidy} />
                   <NumberField label={copy.months} value={loanMonths} min={1} onChange={setLoanMonths} />
-                  <NumberField label={copy.annualRate} value={loanRate} step="0.1" min={0} onChange={setLoanRate} />
                 </div>
                 <button type="button" onClick={printOffer} className="btn-primary mt-4">
                   <Printer className="h-4 w-4" aria-hidden="true" />
@@ -556,7 +548,6 @@ export default function CalculatorsPage() {
               inverterLabel={inverter.label}
               storageLabel={storageLabel}
               storageImageSrc={storageImageSrc}
-              rainwaterLabel={rainwaterLabel}
               boilerLabel={boilerLabel}
               boilerImageSrc={boiler === "none" ? undefined : boilerImageFor(boilerLayout)}
               net={offer.finalNet}
@@ -652,7 +643,6 @@ function OfferDocument({
   inverterLabel,
   storageLabel,
   storageImageSrc,
-  rainwaterLabel,
   boilerLabel,
   boilerImageSrc,
   net,
@@ -670,7 +660,6 @@ function OfferDocument({
   inverterLabel: string;
   storageLabel: string;
   storageImageSrc?: string;
-  rainwaterLabel: string;
   boilerLabel: string;
   boilerImageSrc?: string;
   net: number;
@@ -699,7 +688,7 @@ function OfferDocument({
       />
 
       <div className="relative px-6 pb-10 pt-7 sm:px-9">
-        <header className="mb-8 flex justify-center">
+        <header className="offer-brand-header mb-8 flex justify-center">
           <div className="flex items-center gap-4">
             <span className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#7b7f86] text-[#1f2024]">
               <Zap className="h-7 w-7" aria-hidden="true" />
@@ -723,7 +712,7 @@ function OfferDocument({
           </div>
           <div className="text-left text-xs font-semibold sm:text-right">
             <div>Data: {new Intl.DateTimeFormat("pl-PL").format(new Date())}</div>
-            <div>Klient: {customerName.trim() || "do uzupełnienia"}</div>
+            {customerName.trim() ? <div>Klient: {customerName.trim()}</div> : null}
             {customerPhone.trim() ? <div>Tel.: {customerPhone.trim()}</div> : null}
           </div>
         </div>
@@ -743,7 +732,6 @@ function OfferDocument({
           <OfferSpecRow label="Pomiary, testy i końcowe uruchomienie" value="w cenie" />
           <OfferSpecRow label="Zgłoszenie OSD" value="w cenie" shaded />
           <OfferSpecRow label="Monitoring 24/7" value="w cenie" />
-          {rainwaterLabel ? <OfferSpecRow label="System magazynowania deszczówki" value={rainwaterLabel} shaded /> : null}
         </dl>
 
         <div className="offer-products my-5 grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -755,7 +743,6 @@ function OfferDocument({
           ) : null}
           {mode !== "pv" ? <OfferProduct image={storageImageSrc || "/products/kon-tec-storage.webp"} title={storageLabel} subtitle="Magazyn energii" /> : null}
           {boilerLabel ? <OfferProduct image={boilerImageSrc || "/products/boiler-vertical.png"} title="Bojler" subtitle={boilerLabel} /> : null}
-          {rainwaterLabel ? <OfferProduct image="/products/rainwater-system.png" title="Deszczówka" subtitle="System 2000L" /> : null}
         </div>
 
         <div className="offer-prices overflow-hidden bg-[#00a651] text-sm text-black">
