@@ -1,4 +1,5 @@
 import { createSign } from "node:crypto";
+import { getServiceClient } from "@/lib/server-auth";
 
 function base64Url(value: string) {
   return Buffer.from(value).toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
@@ -52,9 +53,26 @@ function normalizePrivateKey(value: string) {
 }
 
 async function googleUserOAuthToken() {
-  const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID?.trim();
-  const clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET?.trim();
-  const refreshToken = process.env.GOOGLE_OAUTH_REFRESH_TOKEN?.trim();
+  let clientId = process.env.GOOGLE_OAUTH_CLIENT_ID?.trim() || "";
+  let clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET?.trim() || "";
+  let refreshToken = process.env.GOOGLE_OAUTH_REFRESH_TOKEN?.trim() || "";
+
+  if (!clientId || !clientSecret || !refreshToken) {
+    try {
+      const supabase = getServiceClient();
+      const { data } = await supabase
+        .from("google_oauth_config")
+        .select("client_id,client_secret,refresh_token")
+        .eq("id", "default")
+        .maybeSingle();
+      clientId = data?.client_id?.trim() || clientId;
+      clientSecret = data?.client_secret?.trim() || clientSecret;
+      refreshToken = data?.refresh_token?.trim() || refreshToken;
+    } catch {
+      // Fall back to service-account auth below.
+    }
+  }
+
   if (!clientId || !clientSecret || !refreshToken) return null;
 
   const response = await fetch("https://oauth2.googleapis.com/token", {
@@ -76,8 +94,6 @@ async function googleUserOAuthToken() {
 }
 
 export async function googleWorkspaceToken(scopes: string[], delegatedUser?: string) {
-  // Prefer the real Google user's OAuth token. Personal Gmail accounts cannot be
-  // impersonated with domain-wide delegation, and service accounts have no My Drive storage quota.
   const userToken = await googleUserOAuthToken();
   if (userToken) return userToken;
 
