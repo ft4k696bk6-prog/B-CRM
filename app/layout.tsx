@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/components/language-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import "./mobile-ux.css";
+import "./ui-polish.css";
 
 export const metadata: Metadata = {
   title: "B-CRM",
