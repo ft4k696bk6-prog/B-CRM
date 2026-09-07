@@ -44,6 +44,14 @@
   letter-spacing: -0.025em;
 }
 
+.app-table thead {
+  background-color: rgb(var(--panel-soft));
+}
+
+.app-table tbody tr {
+  transition: background-color 120ms ease;
+}
+
 @media (max-width: 640px) {
   .app-card {
     padding: 1rem;
