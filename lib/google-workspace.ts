@@ -38,6 +38,16 @@ function normalizePrivateKey(value: string) {
 
   key = key.replace(/\\n/g, "\n").replace(/\\r/g, "").trim();
 
+  // Vercel users sometimes paste only the base64 body from private_key.
+  // Rebuild standard PKCS#8 PEM markers when the value is clearly a long base64 key body.
+  if (!key.includes("-----BEGIN PRIVATE KEY-----") && !key.includes("-----END PRIVATE KEY-----")) {
+    const compact = key.replace(/\s+/g, "");
+    if (compact.length > 1000 && /^[A-Za-z0-9+/=]+$/.test(compact)) {
+      const lines = compact.match(/.{1,64}/g)?.join("\n") || compact;
+      key = `-----BEGIN PRIVATE KEY-----\n${lines}\n-----END PRIVATE KEY-----`;
+    }
+  }
+
   if (!key.includes("-----BEGIN PRIVATE KEY-----") || !key.includes("-----END PRIVATE KEY-----")) {
     throw new Error("Niepoprawny format klucza prywatnego konta serwisowego Google.");
   }
