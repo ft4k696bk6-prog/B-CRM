@@ -49,6 +49,7 @@ const initialFilters: AdminLeadFilters = {
   postalCode: "",
   voivodeship: "",
   county: "",
+  campaign: "",
   status: [],
   assignedTo: ""
 };
@@ -84,6 +85,7 @@ export default function AdminDashboardPage() {
   const [loadedLeadCount, setLoadedLeadCount] = useState(0);
   const [salespeople, setSalespeople] = useState<Profile[]>([]);
   const [salespeopleLoaded, setSalespeopleLoaded] = useState(false);
+  const [campaignOptions, setCampaignOptions] = useState<string[]>([]);
   const [filters, setFilters] = useState<AdminLeadFilters>(initialFilters);
   const [sort, setSort] = useState<SortOption>(sortOptions[0]);
   const [showFilters, setShowFilters] = useState(false);
@@ -143,6 +145,36 @@ export default function AdminDashboardPage() {
     setSalespeopleLoaded(true);
   }, [crmEnvironment, isManager, profile, profileId]);
 
+  const loadCampaignOptions = useCallback(async () => {
+    if (!crmEnvironment) return;
+
+    let query = supabase
+      .from("leads")
+      .select("campaign")
+      .eq("crm_environment", crmEnvironment)
+      .not("campaign", "is", null)
+      .limit(2000);
+
+    if (isManager) {
+      query = query.or(
+        salespersonScopeKey
+          ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null`
+          : "assigned_to.is.null"
+      );
+    }
+
+    const { data } = await query;
+    const options = Array.from(
+      new Set(
+        (data || [])
+          .map((row) => String(row.campaign || "").trim())
+          .filter((campaign) => campaign.length > 0 && campaign.length <= 160)
+      )
+    ).sort((a, b) => a.localeCompare(b, "pl", { sensitivity: "base" }));
+
+    setCampaignOptions(options);
+  }, [crmEnvironment, isManager, salespersonScopeKey]);
+
   const loadStats = useCallback(async () => {
     if (!session?.access_token) return;
     const response = await fetch("/api/admin/leads/stats", {
@@ -167,13 +199,14 @@ export default function AdminDashboardPage() {
 
     if (debouncedFilters.search.trim()) {
       const search = debouncedFilters.search.trim().replace(/[,%]/g, " ");
-      query = query.or(`full_name.ilike.%${search}%,phone.ilike.%${search}%,address.ilike.%${search}%,meeting_address.ilike.%${search}%`);
+      query = query.or(`full_name.ilike.%${search}%,phone.ilike.%${search}%,address.ilike.%${search}%,meeting_address.ilike.%${search}%,campaign.ilike.%${search}%`);
     }
     if (debouncedFilters.createdFrom) query = query.gte("created_at", startOfDay(debouncedFilters.createdFrom));
     if (debouncedFilters.createdTo) query = query.lte("created_at", endOfDay(debouncedFilters.createdTo));
     if (debouncedFilters.postalCode) query = query.ilike("postal_code", `%${debouncedFilters.postalCode}%`);
     if (debouncedFilters.voivodeship) query = query.or(voivodeshipFilterTerms(debouncedFilters.voivodeship));
     if (debouncedFilters.county) query = query.ilike("county", `%${debouncedFilters.county}%`);
+    if (debouncedFilters.campaign) query = query.eq("campaign", debouncedFilters.campaign);
     if (debouncedFilters.status.length) query = query.in("status", debouncedFilters.status);
     else {
       if (leadBucket === "active") query = query.not("status", "in", postgrestInValues(["Umowa", "Rezygnacja"]));
@@ -234,15 +267,20 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (!salespeopleReady) return;
+    void loadCampaignOptions();
+  }, [loadCampaignOptions, salespeopleReady]);
+
+  useEffect(() => {
+    if (!salespeopleReady) return;
     loadLeads();
   }, [loadLeads, salespeopleReady]);
 
   useEffect(() => {
     if (!salespeopleReady) return;
-    const refreshCurrentView = () => { void Promise.all([loadLeads(), loadStats()]); };
+    const refreshCurrentView = () => { void Promise.all([loadLeads(), loadStats(), loadCampaignOptions()]); };
     window.addEventListener("leads:changed", refreshCurrentView);
     return () => window.removeEventListener("leads:changed", refreshCurrentView);
-  }, [loadLeads, loadStats, salespeopleReady]);
+  }, [loadCampaignOptions, loadLeads, loadStats, salespeopleReady]);
 
   const selectedCount = selectedIds.length;
   const activeFilterCount = useMemo(
@@ -332,6 +370,7 @@ export default function AdminDashboardPage() {
       "Call-back",
       "Spotkanie",
       "Źródło",
+      "Kampania",
       "Utworzony",
       "Zaktualizowany"
     ];
@@ -346,6 +385,7 @@ export default function AdminDashboardPage() {
       lead.callback_at,
       lead.meeting_at,
       lead.source,
+      lead.campaign,
       lead.created_at,
       lead.updated_at
     ]);
@@ -680,7 +720,7 @@ export default function AdminDashboardPage() {
                 className="field"
                 value={filters.search}
                 onChange={(event) => updateFilter("search", event.target.value)}
-                placeholder="Imię i nazwisko, telefon albo adres"
+                placeholder="Imię i nazwisko, telefon, adres albo kampania"
               />
             </label>
             <label>
@@ -709,6 +749,21 @@ export default function AdminDashboardPage() {
                 onChange={(event) => updateFilter("postalCode", event.target.value)}
                 placeholder="np. 30-001"
               />
+            </label>
+            <label>
+              <span className="label">Kampania</span>
+              <select
+                className="field"
+                value={filters.campaign}
+                onChange={(event) => updateFilter("campaign", event.target.value)}
+              >
+                <option value="">Wszystkie kampanie</option>
+                {campaignOptions.map((campaign) => (
+                  <option key={campaign} value={campaign}>
+                    {campaign}
+                  </option>
+                ))}
+              </select>
             </label>
             <RegionFields
               className="md:col-span-2"
