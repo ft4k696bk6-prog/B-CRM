@@ -10,6 +10,7 @@
 - Normalized new lead phone numbers to E.164 and kept existing production backfill safeguards.
 - Temporarily disabled unused accounting, logistics and installer workspaces without deleting their data.
 - Triggered a production redeploy after configuring Google user OAuth for Drive writes and migrations.
+- Added a lazy salesperson lead/meeting map with geocoding, daily routing, travel summary and Google/Apple navigation handoff.
 
 ## 0.1.0
 
