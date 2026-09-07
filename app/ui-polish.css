@@ -57,3 +57,10 @@
     padding: 1rem;
   }
 }
+
+@media print {
+  .offer-document .offer-brand-header {
+    display: flex !important;
+    visibility: visible !important;
+  }
+}
