@@ -9,6 +9,7 @@ export type LeadMapPoint = {
   lat: number;
   lng: number;
   address: string;
+  postalCode?: string;
 };
 
 export type MeetingMapPoint = {
@@ -30,7 +31,7 @@ type Props = {
 
 type LeafletLayer = {
   addTo: (map: LeafletMap) => LeafletLayer;
-  bindPopup?: (html: string) => LeafletLayer;
+  bindPopup?: (html: string, options?: Record<string, unknown>) => LeafletLayer;
 };
 
 type LeafletMap = {
@@ -106,6 +107,36 @@ function statusColor(status: string) {
   return "#2563eb";
 }
 
+function leadGroups(leads: LeadMapPoint[]) {
+  const groups = new Map<string, LeadMapPoint[]>();
+  for (const lead of leads) {
+    const key = `${lead.lat.toFixed(5)},${lead.lng.toFixed(5)}`;
+    const current = groups.get(key) || [];
+    current.push(lead);
+    groups.set(key, current);
+  }
+  return [...groups.values()];
+}
+
+function clusterPopup(leads: LeadMapPoint[]) {
+  const postal = leads.map((lead) => lead.postalCode).find(Boolean) || "";
+  const shown = leads.slice(0, 40);
+  const rows = shown.map((lead) =>
+    `<a href="/leads/${encodeURIComponent(lead.id)}" style="display:block;padding:7px 0;border-top:1px solid #e5e7eb;text-decoration:none;color:#111827">` +
+      `<strong>${escapeHtml(lead.name)}</strong>` +
+      `<span style="display:block;font-size:12px;color:#667085;margin-top:2px">${escapeHtml(lead.status)}</span>` +
+    `</a>`
+  ).join("");
+  const extra = leads.length > shown.length
+    ? `<div style="padding-top:8px;font-size:12px;color:#667085">+ ${leads.length - shown.length} kolejnych leadów</div>`
+    : "";
+
+  return `<div style="min-width:230px;max-width:300px;font-family:system-ui,sans-serif">` +
+    `<div style="font-weight:800;margin-bottom:7px">${postal ? `Kod ${escapeHtml(postal)} · ` : ""}${leads.length} leadów</div>` +
+    rows + extra +
+  `</div>`;
+}
+
 export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -135,21 +166,38 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
 
         const bounds: Array<[number, number]> = [];
 
-        for (const lead of leads) {
-          const point: [number, number] = [lead.lat, lead.lng];
+        for (const group of leadGroups(leads)) {
+          const first = group[0];
+          const point: [number, number] = [first.lat, first.lng];
           bounds.push(point);
+
+          if (group.length > 1) {
+            const size = group.length >= 100 ? 46 : group.length >= 10 ? 42 : 38;
+            const icon = L.divIcon({
+              className: "",
+              html: `<div style="width:${size}px;height:${size}px;border-radius:${size / 2}px;background:#2563eb;color:#fff;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font:800 13px system-ui;box-shadow:0 4px 12px rgba(15,23,42,.25)">${group.length}</div>`,
+              iconSize: [size, size],
+              iconAnchor: [size / 2, size / 2]
+            });
+            L.marker(point, { icon, zIndexOffset: 500 })
+              .addTo(localMap)
+              .bindPopup?.(clusterPopup(group), { maxHeight: 360 });
+            continue;
+          }
+
+          const lead = first;
           const marker = L.circleMarker(point, {
             radius: 6,
             weight: 2,
             color: "#ffffff",
             fillColor: statusColor(lead.status),
-            fillOpacity: 0.9
+            fillOpacity: 0.92
           }).addTo(localMap);
           marker.bindPopup?.(
             `<div style="min-width:190px;font-family:system-ui,sans-serif">` +
               `<strong>${escapeHtml(lead.name)}</strong><br>` +
               `<span>${escapeHtml(lead.status)}</span><br>` +
-              `<span style="color:#667085">${escapeHtml(lead.address || "Brak dokładnego adresu")}</span><br>` +
+              `<span style="color:#667085">${escapeHtml(lead.address || lead.postalCode || "Brak dokładnego adresu")}</span><br>` +
               `<a href="/leads/${encodeURIComponent(lead.id)}" style="display:inline-block;margin-top:8px;font-weight:700">Otwórz lead →</a>` +
             `</div>`
           );
@@ -180,9 +228,9 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
           bounds.push(point);
           const icon = L.divIcon({
             className: "",
-            html: `<div style="width:30px;height:30px;border-radius:15px;background:#16a34a;color:#fff;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font:900 11px system-ui;box-shadow:0 4px 10px rgba(0,0,0,.25)">START</div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 15]
+            html: `<div style="width:34px;height:34px;border-radius:17px;background:#16a34a;color:#fff;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font:900 9px system-ui;box-shadow:0 4px 10px rgba(0,0,0,.25)">START</div>`,
+            iconSize: [34, 34],
+            iconAnchor: [17, 17]
           });
           L.marker(point, { icon, zIndexOffset: 1200 }).addTo(localMap).bindPopup?.(`<strong>${escapeHtml(startPoint.label)}</strong>`);
         }
