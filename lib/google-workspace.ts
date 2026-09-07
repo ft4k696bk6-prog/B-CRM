@@ -7,8 +7,6 @@ function base64Url(value: string) {
 function normalizePrivateKey(value: string) {
   let key = value.trim();
 
-  // Accept either the private_key value itself, a full service-account JSON,
-  // or a copied JSON property snippet such as: "private_key": "...".
   if (key.startsWith("{")) {
     try {
       const parsed = JSON.parse(key) as { private_key?: string };
@@ -38,8 +36,6 @@ function normalizePrivateKey(value: string) {
 
   key = key.replace(/\\n/g, "\n").replace(/\\r/g, "").trim();
 
-  // Vercel users sometimes paste only the base64 body from private_key.
-  // Rebuild standard PKCS#8 PEM markers when the value is clearly a long base64 key body.
   if (!key.includes("-----BEGIN PRIVATE KEY-----") && !key.includes("-----END PRIVATE KEY-----")) {
     const compact = key.replace(/\s+/g, "");
     if (compact.length > 1000 && /^[A-Za-z0-9+/=]+$/.test(compact)) {
@@ -55,7 +51,36 @@ function normalizePrivateKey(value: string) {
   return key;
 }
 
+async function googleUserOAuthToken() {
+  const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID?.trim();
+  const clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET?.trim();
+  const refreshToken = process.env.GOOGLE_OAUTH_REFRESH_TOKEN?.trim();
+  if (!clientId || !clientSecret || !refreshToken) return null;
+
+  const response = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      refresh_token: refreshToken,
+      grant_type: "refresh_token"
+    }),
+    cache: "no-store"
+  });
+  const body = (await response.json()) as { access_token?: string; error_description?: string; error?: string };
+  if (!response.ok || !body.access_token) {
+    throw new Error(body.error_description || body.error || "Google OAuth nie zwrócił tokenu dostępu.");
+  }
+  return body.access_token;
+}
+
 export async function googleWorkspaceToken(scopes: string[], delegatedUser?: string) {
+  // Prefer the real Google user's OAuth token. Personal Gmail accounts cannot be
+  // impersonated with domain-wide delegation, and service accounts have no My Drive storage quota.
+  const userToken = await googleUserOAuthToken();
+  if (userToken) return userToken;
+
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const rawPrivateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
   if (!email || !rawPrivateKey) throw new Error("Brakuje danych konta serwisowego Google.");
