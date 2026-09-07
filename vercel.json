@@ -1,4 +1,6 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "alias": ["b-crm-berni.vercel.app"],
   "crons": [
     {
       "path": "/api/integrations/google-sheets/leads",
