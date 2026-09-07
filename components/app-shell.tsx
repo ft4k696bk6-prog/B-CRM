@@ -14,6 +14,7 @@ import {
   Landmark,
   BookOpen,
   LogOut,
+  MapPinned,
   Menu,
   MousePointerClick,
   PanelLeft,
@@ -51,6 +52,7 @@ type NavigationLink = {
     | "navOperations"
     | "navEquipment"
     | "navNewLead"
+    | "navMap"
     | "navCalendar"
     | "navCalculators"
     | "navSettings"
@@ -106,6 +108,13 @@ const navigationLinks: NavigationLink[] = [
     icon: UserPlus,
     permissions: ["leads:create:own", "leads:create:pool"],
     tourId: "tour-nav-new-lead"
+  },
+  {
+    href: "/map",
+    labelKey: "navMap",
+    groupKey: "sales",
+    icon: MapPinned,
+    allowedRoles: ["owner", "admin", "menadzer", "handlowiec"]
   },
   {
     href: "/realizacja/umowy",
