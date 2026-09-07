@@ -9,22 +9,14 @@ const MAX_NAME_LENGTH = 180;
 
 function normalizePath(value: unknown) {
   if (typeof value !== "string") return "";
-  const parts = value
-    .replace(/\\/g, "/")
-    .split("/")
-    .map((part) => part.trim())
-    .filter(Boolean);
+  const parts = value.replace(/\\/g, "/").split("/").map((part) => part.trim()).filter(Boolean);
   if (parts.some((part) => part === "." || part === "..")) throw new Error("Niepoprawna ścieżka.");
   return parts.join("/");
 }
 
 function safeFileName(value: unknown) {
   if (typeof value !== "string") return "";
-  const name = value
-    .replace(/[\\/]/g, "-")
-    .replace(/[\u0000-\u001f\u007f]/g, "")
-    .trim()
-    .slice(0, MAX_NAME_LENGTH);
+  const name = value.replace(/[\\/]/g, "-").replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, MAX_NAME_LENGTH);
   if (!name || name === "." || name === "..") return "";
   return name;
 }
@@ -68,7 +60,7 @@ export async function GET(request: Request) {
     });
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-    const items = (data || [])
+    const baseItems = (data || [])
       .filter((item) => item.name !== ".emptyFolderPlaceholder")
       .map((item) => {
         const isFolder = !item.id || !item.metadata;
@@ -79,9 +71,22 @@ export async function GET(request: Request) {
           isFolder,
           mimeType: isFolder ? null : String(item.metadata?.mimetype || item.metadata?.contentType || "application/octet-stream"),
           size: isFolder ? null : Number(item.metadata?.size || 0),
-          updatedAt: item.updated_at || item.created_at || null
+          updatedAt: item.updated_at || item.created_at || null,
+          previewUrl: null as string | null
         };
-      })
+      });
+
+    const filePaths = baseItems.filter((item) => !item.isFolder).map((item) => item.path);
+    const signedByPath = new Map<string, string>();
+    if (filePaths.length) {
+      const { data: signed } = await auth.supabaseAdmin.storage.from(BUCKET).createSignedUrls(filePaths, 60 * 60);
+      for (const item of signed || []) {
+        if (item.path && item.signedUrl) signedByPath.set(item.path, item.signedUrl);
+      }
+    }
+
+    const items = baseItems
+      .map((item) => ({ ...item, previewUrl: item.isFolder ? null : signedByPath.get(item.path) || null }))
       .sort((left, right) => {
         if (left.isFolder !== right.isFolder) return left.isFolder ? -1 : 1;
         return left.name.localeCompare(right.name, "pl", { numeric: true });
@@ -100,9 +105,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
     const action = typeof body.action === "string" ? body.action : "";
-    if (action !== "create_upload") {
-      return NextResponse.json({ error: "Nieznana akcja." }, { status: 400 });
-    }
+    if (action !== "create_upload") return NextResponse.json({ error: "Nieznana akcja." }, { status: 400 });
 
     const folder = normalizePath(body.folderPath);
     const relativeFolder = normalizePath(body.relativeFolder);
@@ -115,7 +118,6 @@ export async function POST(request: Request) {
     if (error || !data?.token) {
       return NextResponse.json({ error: error?.message || "Nie udało się przygotować wysyłki." }, { status: 400 });
     }
-
     return NextResponse.json({ bucket: BUCKET, path, token: data.token });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Nie udało się przygotować wysyłki." }, { status: 400 });
@@ -125,7 +127,6 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   const auth = await requireKnowledgeAdmin(request);
   if ("error" in auth) return auth.error;
-
   try {
     const body = await request.json().catch(() => ({}));
     const path = normalizePath(body.path);
