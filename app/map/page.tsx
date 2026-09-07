@@ -18,7 +18,7 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import type { LeadMapPoint, MeetingMapPoint } from "@/components/lead-map-canvas";
-import { normalizeRole, isSalesRole } from "@/lib/roles";
+import { isSalesRole, normalizeRole } from "@/lib/roles";
 import { supabase } from "@/lib/supabase";
 import type { Profile } from "@/lib/types";
 import { useAuth } from "@/lib/use-auth";
@@ -27,7 +27,11 @@ const LeadMapCanvas = dynamic(
   () => import("@/components/lead-map-canvas").then((module) => module.LeadMapCanvas),
   {
     ssr: false,
-    loading: () => <div className="flex h-[64dvh] min-h-[520px] items-center justify-center rounded-xl border border-line bg-panel text-sm font-semibold text-muted">Ładowanie mapy…</div>
+    loading: () => (
+      <div className="flex h-[64dvh] min-h-[520px] items-center justify-center rounded-xl border border-line bg-panel text-sm font-semibold text-muted">
+        Ładowanie mapy…
+      </div>
+    )
   }
 );
 
@@ -67,8 +71,24 @@ type GeocodeResponse = {
   lat?: number;
   lng?: number;
   cached?: boolean;
+  throttle?: boolean;
+  source?: string;
+  postalCode?: string;
+  query?: string;
   geocodedAt?: string;
   error?: string;
+};
+
+type GeoTask = {
+  leadId: string;
+  kind: "lead" | "meeting";
+  postalCode?: string;
+};
+
+type GeoResult = {
+  task: GeoTask;
+  responseOk: boolean;
+  body: GeocodeResponse;
 };
 
 function dateKey(date: Date) {
@@ -78,14 +98,13 @@ function dateKey(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
-function isSameLocalDate(value: string, key: string) {
-  return dateKey(new Date(value)) === key;
-}
-
 function shiftDate(key: string, days: number) {
   const [year, month, day] = key.split("-").map(Number);
-  const next = new Date(year, month - 1, day + days, 12, 0, 0);
-  return dateKey(next);
+  return dateKey(new Date(year, month - 1, day + days, 12));
+}
+
+function isSameLocalDate(value: string, key: string) {
+  return dateKey(new Date(value)) === key;
 }
 
 function validCoords(lat: number | null | undefined, lng: number | null | undefined) {
@@ -95,6 +114,11 @@ function validCoords(lat: number | null | undefined, lng: number | null | undefi
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return false;
   if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return false;
   return !(latitude === 0 && longitude === 0);
+}
+
+function normalizePostalCode(value: string | null | undefined) {
+  const match = String(value || "").match(/(\d{2})\D?(\d{3})/);
+  return match ? `${match[1]}-${match[2]}` : "";
 }
 
 function recentAttempt(value: string | null | undefined) {
@@ -112,25 +136,29 @@ function formatDuration(seconds: number) {
   const minutes = Math.max(0, Math.round(seconds / 60));
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
-  if (!hours) return `${minutes} min`;
-  return `${hours} h ${String(rest).padStart(2, "0")} min`;
+  return hours ? `${hours} h ${String(rest).padStart(2, "0")} min` : `${minutes} min`;
 }
 
 function formatTime(value: string | Date) {
-  return new Intl.DateTimeFormat("pl-PL", { hour: "2-digit", minute: "2-digit" }).format(typeof value === "string" ? new Date(value) : value);
+  return new Intl.DateTimeFormat("pl-PL", { hour: "2-digit", minute: "2-digit" }).format(
+    typeof value === "string" ? new Date(value) : value
+  );
 }
 
 function formatDayLabel(key: string) {
   const [year, month, day] = key.split("-").map(Number);
-  return new Intl.DateTimeFormat("pl-PL", { weekday: "long", day: "numeric", month: "long" }).format(new Date(year, month - 1, day, 12));
+  return new Intl.DateTimeFormat("pl-PL", { weekday: "long", day: "numeric", month: "long" }).format(
+    new Date(year, month - 1, day, 12)
+  );
+}
+
+function meetingAddress(lead: MapLead) {
+  return lead.meeting_address || lead.address || lead.postal_code || "Brak adresu";
 }
 
 function googleDirectionsUrl(startPoint: StartPoint | null, meetings: MeetingMapPoint[]) {
   if (meetings.length === 0) return "";
-  const points = startPoint
-    ? [{ lat: startPoint.lat, lng: startPoint.lng }, ...meetings]
-    : meetings;
-
+  const points = startPoint ? [{ lat: startPoint.lat, lng: startPoint.lng }, ...meetings] : meetings;
   if (points.length === 1) {
     return `https://www.google.com/maps/dir/?api=1&destination=${points[0].lat},${points[0].lng}&travelmode=driving`;
   }
@@ -148,8 +176,13 @@ function googleDirectionsUrl(startPoint: StartPoint | null, meetings: MeetingMap
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
 
-function meetingAddress(lead: MapLead) {
-  return lead.meeting_address || lead.address || lead.postal_code || "Brak adresu";
+async function runInChunks<T, R>(items: T[], chunkSize: number, worker: (item: T) => Promise<R>) {
+  const results: R[] = [];
+  for (let index = 0; index < items.length; index += chunkSize) {
+    const chunk = items.slice(index, index + chunkSize);
+    results.push(...await Promise.all(chunk.map(worker)));
+  }
+  return results;
 }
 
 export default function MapPage() {
@@ -171,22 +204,20 @@ export default function MapPage() {
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem("bcrm-map-start-point");
-      if (saved) {
-        const point = JSON.parse(saved) as StartPoint;
-        if (validCoords(point.lat, point.lng)) {
-          setStartPoint(point);
-          if (point.label !== "Moja lokalizacja") setStartAddress(point.label);
-        }
-      }
+      if (!saved) return;
+      const point = JSON.parse(saved) as StartPoint;
+      if (!validCoords(point.lat, point.lng)) return;
+      setStartPoint(point);
+      if (point.label !== "Moja lokalizacja") setStartAddress(point.label);
     } catch {
-      // Local preference is optional.
+      // Start point is optional.
     }
   }, []);
 
   useEffect(() => {
     if (!profile) return;
-    const currentProfile = profile;
     let active = true;
+    const currentProfile = profile;
 
     async function loadUsers() {
       const { data } = await supabase
@@ -197,14 +228,20 @@ export default function MapPage() {
         .order("full_name", { ascending: true });
 
       if (!active) return;
-      const normalized = ((data || []) as Profile[]).map((user) => ({ ...user, role: normalizeRole(user.role, user.email) }));
+      const normalized = ((data || []) as Profile[]).map((user) => ({
+        ...user,
+        role: normalizeRole(user.role, user.email)
+      }));
       const visible = currentProfile.role === "handlowiec"
         ? normalized.filter((user) => user.id === currentProfile.id)
         : currentProfile.role === "menadzer"
           ? normalized.filter((user) => user.id === currentProfile.id || user.manager_id === currentProfile.id)
           : normalized.filter((user) => isSalesRole(user.role));
+
       setUsers(visible);
-      setSelectedUserId((current) => current || (visible.some((user) => user.id === currentProfile.id) ? currentProfile.id : visible[0]?.id || ""));
+      setSelectedUserId((current) => current || (
+        visible.some((user) => user.id === currentProfile.id) ? currentProfile.id : visible[0]?.id || ""
+      ));
     }
 
     void loadUsers();
@@ -213,8 +250,8 @@ export default function MapPage() {
 
   useEffect(() => {
     if (!profile || !selectedUserId) return;
-    const currentProfile = profile;
     let active = true;
+    const currentProfile = profile;
 
     async function loadLeads() {
       setBusy(true);
@@ -261,22 +298,23 @@ export default function MapPage() {
         status: lead.status,
         lat: Number(lead.map_lat),
         lng: Number(lead.map_lng),
-        address: lead.address || lead.postal_code || ""
+        address: lead.address || lead.postal_code || "",
+        postalCode: normalizePostalCode(lead.postal_code)
       })),
     [visibleLeads]
   );
 
   const meetingPoints = useMemo<MeetingMapPoint[]>(
     () => meetingsForDay.flatMap((lead, index) => {
-      const hasDedicated = validCoords(lead.meeting_map_lat, lead.meeting_map_lng);
-      const canReuseLead = !lead.meeting_address && validCoords(lead.map_lat, lead.map_lng);
-      if (!hasDedicated && !canReuseLead) return [];
+      const dedicated = validCoords(lead.meeting_map_lat, lead.meeting_map_lng);
+      const reuseLead = !lead.meeting_address && validCoords(lead.map_lat, lead.map_lng);
+      if (!dedicated && !reuseLead) return [];
       return [{
         id: lead.id,
         name: lead.full_name,
         at: lead.meeting_at || "",
-        lat: Number(hasDedicated ? lead.meeting_map_lat : lead.map_lat),
-        lng: Number(hasDedicated ? lead.meeting_map_lng : lead.map_lng),
+        lat: Number(dedicated ? lead.meeting_map_lat : lead.map_lat),
+        lng: Number(dedicated ? lead.meeting_map_lng : lead.map_lng),
         address: meetingAddress(lead),
         order: index + 1
       }];
@@ -289,73 +327,118 @@ export default function MapPage() {
     if (!accessToken || !selectedUserId || busy) return;
     let cancelled = false;
 
-    const meetingTasks = meetingsForDay
-      .filter((lead) => {
-        if (lead.meeting_address) return !validCoords(lead.meeting_map_lat, lead.meeting_map_lng) && !recentAttempt(lead.meeting_map_geocoded_at);
-        return !validCoords(lead.map_lat, lead.map_lng) && !recentAttempt(lead.map_geocoded_at);
-      })
-      .map((lead) => ({ leadId: lead.id, kind: lead.meeting_address ? "meeting" as const : "lead" as const }));
+    const postalRepresentatives = new Map<string, MapLead>();
+    for (const lead of visibleLeads) {
+      if (validCoords(lead.map_lat, lead.map_lng)) continue;
+      const postalCode = normalizePostalCode(lead.postal_code);
+      if (!postalCode) continue;
+      const alreadyTriedCurrentPostal = lead.map_geocode_query === `postal:${postalCode}` && recentAttempt(lead.map_geocoded_at);
+      if (alreadyTriedCurrentPostal) continue;
+      if (!postalRepresentatives.has(postalCode)) postalRepresentatives.set(postalCode, lead);
+    }
 
-    const leadTasks = visibleLeads
-      .filter((lead) => !validCoords(lead.map_lat, lead.map_lng) && !recentAttempt(lead.map_geocoded_at))
-      .map((lead) => ({ leadId: lead.id, kind: "lead" as const }));
+    const postalTasks: GeoTask[] = [...postalRepresentatives.entries()]
+      .slice(0, 120)
+      .map(([postalCode, lead]) => ({ leadId: lead.id, kind: "lead", postalCode }));
 
-    const seen = new Set<string>();
-    const tasks = [...meetingTasks, ...leadTasks]
-      .filter((task) => {
-        const key = `${task.leadId}:${task.kind}`;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      })
-      .slice(0, 60);
+    const meetingTasks: GeoTask[] = meetingsForDay
+      .filter((lead) => lead.meeting_address && !validCoords(lead.meeting_map_lat, lead.meeting_map_lng) && !recentAttempt(lead.meeting_map_geocoded_at))
+      .slice(0, 10)
+      .map((lead) => ({ leadId: lead.id, kind: "meeting" }));
 
-    if (tasks.length === 0) {
+    const addressTasks: GeoTask[] = visibleLeads
+      .filter((lead) => !normalizePostalCode(lead.postal_code) && !validCoords(lead.map_lat, lead.map_lng) && !recentAttempt(lead.map_geocoded_at))
+      .slice(0, 10)
+      .map((lead) => ({ leadId: lead.id, kind: "lead" }));
+
+    const total = postalTasks.length + meetingTasks.length + addressTasks.length;
+    if (total === 0) {
       setGeoProgress({ active: false, done: 0, total: 0 });
       return;
     }
 
+    async function callTask(task: GeoTask): Promise<GeoResult> {
+      try {
+        const response = await fetch("/api/map/geocode", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`
+          },
+          body: JSON.stringify({ leadId: task.leadId, kind: task.kind })
+        });
+        const body = (await response.json().catch(() => ({}))) as GeocodeResponse;
+        return { task, responseOk: response.ok, body };
+      } catch {
+        return { task, responseOk: false, body: {} };
+      }
+    }
+
     async function run() {
-      setGeoProgress({ active: true, done: 0, total: tasks.length });
-      for (let index = 0; index < tasks.length; index += 1) {
+      setGeoProgress({ active: true, done: 0, total });
+      const collected: GeoResult[] = [];
+      let done = 0;
+
+      const postalResults = await runInChunks(postalTasks, 12, async (task) => {
+        const result = await callTask(task);
+        done += 1;
+        if (!cancelled) setGeoProgress({ active: done < total, done, total });
+        return result;
+      });
+      collected.push(...postalResults);
+
+      for (const task of [...meetingTasks, ...addressTasks]) {
         if (cancelled) return;
-        const task = tasks[index];
-        try {
-          const response = await fetch("/api/map/geocode", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`
-            },
-            body: JSON.stringify(task)
-          });
-          const body = (await response.json().catch(() => ({}))) as GeocodeResponse;
-          if (!cancelled && response.ok) {
-            const geocodedAt = body.geocodedAt || new Date().toISOString();
-            setLeads((current) => current.map((lead) => {
-              if (lead.id !== task.leadId) return lead;
-              if (task.kind === "meeting") {
-                return {
-                  ...lead,
-                  meeting_map_lat: body.found ? Number(body.lat) : null,
-                  meeting_map_lng: body.found ? Number(body.lng) : null,
-                  meeting_map_geocoded_at: geocodedAt
-                };
-              }
-              return {
-                ...lead,
-                map_lat: body.found ? Number(body.lat) : null,
-                map_lng: body.found ? Number(body.lng) : null,
-                map_geocoded_at: geocodedAt
-              };
-            }));
-          }
-          if (!body.cached) await new Promise((resolve) => window.setTimeout(resolve, 1100));
-        } catch {
+        const result = await callTask(task);
+        collected.push(result);
+        done += 1;
+        setGeoProgress({ active: done < total, done, total });
+        if (result.body.throttle && !result.body.cached) {
           await new Promise((resolve) => window.setTimeout(resolve, 1100));
         }
-        if (!cancelled) setGeoProgress({ active: index + 1 < tasks.length, done: index + 1, total: tasks.length });
       }
+
+      if (cancelled) return;
+      setLeads((current) => current.map((lead) => {
+        let next = lead;
+        for (const result of collected) {
+          if (!result.responseOk) continue;
+          const geocodedAt = result.body.geocodedAt || new Date().toISOString();
+
+          if (result.task.postalCode) {
+            if (normalizePostalCode(lead.postal_code) !== result.task.postalCode) continue;
+            next = {
+              ...next,
+              map_lat: result.body.found ? Number(result.body.lat) : null,
+              map_lng: result.body.found ? Number(result.body.lng) : null,
+              map_geocoded_at: geocodedAt,
+              map_geocode_query: `postal:${result.task.postalCode}`
+            };
+            continue;
+          }
+
+          if (lead.id !== result.task.leadId) continue;
+          if (result.task.kind === "meeting") {
+            next = {
+              ...next,
+              meeting_map_lat: result.body.found ? Number(result.body.lat) : null,
+              meeting_map_lng: result.body.found ? Number(result.body.lng) : null,
+              meeting_map_geocoded_at: geocodedAt,
+              meeting_map_geocode_query: result.body.query || next.meeting_map_geocode_query
+            };
+          } else {
+            next = {
+              ...next,
+              map_lat: result.body.found ? Number(result.body.lat) : null,
+              map_lng: result.body.found ? Number(result.body.lng) : null,
+              map_geocoded_at: geocodedAt,
+              map_geocode_query: result.body.query || next.map_geocode_query
+            };
+          }
+        }
+        return next;
+      }));
+      setGeoProgress({ active: false, done: total, total });
     }
 
     void run();
@@ -365,6 +448,7 @@ export default function MapPage() {
   useEffect(() => {
     const accessToken = session?.access_token;
     if (!accessToken) return;
+
     const points = startPoint
       ? [{ lat: startPoint.lat, lng: startPoint.lng }, ...meetingPoints.map((point) => ({ lat: point.lat, lng: point.lng }))]
       : meetingPoints.map((point) => ({ lat: point.lat, lng: point.lng }));
@@ -385,11 +469,12 @@ export default function MapPage() {
         },
         body: JSON.stringify({ points })
       });
-      const body = (await response.json().catch(() => ({}))) as RouteResult & { error?: string };
+      const body = (await response.json().catch(() => ({}))) as RouteResult;
       if (!active) return;
       setRouteBusy(false);
       setRoute(response.ok ? body : null);
     }
+
     void loadRoute();
     return () => { active = false; };
   }, [meetingPoints, session?.access_token, startPoint]);
@@ -404,6 +489,7 @@ export default function MapPage() {
       (position) => {
         const point = { lat: position.coords.latitude, lng: position.coords.longitude, label: "Moja lokalizacja" };
         setStartPoint(point);
+        window.localStorage.setItem("bcrm-map-start-point", JSON.stringify(point));
         setStartBusy(false);
       },
       () => {
@@ -441,48 +527,50 @@ export default function MapPage() {
   const firstMeeting = meetingPoints[0];
   const departureTime = useMemo(() => {
     if (!startPoint || !firstMeeting || !route?.legs?.[0]) return null;
-    const travelMs = (route.legs[0].duration + 10 * 60) * 1000;
-    return new Date(new Date(firstMeeting.at).getTime() - travelMs);
+    return new Date(new Date(firstMeeting.at).getTime() - (route.legs[0].duration + 10 * 60) * 1000);
   }, [firstMeeting, route, startPoint]);
 
   const googleUrl = useMemo(() => googleDirectionsUrl(startPoint, meetingPoints), [meetingPoints, startPoint]);
+  const unmapped = visibleLeads.filter((lead) => !validCoords(lead.map_lat, lead.map_lng)).length;
 
   if (loading || !profile || !session) return <LoadingScreen />;
 
   return (
     <AppShell profile={profile}>
       <div className="grid gap-4">
-        <div className="flex flex-col gap-3 rounded-xl border border-line bg-panel p-4 shadow-sm xl:flex-row xl:items-end xl:justify-between">
+        <section className="app-card flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
           <div>
             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wide text-muted">
               <MapPin className="h-4 w-4" aria-hidden="true" />
               Mapa handlowca
             </div>
             <h1 className="mt-1 text-2xl font-black text-ink">Leady i trasa spotkań</h1>
-            <p className="mt-1 text-sm text-muted">Mapa ładuje się dopiero po wejściu w ten moduł. Spotkania są pobierane bezpośrednio z CRM.</p>
+            <p className="mt-1 max-w-3xl text-sm text-muted">
+              Leady bez dokładnego adresu są ustawiane na środku obszaru kodu pocztowego. Kilka leadów w tym samym miejscu tworzy jeden znacznik z liczbą.
+            </p>
           </div>
 
           <div className="grid gap-2 sm:grid-cols-2 xl:min-w-[560px]">
             {users.length > 1 ? (
-              <label className="grid gap-1 text-xs font-bold text-muted">
-                Handlowiec
-                <select className="input min-h-11" value={selectedUserId} onChange={(event) => setSelectedUserId(event.target.value)}>
+              <label>
+                <span className="label">Handlowiec</span>
+                <select className="field" value={selectedUserId} onChange={(event) => setSelectedUserId(event.target.value)}>
                   {users.map((user) => <option key={user.id} value={user.id}>{user.full_name}</option>)}
                 </select>
               </label>
             ) : null}
-            <label className="grid gap-1 text-xs font-bold text-muted">
-              Data spotkań
-              <input className="input min-h-11" type="date" value={selectedDate} onChange={(event) => setSelectedDate(event.target.value)} />
+            <label>
+              <span className="label">Data spotkań</span>
+              <input className="field" type="date" value={selectedDate} onChange={(event) => setSelectedDate(event.target.value)} />
             </label>
           </div>
-        </div>
+        </section>
 
-        <div className="grid gap-3 rounded-xl border border-line bg-panel p-3 shadow-sm lg:grid-cols-[1fr_auto] lg:items-center">
+        <section className="app-card flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap items-center gap-2">
             <button type="button" className="btn-secondary h-11 w-11 px-0" onClick={() => setSelectedDate((value) => shiftDate(value, -1))} aria-label="Poprzedni dzień"><ChevronLeft className="h-4 w-4" /></button>
-            <button type="button" className="btn-secondary min-h-11" onClick={() => setSelectedDate(dateKey(new Date()))}>Dziś</button>
-            <button type="button" className="btn-secondary min-h-11" onClick={() => setSelectedDate(shiftDate(dateKey(new Date()), 1))}>Jutro</button>
+            <button type="button" className="btn-secondary" onClick={() => setSelectedDate(dateKey(new Date()))}>Dziś</button>
+            <button type="button" className="btn-secondary" onClick={() => setSelectedDate(shiftDate(dateKey(new Date()), 1))}>Jutro</button>
             <button type="button" className="btn-secondary h-11 w-11 px-0" onClick={() => setSelectedDate((value) => shiftDate(value, 1))} aria-label="Następny dzień"><ChevronRight className="h-4 w-4" /></button>
             <strong className="ml-1 capitalize">{formatDayLabel(selectedDate)}</strong>
           </div>
@@ -490,22 +578,23 @@ export default function MapPage() {
             <input type="checkbox" checked={showClosed} onChange={(event) => setShowClosed(event.target.checked)} />
             Pokaż umowy i rezygnacje
           </label>
-        </div>
+        </section>
 
         {error ? <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-800">{error}</div> : null}
 
         <div className="grid gap-4 2xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className="grid gap-3">
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              <div className="rounded-lg border border-line bg-panel p-3"><div className="text-xs font-bold uppercase text-muted">Leady na mapie</div><div className="mt-1 text-2xl font-black">{leadPoints.length}</div></div>
-              <div className="rounded-lg border border-line bg-panel p-3"><div className="text-xs font-bold uppercase text-muted">Spotkania</div><div className="mt-1 text-2xl font-black">{meetingsForDay.length}</div></div>
-              <div className="rounded-lg border border-line bg-panel p-3"><div className="text-xs font-bold uppercase text-muted">Droga</div><div className="mt-1 text-2xl font-black">{route ? formatKm(route.distance) : "—"}</div></div>
-              <div className="rounded-lg border border-line bg-panel p-3"><div className="text-xs font-bold uppercase text-muted">Jazda</div><div className="mt-1 text-2xl font-black">{route ? formatDuration(route.duration) : "—"}</div></div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+              <div className="app-muted-panel"><div className="text-xs font-bold uppercase text-muted">Leady</div><div className="mt-1 text-2xl font-black">{visibleLeads.length}</div></div>
+              <div className="app-muted-panel"><div className="text-xs font-bold uppercase text-muted">Na mapie</div><div className="mt-1 text-2xl font-black">{leadPoints.length}</div></div>
+              <div className="app-muted-panel"><div className="text-xs font-bold uppercase text-muted">Bez punktu</div><div className="mt-1 text-2xl font-black">{unmapped}</div></div>
+              <div className="app-muted-panel"><div className="text-xs font-bold uppercase text-muted">Droga</div><div className="mt-1 text-2xl font-black">{route ? formatKm(route.distance) : "—"}</div></div>
+              <div className="app-muted-panel"><div className="text-xs font-bold uppercase text-muted">Jazda</div><div className="mt-1 text-2xl font-black">{route ? formatDuration(route.duration) : "—"}</div></div>
             </div>
 
             {geoProgress.total > 0 ? (
               <div className="rounded-lg border border-sky/20 bg-sky/10 px-3 py-2 text-xs font-semibold text-ink">
-                {geoProgress.active ? "Dodaję brakujące leady do mapy w tle" : "Geokodowanie tej partii zakończone"}: {geoProgress.done}/{geoProgress.total}. CRM pozostaje normalnie używalny.
+                {geoProgress.active ? "Uzupełniam współrzędne po kodach pocztowych" : "Współrzędne tej partii uzupełnione"}: {geoProgress.done}/{geoProgress.total}.
               </div>
             ) : null}
 
@@ -516,43 +605,45 @@ export default function MapPage() {
               startPoint={startPoint}
             />
 
-            <div className="text-xs text-muted">Niebieskie/fioletowe punkty to leady. Czarno-żółte znaczniki 1, 2, 3… to spotkania w kolejności godzin. {route?.approximate ? "Router zewnętrzny był niedostępny, więc pokazuję chwilowo trasę przybliżoną." : ""}</div>
+            <div className="text-xs text-muted">
+              Liczba w niebieskim znaczniku oznacza kilka leadów w tej samej okolicy. Kliknij znacznik, żeby rozwinąć listę klientów. Czarno-żółte znaczniki 1, 2, 3… to spotkania w kolejności godzin.
+            </div>
           </div>
 
           <aside className="grid content-start gap-3">
-            <section className="rounded-xl border border-line bg-panel p-4 shadow-sm">
+            <section className="app-card">
               <div className="flex items-center gap-2 font-black"><LocateFixed className="h-4 w-4" /> Punkt startowy</div>
               <p className="mt-1 text-xs text-muted">Potrzebny do policzenia godziny wyjazdu na pierwsze spotkanie.</p>
               <div className="mt-3 grid gap-2">
-                <button type="button" className="btn-primary min-h-11" onClick={locateMe} disabled={startBusy}><LocateFixed className="h-4 w-4" /> Użyj mojej lokalizacji</button>
+                <button type="button" className="btn-primary" onClick={locateMe} disabled={startBusy}><LocateFixed className="h-4 w-4" /> Użyj mojej lokalizacji</button>
                 <div className="flex gap-2">
-                  <input className="input min-h-11 min-w-0 flex-1" value={startAddress} onChange={(event) => setStartAddress(event.target.value)} placeholder="albo wpisz adres startowy" />
-                  <button type="button" className="btn-secondary min-h-11" onClick={geocodeStartAddress} disabled={startBusy || !startAddress.trim()}>Ustaw</button>
+                  <input className="field min-w-0 flex-1" value={startAddress} onChange={(event) => setStartAddress(event.target.value)} placeholder="albo wpisz adres startowy" />
+                  <button type="button" className="btn-secondary" onClick={geocodeStartAddress} disabled={startBusy || !startAddress.trim()}>Ustaw</button>
                 </div>
                 {startPoint ? <div className="text-xs font-semibold text-emerald-700">Start: {startPoint.label}</div> : null}
               </div>
             </section>
 
-            <section className="rounded-xl border border-line bg-panel p-4 shadow-sm">
+            <section className="app-card">
               <div className="flex items-center gap-2 font-black"><Route className="h-4 w-4" /> Plan dnia</div>
               <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                <div className="rounded-lg bg-[#f5f7fa] p-2"><span className="block text-xs text-muted">Spotkania</span><strong>{meetingsForDay.length}</strong></div>
-                <div className="rounded-lg bg-[#f5f7fa] p-2"><span className="block text-xs text-muted">Trasa</span><strong>{route ? formatKm(route.distance) : "—"}</strong></div>
-                <div className="rounded-lg bg-[#f5f7fa] p-2"><span className="block text-xs text-muted">Jazda</span><strong>{routeBusy ? "liczę…" : route ? formatDuration(route.duration) : "—"}</strong></div>
-                <div className="rounded-lg bg-[#f5f7fa] p-2"><span className="block text-xs text-muted">Wyjazd</span><strong>{departureTime ? formatTime(departureTime) : "ustaw start"}</strong></div>
+                <div className="app-muted-panel p-2"><span className="block text-xs text-muted">Spotkania</span><strong>{meetingsForDay.length}</strong></div>
+                <div className="app-muted-panel p-2"><span className="block text-xs text-muted">Trasa</span><strong>{route ? formatKm(route.distance) : "—"}</strong></div>
+                <div className="app-muted-panel p-2"><span className="block text-xs text-muted">Jazda</span><strong>{routeBusy ? "liczę…" : route ? formatDuration(route.duration) : "—"}</strong></div>
+                <div className="app-muted-panel p-2"><span className="block text-xs text-muted">Wyjazd</span><strong>{departureTime ? formatTime(departureTime) : "ustaw start"}</strong></div>
               </div>
-              {departureTime ? <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs font-bold text-amber-900">Godzina wyjazdu zawiera 10 minut zapasu przed pierwszym spotkaniem.</div> : null}
+              {departureTime ? <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs font-bold text-amber-900">Godzina wyjazdu zawiera 10 minut zapasu.</div> : null}
               {googleUrl ? (
-                <a href={googleUrl} target="_blank" rel="noreferrer" className="btn-primary mt-3 min-h-11 w-full justify-center">
+                <a href={googleUrl} target="_blank" rel="noreferrer" className="btn-primary mt-3 w-full justify-center">
                   <Navigation className="h-4 w-4" /> Otwórz cały dzień w Google Maps
                 </a>
               ) : null}
             </section>
 
-            <section className="rounded-xl border border-line bg-panel p-4 shadow-sm">
+            <section className="app-card">
               <div className="flex items-center gap-2 font-black"><CalendarDays className="h-4 w-4" /> Spotkania</div>
               <div className="mt-3 grid gap-2">
-                {meetingsForDay.length === 0 ? <div className="rounded-lg bg-[#f5f7fa] p-3 text-sm text-muted">Brak spotkań w tym dniu.</div> : null}
+                {meetingsForDay.length === 0 ? <div className="app-muted-panel text-sm text-muted">Brak spotkań w tym dniu.</div> : null}
                 {meetingsForDay.map((lead, index) => {
                   const point = meetingPoints.find((item) => item.id === lead.id);
                   const legIndex = startPoint ? index : index - 1;
@@ -561,7 +652,10 @@ export default function MapPage() {
                     <div key={lead.id} className="rounded-lg border border-line p-3">
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <div className="flex items-center gap-2 font-black"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-ink text-xs text-white">{index + 1}</span>{formatTime(lead.meeting_at || "")}</div>
+                          <div className="flex items-center gap-2 font-black">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ink text-xs text-white">{index + 1}</span>
+                            {formatTime(lead.meeting_at || "")}
+                          </div>
                           <Link href={`/leads/${lead.id}`} className="mt-1 block font-bold hover:underline">{lead.full_name}</Link>
                           <div className="mt-1 text-xs text-muted">{meetingAddress(lead)}</div>
                         </div>
@@ -580,9 +674,9 @@ export default function MapPage() {
               </div>
             </section>
 
-            <section className="rounded-xl border border-line bg-panel p-4 text-xs text-muted shadow-sm">
+            <section className="app-card text-xs text-muted">
               <div className="flex items-center gap-2 font-black text-ink"><UsersRound className="h-4 w-4" /> Dane mapy</div>
-              <p className="mt-2">Najpierw używany jest adres leada lub spotkania, a gdy go brakuje kod pocztowy. Współrzędne są zapisywane w CRM, więc nie liczymy ich od nowa przy każdym wejściu.</p>
+              <p className="mt-2">Dla leadów głównym punktem jest kod pocztowy, więc klienci z tego samego kodu są grupowani. Spotkanie z pełnym adresem nadal dostaje dokładniejszy punkt.</p>
             </section>
           </aside>
         </div>
