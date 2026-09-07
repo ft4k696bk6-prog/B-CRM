@@ -10,6 +10,19 @@ function numberOrNull(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
+function aggregateFailureErrors(value: unknown) {
+  if (!Array.isArray(value)) return [];
+  const counts = new Map<string, number>();
+  for (const item of value) {
+    if (!item || typeof item !== "object") continue;
+    const error = (item as { error?: unknown }).error;
+    if (typeof error !== "string" || !error.trim()) continue;
+    const message = error.trim();
+    counts.set(message, (counts.get(message) || 0) + 1);
+  }
+  return [...counts.entries()].map(([error, count]) => ({ error, count }));
+}
+
 export async function GET(request: Request) {
   if (process.env.VERCEL_ENV !== "production") {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
@@ -62,7 +75,8 @@ export async function GET(request: Request) {
       remaining: numberOrNull(body.remaining),
       total: numberOrNull(body.total),
       nextSkip: numberOrNull(body.nextSkip),
-      done: typeof body.done === "boolean" ? body.done : null
+      done: typeof body.done === "boolean" ? body.done : null,
+      failureErrors: aggregateFailureErrors(body.failures)
     });
   } finally {
     await supabase.from("maintenance_tokens").delete().eq("token_hash", tokenHash);
