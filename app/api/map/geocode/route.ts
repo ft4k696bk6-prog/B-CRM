@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
-import { canAccessLeadWithTeam, requireApiProfile } from "@/lib/server-auth";
+import { canAccessLeadWithTeam, getServiceClient, requireApiProfile } from "@/lib/server-auth";
 
 export const runtime = "nodejs";
 
@@ -77,7 +77,7 @@ async function lookupNominatim(query: string) {
 }
 
 async function geocodeWithCache(
-  supabaseAdmin: Awaited<ReturnType<typeof requireApiProfile>> extends { supabaseAdmin: infer T } ? T : never,
+  supabaseAdmin: ReturnType<typeof getServiceClient>,
   query: string
 ) {
   const key = queryKey(query);
