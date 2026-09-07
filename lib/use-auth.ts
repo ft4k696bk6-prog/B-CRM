@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import type { Profile, UserRole } from "@/lib/types";
-import { homePathForRole, normalizeRole } from "@/lib/roles";
+import { homePathForRole, isSalesRole, normalizeRole } from "@/lib/roles";
 import { normalizeCrmScope } from "@/lib/scope";
 
 type AuthState = {
@@ -71,8 +71,9 @@ export function useAuth(requiredRole?: UserRole | UserRole[]) {
       }
 
       const allowedRoles = requiredRoleKey ? (requiredRoleKey.split("|") as UserRole[]) : [];
+      const salespersonCompatible = allowedRoles.includes("handlowiec") && isSalesRole(profile.role);
 
-      if (allowedRoles.length > 0 && !allowedRoles.includes(profile.role)) {
+      if (allowedRoles.length > 0 && !allowedRoles.includes(profile.role) && !salespersonCompatible) {
         router.replace(homePathForRole(profile.role));
         return;
       }
