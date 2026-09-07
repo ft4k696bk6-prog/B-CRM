@@ -88,6 +88,7 @@ export type AdminLeadFilters = {
   postalCode: string;
   voivodeship: string;
   county: string;
+  campaign: string;
   status: LeadStatus[];
   assignedTo: string;
 };
