@@ -32,6 +32,7 @@ const NO_INVERTER_LABEL = "Bez falownika";
 const NO_INVERTER_KW = 0;
 const DEFAULT_STORAGE_INVERTER_KW = 8;
 const INCLUDED_CABLE_METERS = 8;
+const EMS_NET_PRICE = 3_000;
 
 const COMPANY_NIP = "9462741793";
 const packageChoices = PACKAGE_OPTIONS.filter((item) => item.id !== "pv-only");
@@ -270,6 +271,7 @@ export default function CalculatorsPage() {
       pvExtras +
       boilerNet +
       (backup ? EXTRA_NET_PRICES.backup : 0) +
+      (ems ? EMS_NET_PRICE : 0) +
       chargeableCableMeters * EXTRA_NET_PRICES.cablePerMeterAbove8m +
       manualAdjustment;
     const finalNet = Math.max(baseNet + settings.adminMargin + settings.salesMargin + extrasNet, 0);
@@ -548,6 +550,7 @@ export default function CalculatorsPage() {
               storageImageSrc={storageImageSrc}
               boilerLabel={boilerLabel}
               boilerImageSrc={boiler === "none" ? undefined : boilerImageFor(boilerLayout)}
+              ems={ems}
               net={offer.finalNet}
               gross={offer.finalGross}
               subsidy={subsidy}
@@ -643,6 +646,7 @@ function OfferDocument({
   storageImageSrc,
   boilerLabel,
   boilerImageSrc,
+  ems,
   net,
   gross,
   subsidy,
@@ -660,6 +664,7 @@ function OfferDocument({
   storageImageSrc?: string;
   boilerLabel: string;
   boilerImageSrc?: string;
+  ems: boolean;
   net: number;
   gross: number;
   subsidy: number;
@@ -721,6 +726,7 @@ function OfferDocument({
           <OfferSpecRow label="Pojemność magazynu ciepła" value={boilerLabel || "brak bojlera"} shaded />
           {mode !== "storage" ? <OfferSpecRow label="Moduły" value={`${row.panelCount} x JA Solar 500 W`} /> : null}
           <OfferSpecRow label="Inwerter" value={inverterLabel} shaded />
+          {ems ? <OfferSpecRow label="System EMS" value="w zestawie" /> : null}
           <OfferSpecRow label="Okablowanie AC i DC" value="w cenie" />
           <OfferSpecRow label="Konstrukcja" value="w cenie" shaded strongLabel />
           <OfferSpecRow label="Uziemienie" value="w cenie" />
