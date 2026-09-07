@@ -1,0 +1,51 @@
+/* Shared visual polish for every CRM role.
+   Keep the interface flat, quiet and consistent without changing permissions or layout logic. */
+
+.app-card {
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgb(16 24 40 / 0.035), 0 8px 24px rgb(var(--sky) / 0.035) !important;
+}
+
+.app-muted-panel {
+  border-radius: 0.75rem;
+}
+
+.field {
+  box-shadow: none;
+  transition-property: border-color, background-color, box-shadow, opacity;
+  transition-duration: 140ms;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-icon,
+.btn-ghost {
+  transform: none !important;
+  box-shadow: none;
+  transition-property: background-color, border-color, color, opacity, box-shadow;
+  transition-duration: 140ms;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-danger:hover,
+.btn-icon:hover,
+.btn-ghost:hover,
+.btn-primary:active,
+.btn-secondary:active,
+.btn-danger:active,
+.btn-icon:active,
+.btn-ghost:active {
+  transform: none !important;
+}
+
+.section-title {
+  letter-spacing: -0.025em;
+}
+
+@media (max-width: 640px) {
+  .app-card {
+    padding: 1rem;
+  }
+}
