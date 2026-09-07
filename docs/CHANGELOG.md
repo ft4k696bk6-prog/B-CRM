@@ -9,6 +9,7 @@
 - Removed the production runtime contract fallback based on customer names.
 - Normalized new lead phone numbers to E.164 and kept existing production backfill safeguards.
 - Temporarily disabled unused accounting, logistics and installer workspaces without deleting their data.
+- Triggered a production redeploy after configuring Google user OAuth for Drive writes and migrations.
 
 ## 0.1.0
 
