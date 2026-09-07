@@ -180,25 +180,26 @@ export default function MapPage() {
 
   useEffect(() => {
     if (!profile) return;
+    const currentProfile = profile;
     let active = true;
 
     async function loadUsers() {
       const { data } = await supabase
         .from("profiles")
         .select("id,email,full_name,role,manager_id,crm_environment,created_at,business_phone")
-        .eq("crm_environment", profile.crm_environment)
+        .eq("crm_environment", currentProfile.crm_environment)
         .in("role", ["handlowiec", "menadzer", "sales", "manager"])
         .order("full_name", { ascending: true });
 
       if (!active) return;
       const normalized = ((data || []) as Profile[]).map((user) => ({ ...user, role: normalizeRole(user.role, user.email) }));
-      const visible = profile.role === "handlowiec"
-        ? normalized.filter((user) => user.id === profile.id)
-        : profile.role === "menadzer"
-          ? normalized.filter((user) => user.id === profile.id || user.manager_id === profile.id)
+      const visible = currentProfile.role === "handlowiec"
+        ? normalized.filter((user) => user.id === currentProfile.id)
+        : currentProfile.role === "menadzer"
+          ? normalized.filter((user) => user.id === currentProfile.id || user.manager_id === currentProfile.id)
           : normalized.filter((user) => isSalesRole(user.role));
       setUsers(visible);
-      setSelectedUserId((current) => current || (visible.some((user) => user.id === profile.id) ? profile.id : visible[0]?.id || ""));
+      setSelectedUserId((current) => current || (visible.some((user) => user.id === currentProfile.id) ? currentProfile.id : visible[0]?.id || ""));
     }
 
     void loadUsers();
@@ -207,6 +208,7 @@ export default function MapPage() {
 
   useEffect(() => {
     if (!profile || !selectedUserId) return;
+    const currentProfile = profile;
     let active = true;
 
     async function loadLeads() {
@@ -215,7 +217,7 @@ export default function MapPage() {
       const { data, error: dbError } = await supabase
         .from("leads")
         .select("id,full_name,postal_code,address,voivodeship,county,status,assigned_to,meeting_at,meeting_address,map_lat,map_lng,map_geocoded_at,map_geocode_query,meeting_map_lat,meeting_map_lng,meeting_map_geocoded_at,meeting_map_geocode_query")
-        .eq("crm_environment", profile.crm_environment)
+        .eq("crm_environment", currentProfile.crm_environment)
         .eq("assigned_to", selectedUserId)
         .order("updated_at", { ascending: false })
         .limit(800);
@@ -278,7 +280,8 @@ export default function MapPage() {
   );
 
   useEffect(() => {
-    if (!session?.access_token || !selectedUserId || busy) return;
+    const accessToken = session?.access_token;
+    if (!accessToken || !selectedUserId || busy) return;
     let cancelled = false;
 
     const meetingTasks = meetingsForDay
@@ -317,7 +320,7 @@ export default function MapPage() {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${session.access_token}`
+              Authorization: `Bearer ${accessToken}`
             },
             body: JSON.stringify(task)
           });
@@ -355,7 +358,8 @@ export default function MapPage() {
   }, [busy, meetingsForDay, selectedUserId, session?.access_token, visibleLeads]);
 
   useEffect(() => {
-    if (!session?.access_token) return;
+    const accessToken = session?.access_token;
+    if (!accessToken) return;
     const points = startPoint
       ? [{ lat: startPoint.lat, lng: startPoint.lng }, ...meetingPoints.map((point) => ({ lat: point.lat, lng: point.lng }))]
       : meetingPoints.map((point) => ({ lat: point.lat, lng: point.lng }));
@@ -372,7 +376,7 @@ export default function MapPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`
+          Authorization: `Bearer ${accessToken}`
         },
         body: JSON.stringify({ points })
       });
@@ -406,14 +410,15 @@ export default function MapPage() {
   }
 
   async function geocodeStartAddress() {
-    if (!session?.access_token || !startAddress.trim()) return;
+    const accessToken = session?.access_token;
+    if (!accessToken || !startAddress.trim()) return;
     setStartBusy(true);
     setError("");
     const response = await fetch("/api/map/geocode", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`
+        Authorization: `Bearer ${accessToken}`
       },
       body: JSON.stringify({ query: startAddress.trim() })
     });
