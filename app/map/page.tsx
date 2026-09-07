@@ -89,7 +89,12 @@ function shiftDate(key: string, days: number) {
 }
 
 function validCoords(lat: number | null | undefined, lng: number | null | undefined) {
-  return Number.isFinite(Number(lat)) && Number.isFinite(Number(lng));
+  if (lat === null || lat === undefined || lng === null || lng === undefined) return false;
+  const latitude = Number(lat);
+  const longitude = Number(lng);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return false;
+  if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return false;
+  return !(latitude === 0 && longitude === 0);
 }
 
 function recentAttempt(value: string | null | undefined) {
