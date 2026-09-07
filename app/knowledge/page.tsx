@@ -3,8 +3,8 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { BookOpen, ChevronDown, ExternalLink, FileText, Plus, Search, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { KnowledgeAssetsBrowser } from "@/components/knowledge-assets-browser";
 import { LoadingScreen } from "@/components/loading-screen";
-import { PhMaterialsBrowser } from "@/components/ph-materials-browser";
 import { Alert, EmptyState, PageHeader, SectionHeader } from "@/components/ui";
 import { useAuth } from "@/lib/use-auth";
 
@@ -72,7 +72,7 @@ export default function KnowledgePage() {
     await loadArticles(category, "");
   }
 
-  async function addArticle(event: FormEvent) {
+  async function addArticle(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!session?.access_token) return;
     setBusy(true);
@@ -107,16 +107,18 @@ export default function KnowledgePage() {
 
   return (
     <AppShell profile={profile}>
-      <div className="grid gap-5">
+      <div className="grid min-w-0 gap-5">
         <PageHeader
           title="Skarbnica wiedzy"
-          description="Materiały PH z firmowego Google Drive oraz krótkie procedury i instrukcje CRM."
+          description="Materiały PH, zdjęcia, realizacje i dokumenty zapisane bezpośrednio w CRM."
         />
         {error ? <Alert tone="danger">{error}</Alert> : null}
 
-        {session?.access_token ? <PhMaterialsBrowser accessToken={session.access_token} /> : null}
+        {session?.access_token ? (
+          <KnowledgeAssetsBrowser accessToken={session.access_token} canEdit={Boolean(canEdit)} />
+        ) : null}
 
-        <section className="app-card">
+        <section className="app-card min-w-0">
           <SectionHeader
             icon={BookOpen}
             title="Procedury i wiedza CRM"
@@ -142,7 +144,7 @@ export default function KnowledgePage() {
         </section>
 
         {selectedCategory ? (
-          <section className="app-card">
+          <section className="app-card min-w-0">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <SectionHeader
                 icon={FileText}
@@ -209,7 +211,7 @@ export default function KnowledgePage() {
         ) : null}
 
         {canEdit ? (
-          <section className="app-card p-0">
+          <section className="app-card min-w-0 p-0">
             <button
               type="button"
               className="flex min-h-14 w-full items-center justify-between px-5 text-left font-black"
