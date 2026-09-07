@@ -12,12 +12,14 @@ export type PricingSettings = {
   adminMargin: number;
   salesMargin: number;
   commissionPercent: number;
+  loanRate: number;
 };
 
 const defaultSettings: PricingSettings = {
   adminMargin: DEFAULT_ADMIN_MARGIN_NET,
   salesMargin: DEFAULT_SALES_MARGIN_NET,
   commissionPercent: 0,
+  loanRate: 6,
 };
 
 export function usePricingSettings(
@@ -51,12 +53,14 @@ export function usePricingSettings(
           adminMargin: Number(body.adminMargin),
           salesMargin: Number(body.salesMargin),
           commissionPercent: Number(body.commissionPercent) || 0,
+          loanRate: Number.isFinite(body.loanRate) ? Number(body.loanRate) : 6,
         });
       } else if (response.ok && Number.isFinite(body.totalMarginNet)) {
         setSettingsState({
           adminMargin: Number(body.totalMarginNet),
           salesMargin: 0,
           commissionPercent: 0,
+          loanRate: Number.isFinite(body.loanRate) ? Number(body.loanRate) : 6,
         });
       }
     });
@@ -77,6 +81,7 @@ export function usePricingSettings(
         Math.max(Number(next.commissionPercent) || 0, 0),
         100,
       ),
+      loanRate: Math.min(Math.max(Number(next.loanRate) || 0, 0), 100),
     };
     setSettingsState(normalized);
     if (profile?.id)
