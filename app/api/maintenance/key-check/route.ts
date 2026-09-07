@@ -9,11 +9,14 @@ export async function GET() {
 
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || "";
   const key = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY || "";
+  const delegatedUser = process.env.GOOGLE_WORKSPACE_DELEGATED_USER || "";
   const trimmed = key.trim();
 
   return NextResponse.json({
     hasEmail: Boolean(email),
     hasKey: Boolean(key),
+    hasDelegatedUser: Boolean(delegatedUser.trim()),
+    delegatedUserDomain: delegatedUser.includes("@") ? delegatedUser.split("@").at(-1) : null,
     keyLength: key.length,
     startsJson: trimmed.startsWith("{"),
     containsPrivateKeyLabel: trimmed.includes('"private_key"'),
