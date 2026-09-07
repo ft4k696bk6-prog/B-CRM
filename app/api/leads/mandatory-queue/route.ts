@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 import { requireApiProfile } from "@/lib/server-auth";
 import { getScheduledLeadsSinceRollout } from "@/lib/server-lead-work";
 import { isMandatoryLead } from "@/lib/lead-outcomes";
+import { isSalesRole } from "@/lib/roles";
 
 export async function GET(request: Request) {
   const auth = await requireApiProfile(request);
   if ("error" in auth) return auth.error;
-  if (auth.profile.role !== "handlowiec") return NextResponse.json({ leads: [], scheduledLeadIds: [] });
+  if (!isSalesRole(auth.profile.role)) return NextResponse.json({ leads: [], scheduledLeadIds: [] });
 
   try {
     const scheduled = await getScheduledLeadsSinceRollout(auth.supabaseAdmin, auth.profile);
