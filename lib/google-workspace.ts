@@ -19,7 +19,7 @@ function normalizePrivateKey(value: string) {
   }
 
   if (key.includes('"private_key"')) {
-    const match = key.match(/"private_key"\s*:\s*"((?:\\.|[^"\\])*)"/s);
+    const match = key.match(/"private_key"\s*:\s*"((?:\\.|[^"\\])*)"/);
     if (match?.[1]) {
       try {
         key = JSON.parse(`"${match[1]}"`) as string;
