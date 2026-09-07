@@ -29,14 +29,21 @@ type Props = {
   startPoint: { lat: number; lng: number; label: string } | null;
 };
 
+type LeafletLatLng = { lat: number; lng: number };
+
 type LeafletLayer = {
   addTo: (map: LeafletMap) => LeafletLayer;
   bindPopup?: (html: string, options?: Record<string, unknown>) => LeafletLayer;
+  openPopup?: () => LeafletLayer;
+  on?: (event: string, handler: () => void) => LeafletLayer;
 };
 
 type LeafletMap = {
   fitBounds: (bounds: unknown, options?: Record<string, unknown>) => void;
-  setView: (point: [number, number], zoom: number) => void;
+  setView: (point: [number, number], zoom: number, options?: Record<string, unknown>) => void;
+  getCenter: () => LeafletLatLng;
+  getZoom: () => number;
+  on: (event: string, handler: () => void) => LeafletMap;
   remove: () => void;
 };
 
@@ -48,6 +55,15 @@ type LeafletApi = {
   polyline: (points: Array<[number, number]>, options?: Record<string, unknown>) => LeafletLayer;
   divIcon: (options?: Record<string, unknown>) => unknown;
   latLngBounds: (points: Array<[number, number]>) => unknown;
+};
+
+type MapViewState = {
+  center: [number, number];
+  zoom: number;
+};
+
+type ReturnContext = MapViewState & {
+  popupKey: string;
 };
 
 declare global {
@@ -118,11 +134,11 @@ function leadGroups(leads: LeadMapPoint[]) {
   return [...groups.values()];
 }
 
-function clusterPopup(leads: LeadMapPoint[]) {
+function clusterPopup(leads: LeadMapPoint[], popupKey: string) {
   const postal = leads.map((lead) => lead.postalCode).find(Boolean) || "";
   const shown = leads.slice(0, 40);
   const rows = shown.map((lead) =>
-    `<a href="/leads/${encodeURIComponent(lead.id)}" data-bcrm-map-lead="${escapeHtml(lead.id)}" style="display:block;padding:7px 0;border-top:1px solid #e5e7eb;text-decoration:none;color:#111827">` +
+    `<a href="/leads/${encodeURIComponent(lead.id)}" data-bcrm-map-lead="${escapeHtml(lead.id)}" data-bcrm-map-popup="${escapeHtml(popupKey)}" style="display:block;padding:7px 0;border-top:1px solid #e5e7eb;text-decoration:none;color:#111827">` +
       `<strong>${escapeHtml(lead.name)}</strong>` +
       `<span style="display:block;font-size:12px;color:#667085;margin-top:2px">${escapeHtml(lead.status)}</span>` +
     `</a>`
@@ -140,8 +156,40 @@ function clusterPopup(leads: LeadMapPoint[]) {
 export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
+  const popupLayersRef = useRef<Map<string, LeafletLayer>>(new Map());
+  const viewStateRef = useRef<MapViewState | null>(null);
+  const activePopupKeyRef = useRef<string | null>(null);
+  const returnContextRef = useRef<ReturnContext | null>(null);
   const [error, setError] = useState("");
   const [openLeadId, setOpenLeadId] = useState<string | null>(null);
+
+  function rememberView(map = mapRef.current) {
+    if (!map) return;
+    const center = map.getCenter();
+    viewStateRef.current = {
+      center: [center.lat, center.lng],
+      zoom: map.getZoom()
+    };
+  }
+
+  function closeLeadModal() {
+    const context = returnContextRef.current;
+    setOpenLeadId(null);
+
+    if (!context) return;
+    viewStateRef.current = { center: context.center, zoom: context.zoom };
+    activePopupKeyRef.current = context.popupKey;
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const map = mapRef.current;
+        if (!map) return;
+        map.setView(context.center, context.zoom, { animate: false });
+        popupLayersRef.current.get(context.popupKey)?.openPopup?.();
+        returnContextRef.current = null;
+      });
+    });
+  }
 
   useEffect(() => {
     const container = containerRef.current;
@@ -152,14 +200,33 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
       const link = target?.closest?.("a[data-bcrm-map-lead]") as HTMLAnchorElement | null;
       if (!link) return;
       const leadId = link.dataset.bcrmMapLead;
-      if (!leadId) return;
+      const popupKey = link.dataset.bcrmMapPopup;
+      if (!leadId || !popupKey) return;
+
       event.preventDefault();
       event.stopPropagation();
+      event.stopImmediatePropagation();
+
+      const map = mapRef.current;
+      if (map) {
+        const center = map.getCenter();
+        returnContextRef.current = {
+          center: [center.lat, center.lng],
+          zoom: map.getZoom(),
+          popupKey
+        };
+        viewStateRef.current = {
+          center: [center.lat, center.lng],
+          zoom: map.getZoom()
+        };
+        activePopupKeyRef.current = popupKey;
+      }
+
       setOpenLeadId(leadId);
     }
 
-    container.addEventListener("click", interceptLeadOpen);
-    return () => container.removeEventListener("click", interceptLeadOpen);
+    container.addEventListener("click", interceptLeadOpen, true);
+    return () => container.removeEventListener("click", interceptLeadOpen, true);
   }, []);
 
   useEffect(() => {
@@ -169,7 +236,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
     document.body.style.overflow = "hidden";
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpenLeadId(null);
+      if (event.key === "Escape") closeLeadModal();
     }
 
     window.addEventListener("keydown", onKeyDown);
@@ -190,10 +257,12 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
         if (!active || !containerRef.current) return;
 
         if (mapRef.current) {
+          rememberView(mapRef.current);
           mapRef.current.remove();
           mapRef.current = null;
         }
 
+        popupLayersRef.current = new Map();
         localMap = L.map(containerRef.current, { zoomControl: true, preferCanvas: true });
         mapRef.current = localMap;
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -201,11 +270,16 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
           attribution: "© OpenStreetMap"
         }).addTo(localMap);
 
+        const rememberLocalView = () => rememberView(localMap);
+        localMap.on("moveend", rememberLocalView);
+        localMap.on("zoomend", rememberLocalView);
+
         const bounds: Array<[number, number]> = [];
 
         for (const group of leadGroups(leads)) {
           const first = group[0];
           const point: [number, number] = [first.lat, first.lng];
+          const groupKey = `cluster:${first.lat.toFixed(5)},${first.lng.toFixed(5)}`;
           bounds.push(point);
 
           if (group.length > 1) {
@@ -216,13 +290,18 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
               iconSize: [size, size],
               iconAnchor: [size / 2, size / 2]
             });
-            L.marker(point, { icon, zIndexOffset: 500 })
-              .addTo(localMap)
-              .bindPopup?.(clusterPopup(group), { maxHeight: 360 });
+            const marker = L.marker(point, { icon, zIndexOffset: 500 }).addTo(localMap);
+            marker.bindPopup?.(clusterPopup(group, groupKey), { maxHeight: 360 });
+            marker.on?.("popupopen", () => { activePopupKeyRef.current = groupKey; });
+            marker.on?.("popupclose", () => {
+              if (!returnContextRef.current && activePopupKeyRef.current === groupKey) activePopupKeyRef.current = null;
+            });
+            popupLayersRef.current.set(groupKey, marker);
             continue;
           }
 
           const lead = first;
+          const popupKey = `lead:${lead.id}`;
           const marker = L.circleMarker(point, {
             radius: 6,
             weight: 2,
@@ -235,13 +314,19 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
               `<strong>${escapeHtml(lead.name)}</strong><br>` +
               `<span>${escapeHtml(lead.status)}</span><br>` +
               `<span style="color:#667085">${escapeHtml(lead.address || lead.postalCode || "Brak dokładnego adresu")}</span><br>` +
-              `<a href="/leads/${encodeURIComponent(lead.id)}" data-bcrm-map-lead="${escapeHtml(lead.id)}" style="display:inline-block;margin-top:8px;font-weight:700">Otwórz lead →</a>` +
+              `<a href="/leads/${encodeURIComponent(lead.id)}" data-bcrm-map-lead="${escapeHtml(lead.id)}" data-bcrm-map-popup="${escapeHtml(popupKey)}" style="display:inline-block;margin-top:8px;font-weight:700">Otwórz lead →</a>` +
             `</div>`
           );
+          marker.on?.("popupopen", () => { activePopupKeyRef.current = popupKey; });
+          marker.on?.("popupclose", () => {
+            if (!returnContextRef.current && activePopupKeyRef.current === popupKey) activePopupKeyRef.current = null;
+          });
+          popupLayersRef.current.set(popupKey, marker);
         }
 
         for (const meeting of meetings) {
           const point: [number, number] = [meeting.lat, meeting.lng];
+          const popupKey = `meeting:${meeting.id}`;
           bounds.push(point);
           const time = new Intl.DateTimeFormat("pl-PL", { hour: "2-digit", minute: "2-digit" }).format(new Date(meeting.at));
           const icon = L.divIcon({
@@ -255,9 +340,14 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
             `<div style="min-width:210px;font-family:system-ui,sans-serif">` +
               `<strong>${meeting.order}. ${time} · ${escapeHtml(meeting.name)}</strong><br>` +
               `<span style="color:#667085">${escapeHtml(meeting.address)}</span><br>` +
-              `<a href="/leads/${encodeURIComponent(meeting.id)}" data-bcrm-map-lead="${escapeHtml(meeting.id)}" style="display:inline-block;margin-top:8px;font-weight:700">Otwórz spotkanie →</a>` +
+              `<a href="/leads/${encodeURIComponent(meeting.id)}" data-bcrm-map-lead="${escapeHtml(meeting.id)}" data-bcrm-map-popup="${escapeHtml(popupKey)}" style="display:inline-block;margin-top:8px;font-weight:700">Otwórz spotkanie →</a>` +
             `</div>`
           );
+          marker.on?.("popupopen", () => { activePopupKeyRef.current = popupKey; });
+          marker.on?.("popupclose", () => {
+            if (!returnContextRef.current && activePopupKeyRef.current === popupKey) activePopupKeyRef.current = null;
+          });
+          popupLayersRef.current.set(popupKey, marker);
         }
 
         if (startPoint) {
@@ -276,10 +366,24 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
           L.polyline(routeCoordinates, { color: "#111827", weight: 5, opacity: 0.78 }).addTo(localMap);
         }
 
-        if (bounds.length > 0) {
+        const returnContext = returnContextRef.current;
+        const savedView = returnContext
+          ? { center: returnContext.center, zoom: returnContext.zoom }
+          : viewStateRef.current;
+
+        if (savedView) {
+          localMap.setView(savedView.center, savedView.zoom, { animate: false });
+        } else if (bounds.length > 0) {
           localMap.fitBounds(L.latLngBounds(bounds), { padding: [32, 32], maxZoom: 14 });
         } else {
           localMap.setView([52.1, 19.4], 6);
+        }
+
+        const popupKeyToRestore = returnContext?.popupKey || activePopupKeyRef.current;
+        if (popupKeyToRestore) {
+          window.requestAnimationFrame(() => {
+            popupLayersRef.current.get(popupKeyToRestore)?.openPopup?.();
+          });
         }
       } catch (mapError) {
         setError(mapError instanceof Error ? mapError.message : "Nie udało się załadować mapy.");
@@ -289,7 +393,10 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
     void renderMap();
     return () => {
       active = false;
-      if (localMap) localMap.remove();
+      if (localMap) {
+        rememberView(localMap);
+        localMap.remove();
+      }
       if (mapRef.current === localMap) mapRef.current = null;
     };
   }, [leads, meetings, routeCoordinates, startPoint]);
@@ -308,7 +415,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
             type="button"
             className="absolute inset-0 bg-ink/55 backdrop-blur-[2px]"
             aria-label="Zamknij szczegóły leada"
-            onClick={() => setOpenLeadId(null)}
+            onClick={closeLeadModal}
           />
           <div className="relative z-10 flex h-[94dvh] w-full max-w-6xl flex-col overflow-hidden rounded-xl border border-line bg-white shadow-2xl">
             <div className="flex min-h-12 items-center justify-between border-b border-line bg-white px-3 sm:px-4">
@@ -325,7 +432,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
                 <button
                   type="button"
                   className="btn-icon h-9 w-9"
-                  onClick={() => setOpenLeadId(null)}
+                  onClick={closeLeadModal}
                   aria-label="Zamknij"
                   title="Zamknij"
                 >
