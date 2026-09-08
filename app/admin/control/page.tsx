@@ -15,6 +15,7 @@ import {
   Trash2,
   UsersRound
 } from "lucide-react";
+import { AdminActivitySummary } from "@/components/admin-activity-summary";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { Alert, EmptyState, PageHeader, SectionHeader } from "@/components/ui";
@@ -241,6 +242,8 @@ export default function ControlPage() {
 
         {error ? <Alert tone="danger">{error}</Alert> : null}
         {notice ? <Alert tone="success">{notice}</Alert> : null}
+
+        <AdminActivitySummary accessToken={session?.access_token || ""} />
 
         <section className="app-card min-w-0">
           <SectionHeader
