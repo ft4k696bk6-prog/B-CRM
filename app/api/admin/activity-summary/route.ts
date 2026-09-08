@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     .from("profiles")
     .select("id,full_name,email,role")
     .eq("crm_environment", profile.crm_environment)
-    .in("role", ["handlowiec", "sales"])
+    .in("role", ["handlowiec", "sales", "menadzer", "manager"])
     .order("full_name", { ascending: true });
 
   if (profilesError) return NextResponse.json({ error: profilesError.message }, { status: 400 });
@@ -69,6 +69,7 @@ export async function GET(request: Request) {
       userId: person.id,
       fullName: person.full_name,
       email: person.email,
+      role: person.role,
       openedLeads: new Set(userRows.filter((row) => row.action_type === "lead_opened").map((row) => row.lead_id)).size,
       statusChanges: userRows.filter((row) => row.action_type === "status_change").length,
       comments: userRows.filter((row) => row.action_type === "comment").length
