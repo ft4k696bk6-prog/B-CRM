@@ -1,6 +1,6 @@
 import Papa from "papaparse";
-import { createSign } from "node:crypto";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { googleWorkspaceToken } from "@/lib/google-workspace";
 import { normalizeCrmScope } from "@/lib/scope";
 import type { CrmDataScope } from "@/lib/types";
 
@@ -168,65 +168,14 @@ function csvUrl(spreadsheetId: string, sheetName: string) {
   return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?${params.toString()}`;
 }
 
-function base64Url(value: string) {
-  return Buffer.from(value)
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/g, "");
-}
-
-function serviceAccountConfig() {
-  const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const rawPrivateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
-  if (!email || !rawPrivateKey) return null;
-
-  return {
-    email,
-    privateKey: rawPrivateKey.replace(/\\n/g, "\n")
-  };
-}
-
 async function googleAccessToken() {
-  const config = serviceAccountConfig();
-  if (!config) return null;
-
-  const now = Math.floor(Date.now() / 1000);
-  const header = base64Url(JSON.stringify({ alg: "RS256", typ: "JWT" }));
-  const payload = base64Url(
-    JSON.stringify({
-      iss: config.email,
-      scope: "https://www.googleapis.com/auth/spreadsheets.readonly",
-      aud: "https://oauth2.googleapis.com/token",
-      exp: now + 3600,
-      iat: now
-    })
-  );
-  const unsigned = `${header}.${payload}`;
-  const signer = createSign("RSA-SHA256");
-  signer.update(unsigned);
-  signer.end();
-  const signature = signer
-    .sign(config.privateKey, "base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/g, "");
-
-  const response = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-      assertion: `${unsigned}.${signature}`
-    })
-  });
-  const body = (await response.json()) as { access_token?: string; error_description?: string };
-
-  if (!response.ok || !body.access_token) {
-    throw new Error(body.error_description || "Nie udało się pobrać tokenu Google Service Account.");
+  try {
+    return await googleWorkspaceToken(["https://www.googleapis.com/auth/spreadsheets.readonly"]);
+  } catch {
+    // If Google credentials are temporarily unavailable, the importer can still
+    // read a link-accessible sheet through the public CSV endpoint below.
+    return null;
   }
-
-  return body.access_token;
 }
 
 function rowsFromValues(values: string[][]) {
