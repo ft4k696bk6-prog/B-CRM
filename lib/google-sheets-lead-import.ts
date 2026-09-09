@@ -228,7 +228,13 @@ async function fetchSheetRowsViaPublicCsv(spreadsheetId: string, sheetName: stri
 }
 
 async function fetchSheetRows(spreadsheetId: string, sheetName: string, accessToken: string | null) {
-  if (accessToken) return fetchSheetRowsViaGoogleApi(spreadsheetId, sheetName, accessToken);
+  if (accessToken) {
+    try {
+      return await fetchSheetRowsViaGoogleApi(spreadsheetId, sheetName, accessToken);
+    } catch {
+      return fetchSheetRowsViaPublicCsv(spreadsheetId, sheetName);
+    }
+  }
   return fetchSheetRowsViaPublicCsv(spreadsheetId, sheetName);
 }
 
