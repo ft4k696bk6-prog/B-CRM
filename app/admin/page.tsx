@@ -88,6 +88,7 @@ export default function AdminDashboardPage() {
   const [salespeople, setSalespeople] = useState<Profile[]>([]);
   const [salespeopleLoaded, setSalespeopleLoaded] = useState(false);
   const [campaignOptions, setCampaignOptions] = useState<string[]>([]);
+  const [teamPerformanceLeads, setTeamPerformanceLeads] = useState<Array<Pick<Lead, "id" | "phone" | "status" | "assigned_to" | "callback_at" | "meeting_at">>>([]);
   const [filters, setFilters] = useState<AdminLeadFilters>(initialFilters);
   const [sort, setSort] = useState<SortOption>(sortOptions[0]);
   const [showFilters, setShowFilters] = useState(false);
@@ -176,6 +177,46 @@ export default function AdminDashboardPage() {
 
     setCampaignOptions(options);
   }, [crmEnvironment, isManager, salespersonScopeKey]);
+
+  const loadTeamPerformanceLeads = useCallback(async () => {
+    if (!crmEnvironment || !salespeopleReady) return;
+
+    const allLeads: Array<Pick<Lead, "id" | "phone" | "status" | "assigned_to" | "callback_at" | "meeting_at">> = [];
+    const pageSize = 1000;
+    let from = 0;
+
+    while (true) {
+      let query = supabase
+        .from("leads")
+        .select("id,phone,status,assigned_to,callback_at,meeting_at")
+        .eq("crm_environment", crmEnvironment)
+        .not("assigned_to", "is", null)
+        .range(from, from + pageSize - 1);
+
+      if (isManager) {
+        const scopedIds = salespeople.map((person) => person.id);
+        if (!scopedIds.length) {
+          setTeamPerformanceLeads([]);
+          return;
+        }
+        query = query.in("assigned_to", scopedIds);
+      }
+
+      const { data, error: teamError } = await query;
+      if (teamError) {
+        setError(teamError.message);
+        return;
+      }
+
+      const page = (data || []) as Array<Pick<Lead, "id" | "phone" | "status" | "assigned_to" | "callback_at" | "meeting_at">>;
+      allLeads.push(...page);
+
+      if (page.length < pageSize) break;
+      from += pageSize;
+    }
+
+    setTeamPerformanceLeads(allLeads);
+  }, [crmEnvironment, isManager, salespeople, salespeopleReady]);
 
   const loadStats = useCallback(async () => {
     if (!session?.access_token) return;
@@ -269,6 +310,11 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (!salespeopleReady) return;
+    void loadTeamPerformanceLeads();
+  }, [loadTeamPerformanceLeads, salespeopleReady]);
+
+  useEffect(() => {
+    if (!salespeopleReady) return;
     void loadCampaignOptions();
   }, [loadCampaignOptions, salespeopleReady]);
 
@@ -279,10 +325,10 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (!salespeopleReady) return;
-    const refreshCurrentView = () => { void Promise.all([loadLeads(), loadStats(), loadCampaignOptions()]); };
+    const refreshCurrentView = () => { void Promise.all([loadLeads(), loadStats(), loadCampaignOptions(), loadTeamPerformanceLeads()]); };
     window.addEventListener("leads:changed", refreshCurrentView);
     return () => window.removeEventListener("leads:changed", refreshCurrentView);
-  }, [loadCampaignOptions, loadLeads, loadStats, salespeopleReady]);
+  }, [loadCampaignOptions, loadLeads, loadStats, loadTeamPerformanceLeads, salespeopleReady]);
 
   const selectedCount = selectedIds.length;
   const activeFilterCount = useMemo(
@@ -306,19 +352,19 @@ export default function AdminDashboardPage() {
         ])
       );
 
-      for (const lead of leads) {
+      for (const lead of teamPerformanceLeads) {
         if (!lead.assigned_to) continue;
         const row = totals.get(lead.assigned_to);
         if (!row) continue;
-        const phoneKey = lead.phone.replace(/\D/g, "").slice(-9) || lead.id;
+        const leadKey = lead.id;
 
-        row.leadKeys.add(phoneKey);
-        if (lead.status === "Spotkanie") row.meetingKeys.add(phoneKey);
-        if (lead.status === "Umowa") row.contractKeys.add(phoneKey);
+        row.leadKeys.add(leadKey);
+        if (lead.status === "Spotkanie") row.meetingKeys.add(leadKey);
+        if (lead.status === "Umowa") row.contractKeys.add(leadKey);
         if (lead.status === "Call back" && lead.callback_at && new Date(lead.callback_at).getTime() < now) {
-          row.overdueCallbackKeys.add(phoneKey);
+          row.overdueCallbackKeys.add(leadKey);
         }
-        if (needsNextAction(lead)) row.noNextActionKeys.add(phoneKey);
+        if (needsNextAction(lead)) row.noNextActionKeys.add(leadKey);
       }
 
       return salespeople
@@ -335,7 +381,7 @@ export default function AdminDashboardPage() {
         })
         .sort((a, b) => b.contracts - a.contracts || b.meetings - a.meetings || b.leads - a.leads);
     },
-    [leads, salespeople]
+    [salespeople, teamPerformanceLeads]
   );
 
   function updateFilter(key: keyof AdminLeadFilters, value: string | LeadStatus[]) {
@@ -457,7 +503,7 @@ export default function AdminDashboardPage() {
         operationsDescription: "Documents, accounting, logistics, installation and annex generation in one place.",
         openOperations: "Open operations",
         teamTitle: "Team results",
-        teamDescription: `${teamPerformance.length} salespeople in the current view. Details stay collapsed so the dashboard stays focused.`,
+        teamDescription: `${teamPerformance.length} team members. Results are calculated from all assigned leads in the CRM, regardless of the currently loaded page.`,
         showTeam: "Show results",
         hideTeam: "Hide results",
         salesperson: "Salesperson",
@@ -486,7 +532,7 @@ export default function AdminDashboardPage() {
         operationsDescription: "Dokumenty, księgowość, logistyka, montaż i generator aneksu w jednym miejscu.",
         openOperations: "Otwórz realizację",
         teamTitle: "Wyniki zespołu",
-        teamDescription: `${teamPerformance.length} handlowców w aktualnym widoku. Szczegóły są schowane, żeby dashboard został zwarty.`,
+        teamDescription: `${teamPerformance.length} osób w zespole. Wyniki są liczone ze wszystkich leadów przypisanych w CRM, niezależnie od aktualnie załadowanej strony.`,
         showTeam: "Pokaż wyniki",
         hideTeam: "Ukryj wyniki",
         salesperson: "Handlowiec",

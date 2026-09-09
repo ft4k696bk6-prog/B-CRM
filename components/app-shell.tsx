@@ -21,7 +21,6 @@ import {
   RotateCcw,
   Settings,
   UserPlus,
-  Warehouse,
   X,
   type LucideIcon
 } from "lucide-react";
@@ -50,7 +49,6 @@ type NavigationLink = {
     | "navMyLeads"
     | "navWorkPanel"
     | "navOperations"
-    | "navEquipment"
     | "navNewLead"
     | "navMap"
     | "navCalendar"
@@ -124,14 +122,6 @@ const navigationLinks: NavigationLink[] = [
     permissions: ["operations:view"],
     allowedRoles: ["owner", "admin", "menadzer", "finance", "viewer", "ksiegowosc", "logistyk", "monter"],
     tourId: "tour-nav-process"
-  },
-  {
-    href: "/equipment",
-    labelKey: "navEquipment",
-    groupKey: "operations",
-    icon: Warehouse,
-    allowedRoles: ["owner", "admin", "logistyk"],
-    tourId: "tour-nav-equipment"
   },
   { href: "/calendar", labelKey: "navCalendar", groupKey: "company", icon: CalendarDays, permissions: ["calendar:view"] },
   { href: "/calculators", labelKey: "navCalculators", groupKey: "company", icon: Calculator, permissions: ["offers:calculate"], tourId: "tour-nav-calculators" },
