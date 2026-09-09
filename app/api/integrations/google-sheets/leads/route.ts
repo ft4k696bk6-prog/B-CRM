@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
-const SUPABASE_SYNC_TOKEN_HASH = "04d1f23f962590d289464e86ba8a6ce79386d16b6cf60bd93f8fda83a52a61b3";
+const SUPABASE_SYNC_TOKEN_HASH = "b01528855d06983f19f808323650d407b4da2fe1620cd225757e7ffdc3857dbc";
 
 function hasImportSecret(request: Request) {
   const authHeader = request.headers.get("authorization");
