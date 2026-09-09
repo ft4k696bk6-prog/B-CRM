@@ -54,6 +54,7 @@ export type Lead = {
   county: string | null;
   status: LeadStatus;
   assigned_to: string | null;
+  assigned_at: string | null;
   created_at: string;
   updated_at: string;
   last_opened_at: string | null;
@@ -96,6 +97,7 @@ export type AdminLeadFilters = {
 export type SortOption = {
   column: keyof Pick<
     Lead,
+    | "assigned_at"
     | "created_at"
     | "updated_at"
     | "last_opened_at"
