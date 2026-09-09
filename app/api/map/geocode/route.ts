@@ -219,6 +219,7 @@ export async function POST(request: Request) {
       : query;
 
     if (kind === "lead" && postalCode && result) {
+      const [postalPrefix, postalSuffix] = postalCode.split("-");
       const { error: groupUpdateError } = await auth.supabaseAdmin
         .from("leads")
         .update({
@@ -228,7 +229,7 @@ export async function POST(request: Request) {
           map_geocode_query: `postal:${postalCode}`
         })
         .eq("crm_environment", lead.crm_environment)
-        .ilike("postal_code", `%${postalCode}%`);
+        .ilike("postal_code", `%${postalPrefix}%${postalSuffix}%`);
       if (groupUpdateError) throw new Error(groupUpdateError.message);
     } else {
       const update = kind === "meeting"
