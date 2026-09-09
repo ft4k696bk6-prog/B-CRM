@@ -1,12 +1,12 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
-import { importGoogleSheetsLeads } from "@/lib/google-sheets-lead-import";
+import { importGoogleSheetsLeadsPublic } from "@/lib/google-sheets-lead-import-public";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
-const EXPECTED_TOKEN_HASH = "0362e19a2d2d40b06e9452e110bd225dc7a23acd796294d4defd7945e28e30a0";
+const EXPECTED_TOKEN_HASH = "afd5de12e487bce6c9648116c21cec8c972ca84afefa4854c15d78df003c0247";
 
 function authorized(request: Request) {
   if (process.env.VERCEL_ENV !== "production") return false;
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await importGoogleSheetsLeads();
+    const result = await importGoogleSheetsLeadsPublic();
     return NextResponse.json(result, { status: result.errors.length > 0 ? 207 : 200 });
   } catch (error) {
     return NextResponse.json(
