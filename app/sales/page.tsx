@@ -44,7 +44,7 @@ export default function SalesDashboardPage() {
   const [county, setCounty] = useState("");
   const [campaign, setCampaign] = useState("");
   const [campaignOptions, setCampaignOptions] = useState<string[]>([]);
-  const [sort, setSort] = useState<SortOption>({ column: "created_at", direction: "desc" });
+  const [sort, setSort] = useState<SortOption>({ column: "assigned_at", direction: "desc" });
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
   const [quickLead, setQuickLead] = useState<Lead | null>(null);
@@ -300,7 +300,7 @@ export default function SalesDashboardPage() {
                 setVoivodeship("");
                 setCounty("");
                 setCampaign("");
-                setSort({ column: "created_at", direction: "desc" });
+                setSort({ column: "assigned_at", direction: "desc" });
               }}
             >
               Wyczyść
@@ -369,6 +369,8 @@ export default function SalesDashboardPage() {
                   setSort({ column: column as SortOption["column"], direction: direction as SortOption["direction"] });
                 }}
               >
+                <option value="assigned_at:desc">Przypisane do mnie: najnowsze</option>
+                <option value="assigned_at:asc">Przypisane do mnie: najstarsze</option>
                 <option value="created_at:desc">Dodane: najnowsze</option>
                 <option value="created_at:asc">Dodane: najstarsze</option>
                 <option value="updated_at:desc">Modyfikacja: najnowsza</option>
