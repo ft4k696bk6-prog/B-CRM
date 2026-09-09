@@ -121,6 +121,12 @@ function normalizePostalCode(value: string | null | undefined) {
   return match ? `${match[1]}-${match[2]}` : "";
 }
 
+function leadMarkerKey(point: LeadMapPoint) {
+  return point.postalCode
+    ? `postal:${point.postalCode}`
+    : `coord:${point.lat.toFixed(5)},${point.lng.toFixed(5)}`;
+}
+
 function recentAttempt(value: string | null | undefined) {
   if (!value) return false;
   return Date.now() - new Date(value).getTime() < 7 * 24 * 60 * 60 * 1000;
@@ -320,6 +326,19 @@ export default function MapPage() {
       }];
     }),
     [meetingsForDay]
+  );
+
+  const leadsWithPostal = useMemo(
+    () => visibleLeads.filter((lead) => Boolean(normalizePostalCode(lead.postal_code))).length,
+    [visibleLeads]
+  );
+  const distinctPostalCodes = useMemo(
+    () => new Set(visibleLeads.map((lead) => normalizePostalCode(lead.postal_code)).filter(Boolean)).size,
+    [visibleLeads]
+  );
+  const leadMarkerCount = useMemo(
+    () => new Set(leadPoints.map(leadMarkerKey)).size,
+    [leadPoints]
   );
 
   useEffect(() => {
@@ -546,7 +565,7 @@ export default function MapPage() {
             </div>
             <h1 className="mt-1 text-2xl font-black text-ink">Leady i trasa spotkań</h1>
             <p className="mt-1 max-w-3xl text-sm text-muted">
-              Leady bez dokładnego adresu są ustawiane na środku obszaru kodu pocztowego. Kilka leadów w tym samym miejscu tworzy jeden znacznik z liczbą.
+              Jeden kod pocztowy tworzy jeden punkt z liczbą leadów. Jeśli kilka kodów zwraca ten sam środek miejscowości, znaczniki są lekko rozsunięte, żeby żaden nie znikał pod innym.
             </p>
           </div>
 
@@ -586,10 +605,10 @@ export default function MapPage() {
           <div className="grid gap-3">
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
               <div className="app-muted-panel"><div className="text-xs font-bold uppercase text-muted">Leady</div><div className="mt-1 text-2xl font-black">{visibleLeads.length}</div></div>
-              <div className="app-muted-panel"><div className="text-xs font-bold uppercase text-muted">Na mapie</div><div className="mt-1 text-2xl font-black">{leadPoints.length}</div></div>
+              <div className="app-muted-panel"><div className="text-xs font-bold uppercase text-muted">Z kodem</div><div className="mt-1 text-2xl font-black">{leadsWithPostal}</div></div>
+              <div className="app-muted-panel"><div className="text-xs font-bold uppercase text-muted">Różne kody</div><div className="mt-1 text-2xl font-black">{distinctPostalCodes}</div></div>
+              <div className="app-muted-panel"><div className="text-xs font-bold uppercase text-muted">Punkty na mapie</div><div className="mt-1 text-2xl font-black">{leadMarkerCount}</div></div>
               <div className="app-muted-panel"><div className="text-xs font-bold uppercase text-muted">Bez punktu</div><div className="mt-1 text-2xl font-black">{unmapped}</div></div>
-              <div className="app-muted-panel"><div className="text-xs font-bold uppercase text-muted">Droga</div><div className="mt-1 text-2xl font-black">{route ? formatKm(route.distance) : "—"}</div></div>
-              <div className="app-muted-panel"><div className="text-xs font-bold uppercase text-muted">Jazda</div><div className="mt-1 text-2xl font-black">{route ? formatDuration(route.duration) : "—"}</div></div>
             </div>
 
             {geoProgress.total > 0 ? (
@@ -606,7 +625,7 @@ export default function MapPage() {
             />
 
             <div className="text-xs text-muted">
-              Liczba w niebieskim znaczniku oznacza kilka leadów w tej samej okolicy. Kliknij znacznik, żeby rozwinąć listę klientów. Czarno-żółte znaczniki 1, 2, 3… to spotkania w kolejności godzin.
+              Każda kulka oznacza jeden kod pocztowy albo jeden punkt adresowy. Liczba w kulce to liczba leadów przypiętych do tego punktu. Czarno-żółte znaczniki 1, 2, 3… to spotkania w kolejności godzin.
             </div>
           </div>
 
