@@ -66,6 +66,13 @@ type ReturnContext = MapViewState & {
   popupKey: string;
 };
 
+type LeadGroup = {
+  key: string;
+  leads: LeadMapPoint[];
+  basePoint: [number, number];
+  point: [number, number];
+};
+
 declare global {
   interface Window {
     L?: LeafletApi;
@@ -126,12 +133,50 @@ function statusColor(status: string) {
 function leadGroups(leads: LeadMapPoint[]) {
   const groups = new Map<string, LeadMapPoint[]>();
   for (const lead of leads) {
-    const key = `${lead.lat.toFixed(5)},${lead.lng.toFixed(5)}`;
+    const key = lead.postalCode
+      ? `postal:${lead.postalCode}`
+      : `coord:${lead.lat.toFixed(5)},${lead.lng.toFixed(5)}`;
     const current = groups.get(key) || [];
     current.push(lead);
     groups.set(key, current);
   }
-  return [...groups.values()];
+
+  const result: LeadGroup[] = [...groups.entries()].map(([key, groupedLeads]) => ({
+    key,
+    leads: groupedLeads,
+    basePoint: [groupedLeads[0].lat, groupedLeads[0].lng],
+    point: [groupedLeads[0].lat, groupedLeads[0].lng]
+  }));
+
+  const collisions = new Map<string, LeadGroup[]>();
+  for (const group of result) {
+    const collisionKey = `${group.basePoint[0].toFixed(5)},${group.basePoint[1].toFixed(5)}`;
+    const current = collisions.get(collisionKey) || [];
+    current.push(group);
+    collisions.set(collisionKey, current);
+  }
+
+  for (const colliding of collisions.values()) {
+    if (colliding.length < 2) continue;
+    const ordered = [...colliding].sort((a, b) => a.key.localeCompare(b.key));
+    const baseLat = ordered[0].basePoint[0];
+    const baseLng = ordered[0].basePoint[1];
+    const lngScale = Math.max(Math.cos((baseLat * Math.PI) / 180), 0.35);
+
+    ordered.forEach((group, index) => {
+      const ring = Math.floor(index / 8);
+      const slot = index % 8;
+      const slotsInRing = Math.min(8, ordered.length - ring * 8);
+      const radius = 0.0045 + ring * 0.0035;
+      const angle = (2 * Math.PI * slot) / Math.max(slotsInRing, 1);
+      group.point = [
+        baseLat + Math.cos(angle) * radius,
+        baseLng + (Math.sin(angle) * radius) / lngScale
+      ];
+    });
+  }
+
+  return result;
 }
 
 function clusterPopup(leads: LeadMapPoint[], popupKey: string) {
@@ -277,51 +322,27 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
         const bounds: Array<[number, number]> = [];
 
         for (const group of leadGroups(leads)) {
-          const first = group[0];
-          const point: [number, number] = [first.lat, first.lng];
-          const groupKey = `cluster:${first.lat.toFixed(5)},${first.lng.toFixed(5)}`;
+          const first = group.leads[0];
+          const point = group.point;
+          const groupKey = `lead-group:${group.key}`;
           bounds.push(point);
 
-          if (group.length > 1) {
-            const size = group.length >= 100 ? 46 : group.length >= 10 ? 42 : 38;
-            const icon = L.divIcon({
-              className: "",
-              html: `<div style="width:${size}px;height:${size}px;border-radius:${size / 2}px;background:#2563eb;color:#fff;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font:800 13px system-ui;box-shadow:0 4px 12px rgba(15,23,42,.25)">${group.length}</div>`,
-              iconSize: [size, size],
-              iconAnchor: [size / 2, size / 2]
-            });
-            const marker = L.marker(point, { icon, zIndexOffset: 500 }).addTo(localMap);
-            marker.bindPopup?.(clusterPopup(group, groupKey), { maxHeight: 360 });
-            marker.on?.("popupopen", () => { activePopupKeyRef.current = groupKey; });
-            marker.on?.("popupclose", () => {
-              if (!returnContextRef.current && activePopupKeyRef.current === groupKey) activePopupKeyRef.current = null;
-            });
-            popupLayersRef.current.set(groupKey, marker);
-            continue;
-          }
-
-          const lead = first;
-          const popupKey = `lead:${lead.id}`;
-          const marker = L.circleMarker(point, {
-            radius: 6,
-            weight: 2,
-            color: "#ffffff",
-            fillColor: statusColor(lead.status),
-            fillOpacity: 0.92
-          }).addTo(localMap);
-          marker.bindPopup?.(
-            `<div style="min-width:190px;font-family:system-ui,sans-serif">` +
-              `<strong>${escapeHtml(lead.name)}</strong><br>` +
-              `<span>${escapeHtml(lead.status)}</span><br>` +
-              `<span style="color:#667085">${escapeHtml(lead.address || lead.postalCode || "Brak dokładnego adresu")}</span><br>` +
-              `<a href="/leads/${encodeURIComponent(lead.id)}" data-bcrm-map-lead="${escapeHtml(lead.id)}" data-bcrm-map-popup="${escapeHtml(popupKey)}" style="display:inline-block;margin-top:8px;font-weight:700">Otwórz lead →</a>` +
-            `</div>`
-          );
-          marker.on?.("popupopen", () => { activePopupKeyRef.current = popupKey; });
-          marker.on?.("popupclose", () => {
-            if (!returnContextRef.current && activePopupKeyRef.current === popupKey) activePopupKeyRef.current = null;
+          const count = group.leads.length;
+          const size = count >= 100 ? 46 : count >= 10 ? 42 : count > 1 ? 38 : 28;
+          const background = count > 1 ? "#2563eb" : statusColor(first.status);
+          const icon = L.divIcon({
+            className: "",
+            html: `<div style="width:${size}px;height:${size}px;border-radius:${size / 2}px;background:${background};color:#fff;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font:800 ${count > 1 ? 13 : 11}px system-ui;box-shadow:0 4px 12px rgba(15,23,42,.25)">${count}</div>`,
+            iconSize: [size, size],
+            iconAnchor: [size / 2, size / 2]
           });
-          popupLayersRef.current.set(popupKey, marker);
+          const marker = L.marker(point, { icon, zIndexOffset: count > 1 ? 500 : 420 }).addTo(localMap);
+          marker.bindPopup?.(clusterPopup(group.leads, groupKey), { maxHeight: 360 });
+          marker.on?.("popupopen", () => { activePopupKeyRef.current = groupKey; });
+          marker.on?.("popupclose", () => {
+            if (!returnContextRef.current && activePopupKeyRef.current === groupKey) activePopupKeyRef.current = null;
+          });
+          popupLayersRef.current.set(groupKey, marker);
         }
 
         for (const meeting of meetings) {
