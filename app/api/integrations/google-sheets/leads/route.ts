@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { importGoogleSheetsLeads } from "@/lib/google-sheets-lead-import";
+import { importGoogleSheetsLeadsPublic } from "@/lib/google-sheets-lead-import-public";
 import { requireApiProfile } from "@/lib/server-auth";
 
 export const dynamic = "force-dynamic";
@@ -15,8 +15,12 @@ function hasImportSecret(request: Request) {
   return Boolean(token && (token === importSecret || token === cronSecret));
 }
 
+function isVercelCron(request: Request) {
+  return request.headers.get("x-vercel-cron-schedule") === "0 6 * * *";
+}
+
 async function runImport(request: Request) {
-  if (!hasImportSecret(request)) {
+  if (!hasImportSecret(request) && !isVercelCron(request)) {
     const auth = await requireApiProfile(request);
     if ("error" in auth) return auth.error;
     if (!["owner", "admin"].includes(auth.profile.role)) {
@@ -25,7 +29,7 @@ async function runImport(request: Request) {
   }
 
   try {
-    const result = await importGoogleSheetsLeads();
+    const result = await importGoogleSheetsLeadsPublic();
     return NextResponse.json(result, { status: result.errors.length > 0 ? 207 : 200 });
   } catch (error) {
     return NextResponse.json(
