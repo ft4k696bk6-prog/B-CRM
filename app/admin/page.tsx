@@ -55,6 +55,8 @@ const initialFilters: AdminLeadFilters = {
 };
 
 const sortOptions: Array<SortOption & { label: string }> = [
+  { label: "Przypisane handlowcowi: najnowsze", column: "assigned_at", direction: "desc" },
+  { label: "Przypisane handlowcowi: najstarsze", column: "assigned_at", direction: "asc" },
   { label: "Dodane: najnowsze", column: "created_at", direction: "desc" },
   { label: "Dodane: najstarsze", column: "created_at", direction: "asc" },
   { label: "Modyfikacja: najnowsza", column: "updated_at", direction: "desc" },
@@ -189,7 +191,7 @@ export default function AdminDashboardPage() {
     let query = supabase
       .from("leads")
       .select(
-        "id,full_name,postal_code,phone,address,voivodeship,county,status,assigned_to,created_at,updated_at,last_opened_at,source,campaign,resignation_reason,callback_at,meeting_at,meeting_address,meeting_note,contract_number,crm_environment,assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)",
+        "id,full_name,postal_code,phone,address,voivodeship,county,status,assigned_to,assigned_at,created_at,updated_at,last_opened_at,source,campaign,resignation_reason,callback_at,meeting_at,meeting_address,meeting_note,contract_number,crm_environment,assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)",
         { count: "exact" }
       )
       .eq("crm_environment", crmEnvironment!)
