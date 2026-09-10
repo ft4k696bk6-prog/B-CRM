@@ -38,6 +38,12 @@ export async function GET(request: Request) {
     return NextResponse.json({
       totalMarginNet:
         Number(data.company_margin_net) + Number(data.sales_margin_net),
+      ...(auth.profile.role === "handlowiec"
+        ? {
+            salesMargin: Number(data.sales_margin_net),
+            commissionPercent: Number(data.commission_percent),
+          }
+        : {}),
       loanRate,
     });
   }
@@ -53,12 +59,35 @@ export async function GET(request: Request) {
 export async function PATCH(request: Request) {
   const auth = await requireApiProfile(request);
   if ("error" in auth) return auth.error;
-  if (!canManagePricing(auth.profile.role))
+
+  const canManageAllPricing = canManagePricing(auth.profile.role);
+  const canManageOwnSalesMargin = auth.profile.role === "handlowiec";
+  if (!canManageAllPricing && !canManageOwnSalesMargin)
     return NextResponse.json({ error: "Brak uprawnień." }, { status: 403 });
 
   const body = (await request.json()) as Record<string, unknown>;
-  const adminMargin = Number(body.adminMargin);
   const salesMargin = Number(body.salesMargin);
+
+  if (canManageOwnSalesMargin && !canManageAllPricing) {
+    if (!Number.isFinite(salesMargin) || salesMargin < 0) {
+      return NextResponse.json(
+        { error: "Marża handlowca musi być nieujemna." },
+        { status: 400 },
+      );
+    }
+
+    const { error } = await auth.supabaseAdmin
+      .from("profiles")
+      .update({ sales_margin_net: salesMargin })
+      .eq("id", auth.profile.id);
+
+    if (error)
+      return NextResponse.json({ error: error.message }, { status: 400 });
+
+    return NextResponse.json({ salesMargin });
+  }
+
+  const adminMargin = Number(body.adminMargin);
   const commissionPercent = Number(body.commissionPercent);
   const loanRate = Number(body.loanRate);
 
