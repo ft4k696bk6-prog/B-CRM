@@ -56,10 +56,13 @@ export function usePricingSettings(
           loanRate: Number.isFinite(body.loanRate) ? Number(body.loanRate) : 6,
         });
       } else if (response.ok && Number.isFinite(body.totalMarginNet)) {
+        const salesMargin = Number.isFinite(body.salesMargin)
+          ? Math.max(Number(body.salesMargin), 0)
+          : 0;
         setSettingsState({
-          adminMargin: Number(body.totalMarginNet),
-          salesMargin: 0,
-          commissionPercent: 0,
+          adminMargin: Math.max(Number(body.totalMarginNet) - salesMargin, 0),
+          salesMargin,
+          commissionPercent: Number(body.commissionPercent) || 0,
           loanRate: Number.isFinite(body.loanRate) ? Number(body.loanRate) : 6,
         });
       }
@@ -73,7 +76,10 @@ export function usePricingSettings(
   ]);
 
   function setSettings(next: PricingSettings) {
-    if (profile?.role !== "owner" && profile?.role !== "admin") return;
+    const canEditAll = profile?.role === "owner" || profile?.role === "admin";
+    const canEditOwnMargin = profile?.role === "handlowiec";
+    if (!canEditAll && !canEditOwnMargin) return;
+
     const normalized = {
       adminMargin: Math.max(Number(next.adminMargin) || 0, 0),
       salesMargin: Math.max(Number(next.salesMargin) || 0, 0),
