@@ -271,29 +271,37 @@ export default function SettingsPage() {
           </button>
         </form>
 
-        {profile.role === "owner" || profile.role === "admin" ? (
+        {profile.role === "owner" ||
+        profile.role === "admin" ||
+        profile.role === "handlowiec" ? (
           <form onSubmit={save} className="app-card max-w-2xl">
             <SectionHeader
               icon={Settings}
               title="Ustawienia oferty"
-              description="Wartości techniczne nie są widoczne w ofercie dla klienta."
+              description={
+                profile.role === "handlowiec"
+                  ? "Tutaj ustawiasz swoją marżę ofertową."
+                  : "Wartości techniczne nie są widoczne w ofercie dla klienta."
+              }
               tone="ink"
               className="mb-4"
             />
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <label>
-                <span className="label">Marża bazowa firmy netto</span>
-                <input
-                  className="field"
-                  type="number"
-                  value={adminMargin}
-                  min={0}
-                  onChange={(event) =>
-                    setAdminMargin(Number(event.target.value))
-                  }
-                />
-              </label>
+              {profile.role === "owner" || profile.role === "admin" ? (
+                <label>
+                  <span className="label">Marża bazowa firmy netto</span>
+                  <input
+                    className="field"
+                    type="number"
+                    value={adminMargin}
+                    min={0}
+                    onChange={(event) =>
+                      setAdminMargin(Number(event.target.value))
+                    }
+                  />
+                </label>
+              ) : null}
 
               <label>
                 <span className="label">Moja marża ofertowa netto</span>
@@ -308,24 +316,26 @@ export default function SettingsPage() {
                 />
               </label>
 
-              <label>
-                <span className="label">Prowizja z marży handlowca (%)</span>
-                <input
-                  className="field"
-                  type="number"
-                  value={commissionPercent}
-                  min={0}
-                  max={100}
-                  step={0.1}
-                  onChange={(event) =>
-                    setCommissionPercent(Number(event.target.value))
-                  }
-                />
-                <span className="mt-1 block text-xs text-muted">
-                  Ten procent marży ofertowej netto jest finalną prowizją do
-                  wypłaty.
-                </span>
-              </label>
+              {profile.role === "owner" || profile.role === "admin" ? (
+                <label>
+                  <span className="label">Prowizja z marży handlowca (%)</span>
+                  <input
+                    className="field"
+                    type="number"
+                    value={commissionPercent}
+                    min={0}
+                    max={100}
+                    step={0.1}
+                    onChange={(event) =>
+                      setCommissionPercent(Number(event.target.value))
+                    }
+                  />
+                  <span className="mt-1 block text-xs text-muted">
+                    Ten procent marży ofertowej netto jest finalną prowizją do
+                    wypłaty.
+                  </span>
+                </label>
+              ) : null}
 
               {profile.role === "owner" ? (
                 <label>
