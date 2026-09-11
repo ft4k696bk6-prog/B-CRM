@@ -32,7 +32,7 @@ const appearanceScript = `
     var theme = window.localStorage.getItem("bcrm-appearance");
     document.documentElement.dataset.theme =
       theme === "light" || theme === "dark" || theme === "system" ? theme : "system";
-  } catch (_) {
+  } catch {
     document.documentElement.dataset.theme = "system";
   }
 `;
