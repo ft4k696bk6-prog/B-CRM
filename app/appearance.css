@@ -169,13 +169,26 @@ html[data-resolved-theme="dark"] .shadow-soft {
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 18px 48px rgb(0 0 0 / 0.24) !important;
 }
 
+html[data-resolved-theme="dark"] [class~="bg-white/60"] {
+  background-color: rgb(var(--panel) / 0.72) !important;
+}
+
+html[data-resolved-theme="dark"] [class~="bg-white/70"] {
+  background-color: rgb(var(--panel) / 0.82) !important;
+}
+
+html[data-resolved-theme="dark"] [class~="bg-white/90"] {
+  background-color: rgb(var(--panel) / 0.94) !important;
+}
+
 html[data-resolved-theme="dark"] [class~="bg-[#eef1f4]"],
 html[data-resolved-theme="dark"] [class~="bg-[#f5f7fa]"],
 html[data-resolved-theme="dark"] [class~="bg-[#f3f6fa]"] {
   background-color: rgb(var(--panel-soft)) !important;
 }
 
-html[data-resolved-theme="dark"] [class~="bg-ink/45"] {
+html[data-resolved-theme="dark"] [class~="bg-ink/45"],
+html[data-resolved-theme="dark"] [class~="bg-ink/55"] {
   background-color: rgb(2 6 23 / 0.72) !important;
 }
 
@@ -263,6 +276,7 @@ html[data-resolved-theme="dark"] [class~="text-[#8a5a00]"] {
 
 html[data-resolved-theme="dark"] [class~="text-[#1d7556]"],
 html[data-resolved-theme="dark"] [class~="text-[#226b59]"],
+html[data-resolved-theme="dark"] [class~="text-[#23682e]"],
 html[data-resolved-theme="dark"] [class~="text-[#31701f]"],
 html[data-resolved-theme="dark"] [class~="text-[#277333]"] {
   color: rgb(var(--leaf)) !important;
@@ -289,10 +303,42 @@ html[data-resolved-theme="dark"] [class~="hover:border-[#4cae55]"]:hover {
   border-color: rgb(var(--leaf)) !important;
 }
 
+/* Legacy semantic Tailwind colors used by older CRM panels. */
+html[data-resolved-theme="dark"] .bg-amber-50 {
+  background-color: rgb(var(--warn) / 0.12) !important;
+}
+
+html[data-resolved-theme="dark"] .border-amber-200 {
+  border-color: rgb(var(--warn) / 0.3) !important;
+}
+
+html[data-resolved-theme="dark"] .text-amber-700,
+html[data-resolved-theme="dark"] .text-amber-900 {
+  color: rgb(var(--warn)) !important;
+}
+
+html[data-resolved-theme="dark"] .bg-red-50 {
+  background-color: rgb(var(--danger) / 0.1) !important;
+}
+
+html[data-resolved-theme="dark"] .border-red-200 {
+  border-color: rgb(var(--danger) / 0.28) !important;
+}
+
+html[data-resolved-theme="dark"] .text-red-700,
+html[data-resolved-theme="dark"] .text-red-800 {
+  color: rgb(var(--danger)) !important;
+}
+
+html[data-resolved-theme="dark"] .text-emerald-700 {
+  color: rgb(var(--leaf)) !important;
+}
+
 /* Generic hard-coded light hover states. */
 html[data-resolved-theme="dark"] [class~="hover:bg-white"]:hover,
 html[data-resolved-theme="dark"] [class~="hover:bg-[#f8fafc]"]:hover,
-html[data-resolved-theme="dark"] [class~="hover:bg-[#eef3f8]"]:hover {
+html[data-resolved-theme="dark"] [class~="hover:bg-[#eef3f8]"]:hover,
+html[data-resolved-theme="dark"] [class~="hover:bg-[#fbfcfe]"]:hover {
   background-color: rgb(var(--dark-hover)) !important;
 }
 
