@@ -11,13 +11,13 @@ export const LEAD_STATUSES: LeadStatus[] = [
 ];
 
 export const STATUS_TONES: Record<LeadStatus, string> = {
-  Nowy: "bg-sky/10 text-sky border-sky/20",
-  "Call back": "bg-solar/20 text-[#8a5a00] border-solar/30",
-  Spotkanie: "bg-[#e8f7f0] text-[#1d7556] border-[#bfe8d5]",
-  "Po spotkaniu": "bg-[#edf7f2] text-[#226b59] border-[#c8e8dc]",
-  Umowa: "bg-[#eef8e8] text-[#31701f] border-[#cde9c2]",
-  Rezygnacja: "bg-danger/10 text-danger border-danger/20",
-  "Nie odebrał": "bg-warn/10 text-warn border-warn/20",
+  Nowy: "bg-sky/10 text-sky border-sky/25",
+  "Call back": "bg-solar/15 text-solar border-solar/30",
+  Spotkanie: "bg-leaf/10 text-leaf border-leaf/25",
+  "Po spotkaniu": "bg-leaf/10 text-leaf border-leaf/25",
+  Umowa: "bg-leaf/15 text-leaf border-leaf/30",
+  Rezygnacja: "bg-danger/10 text-danger border-danger/25",
+  "Nie odebrał": "bg-warn/10 text-warn border-warn/25",
 };
 
 export const STATUS_LABELS: Record<LeadStatus, string> = {
@@ -55,10 +55,10 @@ export const ACTION_LABELS: Record<string, string> = {
 
 export const STATUS_TILE_TONES: Record<LeadStatus, string> = {
   Nowy: "border-sky/30 bg-sky/10 text-sky hover:border-sky",
-  "Call back": "border-solar/40 bg-solar/20 text-[#8a5a00] hover:border-solar",
-  Spotkanie: "border-[#9dddbf] bg-[#e8f7f0] text-[#1d7556] hover:border-leaf",
-  "Po spotkaniu": "border-[#a9ded1] bg-[#edf7f2] text-[#226b59] hover:border-[#4fb391]",
-  Umowa: "border-[#97d49b] bg-[#e9f8eb] text-[#277333] hover:border-[#4cae55]",
+  "Call back": "border-solar/35 bg-solar/15 text-solar hover:border-solar",
+  Spotkanie: "border-leaf/30 bg-leaf/10 text-leaf hover:border-leaf",
+  "Po spotkaniu": "border-leaf/30 bg-leaf/10 text-leaf hover:border-leaf",
+  Umowa: "border-leaf/35 bg-leaf/15 text-leaf hover:border-leaf",
   Rezygnacja: "border-danger/30 bg-danger/10 text-danger hover:border-danger",
   "Nie odebrał": "border-warn/30 bg-warn/10 text-warn hover:border-warn",
 };
