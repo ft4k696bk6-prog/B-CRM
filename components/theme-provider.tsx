@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import {
@@ -18,12 +18,18 @@ type ThemeContextValue = {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-function applyTheme(theme: ThemeName) {
-  document.documentElement.dataset.theme = theme;
-}
-
 function readTheme(value: unknown): ThemeName | null {
   return typeof value === "string" && isThemeName(value) ? value : null;
+}
+
+function resolveTheme(theme: ThemeName, systemDark: boolean) {
+  return theme === "system" ? (systemDark ? "dark" : "light") : theme;
+}
+
+function applyTheme(theme: ThemeName, systemDark: boolean) {
+  const root = document.documentElement;
+  root.dataset.theme = theme;
+  root.dataset.resolvedTheme = resolveTheme(theme, systemDark);
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -31,11 +37,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    let mounted = true;
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const syncResolvedTheme = () => applyTheme(theme, media.matches);
 
+    syncResolvedTheme();
+    media.addEventListener("change", syncResolvedTheme);
+    return () => media.removeEventListener("change", syncResolvedTheme);
+  }, [theme]);
+
+  useEffect(() => {
+    let mounted = true;
     const browserTheme = readTheme(window.localStorage.getItem(THEME_STORAGE_KEY)) ?? defaultTheme;
     setThemeState(browserTheme);
-    applyTheme(browserTheme);
 
     function applyUserPreference(session: Session | null) {
       if (!mounted || !session?.user) return;
@@ -47,7 +60,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
       setUserId(nextUserId);
       setThemeState(nextTheme);
-      applyTheme(nextTheme);
       window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
       window.localStorage.setItem(userThemeStorageKey(nextUserId), nextTheme);
     }
@@ -70,9 +82,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  function setTheme(nextTheme: ThemeName) {
+  const setTheme = useCallback((nextTheme: ThemeName) => {
     setThemeState(nextTheme);
-    applyTheme(nextTheme);
     window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
 
     if (userId) {
@@ -81,9 +92,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         data: { bcrm_appearance: nextTheme },
       });
     }
-  }
+  }, [userId]);
 
-  const value = useMemo(() => ({ theme, setTheme }), [theme]);
+  const value = useMemo(() => ({ theme, setTheme }), [theme, setTheme]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

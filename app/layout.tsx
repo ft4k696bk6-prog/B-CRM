@@ -29,11 +29,16 @@ export const metadata: Metadata = {
 
 const appearanceScript = `
   try {
-    var theme = window.localStorage.getItem("bcrm-appearance");
-    document.documentElement.dataset.theme =
-      theme === "light" || theme === "dark" || theme === "system" ? theme : "system";
+    var saved = window.localStorage.getItem("bcrm-appearance");
+    var theme = saved === "light" || saved === "dark" || saved === "system" ? saved : "system";
+    var systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset.resolvedTheme =
+      theme === "system" ? (systemDark ? "dark" : "light") : theme;
   } catch {
+    var fallbackDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     document.documentElement.dataset.theme = "system";
+    document.documentElement.dataset.resolvedTheme = fallbackDark ? "dark" : "light";
   }
 `;
 
