@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import "./mobile-ux.css";
 import "./ui-polish.css";
+import "./appearance.css";
 
 export const metadata: Metadata = {
   title: "B-CRM",
@@ -26,9 +27,22 @@ export const metadata: Metadata = {
   }
 };
 
+const appearanceScript = `
+  try {
+    var theme = window.localStorage.getItem("bcrm-appearance");
+    document.documentElement.dataset.theme =
+      theme === "light" || theme === "dark" || theme === "system" ? theme : "system";
+  } catch {
+    document.documentElement.dataset.theme = "system";
+  }
+`;
+
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="pl">
+    <html lang="pl" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: appearanceScript }} />
+      </head>
       <body>
         <LanguageProvider>
           <ThemeProvider>{children}</ThemeProvider>

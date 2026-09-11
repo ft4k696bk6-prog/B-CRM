@@ -1,0 +1,164 @@
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas-top: 17 24 39;
+  --canvas: 10 15 27;
+  --panel: 20 28 44;
+  --panel-soft: 27 36 54;
+  --ink: 238 242 247;
+  --muted: 158 169 185;
+  --line: 51 65 85;
+  --solar: 221 172 70;
+  --leaf: 67 176 142;
+  --sky: 104 165 246;
+  --warn: 245 158 11;
+  --danger: 248 113 113;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"],
+  html:not([data-theme]) {
+    color-scheme: dark;
+    --canvas-top: 17 24 39;
+    --canvas: 10 15 27;
+    --panel: 20 28 44;
+    --panel-soft: 27 36 54;
+    --ink: 238 242 247;
+    --muted: 158 169 185;
+    --line: 51 65 85;
+    --solar: 221 172 70;
+    --leaf: 67 176 142;
+    --sky: 104 165 246;
+    --warn: 245 158 11;
+    --danger: 248 113 113;
+  }
+}
+
+html[data-theme="dark"] .bg-ink {
+  background-color: rgb(30 41 59) !important;
+}
+
+html[data-theme="dark"] .border-ink {
+  border-color: rgb(100 116 139) !important;
+}
+
+html[data-theme="dark"] .mobile-menu-panel {
+  background: rgb(var(--panel)) !important;
+  background-color: rgb(var(--panel)) !important;
+  border-color: rgb(var(--line));
+  color: rgb(var(--ink));
+  box-shadow: 28px 0 70px rgb(0 0 0 / 0.42);
+}
+
+html[data-theme="dark"] .mobile-menu-panel .text-muted,
+html[data-theme="dark"] .mobile-menu-panel [aria-label="Language"] button:not(.bg-ink) {
+  color: rgb(var(--muted)) !important;
+}
+
+html[data-theme="dark"] .mobile-menu-panel [aria-label="Language"] {
+  border-color: rgb(var(--line)) !important;
+  background-color: rgb(var(--panel)) !important;
+}
+
+html[data-theme="dark"] .mobile-menu-panel [aria-label="Language"] .bg-ink {
+  background-color: rgb(30 41 59) !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] .mobile-menu-close {
+  border-color: rgb(var(--line));
+  background: rgb(var(--panel));
+  color: rgb(var(--ink));
+  box-shadow: 0 10px 24px rgb(0 0 0 / 0.3);
+}
+
+html[data-theme="dark"] .mobile-menu-close:hover {
+  background: rgb(var(--panel-soft));
+}
+
+html[data-theme="dark"] .field:disabled {
+  background-color: rgb(var(--panel-soft)) !important;
+  color: rgb(var(--muted)) !important;
+}
+
+html[data-theme="dark"] .btn-primary:hover {
+  background-color: rgb(51 65 85) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] .bg-ink,
+  html:not([data-theme]) .bg-ink {
+    background-color: rgb(30 41 59) !important;
+  }
+
+  html[data-theme="system"] .border-ink,
+  html:not([data-theme]) .border-ink {
+    border-color: rgb(100 116 139) !important;
+  }
+
+  html[data-theme="system"] .mobile-menu-panel,
+  html:not([data-theme]) .mobile-menu-panel {
+    background: rgb(var(--panel)) !important;
+    background-color: rgb(var(--panel)) !important;
+    border-color: rgb(var(--line));
+    color: rgb(var(--ink));
+    box-shadow: 28px 0 70px rgb(0 0 0 / 0.42);
+  }
+
+  html[data-theme="system"] .mobile-menu-panel .text-muted,
+  html[data-theme="system"] .mobile-menu-panel [aria-label="Language"] button:not(.bg-ink),
+  html:not([data-theme]) .mobile-menu-panel .text-muted,
+  html:not([data-theme]) .mobile-menu-panel [aria-label="Language"] button:not(.bg-ink) {
+    color: rgb(var(--muted)) !important;
+  }
+
+  html[data-theme="system"] .mobile-menu-panel [aria-label="Language"],
+  html:not([data-theme]) .mobile-menu-panel [aria-label="Language"] {
+    border-color: rgb(var(--line)) !important;
+    background-color: rgb(var(--panel)) !important;
+  }
+
+  html[data-theme="system"] .mobile-menu-panel [aria-label="Language"] .bg-ink,
+  html:not([data-theme]) .mobile-menu-panel [aria-label="Language"] .bg-ink {
+    background-color: rgb(30 41 59) !important;
+    color: #ffffff !important;
+  }
+
+  html[data-theme="system"] .mobile-menu-close,
+  html:not([data-theme]) .mobile-menu-close {
+    border-color: rgb(var(--line));
+    background: rgb(var(--panel));
+    color: rgb(var(--ink));
+    box-shadow: 0 10px 24px rgb(0 0 0 / 0.3);
+  }
+
+  html[data-theme="system"] .mobile-menu-close:hover,
+  html:not([data-theme]) .mobile-menu-close:hover {
+    background: rgb(var(--panel-soft));
+  }
+
+  html[data-theme="system"] .field:disabled,
+  html:not([data-theme]) .field:disabled {
+    background-color: rgb(var(--panel-soft)) !important;
+    color: rgb(var(--muted)) !important;
+  }
+
+  html[data-theme="system"] .btn-primary:hover,
+  html:not([data-theme]) .btn-primary:hover {
+    background-color: rgb(51 65 85) !important;
+  }
+}
+
+body,
+.app-card,
+.app-sidebar,
+.app-muted-panel,
+.field,
+.btn-secondary,
+.btn-icon,
+.mobile-menu-panel {
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}

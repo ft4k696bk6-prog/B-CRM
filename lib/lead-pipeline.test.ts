@@ -13,6 +13,7 @@ function lead(id: string, status: Lead["status"]): Lead {
     county: null,
     status,
     assigned_to: null,
+    assigned_at: null,
     created_at: "2026-09-06T10:00:00.000Z",
     updated_at: "2026-09-06T10:00:00.000Z",
     last_opened_at: null,
