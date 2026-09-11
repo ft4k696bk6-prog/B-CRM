@@ -179,6 +179,10 @@ html[data-resolved-theme="dark"] [class~="bg-ink/45"] {
   background-color: rgb(2 6 23 / 0.72) !important;
 }
 
+html[data-resolved-theme="dark"] [class~="hover:border-[#c7d1df]"]:hover {
+  border-color: rgb(var(--sky) / 0.42) !important;
+}
+
 /* Tables and dense CRM lists */
 html[data-resolved-theme="dark"] .app-table thead {
   border-color: rgb(var(--line));
