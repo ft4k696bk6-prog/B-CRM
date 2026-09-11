@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import {
   defaultTheme,
@@ -36,7 +37,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setThemeState(browserTheme);
     applyTheme(browserTheme);
 
-    function applyUserPreference(session: Awaited<ReturnType<typeof supabase.auth.getSession>>["data"]["session"]) {
+    function applyUserPreference(session: Session | null) {
       if (!mounted || !session?.user) return;
 
       const nextUserId = session.user.id;
