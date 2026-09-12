@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireApiProfile } from "@/lib/server-auth";
 import {
-  ACTIVE_CONTRACT_STATUSES,
-  calculateCommission,
   canViewContractForRole,
-  CONTRACT_TASKS,
+  type ContractRecord,
   type ContractStatus,
   type ContractSubmissionStatus,
   FINANCING_OPTIONS,
@@ -12,8 +10,10 @@ import {
   PRODUCT_OPTIONS,
 } from "@/lib/contracts";
 
+import { buildContractStats, canManageContractWorkflow, publicContract, validateWorkflowCommand, type ContractWorkflow } from "@/lib/contract-workflow";
+
 const contractSelect =
-  "*,creator:profiles!contracts_created_by_fkey(id,full_name,email,manager_id),tasks:contract_tasks(*),files:contract_files(*)";
+  "*,creator:profiles!contracts_created_by_fkey(id,full_name,email,manager_id),tasks:contract_tasks(*),files:contract_files(*),workflow:contract_workflow(*)";
 
 type ContractRow = Record<string, unknown> & {
   id: string;
@@ -21,7 +21,8 @@ type ContractRow = Record<string, unknown> & {
   created_by: string;
   contract_number: string;
   customer_name: string;
-  creator?: { manager_id?: string | null } | null;
+  creator?: { id?: string; full_name?: string; email?: string | null; manager_id?: string | null; manager_name?: string | null } | null;
+  workflow?: ContractWorkflow | ContractWorkflow[] | null;
   tasks?: Array<Record<string, unknown>>;
   installation_at?: string | null;
   updated_at?: string;
@@ -50,9 +51,15 @@ function submissionStatusOf(contract: ContractRow): ContractSubmissionStatus {
   );
 }
 
-function normalizeContract(contract: ContractRow): ContractRow {
+function normalizeContract(contract: ContractRow): ContractRecord {
+  const workflow = Array.isArray(contract.workflow) ? contract.workflow[0] : contract.workflow;
   return {
     ...contract,
+    workflow: workflow || null,
+    archived_at: workflow?.archived_at || null,
+    archive_reason: workflow?.archive_reason || null,
+    equipment_ordered: workflow?.equipment_ordered || false,
+    installation_scheduled: workflow?.installation_scheduled || false,
     submission_status: submissionStatusOf(contract),
     submitted_at: contract.submitted_at || null,
     files: (contract.files || []).map((file) => ({
@@ -61,7 +68,7 @@ function normalizeContract(contract: ContractRow): ContractRow {
       path: file.path || file.file_path,
       mime: file.mime || file.mime_type,
     })),
-  };
+  } as unknown as ContractRecord;
 }
 
 /**
@@ -149,58 +156,46 @@ export async function GET(request: Request) {
   if ("error" in auth) return auth.error;
   const { profile, supabaseAdmin } = auth;
   const id = new URL(request.url).searchParams.get("id");
-  let query = supabaseAdmin
-    .from("contracts")
-    .select(contractSelect)
-    .eq("crm_environment", profile.crm_environment);
-  if (id) query = query.eq("id", id);
   let teamIds = new Set<string>();
   if (profile.role === "menadzer") {
-    const { data: team } = await supabaseAdmin
-      .from("profiles")
-      .select("id")
+    const { data: team, error } = await supabaseAdmin.from("profiles")
+      .select("id").eq("crm_environment", profile.crm_environment)
       .or(`id.eq.${profile.id},manager_id.eq.${profile.id}`);
+    if (error) return NextResponse.json({ error: "Nie udało się sprawdzić zespołu." }, { status: 500 });
     teamIds = new Set((team || []).map((person) => person.id));
   }
-  const { data, error } = await query.order("updated_at", { ascending: false });
-  if (error?.message?.includes("contracts")) {
-    let contracts = await fallbackContracts(
-      supabaseAdmin,
-      profile.crm_environment,
-    );
-    contracts = visibleContractsFor(profile, contracts, teamIds);
-    if (id) contracts = contracts.filter((contract) => contract.id === id);
-    contracts = contracts.map(normalizeContract);
-    return NextResponse.json(
-      id ? { contract: contracts[0] || null } : { contracts },
-    );
+  const contracts: ContractRow[] = [];
+  // Supabase caps individual responses. Fetch every authorized row, including
+  // archived contracts, so monthly totals cannot depend on table pagination.
+  const pageSize = 500;
+  for (let offset = 0; ; offset += pageSize) {
+    let query = supabaseAdmin.from("contracts").select(contractSelect)
+      .eq("crm_environment", profile.crm_environment);
+    if (id) query = query.eq("id", id);
+    if (profile.role === "handlowiec") query = query.eq("created_by", profile.id);
+    else if (profile.role === "menadzer") query = query.in("created_by", [...teamIds]).eq("submission_status", "submitted");
+    else if (!canManageContractWorkflow(profile.role)) query = query.eq("submission_status", "submitted");
+    const { data, error } = await query.order("created_at", { ascending: false })
+      .order("id", { ascending: false }).range(offset, offset + pageSize - 1);
+    if (error) return NextResponse.json({ error: "Nie udało się pobrać kompletu umów. Spróbuj ponownie." }, { status: 500 });
+    contracts.push(...((data || []) as unknown as ContractRow[]));
+    if (!data || data.length < pageSize || id) break;
   }
-  if (error)
-    return NextResponse.json({ error: error.message }, { status: 400 });
-
-  let contracts = [...((data || []) as ContractRow[])];
-
-  // An id miss may still be recoverable from a historical snapshot on an
-  // installation that predates the contracts table migration. Lists on a
-  // healthy installation always come exclusively from contracts.
-  if (id && contracts.length === 0) {
-    contracts = (await fallbackContracts(
-      supabaseAdmin,
-      profile.crm_environment,
-    )).filter((contract) => contract.id === id);
+  const visible = visibleContractsFor(profile, contracts, teamIds);
+  const managerIds = [...new Set(visible.map((c) => c.creator?.manager_id).filter((value): value is string => Boolean(value)))];
+  if (managerIds.length) {
+    const { data: managers } = await supabaseAdmin.from("profiles").select("id,full_name")
+      .eq("crm_environment", profile.crm_environment).in("id", managerIds);
+    const names = new Map((managers || []).map((manager) => [manager.id, manager.full_name]));
+    for (const contract of visible) {
+      if (contract.creator) contract.creator.manager_name = names.get(contract.creator.manager_id || "") || null;
+    }
   }
-
-  contracts = [
-    ...new Map(
-      contracts.map((contract) => [contract.lead_id, contract]),
-    ).values(),
-  ];
-  contracts = visibleContractsFor(profile, contracts, teamIds);
-  if (id) contracts = contracts.filter((contract) => contract.id === id);
-  contracts = contracts.map(normalizeContract);
-  return NextResponse.json(
-    id ? { contract: contracts[0] || null } : { contracts },
-  );
+  const normalized = visible.map(normalizeContract);
+  const sanitized = normalized.map((contract) => publicContract(contract, profile.role));
+  return NextResponse.json(id ? { contract: sanitized[0] || null }
+    : { contracts: sanitized, stats: buildContractStats(normalized) },
+    { headers: { "Cache-Control": "private, no-store" } });
 }
 
 export async function POST(request: Request) {
@@ -274,13 +269,6 @@ export async function POST(request: Request) {
       { error: "Nie masz dostępu do tego leada." },
       { status: 403 },
     );
-  const { data: creatorPricing } = await supabaseAdmin
-    .from("profiles")
-    .select("sales_margin_net,commission_percent")
-    .eq("id", profile.id)
-    .single();
-  const commissionMarginNet = Number(creatorPricing?.sales_margin_net) || 0;
-  const commissionPercent = Number(creatorPricing?.commission_percent) || 0;
   const payload = {
     lead_id: leadId,
     contract_number: text(body, "contract_number"),
@@ -324,12 +312,7 @@ export async function POST(request: Request) {
     process_status: "incomplete" as ContractStatus,
     is_process_visible: false,
     management_notes: [],
-    commission_margin_net: commissionMarginNet,
-    commission_percent: commissionPercent,
-    commission_amount: calculateCommission(
-      commissionMarginNet,
-      commissionPercent,
-    ),
+
   };
   if (
     !payload.gross_amount ||
@@ -350,51 +333,9 @@ export async function POST(request: Request) {
     .insert(payload)
     .select()
     .single();
-  let contract = insertResult.data as ContractRow | null;
-  let error = insertResult.error;
-  if (error?.message?.includes("contracts")) {
-    contract = {
-      ...payload,
-      id: crypto.randomUUID(),
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      installation_at: null,
-      tasks: CONTRACT_TASKS.map(([task_key]) => ({
-        id: crypto.randomUUID(),
-        contract_id: "",
-        task_key,
-        completed: false,
-        completed_at: null,
-        completed_by: null,
-        updated_at: new Date().toISOString(),
-      })),
-    };
-    contract.tasks = contract.tasks?.map((task) => ({
-      ...task,
-      contract_id: contract!.id,
-    }));
-    const fallback = await supabaseAdmin
-      .from("lead_history")
-      .insert({
-        lead_id: leadId,
-        user_id: profile.id,
-        action_type: "contract_record",
-        description: `Zapisano umowę ${payload.contract_number}.`,
-        new_value: contract,
-      });
-    error = fallback.error;
-  } else if (!error) {
-    await supabaseAdmin
-      .from("contract_tasks")
-      .insert(
-        CONTRACT_TASKS.map(([task_key]) => ({
-          contract_id: contract!.id,
-          task_key,
-        })),
-      );
-  }
-  if (error)
-    return NextResponse.json({ error: error.message }, { status: 400 });
+  const contract = insertResult.data as ContractRow | null;
+  if (insertResult.error || !contract)
+    return NextResponse.json({ error: insertResult.error?.message || "Nie udało się zapisać umowy." }, { status: 400 });
   return NextResponse.json({ contract }, { status: 201 });
 }
 
@@ -402,8 +343,26 @@ export async function PATCH(request: Request) {
   const auth = await requireApiProfile(request);
   if ("error" in auth) return auth.error;
   const { profile, supabaseAdmin } = auth;
-  const body = (await request.json()) as Record<string, unknown>;
+  const parsed = await request.json().catch(() => null);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
+    return NextResponse.json({ error: "Niepoprawne dane." }, { status: 400 });
+  const body = parsed as Record<string, unknown>;
   const id = text(body, "id");
+  if (["workflow", "archive", "restore"].includes(text(body, "action"))) {
+    if (!canManageContractWorkflow(profile.role))
+      return NextResponse.json({ error: "Oznaczeniami i archiwum zarządza właściciel lub administrator." }, { status: 403 });
+    const validationError = validateWorkflowCommand(body);
+    if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
+    const { error } = await supabaseAdmin.rpc("update_contract_workflow", {
+      p_contract_id: id, p_actor_id: profile.id, p_command: body,
+    });
+    if (error) return NextResponse.json({ error: error.message }, {
+      status: error.code === "42501" ? 403 : error.code === "40001" ? 409 : 400,
+    });
+    return GET(new Request(`${new URL(request.url).origin}/api/contracts?id=${id}`, { headers: request.headers }));
+  }
+  if (["process_status", "task_key", "installation_at"].some((key) => key in body))
+    return NextResponse.json({ error: "Odśwież stronę i użyj nowych oznaczeń umowy." }, { status: canManageContractWorkflow(profile.role) ? 409 : 403 });
   const dbResult = await supabaseAdmin
     .from("contracts")
     .select(
@@ -427,11 +386,8 @@ export async function PATCH(request: Request) {
       { error: "Nie znaleziono umowy." },
       { status: 404 },
     );
-  const canManageContract =
-    ["owner", "admin"].includes(profile.role) ||
-    (profile.role === "menadzer" &&
-      (contract.created_by === profile.id ||
-        contract.creator?.manager_id === profile.id));
+  const canManageContract = canManageContractWorkflow(profile.role) ||
+    (profile.role === "menadzer" && (contract.created_by === profile.id || contract.creator?.manager_id === profile.id));
   const isSalespersonContract =
     profile.role === "handlowiec" && contract.created_by === profile.id;
   if (!canManageContract && !isSalespersonContract)
@@ -478,49 +434,6 @@ export async function PATCH(request: Request) {
       }),
     );
   }
-  if (text(body, "process_status")) {
-    if (submissionStatus === "draft")
-      return NextResponse.json(
-        { error: "Najpierw wyślij kompletną umowę do weryfikacji." },
-        { status: 409 },
-      );
-    const nextStatus = text(body, "process_status") as ContractStatus;
-    if (!["owner", "admin", "menadzer"].includes(profile.role))
-      return NextResponse.json(
-        { error: "Brak uprawnień do zmiany procesu." },
-        { status: 403 },
-      );
-    if (
-      ![...ACTIVE_CONTRACT_STATUSES, "settled", "resigned", "paused"].includes(
-        nextStatus,
-      )
-    )
-      return NextResponse.json(
-        { error: "Niepoprawny etap procesu." },
-        { status: 400 },
-      );
-    if (nextStatus === "resigned" && !text(body, "note"))
-      return NextResponse.json(
-        { error: "Rezygnacja wymaga notatki." },
-        { status: 400 },
-      );
-    contract.process_status = nextStatus;
-    contract.is_process_visible = ACTIVE_CONTRACT_STATUSES.includes(nextStatus);
-    contract.process_note = text(body, "note") || null;
-    Object.assign(pendingUpdates, {
-      process_status: contract.process_status,
-      is_process_visible: contract.is_process_visible,
-      process_note: contract.process_note,
-    });
-    if (nextStatus === "resigned") {
-      contract.resignation_note = text(body, "note");
-      contract.resigned_at = new Date().toISOString();
-      Object.assign(pendingUpdates, {
-        resignation_note: contract.resignation_note,
-        resigned_at: contract.resigned_at,
-      });
-    }
-  }
   if (text(body, "management_note")) {
     if (profile.role === "handlowiec")
       return NextResponse.json(
@@ -539,86 +452,6 @@ export async function PATCH(request: Request) {
       },
     ];
     pendingUpdates.management_notes = contract.management_notes;
-  }
-  if (text(body, "task_key")) {
-    if (!["owner", "admin"].includes(profile.role))
-      return NextResponse.json(
-        { error: "Zadaniami realizacji zarządza administrator." },
-        { status: 403 },
-      );
-    const taskKey = text(body, "task_key");
-    if (!CONTRACT_TASKS.some(([key]) => key === taskKey))
-      return NextResponse.json(
-        { error: "Niepoprawne zadanie." },
-        { status: 400 },
-      );
-    const completed = bool(body, "completed");
-    if (fallbackMode)
-      contract.tasks = (contract.tasks || []).map(
-        (task: Record<string, unknown>) =>
-          task.task_key === taskKey
-            ? {
-                ...task,
-                completed,
-                completed_at: completed ? new Date().toISOString() : null,
-                completed_by: completed ? profile.id : null,
-                updated_at: new Date().toISOString(),
-              }
-            : task,
-      );
-    else {
-      await supabaseAdmin
-        .from("contract_tasks")
-        .update({
-          completed,
-          completed_at: completed ? new Date().toISOString() : null,
-          completed_by: completed ? profile.id : null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("contract_id", id)
-        .eq("task_key", taskKey);
-      await supabaseAdmin
-        .from("contract_task_history")
-        .insert({
-          contract_id: id,
-          task_key: taskKey,
-          completed,
-          changed_by: profile.id,
-        });
-    }
-  }
-  if (Object.prototype.hasOwnProperty.call(body, "installation_at")) {
-    if (!canManageContract)
-      return NextResponse.json(
-        { error: "Termin montażu zmienia przełożony lub administrator." },
-        { status: 403 },
-      );
-    const installationAt = text(body, "installation_at") || null;
-    if (fallbackMode) {
-      contract.installation_at = installationAt;
-      contract.updated_at = new Date().toISOString();
-    } else
-      await supabaseAdmin
-        .from("contracts")
-        .update({
-          installation_at: installationAt,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", id);
-    if (installationAt)
-      await supabaseAdmin
-        .from("calendar_events")
-        .upsert({
-          id,
-          title: `Montaż — ${contract.customer_name}`,
-          description: `Umowa ${contract.contract_number}`,
-          starts_at: installationAt,
-          owner_id: profile.id,
-          owner_role: profile.role,
-          visibility: "internal",
-          created_by: profile.id,
-          crm_environment: profile.crm_environment,
-        });
   }
   if (body.contract_data && typeof body.contract_data === "object") {
     if (isSalespersonContract && submissionStatus !== "draft")

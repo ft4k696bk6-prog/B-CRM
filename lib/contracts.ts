@@ -1,3 +1,5 @@
+import type { ArchiveReason, ContractWorkflow } from "@/lib/contract-workflow";
+
 export const FINANCING_OPTIONS = [
   ["gotowka", "Gotówka"],
   ["kredyt_do_sprawdzenia", "Kredyt — do sprawdzenia"],
@@ -84,11 +86,17 @@ export type ContractRecord = {
   crm_environment: string;
   created_at: string;
   updated_at: string;
+  workflow?: ContractWorkflow | null;
+  archived_at?: string | null;
+  archive_reason?: ArchiveReason | null;
+  equipment_ordered?: boolean;
+  installation_scheduled?: boolean;
   creator?: {
     id: string;
     full_name: string;
     email: string | null;
     manager_id: string | null;
+    manager_name?: string | null;
   } | null;
   tasks?: ContractTask[];
   submission_status?: ContractSubmissionStatus;
