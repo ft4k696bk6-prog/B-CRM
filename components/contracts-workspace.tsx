@@ -7,6 +7,8 @@ import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
 import { Alert, EmptyState, PageHeader } from "@/components/ui";
 import { ContractArchiveButton, ContractPublicProgress, useContractWorkflowActions, WorkflowCheckbox } from "@/components/contract-workflow-controls";
+import { ContractViewToggle } from "@/components/contract-view-toggle";
+import { LegacyContractsView } from "@/components/legacy-contracts-view";
 import { useAuth } from "@/lib/use-auth";
 import type { ContractRecord } from "@/lib/contracts";
 import { buildContractStats, canManageContractWorkflow, isArchived, matchesContractFilters, monthLabel, needsScheduling, signingMonth, summarizeContracts, WORKFLOW_CHECKBOXES, type ContractFilters, type ContractStatsBucket } from "@/lib/contract-workflow";
@@ -27,6 +29,7 @@ export function ContractsWorkspace({ archive = false }: { archive?: boolean }) {
   const [showDrafts, setShowDrafts] = useState(false);
   const [onlyUnscheduled, setOnlyUnscheduled] = useState(false);
   const [page, setPage] = useState(0);
+  const [showingLegacy, setShowingLegacy] = useState(false);
   const canManage = canManageContractWorkflow(profile?.role || "");
 
   const load = useCallback(async () => {
@@ -42,6 +45,10 @@ export function ContractsWorkspace({ archive = false }: { archive?: boolean }) {
   }, [session?.access_token]);
 
   useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    if (archive) return;
+    setShowingLegacy(window.localStorage.getItem("bcrm-contract-view") === "legacy");
+  }, [archive]);
   useEffect(() => { setPage(0); }, [filters, query, showDrafts, onlyUnscheduled, archiveYear]);
 
   const workflow = useContractWorkflowActions({
@@ -95,10 +102,11 @@ export function ContractsWorkspace({ archive = false }: { archive?: boolean }) {
   }
 
   if (loading || !profile) return <LoadingScreen />;
+  if (!archive && showingLegacy && session) return <LegacyContractsView profile={profile} session={session} onSwitch={() => { window.localStorage.setItem("bcrm-contract-view", "new"); setShowingLegacy(false); }} />;
   return <AppShell profile={profile}><div className="grid min-w-0 gap-5">
     <PageHeader title={archive ? "Archiwum umów" : "Umowy"}
       description={archive ? "Rozliczone umowy i rezygnacje według daty podpisania." : "Bieżące umowy i realizacja."}
-      actions={<button type="button" className="btn-secondary" onClick={() => void load()} disabled={dataLoading || workflow.busy}><RefreshCw className={`h-4 w-4 ${dataLoading ? "animate-spin" : ""}`} />Odśwież</button>} />
+      actions={<div className="flex flex-wrap gap-2">{!archive ? <ContractViewToggle showingLegacy={false} onToggle={() => { window.localStorage.setItem("bcrm-contract-view", "legacy"); setShowingLegacy(true); }} /> : null}<button type="button" className="btn-secondary" onClick={() => void load()} disabled={dataLoading || workflow.busy}><RefreshCw className={`h-4 w-4 ${dataLoading ? "animate-spin" : ""}`} />Odśwież</button></div>} />
     <div className="flex flex-wrap items-center justify-between gap-3">
       <nav aria-label="Widok umów" className="flex flex-wrap gap-2">
         <Link href="/realizacja/umowy" className={!archive && !showDrafts ? "btn-primary" : "btn-secondary"} onClick={() => setShowDrafts(false)}><List className="h-4 w-4" />Bieżące {activeCount}</Link>
