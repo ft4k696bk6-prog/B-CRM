@@ -111,6 +111,7 @@ export function ContractsWorkspace({ archive = false }: { archive?: boolean }) {
       <nav aria-label="Widok umów" className="flex flex-wrap gap-2">
         <Link href="/realizacja/umowy" className={!archive && !showDrafts ? "btn-primary" : "btn-secondary"} onClick={() => setShowDrafts(false)}><List className="h-4 w-4" />Bieżące {activeCount}</Link>
         <Link href="/realizacja/archiwum" className={archive ? "btn-primary" : "btn-secondary"}><Archive className="h-4 w-4" />Archiwum {archiveItems.length}</Link>
+        {!archive && canManage ? <Link href="/realizacja/prowizje" className="btn-secondary">Prowizje</Link> : null}
         {!archive && draftCount > 0 ? <button className={showDrafts ? "btn-primary" : "btn-secondary"} onClick={() => setShowDrafts((value) => !value)}>Wersje robocze {draftCount}</button> : null}
       </nav>
       <div className="flex items-center gap-2 rounded-xl border border-sky/20 bg-sky/10 px-4 py-2 text-sky"><CalendarDays className="h-5 w-5" /><div><b>Do montażu: {overall.toInstall}</b><span className="block text-[11px]">Łącznie we wszystkich miesiącach</span></div></div>
