@@ -20,6 +20,7 @@ import { RegionFields } from "@/components/region-fields";
 import { StatTile } from "@/components/stat-tile";
 import { Alert, EmptyState, PageHeader, SectionHeader } from "@/components/ui";
 import { LEAD_STATUSES } from "@/lib/constants";
+import { ContractPublicProgress } from "@/components/contract-workflow-controls";
 import { contractDisplayStatus, type ContractRecord } from "@/lib/contracts";
 import { endOfDay, startOfDay } from "@/lib/admin-leads";
 import { formatDateTime, isPast, isToday } from "@/lib/date";
@@ -275,7 +276,7 @@ export default function SalesDashboardPage() {
             {contracts.map((contract) => (
               <Link key={contract.id} href={contract.submission_status === "draft" ? `/realizacja/nowa?contractId=${contract.id}` : `/realizacja/${contract.id}`} className="flex min-h-11 flex-col gap-1 rounded-md border border-line bg-[#f9fbfd] px-3 py-3 transition hover:border-ink hover:bg-white sm:flex-row sm:items-center sm:justify-between">
                 <span><span className="font-bold text-ink">{contract.customer_name}</span><span className="ml-2 text-xs text-muted">{contract.contract_number}</span></span>
-                <span className={`text-sm font-bold ${contract.submission_status === "draft" ? "text-amber-700" : "text-muted"}`}>{contractDisplayStatus(contract)}</span>
+                <span>{contract.submission_status === "draft" ? <span className="text-sm font-bold text-amber-700">{contractDisplayStatus(contract)}</span> : <ContractPublicProgress contract={contract} />}</span>
               </Link>
             ))}
             {contracts.length === 0 ? <EmptyState title="Brak umów" description="Zapisane wersje robocze i wysłane umowy pojawią się tutaj." /> : null}
