@@ -120,7 +120,7 @@ const navigationLinks: NavigationLink[] = [
     groupKey: "operations",
     icon: FolderKanban,
     permissions: ["operations:view"],
-    allowedRoles: ["owner", "admin", "menadzer", "finance", "viewer", "ksiegowosc", "logistyk", "monter"],
+    allowedRoles: ["owner", "admin", "menadzer", "handlowiec", "finance", "viewer", "ksiegowosc", "logistyk", "monter"],
     tourId: "tour-nav-process"
   },
   { href: "/calendar", labelKey: "navCalendar", groupKey: "company", icon: CalendarDays, permissions: ["calendar:view"] },
@@ -201,14 +201,11 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
 
   const mandatoryPathAllowed = pathname === "/sales" || mandatoryLeadIds.some((id) => pathname === `/leads/${id}`);
 
-  const salesContractListBlocked = profile.role === "handlowiec" && (pathname === "/realizacja" || pathname === "/realizacja/umowy");
   const gateContent = profile.role === "handlowiec" && mandatoryLoading
     ? <div className="app-card text-sm font-semibold text-muted">Sprawdzanie obowiązkowej kolejki…</div>
     : profile.role === "handlowiec" && mandatoryLeadIds.length > 0 && !mandatoryPathAllowed
       ? <div className="app-card mx-auto max-w-2xl"><Alert tone="danger"><strong>Najpierw obsłuż zaległą kolejkę.</strong><br />Masz {mandatoryLeadIds.length} zaległych call-backów lub spotkań ustawionych od dzisiaj. Pozostałe moduły odblokują się po zapisaniu wyniku ostatniej pozycji.</Alert><Link href="/sales" className="btn-primary mt-4 min-h-11">Przejdź do kolejki</Link></div>
-      : salesContractListBlocked
-        ? <div className="app-card mx-auto max-w-2xl"><Alert tone="info"><strong>Umowy handlowca są dostępne w prostym widoku „Moje umowy”.</strong><br />Znajdziesz tam klienta, numer umowy i bieżący etap bez danych operacyjnych.</Alert><Link href="/sales" className="btn-primary mt-4 min-h-11">Przejdź do moich umów</Link></div>
-        : children;
+      : children;
 
   if (embedded) return <main className="min-h-screen bg-[#f5f7fa] p-3 sm:p-5">{gateContent}</main>;
 
