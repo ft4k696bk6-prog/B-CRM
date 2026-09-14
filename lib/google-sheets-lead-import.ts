@@ -47,7 +47,8 @@ const DEFAULT_SHEET_NAMES = [
   "Mazowieckie Magazyny",
   "Świętokrzyskie Magazyny Energii",
   "Łódzkie  Magazyny Energii",
-  "Małopolskie magazyny"
+  "Małopolskie magazyny",
+  "Magazyny energii Podlaskie"
 ];
 
 const VALID_VOIVODESHIPS = new Set([
@@ -273,10 +274,11 @@ function chunk<T>(items: T[], size: number) {
 
 export async function importGoogleSheetsLeads(): Promise<ImportResult> {
   const spreadsheetId = process.env.GOOGLE_SHEETS_LEADS_SPREADSHEET_ID || DEFAULT_SPREADSHEET_ID;
-  const sheetNames = (process.env.GOOGLE_SHEETS_LEADS_SHEET_NAMES || DEFAULT_SHEET_NAMES.join(","))
+  const configuredSheetNames = (process.env.GOOGLE_SHEETS_LEADS_SHEET_NAMES || "")
     .split(",")
     .map((sheet) => sheet.trim())
     .filter(Boolean);
+  const sheetNames = Array.from(new Set([...DEFAULT_SHEET_NAMES, ...configuredSheetNames]));
   const crmEnvironment = normalizeCrmScope(process.env.GOOGLE_SHEETS_LEADS_CRM_ENVIRONMENT);
 
   const result: ImportResult = {
