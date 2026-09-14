@@ -1,6 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
-import { importGoogleSheetsLeadsPublic } from "@/lib/google-sheets-lead-import-public";
+import { importGoogleSheetsLeads } from "@/lib/google-sheets-lead-import";
 import { requireApiProfile } from "@/lib/server-auth";
 
 export const dynamic = "force-dynamic";
@@ -41,7 +41,7 @@ async function runImport(request: Request) {
   }
 
   try {
-    const result = await importGoogleSheetsLeadsPublic();
+    const result = await importGoogleSheetsLeads();
     return NextResponse.json(result, { status: result.errors.length > 0 ? 207 : 200 });
   } catch (error) {
     console.error("Google Sheets lead import failed", error);
