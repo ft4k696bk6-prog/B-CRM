@@ -165,6 +165,7 @@ function csvUrl(spreadsheetId: string, sheetName: string) {
   const params = new URLSearchParams({
     tqx: "out:csv",
     sheet: sheetName,
+    headers: "1",
     cache_bust: Date.now().toString()
   });
   return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?${params.toString()}`;
