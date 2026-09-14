@@ -73,6 +73,27 @@ async function findFolder(token: string, parentId: string, queryExtra: string) {
   return result.files?.[0] || null;
 }
 
+function normalizedFolderName(name: string) {
+  return name.trim().toLocaleLowerCase("pl-PL");
+}
+
+async function findNamedFolder(token: string, parentId: string, name: string) {
+  const params = new URLSearchParams({
+    pageSize: "1000",
+    fields: "files(id,name,webViewLink,appProperties)"
+  });
+  params.set(
+    "q",
+    `'${escapeDriveQuery(parentId)}' in parents and mimeType='${FOLDER_MIME}' and trashed=false`
+  );
+  const result = await driveJson<{ files?: DriveFolder[] }>(
+    token,
+    `https://www.googleapis.com/drive/v3/files?${params}`
+  );
+  const expectedName = normalizedFolderName(name);
+  return result.files?.find((folder) => normalizedFolderName(folder.name) === expectedName) || null;
+}
+
 async function createFolder(
   token: string,
   parentId: string,
@@ -101,7 +122,7 @@ async function ensureNamedFolder(
   name: string,
   appProperties: Record<string, string>
 ) {
-  const existing = await findFolder(token, parentId, `name='${escapeDriveQuery(name)}'`);
+  const existing = await findNamedFolder(token, parentId, name);
   return existing || createFolder(token, parentId, name, appProperties);
 }
 

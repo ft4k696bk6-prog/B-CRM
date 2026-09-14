@@ -75,7 +75,6 @@ export function ContractAttachments({
     const uploaded: ContractFile[] = [];
     const failed: string[] = [];
     const driveWarnings: string[] = [];
-    let cursor = 0;
     let completed = 0;
 
     async function uploadOne(file: File) {
@@ -118,15 +117,10 @@ export function ContractAttachments({
       }
     }
 
-    async function worker() {
-      while (cursor < chosen.length) {
-        const index = cursor++;
-        await uploadOne(chosen[index]);
-      }
-    }
-
     try {
-      await Promise.all(Array.from({ length: Math.min(3, chosen.length) }, () => worker()));
+      // Finalize one attachment at a time so Google Drive can reuse the client folder
+      // created by the previous upload instead of racing to create duplicates.
+      for (const file of chosen) await uploadOne(file);
       if (uploaded.length) {
         onUploaded?.(uploaded);
         setMessage(
