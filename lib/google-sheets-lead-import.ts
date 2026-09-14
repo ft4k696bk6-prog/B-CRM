@@ -326,9 +326,9 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
 
       const postalCode = normalizePostalCode(row.post_code).slice(0, 20) || null;
       const voivodeship =
+        voivodeshipFromSheetName(sheetName) ||
         voivodeshipFromPostalCode(postalCode) ||
-        normalizeVoivodeship(row["Województwo"]) ||
-        voivodeshipFromSheetName(sheetName);
+        normalizeVoivodeship(row["Województwo"]);
 
       leads.push({
         full_name: fullName,
