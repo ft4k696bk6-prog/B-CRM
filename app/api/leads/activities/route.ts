@@ -124,7 +124,9 @@ export async function POST(request: Request) {
 
     const supabase = getSupabaseClient(token);
 
-    const { data: user } = await supabase.auth.getUser();
+    // This server-side client does not persist a browser session. Validate the
+    // bearer token that was actually presented with the request.
+    const { data: user } = await supabase.auth.getUser(token);
 
     if (!user.user) {
       return NextResponse.json({ error: "Sesja wygasła" }, { status: 401 });
