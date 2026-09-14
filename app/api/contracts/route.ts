@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireApiProfile } from "@/lib/server-auth";
+import { canAccessLeadWithTeam, requireApiProfile } from "@/lib/server-auth";
 import {
   canViewContractForRole,
   type ContractRecord,
@@ -173,7 +173,7 @@ export async function GET(request: Request) {
       .eq("crm_environment", profile.crm_environment);
     if (id) query = query.eq("id", id);
     if (profile.role === "handlowiec") query = query.eq("created_by", profile.id);
-    else if (profile.role === "menadzer") query = query.in("created_by", [...teamIds]).eq("submission_status", "submitted");
+    else if (profile.role === "menadzer") query = query.in("created_by", [...teamIds]);
     else if (!canManageContractWorkflow(profile.role)) query = query.eq("submission_status", "submitted");
     const { data, error } = await query.order("created_at", { ascending: false })
       .order("id", { ascending: false }).range(offset, offset + pageSize - 1);
@@ -202,7 +202,7 @@ export async function POST(request: Request) {
   const auth = await requireApiProfile(request);
   if ("error" in auth) return auth.error;
   const { profile, supabaseAdmin } = auth;
-  if (!["owner", "admin", "handlowiec"].includes(profile.role))
+  if (!["owner", "admin", "handlowiec", "menadzer"].includes(profile.role))
     return NextResponse.json({ error: "Brak uprawnień." }, { status: 403 });
   const body = (await request.json()) as Record<string, unknown>;
   const required = [
@@ -261,10 +261,7 @@ export async function POST(request: Request) {
     .eq("id", leadId)
     .eq("crm_environment", profile.crm_environment)
     .single();
-  if (
-    !lead ||
-    (profile.role === "handlowiec" && lead.assigned_to !== profile.id)
-  )
+  if (!lead || !(await canAccessLeadWithTeam(supabaseAdmin, profile, lead)))
     return NextResponse.json(
       { error: "Nie masz dostępu do tego leada." },
       { status: 403 },
@@ -386,10 +383,13 @@ export async function PATCH(request: Request) {
       { error: "Nie znaleziono umowy." },
       { status: 404 },
     );
+  const isOwnManagerContract =
+    profile.role === "menadzer" && contract.created_by === profile.id;
   const canManageContract = canManageContractWorkflow(profile.role) ||
     (profile.role === "menadzer" && (contract.created_by === profile.id || contract.creator?.manager_id === profile.id));
   const isSalespersonContract =
-    profile.role === "handlowiec" && contract.created_by === profile.id;
+    (profile.role === "handlowiec" || profile.role === "menadzer") &&
+    contract.created_by === profile.id;
   if (!canManageContract && !isSalespersonContract)
     return NextResponse.json(
       { error: "Nie masz dostępu do edycji tej umowy." },
@@ -397,7 +397,7 @@ export async function PATCH(request: Request) {
     );
   const submissionStatus = submissionStatusOf(contract);
   const pendingUpdates: Record<string, unknown> = {};
-  if (profile.role === "menadzer" && submissionStatus === "draft")
+  if (profile.role === "menadzer" && !isOwnManagerContract && submissionStatus === "draft")
     return NextResponse.json(
       { error: "Menadżer nie ma dostępu do wersji roboczych umów zespołu." },
       { status: 403 },
@@ -409,7 +409,7 @@ export async function PATCH(request: Request) {
           headers: request.headers,
         }),
       );
-    if (profile.role === "menadzer")
+    if (profile.role === "menadzer" && !isOwnManagerContract)
       return NextResponse.json(
         { error: "Wersję roboczą wysyła jej autor albo administrator." },
         { status: 403 },

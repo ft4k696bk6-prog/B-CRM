@@ -3,6 +3,7 @@ import {
   calculateCommission,
   canViewContractForRole,
   contractDisplayStatus,
+  missingRequiredContractAttachments,
 } from "@/lib/contracts";
 
 describe("contract visibility", () => {
@@ -24,7 +25,14 @@ describe("contract visibility", () => {
     expect(canViewContractForRole({ ...base, role: "handlowiec" })).toBe(false);
   });
 
-  it("hides drafts from managers and exposes submitted team contracts", () => {
+  it("shows a manager their own draft and only submitted team contracts", () => {
+    expect(
+      canViewContractForRole({
+        ...base,
+        role: "menadzer",
+        profileId: "seller",
+      }),
+    ).toBe(true);
     expect(
       canViewContractForRole({
         ...base,
@@ -48,6 +56,12 @@ describe("contract visibility", () => {
         submissionStatus: "submitted",
       }),
     ).toBe(false);
+  });
+
+  it("requires a PDF and at least one photo before submission", () => {
+    expect(missingRequiredContractAttachments()).toEqual(["PDF umowy", "co najmniej jedno zdjęcie"]);
+    expect(missingRequiredContractAttachments([{ kind: "contract_pdf" }])).toEqual(["co najmniej jedno zdjęcie"]);
+    expect(missingRequiredContractAttachments([{ kind: "contract_pdf" }, { kind: "photo" }])).toEqual([]);
   });
 
   it("lets owner and admin see all contracts", () => {

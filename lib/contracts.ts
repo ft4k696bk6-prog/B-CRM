@@ -180,11 +180,21 @@ export function canViewContractForRole(input: {
 }) {
   if (input.role === "owner" || input.role === "admin") return true;
   if (input.role === "handlowiec") return input.createdBy === input.profileId;
-  if (input.submissionStatus !== "submitted") return false;
   if (input.role === "menadzer")
     return (
       input.createdBy === input.profileId ||
-      input.creatorManagerId === input.profileId
+      (input.submissionStatus === "submitted" &&
+        input.creatorManagerId === input.profileId)
     );
+  if (input.submissionStatus !== "submitted") return false;
   return true;
+}
+
+export function missingRequiredContractAttachments(
+  files: Array<{ kind: "contract_pdf" | "photo" | "video" }> = [],
+) {
+  const missing: string[] = [];
+  if (!files.some((file) => file.kind === "contract_pdf")) missing.push("PDF umowy");
+  if (!files.some((file) => file.kind === "photo")) missing.push("co najmniej jedno zdjęcie");
+  return missing;
 }
