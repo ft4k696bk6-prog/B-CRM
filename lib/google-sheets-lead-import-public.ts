@@ -42,7 +42,8 @@ const DEFAULT_SHEET_NAMES = [
   "Mazowieckie Magazyny",
   "Świętokrzyskie Magazyny Energii",
   "Łódzkie  Magazyny Energii",
-  "Małopolskie magazyny"
+  "Małopolskie magazyny",
+  "Magazyny energii Podlaskie"
 ];
 
 const VALID_VOIVODESHIPS = new Set([
