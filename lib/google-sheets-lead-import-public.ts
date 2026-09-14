@@ -159,8 +159,9 @@ function chunk<T>(items: T[], size: number) {
 
 export async function importGoogleSheetsLeadsPublic(): Promise<PublicLeadImportResult> {
   const spreadsheetId = process.env.GOOGLE_SHEETS_LEADS_SPREADSHEET_ID || DEFAULT_SPREADSHEET_ID;
-  const sheetNames = (process.env.GOOGLE_SHEETS_LEADS_SHEET_NAMES || DEFAULT_SHEET_NAMES.join(","))
+  const configuredSheetNames = (process.env.GOOGLE_SHEETS_LEADS_SHEET_NAMES || "")
     .split(",").map((s) => s.trim()).filter(Boolean);
+  const sheetNames = Array.from(new Set([...DEFAULT_SHEET_NAMES, ...configuredSheetNames]));
   const crmEnvironment = normalizeCrmScope(process.env.GOOGLE_SHEETS_LEADS_CRM_ENVIRONMENT);
   const result: PublicLeadImportResult = { scanned: 0, prepared: 0, inserted: 0, skipped: 0, errors: [] };
   const supabase = adminClient();
