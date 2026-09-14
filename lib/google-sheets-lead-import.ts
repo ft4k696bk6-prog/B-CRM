@@ -164,7 +164,8 @@ function createdAtFromMeta(value: unknown) {
 function csvUrl(spreadsheetId: string, sheetName: string) {
   const params = new URLSearchParams({
     tqx: "out:csv",
-    sheet: sheetName
+    sheet: sheetName,
+    cache_bust: Date.now().toString()
   });
   return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?${params.toString()}`;
 }
@@ -232,7 +233,11 @@ async function fetchSheetRows(spreadsheetId: string, sheetName: string, accessTo
   if (accessToken) {
     try {
       return await fetchSheetRowsViaGoogleApi(spreadsheetId, sheetName, accessToken);
-    } catch {
+    } catch (error) {
+      console.warn("Google Sheets API read failed; using public CSV", {
+        sheetName,
+        error: error instanceof Error ? error.message : "unknown"
+      });
       return fetchSheetRowsViaPublicCsv(spreadsheetId, sheetName);
     }
   }
@@ -300,6 +305,7 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
 
     try {
       rows = await fetchSheetRows(spreadsheetId, sheetName, accessToken);
+      console.info("Google Sheets lead source scanned", { sheetName, rows: rows.length });
     } catch (error) {
       result.errors.push(error instanceof Error ? error.message : `Błąd zakładki "${sheetName}".`);
       continue;
@@ -342,6 +348,7 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
   }
 
   result.prepared = leads.length;
+  console.info("Google Sheets lead import prepared", result);
 
   for (const leadChunk of chunk(leads, 500)) {
     const { error } = await supabase.from("leads").insert(leadChunk);
