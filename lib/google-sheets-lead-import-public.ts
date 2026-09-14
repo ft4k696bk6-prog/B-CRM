@@ -173,6 +173,7 @@ export async function importGoogleSheetsLeadsPublic(): Promise<PublicLeadImportR
     let rows: SheetRow[];
     try {
       rows = await fetchRows(spreadsheetId, sheetName);
+      console.info("Google Sheets lead source scanned", { sheetName, rows: rows.length });
     } catch (error) {
       result.errors.push(error instanceof Error ? error.message : `Błąd zakładki "${sheetName}".`);
       continue;
@@ -208,6 +209,7 @@ export async function importGoogleSheetsLeadsPublic(): Promise<PublicLeadImportR
   }
 
   result.prepared = leads.length;
+  console.info("Google Sheets lead import prepared", result);
   for (const leadChunk of chunk(leads, 500)) {
     const { error } = await supabase.from("leads").insert(leadChunk);
     if (error) result.errors.push(error.message);
