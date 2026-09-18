@@ -24,7 +24,7 @@ export function WorkflowCheckbox({ contract, field, label, busy, onChange }: {
 export function ContractPublicProgress({ contract }: { contract: ContractRecord }) {
   return <div className="flex flex-wrap gap-2 text-xs font-semibold">
     {contract.equipment_ordered ? <span className="inline-flex items-center gap-1 rounded-md bg-leaf/10 px-2 py-1 text-leaf"><PackageCheck className="h-3.5 w-3.5" />Sprzęt zamówiony</span> : null}
-    {contract.installation_scheduled && contract.installation_at ? <span className="inline-flex items-center gap-1 rounded-md bg-sky/10 px-2 py-1 text-sky"><CalendarDays className="h-3.5 w-3.5" />Montaż: {formatDateTime(contract.installation_at)}</span> : null}
+    {contract.installation_scheduled && contract.installation_at ? <span className="inline-flex items-center gap-1 rounded-md bg-sky/10 px-2 py-1 text-sky"><CalendarDays className="h-3.5 w-3.5" />Montaż: {formatDateTime(contract.installation_at)} · Monter: {contract.installer?.full_name || "Nieprzypisany"}</span> : null}
     {!contract.equipment_ordered && !contract.installation_scheduled ? <span className="text-muted">Oczekuje na realizację</span> : null}
   </div>;
 }
@@ -45,6 +45,9 @@ export function useContractWorkflowActions({ accessToken, onUpdated, onStale }: 
   const [error, setError] = useState("");
   const [schedule, setSchedule] = useState<ContractRecord | null>(null);
   const [date, setDate] = useState("");
+  const [installerId, setInstallerId] = useState("");
+  const [installers, setInstallers] = useState<Array<{ id: string; full_name: string }>>([]);
+  const [installersLoading, setInstallersLoading] = useState(false);
   const [archive, setArchive] = useState<ContractRecord | null>(null);
   const [reason, setReason] = useState<ArchiveReason | "">("");
 
@@ -70,8 +73,38 @@ export function useContractWorkflowActions({ accessToken, onUpdated, onStale }: 
     } finally { setBusy(false); }
   }
 
+  async function loadInstallers() {
+    if (!accessToken) return;
+    setInstallersLoading(true);
+    try {
+      const response = await fetch("/api/admin/users", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        cache: "no-store",
+      });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || "Nie udało się pobrać listy monterów.");
+      const available = (Array.isArray(body.users) ? body.users : [])
+        .filter((user: { role?: string }) => user.role === "monter")
+        .map((user: { id: string; full_name?: string | null; email?: string | null }) => ({
+          id: user.id,
+          full_name: user.full_name || user.email || "Monter",
+        }))
+        .sort((a: { full_name: string }, b: { full_name: string }) => a.full_name.localeCompare(b.full_name, "pl"));
+      setInstallers(available);
+    } catch (failure) {
+      setInstallers([]);
+      setError(failure instanceof Error ? failure.message : "Nie udało się pobrać listy monterów.");
+    } finally {
+      setInstallersLoading(false);
+    }
+  }
+
   function openSchedule(contract: ContractRecord) {
-    setError(""); setDate(toDatetimeLocalValue(contract.installation_at)); setSchedule(contract);
+    setError("");
+    setDate(toDatetimeLocalValue(contract.installation_at));
+    setInstallerId(contract.installer_id || "");
+    setSchedule(contract);
+    void loadInstallers();
   }
 
   function setField(contract: ContractRecord, field: WorkflowField, value: boolean) {
@@ -83,12 +116,14 @@ export function useContractWorkflowActions({ accessToken, onUpdated, onStale }: 
     <ModalShell open={Boolean(schedule)} title="Umów montaż" description={schedule?.customer_name} size="sm" onClose={() => !busy && setSchedule(null)}>
       <form onSubmit={async (event) => {
         event.preventDefault();
-        if (!schedule || !date || Number.isNaN(Date.parse(date))) return;
-        if (await mutate(schedule, { action: "workflow", field: "installation_scheduled", value: true, installation_at: new Date(date).toISOString() })) setSchedule(null);
+        if (!schedule || !date || !installerId || Number.isNaN(Date.parse(date))) return;
+        if (await mutate(schedule, { action: "workflow", field: "installation_scheduled", value: true, installation_at: new Date(date).toISOString(), installer_id: installerId })) setSchedule(null);
       }} className="grid gap-4">
         <label><span className="label">Termin montażu</span><input autoFocus required className="field" type="datetime-local" value={date} onChange={(event) => setDate(event.target.value)} /></label>
+        <label><span className="label">Monter</span><select required className="field" value={installerId} disabled={installersLoading} onChange={(event) => setInstallerId(event.target.value)}><option value="">{installersLoading ? "Ładowanie monterów…" : "Wybierz montera"}</option>{installers.map((installer) => <option key={installer.id} value={installer.id}>{installer.full_name}</option>)}</select></label>
+        {!installersLoading && !installers.length ? <p className="text-xs text-warn">Brak użytkowników z rolą „Monter”. Dodaj montera w panelu użytkowników, a pojawi się na tej liście.</p> : null}
         {error ? <Alert tone="danger">{error}</Alert> : null}
-        <button className="btn-primary" disabled={busy || !date}>{busy ? "Zapisywanie…" : "Zapisz termin montażu"}</button>
+        <button className="btn-primary" disabled={busy || installersLoading || !date || !installerId}>{busy ? "Zapisywanie…" : "Zapisz termin montażu"}</button>
       </form>
     </ModalShell>
     <ModalShell open={Boolean(archive)} title="Przenieś umowę do archiwum" description={archive?.customer_name} size="sm" onClose={() => !busy && setArchive(null)}>
