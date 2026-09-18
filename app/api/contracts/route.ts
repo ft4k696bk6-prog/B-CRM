@@ -13,7 +13,7 @@ import {
 import { buildContractStats, canManageContractWorkflow, publicContract, validateWorkflowCommand, type ContractWorkflow } from "@/lib/contract-workflow";
 
 const contractSelect =
-  "*,creator:profiles!contracts_created_by_fkey(id,full_name,email,manager_id),tasks:contract_tasks(*),files:contract_files(*),workflow:contract_workflow(*)";
+  "*,creator:profiles!contracts_created_by_fkey(id,full_name,email,manager_id),installer:profiles!contracts_installer_id_fkey(id,full_name),tasks:contract_tasks(*),files:contract_files(*),workflow:contract_workflow(*)";
 
 type ContractRow = Record<string, unknown> & {
   id: string;
@@ -25,6 +25,8 @@ type ContractRow = Record<string, unknown> & {
   workflow?: ContractWorkflow | ContractWorkflow[] | null;
   tasks?: Array<Record<string, unknown>>;
   installation_at?: string | null;
+  installer_id?: string | null;
+  installer?: { id?: string; full_name?: string } | null;
   updated_at?: string;
   process_status?: ContractStatus;
   submission_status?: ContractSubmissionStatus;

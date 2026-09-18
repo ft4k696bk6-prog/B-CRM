@@ -74,7 +74,8 @@ describe("private workflow", () => {
     const command = { action: "workflow", field: "installation_scheduled", value: true, expected_version: 1 };
     expect(validateWorkflowCommand(command)).not.toBeNull();
     expect(validateWorkflowCommand({ ...command, installation_at: "not-a-date" })).not.toBeNull();
-    expect(validateWorkflowCommand({ ...command, installation_at: "2026-09-22T08:00:00Z" })).toBeNull();
+    expect(validateWorkflowCommand({ ...command, installation_at: "2026-09-22T08:00:00Z" })).not.toBeNull();
+    expect(validateWorkflowCommand({ ...command, installation_at: "2026-09-22T08:00:00Z", installer_id: "11111111-1111-4111-8111-111111111111" })).toBeNull();
     expect(validateWorkflowCommand({ ...command, value: false })).toBeNull();
     expect(validateWorkflowCommand({ action: "restore" })).not.toBeNull();
   });

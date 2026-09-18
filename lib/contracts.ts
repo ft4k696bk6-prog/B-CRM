@@ -82,6 +82,7 @@ export type ContractRecord = {
   grounding: boolean;
   additional_notes: string | null;
   installation_at: string | null;
+  installer_id: string | null;
   created_by: string;
   crm_environment: string;
   created_at: string;
@@ -97,6 +98,10 @@ export type ContractRecord = {
     email: string | null;
     manager_id: string | null;
     manager_name?: string | null;
+  } | null;
+  installer?: {
+    id: string;
+    full_name: string;
   } | null;
   tasks?: ContractTask[];
   submission_status?: ContractSubmissionStatus;
