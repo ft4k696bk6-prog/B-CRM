@@ -150,8 +150,12 @@ export function validateWorkflowCommand(body: Record<string, unknown>): string |
   if (body.action !== "workflow") return null;
   if (!WORKFLOW_CHECKBOXES.some(([field]) => field === body.field) || typeof body.value !== "boolean")
     return "Niepoprawne oznaczenie umowy.";
-  if (body.field === "installation_scheduled" && body.value === true &&
-      (typeof body.installation_at !== "string" || !body.installation_at || Number.isNaN(Date.parse(body.installation_at))))
-    return "Podaj prawidłowy termin montażu.";
+  if (body.field === "installation_scheduled" && body.value === true) {
+    if (typeof body.installation_at !== "string" || !body.installation_at || Number.isNaN(Date.parse(body.installation_at)))
+      return "Podaj prawidłowy termin montażu.";
+    if (typeof body.installer_id !== "string" ||
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.installer_id))
+      return "Wybierz montera.";
+  }
   return null;
 }
