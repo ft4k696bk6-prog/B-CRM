@@ -38,6 +38,7 @@ const LeadMapCanvas = dynamic(
 type MapLead = {
   id: string;
   full_name: string;
+  phone: string;
   postal_code: string | null;
   address: string | null;
   voivodeship: string | null;
@@ -264,7 +265,7 @@ export default function MapPage() {
       setError("");
       const { data, error: dbError } = await supabase
         .from("leads")
-        .select("id,full_name,postal_code,address,voivodeship,county,status,assigned_to,meeting_at,meeting_address,map_lat,map_lng,map_geocoded_at,map_geocode_query,meeting_map_lat,meeting_map_lng,meeting_map_geocoded_at,meeting_map_geocode_query")
+        .select("id,full_name,phone,postal_code,address,voivodeship,county,status,assigned_to,meeting_at,meeting_address,map_lat,map_lng,map_geocoded_at,map_geocode_query,meeting_map_lat,meeting_map_lng,meeting_map_geocoded_at,meeting_map_geocode_query")
         .eq("crm_environment", currentProfile.crm_environment)
         .eq("assigned_to", selectedUserId)
         .order("updated_at", { ascending: false })
@@ -301,6 +302,7 @@ export default function MapPage() {
       .map((lead) => ({
         id: lead.id,
         name: lead.full_name,
+        phone: lead.phone,
         status: lead.status,
         lat: Number(lead.map_lat),
         lng: Number(lead.map_lng),
@@ -318,6 +320,7 @@ export default function MapPage() {
       return [{
         id: lead.id,
         name: lead.full_name,
+        phone: lead.phone,
         at: lead.meeting_at || "",
         lat: Number(dedicated ? lead.meeting_map_lat : lead.map_lat),
         lng: Number(dedicated ? lead.meeting_map_lng : lead.map_lng),
