@@ -26,7 +26,7 @@ function html(body: string, status = 200) {
   return new Response(`<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Połącz Google z B-CRM</title><style>body{font-family:system-ui,-apple-system,sans-serif;background:#0b0b0b;color:#fff;max-width:720px;margin:0 auto;padding:32px}h1{font-size:30px}p{color:#c8c8c8;line-height:1.5}label{display:block;margin:18px 0 6px}input{box-sizing:border-box;width:100%;padding:14px;border-radius:10px;border:1px solid #333;background:#171717;color:#fff}button{margin-top:22px;width:100%;padding:15px;border:0;border-radius:10px;background:#fff;color:#000;font-weight:700;font-size:16px}.box{border:1px solid #2b2b2b;border-radius:14px;padding:22px;background:#111}.small{font-size:13px;color:#999;word-break:break-all}</style></head><body>${body}</body></html>`, { status, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
 }
 
-async function beginGoogleOAuth(clientId: string, clientSecret: string) {
+async function beginGoogleOAuth(clientId: string, clientSecret: string, manual = false) {
   const state = randomBytes(32).toString("base64url");
   const supabase = getServiceClient();
   const { error } = await supabase.from("google_oauth_config").upsert({
@@ -49,6 +49,10 @@ async function beginGoogleOAuth(clientId: string, clientSecret: string) {
   auth.searchParams.set("include_granted_scopes", "true");
   auth.searchParams.set("state", state);
 
+  if (manual) {
+    return html(`<h1>Połącz Google Drive z B-CRM</h1><div class="box"><p>Kliknij przycisk poniżej. Zostaniesz przeniesiony bezpośrednio do Google.</p><a href="${auth.toString()}" style="display:block;margin-top:22px;padding:15px;border-radius:10px;background:#fff;color:#000;font-weight:800;font-size:17px;text-align:center;text-decoration:none">Połącz Google Drive</a><p class="small" style="margin-top:18px">Jeśli otwierasz to wewnątrz aplikacji ChatGPT i Google nie startuje, przytrzymaj przycisk i wybierz otwarcie w Safari.</p></div>`);
+  }
+
   return new Response(null, {
     status: 303,
     headers: {
@@ -66,7 +70,7 @@ export async function GET(request: Request) {
   if (url.searchParams.get("auto") === "1") {
     const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID?.trim() || "";
     const clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET?.trim() || "";
-    if (clientId && clientSecret) return beginGoogleOAuth(clientId, clientSecret);
+    if (clientId && clientSecret) return beginGoogleOAuth(clientId, clientSecret, true);
   }
 
   return html(`<h1>Połącz Google Drive z B-CRM</h1><div class="box"><p>Wklej dane klienta OAuth z Google Cloud. Potem przekieruję Cię do Google, gdzie tylko zaakceptujesz dostęp do Dysku.</p><form method="post" action="?token=${encodeURIComponent(token)}"><label>Client ID</label><input name="client_id" autocomplete="off" required><label>Client Secret</label><input name="client_secret" type="password" autocomplete="off" required><button type="submit">Połącz z Google</button></form><p class="small">Redirect URI do wpisania w Google Cloud:<br>${CALLBACK_URL}</p></div>`);
