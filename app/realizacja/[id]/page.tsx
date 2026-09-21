@@ -66,7 +66,7 @@ export default function ContractPage() {
     ["Moc PV", contract.pv_power_kwp ? `${contract.pv_power_kwp} kWp` : "—"],
     ["Magazyn energii", contract.storage_capacity_kwh ? `${contract.storage_capacity_kwh} kWh` : "—"],
     ["Panele", contract.panels_count ? `${contract.panels_count} szt. × ${contract.panel_power_wp || "—"} Wp` : "—"],
-    ["Falownik", contract.has_inverter ? `${contract.inverter_power_kw || "—"} kW` : "Bez falownika"],
+    ["Falownik", contract.has_inverter ? `${contract.inverter_power_kw || "—"} kW${contract.inverter_phase ? ` · ${contract.inverter_phase}` : ""}` : "Bez falownika"],
     ["Miejsce montażu", contract.mounting_locations?.join(", ") || "—"],
     ["Optymalizatory", String(contract.optimizer_count || 0)], ["Back-up", contract.backup_power ? "Tak" : "Nie"],
     ["Ochrona przepięciowa", contract.surge_protection ? "Tak" : "Nie"], ["Uziemienie", contract.grounding ? "Tak" : "Nie"],
