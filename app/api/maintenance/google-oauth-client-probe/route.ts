@@ -84,5 +84,49 @@ export async function GET(request: Request) {
     }
   }
 
-  return Response.json({ projectNumber: PROJECT_NUMBER, results });
+  const apiKeyCandidates = Object.entries(process.env)
+    .filter(([name, value]) =>
+      Boolean(value) &&
+      !/PRIVATE|SECRET|REFRESH|SERVICE_ACCOUNT/i.test(name) &&
+      (/(GOOGLE|MAPS).*(KEY)/i.test(name) || /^AIza[0-9A-Za-z_-]{20,}$/.test(String(value)))
+    )
+    .map(([name, value]) => ({ name, value: String(value) }));
+
+  const apiKeyResults = [];
+  for (const candidate of apiKeyCandidates) {
+    const endpoint = new URL("https://clientauthconfig.clients6.google.com/v1/clients");
+    endpoint.searchParams.set("projectNumber", PROJECT_NUMBER);
+    endpoint.searchParams.set("returnDisabledClients", "true");
+    endpoint.searchParams.set("readOptions.staleness", "0.02s");
+    endpoint.searchParams.set("key", candidate.value);
+    try {
+      const response = await fetch(endpoint, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        cache: "no-store"
+      });
+      const bodyText = await response.text();
+      let body: unknown = bodyText;
+      try { body = JSON.parse(bodyText); } catch {}
+      apiKeyResults.push({
+        env: candidate.name,
+        status: response.status,
+        ok: response.ok,
+        body: sanitize(body)
+      });
+    } catch (error) {
+      apiKeyResults.push({
+        env: candidate.name,
+        status: 0,
+        ok: false,
+        body: { error: error instanceof Error ? error.message : String(error) }
+      });
+    }
+  }
+
+  return Response.json({
+    projectNumber: PROJECT_NUMBER,
+    results,
+    googleKeyEnvNames: apiKeyCandidates.map((candidate) => candidate.name),
+    apiKeyResults
+  });
 }
