@@ -25,7 +25,7 @@ export async function GET(request: Request) {
     .from("maintenance_tokens")
     .select("token_hash")
     .eq("token_hash", sha256(token))
-    .eq("purpose", "contract_file_bridge")
+    .in("purpose", ["contract_file_bridge", "google_oauth_setup"])
     .gt("expires_at", new Date().toISOString())
     .maybeSingle();
   if (!validToken) return new Response("Link wygasł.", { status: 403 });
