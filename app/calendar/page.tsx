@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
+  Bell,
   BriefcaseBusiness,
   CalendarDays,
   CheckCircle2,
@@ -87,6 +88,13 @@ function dateKey(date: Date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function urlBase64ToUint8Array(value: string) {
+  const padding = "=".repeat((4 - (value.length % 4)) % 4);
+  const base64 = (value + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = window.atob(base64);
+  return Uint8Array.from([...raw].map((char) => char.charCodeAt(0)));
 }
 
 function startOfMonthIso(date: Date) {
@@ -244,6 +252,11 @@ export default function CalendarPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [usesDemoEvents, setUsesDemoEvents] = useState(false);
+  const [pushSupported, setPushSupported] = useState(false);
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [pushTime, setPushTime] = useState("");
+  const [pushBusy, setPushBusy] = useState(false);
+  const [pushError, setPushError] = useState("");
 
   const visibleUsers = useMemo(
     () => (profile ? visibleProfilesFor(profile, users, calendarKind) : []),
@@ -425,6 +438,111 @@ export default function CalendarPage() {
   }
 
   useEffect(() => {
+    if (!session?.access_token) return;
+    let active = true;
+
+    async function loadPushSettings() {
+      const supported =
+        typeof window !== "undefined" &&
+        "serviceWorker" in navigator &&
+        "PushManager" in window &&
+        "Notification" in window;
+      if (!active) return;
+      setPushSupported(supported);
+      if (!supported) return;
+
+      try {
+        const registration = await navigator.serviceWorker.register("/sw.js");
+        const subscription = await registration.pushManager.getSubscription();
+        const response = await fetch("/api/push/subscriptions", {
+          headers: { Authorization: `Bearer ${session?.access_token || ""}` },
+          cache: "no-store"
+        });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(body.error || "Nie udało się pobrać ustawień powiadomień.");
+        if (!active || !subscription) return;
+        const current = (body.subscriptions || []).find(
+          (item: { endpoint?: string }) => item.endpoint === subscription.endpoint
+        );
+        if (current) {
+          setPushEnabled(current.enabled === true);
+          setPushTime(current.notification_time || "");
+        }
+      } catch (pushFailure) {
+        if (active) setPushError(pushFailure instanceof Error ? pushFailure.message : "Nie udało się odczytać powiadomień.");
+      }
+    }
+
+    void loadPushSettings();
+    return () => { active = false; };
+  }, [session?.access_token]);
+
+  async function savePushSubscription(enable: boolean) {
+    if (!session?.access_token || pushBusy) return;
+    if (!pushTime) {
+      setPushError("Wybierz godzinę codziennego podsumowania.");
+      return;
+    }
+    setPushBusy(true);
+    setPushError("");
+    try {
+      if (!pushSupported) throw new Error("To urządzenie lub przeglądarka nie obsługuje powiadomień push.");
+      const permission = enable ? await Notification.requestPermission() : Notification.permission;
+      if (enable && permission !== "granted") {
+        throw new Error("Zezwól B-CRM na wysyłanie powiadomień w ustawieniach telefonu.");
+      }
+
+      const registration = await navigator.serviceWorker.register("/sw.js");
+      let subscription = await registration.pushManager.getSubscription();
+
+      if (enable && !subscription) {
+        const configResponse = await fetch("/api/push/subscriptions", {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+          cache: "no-store"
+        });
+        const config = await configResponse.json().catch(() => ({}));
+        if (!configResponse.ok || !config.publicKey) {
+          throw new Error(config.error || "Brakuje konfiguracji powiadomień push.");
+        }
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(config.publicKey)
+        });
+      }
+
+      if (!subscription) {
+        setPushEnabled(false);
+        return;
+      }
+
+      const json = subscription.toJSON();
+      const response = await fetch("/api/push/subscriptions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          endpoint: subscription.endpoint,
+          p256dh: json.keys?.p256dh,
+          auth: json.keys?.auth,
+          notification_time: pushTime,
+          enabled: enable
+        })
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.error || "Nie udało się zapisać powiadomień.");
+
+      if (!enable) await subscription.unsubscribe().catch(() => false);
+      setPushEnabled(enable);
+    } catch (pushFailure) {
+      setPushError(pushFailure instanceof Error ? pushFailure.message : "Nie udało się zapisać powiadomień.");
+    } finally {
+      setPushBusy(false);
+    }
+  }
+
+  useEffect(() => {
     if (!profile) return;
     setCalendarKind(defaultKindForRole(profile.role));
     loadUsers();
@@ -523,6 +641,43 @@ export default function CalendarPage() {
           </div>
           }
         />
+
+        <section className="app-card">
+          <SectionHeader
+            icon={Bell}
+            title={language === "en" ? "Daily notifications" : "Powiadomienia z kalendarza"}
+            description={language === "en"
+              ? "Choose when B-CRM should send a daily summary of your callbacks, meetings and calendar tasks."
+              : "Wybierz godzinę. B-CRM wyśle na telefon codzienne podsumowanie Twoich call-backów, spotkań i zadań z kalendarza."}
+            tone="sky"
+          />
+          {pushSupported ? (
+            <div className="grid gap-3 sm:grid-cols-[220px_auto] sm:items-end">
+              <label>
+                <span className="label">{language === "en" ? "Notification time" : "Godzina powiadomienia"}</span>
+                <input className="field" type="time" value={pushTime} onChange={(event) => setPushTime(event.target.value)} />
+              </label>
+              <div className="flex flex-wrap gap-2">
+                <button type="button" className="btn-primary" disabled={pushBusy || !pushTime} onClick={() => void savePushSubscription(true)}>
+                  <Bell className="h-4 w-4" />
+                  {pushBusy ? "Zapisywanie…" : pushEnabled ? "Zapisz godzinę" : "Włącz powiadomienia"}
+                </button>
+                {pushEnabled ? (
+                  <button type="button" className="btn-secondary" disabled={pushBusy} onClick={() => void savePushSubscription(false)}>
+                    Wyłącz
+                  </button>
+                ) : null}
+              </div>
+              <p className="text-xs font-semibold text-muted sm:col-span-2">
+                Na iPhonie powiadomienia web push działają dla B-CRM dodanego do ekranu początkowego. Przy pierwszym włączeniu telefon poprosi o zgodę.
+              </p>
+              {pushError ? <div className="sm:col-span-2"><Alert tone="danger">{pushError}</Alert></div> : null}
+              {pushEnabled ? <div className="sm:col-span-2"><Alert tone="success">Powiadomienia są włączone na tym urządzeniu.</Alert></div> : null}
+            </div>
+          ) : (
+            <Alert tone="warn">Ta przeglądarka nie udostępnia powiadomień push dla aplikacji webowej.</Alert>
+          )}
+        </section>
 
         <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
           {([
