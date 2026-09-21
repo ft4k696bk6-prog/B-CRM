@@ -80,6 +80,19 @@ export default function SalesDashboardPage() {
     setBusy(true);
     setError("");
 
+    const cleanSearch = search.trim().replace(/[,%]/g, " ");
+    let commentLeadIds: string[] = [];
+    if (cleanSearch) {
+      const [activitiesResult, historyResult] = await Promise.all([
+        supabase.from("lead_activities").select("lead_id").ilike("description", `%${cleanSearch}%`).limit(500),
+        supabase.from("lead_history").select("lead_id").ilike("description", `%${cleanSearch}%`).limit(500)
+      ]);
+      commentLeadIds = Array.from(new Set([
+        ...(activitiesResult.data || []).map((row) => row.lead_id),
+        ...(historyResult.data || []).map((row) => row.lead_id)
+      ].filter(Boolean)));
+    }
+
     let query = supabase
       .from("leads")
       .select("*, assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)")
@@ -89,9 +102,20 @@ export default function SalesDashboardPage() {
       .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false })
       .limit(1000);
 
-    if (search.trim()) {
-      const cleanSearch = search.trim().replace(/[,%]/g, " ");
-      query = query.or(`full_name.ilike.%${cleanSearch}%,phone.ilike.%${cleanSearch}%,address.ilike.%${cleanSearch}%,meeting_address.ilike.%${cleanSearch}%,campaign.ilike.%${cleanSearch}%`);
+    if (cleanSearch) {
+      const digits = cleanSearch.replace(/\D/g, "");
+      const terms = [
+        `full_name.ilike.%${cleanSearch}%`,
+        `phone.ilike.%${cleanSearch}%`,
+        `address.ilike.%${cleanSearch}%`,
+        `meeting_address.ilike.%${cleanSearch}%`,
+        `campaign.ilike.%${cleanSearch}%`
+      ];
+      if (digits.length >= 5) {
+        terms.push(`phone.ilike.%${digits}%`, `phone_key.ilike.%${digits}%`);
+      }
+      if (commentLeadIds.length) terms.push(`id.in.(${commentLeadIds.join(",")})`);
+      query = query.or(terms.join(","));
     }
     if (statusFilter) query = query.eq("status", statusFilter);
     if (createdFrom) query = query.gte("created_at", startOfDay(createdFrom));
@@ -314,7 +338,7 @@ export default function SalesDashboardPage() {
                 className="field"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Imię i nazwisko, telefon, adres albo kampania"
+                placeholder="Imię, telefon, adres, kampania albo tekst z komentarza"
               />
             </label>
             <label>
