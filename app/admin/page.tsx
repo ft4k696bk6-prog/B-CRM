@@ -228,7 +228,7 @@ export default function AdminDashboardPage() {
     setStats(body.stats);
   }, [session?.access_token]);
 
-  const buildLeadQuery = useCallback((from: number) => {
+  const buildLeadQuery = useCallback((from: number, commentLeadIds: string[] = []) => {
     let query = supabase
       .from("leads")
       .select(
@@ -242,7 +242,17 @@ export default function AdminDashboardPage() {
 
     if (debouncedFilters.search.trim()) {
       const search = debouncedFilters.search.trim().replace(/[,%]/g, " ");
-      query = query.or(`full_name.ilike.%${search}%,phone.ilike.%${search}%,address.ilike.%${search}%,meeting_address.ilike.%${search}%,campaign.ilike.%${search}%`);
+      const digits = search.replace(/\D/g, "");
+      const terms = [
+        `full_name.ilike.%${search}%`,
+        `phone.ilike.%${search}%`,
+        `address.ilike.%${search}%`,
+        `meeting_address.ilike.%${search}%`,
+        `campaign.ilike.%${search}%`
+      ];
+      if (digits.length >= 5) terms.push(`phone.ilike.%${digits}%`, `phone_key.ilike.%${digits}%`);
+      if (commentLeadIds.length) terms.push(`id.in.(${commentLeadIds.join(",")})`);
+      query = query.or(terms.join(","));
     }
     if (debouncedFilters.createdFrom) query = query.gte("created_at", startOfDay(debouncedFilters.createdFrom));
     if (debouncedFilters.createdTo) query = query.lte("created_at", endOfDay(debouncedFilters.createdTo));
@@ -262,13 +272,27 @@ export default function AdminDashboardPage() {
     return query;
   }, [crmEnvironment, debouncedFilters, isManager, leadBucket, salespersonScopeKey, sort]);
 
+  const findCommentLeadIds = useCallback(async (searchValue: string) => {
+    const cleanSearch = searchValue.trim().replace(/[,%]/g, " ");
+    if (!cleanSearch) return [] as string[];
+    const [activitiesResult, historyResult] = await Promise.all([
+      supabase.from("lead_activities").select("lead_id").ilike("description", `%${cleanSearch}%`).limit(500),
+      supabase.from("lead_history").select("lead_id").ilike("description", `%${cleanSearch}%`).limit(500)
+    ]);
+    return Array.from(new Set([
+      ...(activitiesResult.data || []).map((row) => row.lead_id),
+      ...(historyResult.data || []).map((row) => row.lead_id)
+    ].filter(Boolean)));
+  }, []);
+
   const loadLeads = useCallback(async () => {
     if (!crmEnvironment) return;
 
     setBusy(true);
     setError("");
     const requestId = ++leadRequestId.current;
-    const { data, error: leadsError, count } = await buildLeadQuery(0);
+    const commentLeadIds = await findCommentLeadIds(debouncedFilters.search);
+    const { data, error: leadsError, count } = await buildLeadQuery(0, commentLeadIds);
     if (requestId !== leadRequestId.current) return;
 
       if (leadsError) {
@@ -284,12 +308,13 @@ export default function AdminDashboardPage() {
     setSelectedIds([]);
     setSelectionAnchorId(null);
     setBusy(false);
-  }, [buildLeadQuery, crmEnvironment]);
+  }, [buildLeadQuery, crmEnvironment, debouncedFilters.search, findCommentLeadIds]);
 
   const loadMoreLeads = useCallback(async () => {
     if (loadingMore || leads.length >= totalLeadCount) return;
     setLoadingMore(true); setError("");
-    const { data, error: leadsError } = await buildLeadQuery(leads.length);
+    const commentLeadIds = await findCommentLeadIds(debouncedFilters.search);
+    const { data, error: leadsError } = await buildLeadQuery(leads.length, commentLeadIds);
     if (leadsError) setError(leadsError.message);
     else {
       const page = (data || []) as unknown as Lead[];
@@ -297,7 +322,7 @@ export default function AdminDashboardPage() {
       setLoadedLeadCount((current) => current + page.length);
     }
     setLoadingMore(false);
-  }, [buildLeadQuery, leads.length, loadingMore, totalLeadCount]);
+  }, [buildLeadQuery, debouncedFilters.search, findCommentLeadIds, leads.length, loadingMore, totalLeadCount]);
 
   useEffect(() => {
     loadSalespeople();
