@@ -28,8 +28,10 @@ export function ContractAttachments({
   const [error, setError] = useState("");
   const [modal, setModal] = useState<"contract" | "gallery" | null>(null);
   const [focused, setFocused] = useState<ContractFile | null>(null);
+  const [resyncing, setResyncing] = useState(false);
 
   const files = useMemo(() => contract.files || [], [contract.files]);
+  const drivePending = useMemo(() => files.filter((file) => !file.drive_file_id || file.drive_sync_error), [files]);
   const contractPdf = files.find((file) => file.kind === "contract_pdf");
   const gallery = useMemo(() => files.filter((file) => file.kind === "photo" || file.kind === "video"), [files]);
 
@@ -63,6 +65,32 @@ export function ContractAttachments({
 
   async function downloadAll() {
     for (const file of files) await download(file);
+  }
+
+  async function resyncDrive() {
+    if (!drivePending.length || resyncing) return;
+    setResyncing(true);
+    setError("");
+    setMessage("");
+    try {
+      const response = await fetch("/api/contracts/files", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify({ action: "resync_drive", contract_id: contract.id })
+      });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || "Nie udało się ponowić synchronizacji Google Drive.");
+      if (body.failed?.length) {
+        setError(`Google Drive: zsynchronizowano ${body.synced || 0}, nadal nie udało się ${body.failed.length}. ${body.failed.join(" | ")}`);
+      } else {
+        setMessage(`Google Drive: zsynchronizowano ${body.synced || 0} plików.`);
+        setTimeout(() => window.location.reload(), 500);
+      }
+    } catch (syncError) {
+      setError(syncError instanceof Error ? syncError.message : "Nie udało się ponowić synchronizacji Google Drive.");
+    } finally {
+      setResyncing(false);
+    }
   }
 
   async function upload(kind: string) {
@@ -163,7 +191,12 @@ export function ContractAttachments({
           </div>
         ))}
       </div>
-      <div className="text-sm font-bold text-muted">Zapisane załączniki: {files.length}</div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="text-sm font-bold text-muted">Zapisane załączniki: {files.length}</div>
+        {drivePending.length ? <button type="button" className="btn-secondary" disabled={resyncing} onClick={resyncDrive}>
+          {resyncing ? "Synchronizacja Drive…" : `Ponów Google Drive (${drivePending.length})`}
+        </button> : null}
+      </div>
     </div>
   );
 
