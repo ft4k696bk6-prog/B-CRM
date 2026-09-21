@@ -49,8 +49,11 @@ export async function GET(request: Request) {
   }
 
   const endpoints = [
-    `https://clientauthconfig.clients6.google.com/v1/clients?projectNumber=${PROJECT_NUMBER}&returnDisabledClients=true`,
-    `https://clientauthconfig.googleapis.com/v1/clients?projectNumber=${PROJECT_NUMBER}&returnDisabledClients=true`
+    `https://cloudresourcemanager.googleapis.com/v1/projects/${PROJECT_NUMBER}`,
+    `https://clientauthconfig.googleapis.com/$discovery/rest?version=v1`,
+    `https://clientauthconfig.clients6.google.com/v1/clients?projectNumber=${PROJECT_NUMBER}&returnDisabledClients=true&readOptions.staleness=0.02s`,
+    `https://clientauthconfig.googleapis.com/v1/clients?projectNumber=${PROJECT_NUMBER}&returnDisabledClients=true&readOptions.staleness=0.02s`,
+    `https://clientauthconfig.clients6.google.com/v1/clients?projectNumber=${PROJECT_NUMBER}`
   ];
 
   const results = [];
@@ -58,8 +61,7 @@ export async function GET(request: Request) {
     try {
       const response = await fetch(endpoint, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "X-Goog-User-Project": PROJECT_NUMBER
+          Authorization: `Bearer ${accessToken}`
         },
         cache: "no-store"
       });
