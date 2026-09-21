@@ -522,10 +522,17 @@ export default function LeadDetailsPage() {
       <div className="grid gap-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           {!embedded ? (
-            <Link href={backHref} className="btn-secondary w-fit">
-              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-              Wróć
-            </Link>
+            requestedReturnTo && requestedReturnTo.startsWith("/") && !requestedReturnTo.startsWith("//") ? (
+              <button type="button" onClick={() => router.back()} className="btn-secondary w-fit">
+                <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                Wróć
+              </button>
+            ) : (
+              <Link href={backHref} className="btn-secondary w-fit">
+                <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                Wróć
+              </Link>
+            )
           ) : (
             <span />
           )}
