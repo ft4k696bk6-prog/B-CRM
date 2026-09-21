@@ -73,8 +73,8 @@ export function LeadQuickActionDialog({
       body: JSON.stringify({
         leadId: lead!.id,
         outcome: selectedOutcome,
-        callbackAt,
-        meetingAt,
+        callbackAt: callbackAt ? new Date(callbackAt).toISOString() : "",
+        meetingAt: meetingAt ? new Date(meetingAt).toISOString() : "",
         address,
         note
       })
