@@ -73,6 +73,7 @@ export type ContractRecord = {
   panels_count: number | null;
   has_inverter: boolean;
   inverter_power_kw: number | null;
+  inverter_phase: "1F" | "3F" | null;
   mounting_locations: string[];
   multiple_mounting_locations: boolean;
   gross_amount: number;
