@@ -27,10 +27,20 @@ function html(body: string, status = 200) {
   return new Response(`<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Połącz Google z B-CRM</title><style>body{font-family:system-ui,-apple-system,sans-serif;background:#0b0b0b;color:#fff;max-width:720px;margin:0 auto;padding:32px}h1{font-size:30px}p{color:#c8c8c8;line-height:1.5}label{display:block;margin:18px 0 6px}input{box-sizing:border-box;width:100%;padding:14px;border-radius:10px;border:1px solid #333;background:#171717;color:#fff}button{margin-top:22px;width:100%;padding:15px;border:0;border-radius:10px;background:#fff;color:#000;font-weight:700;font-size:16px}.box{border:1px solid #2b2b2b;border-radius:14px;padding:22px;background:#111}.small{font-size:13px;color:#999;word-break:break-all}</style></head><body>${body}</body></html>`, { status, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
 }
 
+async function beginGoogleOAuth(clientId: string, clientSecret: string) {
+  return beginGoogleOAuth(clientId, clientSecret);
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const token = url.searchParams.get("token") || "";
   if (!(await validSetupToken(token))) return html("<h1>Link wygasł</h1><p>Wygeneruj nowy link konfiguracji.</p>", 403);
+
+  if (url.searchParams.get("auto") === "1") {
+    const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID?.trim() || "";
+    const clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET?.trim() || "";
+    if (clientId && clientSecret) return beginGoogleOAuth(clientId, clientSecret);
+  }
 
   return html(`<h1>Połącz Google Drive z B-CRM</h1><div class="box"><p>Wklej dane klienta OAuth z Google Cloud. Potem przekieruję Cię do Google, gdzie tylko zaakceptujesz dostęp do Dysku.</p><form method="post" action="?token=${encodeURIComponent(token)}"><label>Client ID</label><input name="client_id" autocomplete="off" required><label>Client Secret</label><input name="client_secret" type="password" autocomplete="off" required><button type="submit">Połącz z Google</button></form><p class="small">Redirect URI do wpisania w Google Cloud:<br>${CALLBACK_URL}</p></div>`);
 }
