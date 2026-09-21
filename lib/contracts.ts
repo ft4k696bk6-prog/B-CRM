@@ -127,6 +127,11 @@ export type ContractRecord = {
     kind: "contract_pdf" | "photo" | "video";
     path: string;
     mime: string;
+    drive_file_id?: string | null;
+    drive_folder_id?: string | null;
+    drive_web_view_link?: string | null;
+    drive_sync_error?: string | null;
+    drive_synced_at?: string | null;
   }>;
 };
 
