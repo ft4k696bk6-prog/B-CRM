@@ -675,7 +675,7 @@ export default function CalendarPage() {
               {pushEnabled ? <div className="sm:col-span-2"><Alert tone="success">Powiadomienia są włączone na tym urządzeniu.</Alert></div> : null}
             </div>
           ) : (
-            <Alert tone="warn">Ta przeglądarka nie udostępnia powiadomień push dla aplikacji webowej.</Alert>
+            <Alert tone="warning">Ta przeglądarka nie udostępnia powiadomień push dla aplikacji webowej.</Alert>
           )}
         </section>
 
