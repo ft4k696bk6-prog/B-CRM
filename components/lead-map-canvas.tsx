@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 export type LeadMapPoint = {
   id: string;
   name: string;
+  phone: string;
   status: string;
   lat: number;
   lng: number;
@@ -15,6 +16,7 @@ export type LeadMapPoint = {
 export type MeetingMapPoint = {
   id: string;
   name: string;
+  phone: string;
   at: string;
   lat: number;
   lng: number;
@@ -185,6 +187,7 @@ function clusterPopup(leads: LeadMapPoint[], popupKey: string) {
   const rows = shown.map((lead) =>
     `<a href="/leads/${encodeURIComponent(lead.id)}" data-bcrm-map-lead="${escapeHtml(lead.id)}" data-bcrm-map-popup="${escapeHtml(popupKey)}" style="display:block;padding:7px 0;border-top:1px solid #e5e7eb;text-decoration:none;color:#111827">` +
       `<strong>${escapeHtml(lead.name)}</strong>` +
+      `<span style="display:block;font-size:12px;color:#111827;margin-top:2px">Tel. ${escapeHtml(lead.phone || "—")}</span>` +
       `<span style="display:block;font-size:12px;color:#667085;margin-top:2px">${escapeHtml(lead.status)}</span>` +
     `</a>`
   ).join("");
@@ -360,6 +363,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
           marker.bindPopup?.(
             `<div style="min-width:210px;font-family:system-ui,sans-serif">` +
               `<strong>${meeting.order}. ${time} · ${escapeHtml(meeting.name)}</strong><br>` +
+              `<span style="color:#111827">Tel. ${escapeHtml(meeting.phone || "—")}</span><br>` +
               `<span style="color:#667085">${escapeHtml(meeting.address)}</span><br>` +
               `<a href="/leads/${encodeURIComponent(meeting.id)}" data-bcrm-map-lead="${escapeHtml(meeting.id)}" data-bcrm-map-popup="${escapeHtml(popupKey)}" style="display:inline-block;margin-top:8px;font-weight:700">Otwórz spotkanie →</a>` +
             `</div>`
