@@ -103,7 +103,10 @@ export default function LeadDetailsPage() {
     "leads:edit:all",
   ]);
   const isManager = isManagerRole(profile?.role);
-  const backHref = homePathForRole(profile?.role);
+  const requestedReturnTo = searchParams.get("returnTo");
+  const backHref = requestedReturnTo && requestedReturnTo.startsWith("/") && !requestedReturnTo.startsWith("//")
+    ? requestedReturnTo
+    : homePathForRole(profile?.role);
 
   async function loadLead() {
     if (!params.id || !profile) return;
@@ -284,8 +287,8 @@ export default function LeadDetailsPage() {
         body: JSON.stringify({
           leadId: lead.id,
           outcome,
-          callbackAt,
-          meetingAt,
+          callbackAt: callbackAt ? new Date(callbackAt).toISOString() : "",
+          meetingAt: meetingAt ? new Date(meetingAt).toISOString() : "",
           address: meetingAddress,
           note: outcome === "resignation" ? resignationReason : meetingNote,
         }),
