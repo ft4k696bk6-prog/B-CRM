@@ -84,6 +84,7 @@ export type ContractRecord = {
   additional_notes: string | null;
   installation_at: string | null;
   installer_id: string | null;
+  installer_name: string | null;
   created_by: string;
   crm_environment: string;
   created_at: string;
