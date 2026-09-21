@@ -220,7 +220,7 @@ function EventRow({ event }: { event: CalendarEvent }) {
 
   if (event.leadId) {
     return (
-      <Link href={`/leads/${event.leadId}`} className={className}>
+      <Link href={`/leads/${event.leadId}?returnTo=${encodeURIComponent("/calendar")}`} className={className}>
         {content}
       </Link>
     );
@@ -370,7 +370,7 @@ export default function CalendarPage() {
       id: `${lead.id}-callback`,
       type: "callback" as const,
       at: lead.callback_at as string,
-      title: lead.full_name,
+      title: `${lead.full_name}${lead.postal_code ? ` · ${lead.postal_code}` : ""}`,
       subtitle: lead.phone,
       ownerId: lead.assigned_to,
       ownerName: lead.assigned_profile?.full_name || "Nieprzypisany",
