@@ -53,25 +53,32 @@ function normalizePrivateKey(value: string) {
 }
 
 async function googleUserOAuthToken() {
-  let clientId = process.env.GOOGLE_OAUTH_CLIENT_ID?.trim() || "";
-  let clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET?.trim() || "";
-  let refreshToken = process.env.GOOGLE_OAUTH_REFRESH_TOKEN?.trim() || "";
+  const envClientId = process.env.GOOGLE_OAUTH_CLIENT_ID?.trim() || "";
+  const envClientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET?.trim() || "";
+  const envRefreshToken = process.env.GOOGLE_OAUTH_REFRESH_TOKEN?.trim() || "";
 
-  if (!clientId || !clientSecret || !refreshToken) {
-    try {
-      const supabase = getServiceClient();
-      const { data } = await supabase
-        .from("google_oauth_config")
-        .select("client_id,client_secret,refresh_token")
-        .eq("id", "default")
-        .maybeSingle();
-      clientId = data?.client_id?.trim() || clientId;
-      clientSecret = data?.client_secret?.trim() || clientSecret;
-      refreshToken = data?.refresh_token?.trim() || refreshToken;
-    } catch {
-      // Fall back to service-account auth below.
-    }
+  let dbClientId = "";
+  let dbClientSecret = "";
+  let dbRefreshToken = "";
+  try {
+    const supabase = getServiceClient();
+    const { data } = await supabase
+      .from("google_oauth_config")
+      .select("client_id,client_secret,refresh_token")
+      .eq("id", "default")
+      .maybeSingle();
+    dbClientId = data?.client_id?.trim() || "";
+    dbClientSecret = data?.client_secret?.trim() || "";
+    dbRefreshToken = data?.refresh_token?.trim() || "";
+  } catch {
+    // Database OAuth config is optional.
   }
+
+  // A freshly reconnected token stored by the maintenance callback must win
+  // over an older Vercel environment token that Google may have revoked.
+  const clientId = dbClientId || envClientId;
+  const clientSecret = dbClientSecret || envClientSecret;
+  const refreshToken = dbRefreshToken || envRefreshToken;
 
   if (!clientId || !clientSecret || !refreshToken) return null;
 
@@ -94,12 +101,20 @@ async function googleUserOAuthToken() {
 }
 
 export async function googleWorkspaceToken(scopes: string[], delegatedUser?: string) {
-  const userToken = await googleUserOAuthToken();
-  if (userToken) return userToken;
+  let oauthError: unknown = null;
+  try {
+    const userToken = await googleUserOAuthToken();
+    if (userToken) return userToken;
+  } catch (error) {
+    oauthError = error;
+  }
 
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const rawPrivateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
-  if (!email || !rawPrivateKey) throw new Error("Brakuje danych konta serwisowego Google.");
+  if (!email || !rawPrivateKey) {
+    if (oauthError instanceof Error) throw oauthError;
+    throw new Error("Brakuje danych konta serwisowego Google.");
+  }
 
   const privateKey = normalizePrivateKey(rawPrivateKey);
   const now = Math.floor(Date.now() / 1000);
