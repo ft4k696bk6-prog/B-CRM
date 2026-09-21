@@ -20,6 +20,15 @@ export async function GET(request: Request) {
   const fileId = url.searchParams.get("file_id") || "";
   if (!token || !fileId) return new Response("Brak tokenu lub pliku.", { status: 400 });
 
+  if (url.searchParams.get("raw") !== "1") {
+    const raw = new URL(url);
+    raw.searchParams.set("raw", "1");
+    return new Response(`<!doctype html><html><body><a href="${raw.toString()}">Pobierz plik</a></body></html>`, {
+      status: 200,
+      headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" }
+    });
+  }
+
   const supabase = getServiceClient();
   const { data: validToken } = await supabase
     .from("maintenance_tokens")
