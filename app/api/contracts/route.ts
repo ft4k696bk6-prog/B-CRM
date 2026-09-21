@@ -268,6 +268,14 @@ export async function POST(request: Request) {
       { error: "Nie masz dostępu do tego leada." },
       { status: 403 },
     );
+  const hasInverter = product !== "ME" || bool(body, "has_inverter");
+  const inverterPhase = text(body, "inverter_phase");
+  if (hasInverter && !["1F", "3F"].includes(inverterPhase))
+    return NextResponse.json(
+      { error: "Wybierz, czy falownik jest 1F czy 3F." },
+      { status: 400 },
+    );
+
   const payload = {
     lead_id: leadId,
     contract_number: text(body, "contract_number"),
@@ -291,11 +299,9 @@ export async function POST(request: Request) {
       ? number(body, "panel_power_wp")
       : null,
     panels_count: product.includes("PV") ? number(body, "panels_count") : null,
-    has_inverter: product !== "ME" || bool(body, "has_inverter"),
-    inverter_power_kw:
-      product !== "ME" || bool(body, "has_inverter")
-        ? number(body, "inverter_power_kw")
-        : null,
+    has_inverter: hasInverter,
+    inverter_power_kw: hasInverter ? number(body, "inverter_power_kw") : null,
+    inverter_phase: hasInverter ? inverterPhase : null,
     mounting_locations: locations,
     multiple_mounting_locations: bool(body, "multiple_mounting_locations"),
     gross_amount: number(body, "gross_amount"),
@@ -484,6 +490,7 @@ export async function PATCH(request: Request) {
       "panels_count",
       "has_inverter",
       "inverter_power_kw",
+      "inverter_phase",
       "mounting_locations",
       "multiple_mounting_locations",
       "gross_amount",
