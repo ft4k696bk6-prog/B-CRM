@@ -7,6 +7,7 @@ import {
   createSign,
   randomBytes
 } from "node:crypto";
+import type { JsonWebKey as NodeJsonWebKey } from "node:crypto";
 
 export type StoredPushSubscription = {
   endpoint: string;
@@ -16,7 +17,7 @@ export type StoredPushSubscription = {
 
 export type VapidConfig = {
   publicKey: string;
-  privateJwk: JsonWebKey;
+  privateJwk: NodeJsonWebKey;
   subject: string;
 };
 
