@@ -86,6 +86,71 @@ export async function POST(request: Request) {
   const fileName = String(body.file_name || "");
   const mime = String(body.mime || "application/octet-stream");
   const size = Number(body.size || 0);
+
+  if (action === "resync_drive") {
+    if (!["owner", "admin"].includes(auth.profile.role)) {
+      return NextResponse.json({ error: "Ponowną synchronizację Drive może uruchomić administrator." }, { status: 403 });
+    }
+    if (!contractId) return NextResponse.json({ error: "Brak umowy." }, { status: 400 });
+
+    const { data: syncContract } = await auth.supabaseAdmin
+      .from("contracts")
+      .select("id,lead_id,customer_name,signed_at")
+      .eq("id", contractId)
+      .eq("crm_environment", auth.profile.crm_environment)
+      .maybeSingle();
+    if (!syncContract) return NextResponse.json({ error: "Nie znaleziono umowy." }, { status: 404 });
+
+    const { data: pendingFiles, error: pendingError } = await auth.supabaseAdmin
+      .from("contract_files")
+      .select("id,file_name,file_path,mime_type")
+      .eq("contract_id", contractId)
+      .is("drive_file_id", null);
+    if (pendingError) return NextResponse.json({ error: pendingError.message }, { status: 400 });
+
+    let synced = 0;
+    const failed: string[] = [];
+    for (const pending of pendingFiles || []) {
+      try {
+        const download = await auth.supabaseAdmin.storage
+          .from(CONTRACT_FILES_BUCKET)
+          .download(pending.file_path);
+        if (download.error || !download.data) throw new Error(download.error?.message || "Nie udało się odczytać pliku z CRM.");
+
+        const driveFile = await uploadClientAttachmentToDrive({
+          leadId: syncContract.lead_id,
+          contractId: syncContract.id,
+          customerName: syncContract.customer_name,
+          signedAt: syncContract.signed_at,
+          fileName: pending.file_name,
+          mimeType: pending.mime_type || "application/octet-stream",
+          bytes: await download.data.arrayBuffer()
+        });
+        const { error: updateError } = await auth.supabaseAdmin
+          .from("contract_files")
+          .update({
+            drive_file_id: driveFile.id,
+            drive_folder_id: driveFile.folderId,
+            drive_web_view_link: driveFile.webViewLink || null,
+            drive_sync_error: null,
+            drive_synced_at: new Date().toISOString()
+          })
+          .eq("id", pending.id);
+        if (updateError) throw updateError;
+        synced += 1;
+      } catch (syncError) {
+        const message = syncError instanceof Error ? syncError.message : "Błąd synchronizacji Google Drive.";
+        failed.push(`${pending.file_name}: ${message}`);
+        await auth.supabaseAdmin
+          .from("contract_files")
+          .update({ drive_sync_error: message })
+          .eq("id", pending.id);
+      }
+    }
+
+    return NextResponse.json({ synced, failed, pending: (pendingFiles || []).length });
+  }
+
   if (!leadId || !contractId || !fileName || !["contract_pdf", "photo", "video"].includes(kind)) {
     return NextResponse.json({ error: "Niepoprawny plik." }, { status: 400 });
   }
