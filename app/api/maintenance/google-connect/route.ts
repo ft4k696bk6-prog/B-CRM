@@ -68,8 +68,20 @@ export async function GET(request: Request) {
   if (!(await validSetupToken(token))) return html("<h1>Link wygasł</h1><p>Wygeneruj nowy link konfiguracji.</p>", 403);
 
   if (url.searchParams.get("auto") === "1") {
-    const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID?.trim() || "";
-    const clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET?.trim() || "";
+    let clientId = process.env.GOOGLE_OAUTH_CLIENT_ID?.trim() || "";
+    let clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET?.trim() || "";
+
+    if (!clientId || !clientSecret) {
+      const supabase = getServiceClient();
+      const { data: savedConfig } = await supabase
+        .from("google_oauth_config")
+        .select("client_id,client_secret")
+        .eq("id", "default")
+        .maybeSingle();
+      clientId = savedConfig?.client_id?.trim() || clientId;
+      clientSecret = savedConfig?.client_secret?.trim() || clientSecret;
+    }
+
     if (clientId && clientSecret) return beginGoogleOAuth(clientId, clientSecret, true);
   }
 
