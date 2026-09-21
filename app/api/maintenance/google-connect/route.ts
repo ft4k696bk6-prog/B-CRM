@@ -1,5 +1,4 @@
 import { createHash, randomBytes } from "node:crypto";
-import { NextResponse } from "next/server";
 import { getServiceClient } from "@/lib/server-auth";
 
 export const runtime = "nodejs";
@@ -28,7 +27,35 @@ function html(body: string, status = 200) {
 }
 
 async function beginGoogleOAuth(clientId: string, clientSecret: string) {
-  return beginGoogleOAuth(clientId, clientSecret);
+  const state = randomBytes(32).toString("base64url");
+  const supabase = getServiceClient();
+  const { error } = await supabase.from("google_oauth_config").upsert({
+    id: "default",
+    client_id: clientId,
+    client_secret: clientSecret,
+    state_hash: sha256(state),
+    state_expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+    updated_at: new Date().toISOString()
+  });
+  if (error) return html(`<h1>Błąd zapisu konfiguracji</h1><p>${error.message}</p>`, 500);
+
+  const auth = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+  auth.searchParams.set("client_id", clientId);
+  auth.searchParams.set("redirect_uri", CALLBACK_URL);
+  auth.searchParams.set("response_type", "code");
+  auth.searchParams.set("scope", "https://www.googleapis.com/auth/drive");
+  auth.searchParams.set("access_type", "offline");
+  auth.searchParams.set("prompt", "consent");
+  auth.searchParams.set("include_granted_scopes", "true");
+  auth.searchParams.set("state", state);
+
+  return new Response(null, {
+    status: 303,
+    headers: {
+      Location: auth.toString(),
+      "Cache-Control": "no-store"
+    }
+  });
 }
 
 export async function GET(request: Request) {
@@ -55,26 +82,5 @@ export async function POST(request: Request) {
   const clientSecret = String(form.get("client_secret") || "").trim();
   if (!clientId || !clientSecret) return html("<h1>Brakuje Client ID lub Client Secret.</h1>", 400);
 
-  const state = randomBytes(32).toString("base64url");
-  const supabase = getServiceClient();
-  const { error } = await supabase.from("google_oauth_config").upsert({
-    id: "default",
-    client_id: clientId,
-    client_secret: clientSecret,
-    state_hash: sha256(state),
-    state_expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
-    updated_at: new Date().toISOString()
-  });
-  if (error) return html(`<h1>Błąd zapisu konfiguracji</h1><p>${error.message}</p>`, 500);
-
-  const auth = new URL("https://accounts.google.com/o/oauth2/v2/auth");
-  auth.searchParams.set("client_id", clientId);
-  auth.searchParams.set("redirect_uri", CALLBACK_URL);
-  auth.searchParams.set("response_type", "code");
-  auth.searchParams.set("scope", "https://www.googleapis.com/auth/drive");
-  auth.searchParams.set("access_type", "offline");
-  auth.searchParams.set("prompt", "consent");
-  auth.searchParams.set("include_granted_scopes", "true");
-  auth.searchParams.set("state", state);
-  return NextResponse.redirect(auth, 303);
+  return beginGoogleOAuth(clientId, clientSecret);
 }
