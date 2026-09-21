@@ -74,7 +74,7 @@ function taskSummary(tasks: Task[]) {
 
 export async function POST(request: Request) {
   const url = new URL(request.url);
-  const token = url.searchParams.get("token") || "";
+  const token = request.headers.get("x-bcrm-push-token") || url.searchParams.get("token") || "";
   if (!token) return NextResponse.json({ error: "Brak autoryzacji." }, { status: 403 });
 
   const supabase = getServiceClient();
