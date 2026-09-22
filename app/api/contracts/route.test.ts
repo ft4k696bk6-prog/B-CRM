@@ -30,6 +30,35 @@ describe("workflow API authorization", () => {
     auth.mockResolvedValue({ profile: { id: "admin", role: "admin" }, supabaseAdmin: { rpc } });
     expect((await PATCH(request({ action: "restore" })))?.status).toBe(409);
   });
+  it("does not return resigned contracts to the salesperson who created them", async () => {
+    const records = [
+      {
+        id: "active", lead_id: "lead-active", created_by: "seller", customer_name: "Aktywny",
+        created_at: "2026-09-22T12:00:00Z", signed_at: "2026-09-20T00:00:00Z",
+        submission_status: "submitted", process_status: "verification", gross_amount: 100,
+        workflow: { verified: false, settled: false, archived_at: null, archive_reason: null },
+      },
+      {
+        id: "resigned", lead_id: "lead-resigned", created_by: "seller", customer_name: "Rezygnacja",
+        created_at: "2026-09-21T12:00:00Z", signed_at: "2026-09-19T00:00:00Z",
+        submission_status: "submitted", process_status: "resigned", gross_amount: 200,
+        workflow: { verified: false, settled: false, archived_at: "2026-09-22T08:00:00Z", archive_reason: "resigned" },
+      },
+    ];
+    const range = vi.fn(() => Promise.resolve({ data: records, error: null }));
+    const query = { select: vi.fn(), eq: vi.fn(), order: vi.fn(), range };
+    query.select.mockReturnValue(query); query.eq.mockReturnValue(query); query.order.mockReturnValue(query);
+    auth.mockResolvedValue({
+      profile: { id: "seller", role: "handlowiec", crm_environment: "production" },
+      supabaseAdmin: { from: () => query },
+    });
+    const response = await GET(new Request("https://crm.test/api/contracts"));
+    if (!response) throw new Error("API nie zwróciło odpowiedzi.");
+    const body = await response.json();
+    expect(response.status).toBe(200);
+    expect(body.contracts.map((contract: { id: string }) => contract.id)).toEqual(["active"]);
+  });
+
   it("reads beyond database response limits and counts each contract, including shared leads", async () => {
     const records = Array.from({ length: 1205 }, (_, index) => ({
       id: `contract-${index}`, lead_id: "same-lead", created_by: "admin", customer_name: "Test",

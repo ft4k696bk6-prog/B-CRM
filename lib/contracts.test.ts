@@ -14,7 +14,7 @@ describe("contract visibility", () => {
     submissionStatus: "draft" as const,
   };
 
-  it("lets a salesperson see only own drafts and submitted contracts", () => {
+  it("lets a salesperson see only own non-resigned drafts and submitted contracts", () => {
     expect(
       canViewContractForRole({
         ...base,
@@ -23,6 +23,24 @@ describe("contract visibility", () => {
       }),
     ).toBe(true);
     expect(canViewContractForRole({ ...base, role: "handlowiec" })).toBe(false);
+    expect(
+      canViewContractForRole({
+        ...base,
+        role: "handlowiec",
+        profileId: "seller",
+        submissionStatus: "submitted",
+        archiveReason: "resigned",
+      }),
+    ).toBe(false);
+    expect(
+      canViewContractForRole({
+        ...base,
+        role: "handlowiec",
+        profileId: "seller",
+        submissionStatus: "submitted",
+        processStatus: "resigned",
+      }),
+    ).toBe(false);
   });
 
   it("shows a manager their own draft and only submitted team contracts", () => {
