@@ -203,9 +203,14 @@ export function canViewContractForRole(input: {
   createdBy: string;
   creatorManagerId?: string | null;
   submissionStatus: ContractSubmissionStatus;
+  archiveReason?: ArchiveReason | null;
+  processStatus?: ContractStatus;
 }) {
   if (input.role === "owner" || input.role === "admin") return true;
-  if (input.role === "handlowiec") return input.createdBy === input.profileId;
+  if (input.role === "handlowiec") {
+    const resigned = input.archiveReason === "resigned" || input.processStatus === "resigned";
+    return input.createdBy === input.profileId && !resigned;
+  }
   if (input.role === "menadzer")
     return (
       input.createdBy === input.profileId ||
