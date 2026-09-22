@@ -4,14 +4,16 @@ export const WORKFLOW_CHECKBOXES = [
   ["verified", "Dział weryfikacji"],
   ["equipment_ordered", "Sprzęt zamówiony"],
   ["installation_scheduled", "Montaż umówiony"],
-  ["pge_submitted", "Zgłoszenie PGE"],
-  ["settled", "Rozliczona"],
+  ["invoice_issued", "Faktura wystawiona"],
+  ["settled", "Rozliczone"],
+  ["commission_paid", "Prowizja wypłacona"],
 ] as const;
 
 export type WorkflowField = (typeof WORKFLOW_CHECKBOXES)[number][0];
 export type ArchiveReason = "settled" | "resigned";
 export type ContractWorkflow = Record<WorkflowField, boolean> & {
   contract_id: string;
+  pge_submitted?: boolean;
   archived_at: string | null;
   archive_reason: ArchiveReason | null;
   version: number;
@@ -132,12 +134,20 @@ export function publicContract(contract: ContractRecord, role: string): Contract
   delete result.commission_margin_net;
   delete result.commission_percent;
   delete result.commission_amount;
-  // Old snapshots/metadata must not disclose the internal verification or PGE state.
-  delete (result as unknown as Record<string, unknown>).metadata;
+  const privateResult = result as unknown as Record<string, unknown>;
+  delete privateResult.installer_id;
+  delete privateResult.installer_name;
+  delete privateResult.installer;
+  // Old snapshots/metadata must not disclose private operational state.
+  delete privateResult.metadata;
   result.process_status = contract.archive_reason === "resigned" ? "resigned"
-    : contract.archive_reason === "settled" ? "settled"
     : contract.submission_status === "draft" ? "incomplete"
-    : contract.installation_scheduled ? "installation_scheduled" : "verification";
+    : contract.workflow?.commission_paid ? "commission_paid"
+    : contract.archive_reason === "settled" || contract.workflow?.settled ? "settled"
+    : contract.workflow?.invoice_issued ? "invoice_issued"
+    : contract.installation_scheduled ? "installation_scheduled"
+    : contract.workflow?.equipment_ordered ? "equipment_ordered"
+    : "verification";
   return result;
 }
 
