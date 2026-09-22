@@ -140,8 +140,9 @@ function visibleContractsFor(
   contracts: ContractRow[],
   teamIds: Set<string>,
 ) {
-  return contracts.filter((contract) =>
-    canViewContractForRole({
+  return contracts.filter((contract) => {
+    const workflow = Array.isArray(contract.workflow) ? contract.workflow[0] : contract.workflow;
+    return canViewContractForRole({
       role: profile.role,
       profileId: profile.id,
       createdBy: contract.created_by,
@@ -149,8 +150,10 @@ function visibleContractsFor(
         ? profile.id
         : contract.creator?.manager_id,
       submissionStatus: submissionStatusOf(contract),
-    }),
-  );
+      archiveReason: workflow?.archive_reason || null,
+      processStatus: contract.process_status,
+    });
+  });
 }
 
 export async function GET(request: Request) {
