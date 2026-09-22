@@ -8,7 +8,7 @@ function contract(overrides: Partial<ContractRecord> = {}): ContractRecord {
     id: "contract-1", created_by: "seller", signed_at: "2026-09-12T00:00:00Z",
     submission_status: "submitted", gross_amount: 45000, archived_at: null, archive_reason: null,
     creator: { id: "seller", full_name: "Handlowiec", email: null, manager_id: "manager" },
-    workflow: { contract_id: "contract-1", verified: true, equipment_ordered: false, installation_scheduled: false, pge_submitted: false, settled: false, archived_at: null, archive_reason: null, version: 0, updated_at: "2026-09-12T12:00:00Z" },
+    workflow: { contract_id: "contract-1", verified: true, equipment_ordered: false, installation_scheduled: false, invoice_issued: false, settled: false, commission_paid: false, archived_at: null, archive_reason: null, version: 0, updated_at: "2026-09-12T12:00:00Z" },
     ...overrides,
   } as ContractRecord;
 }
@@ -64,6 +64,8 @@ describe("private workflow", () => {
     for (const key of ["workflow", "tasks", "process_note", "management_notes", "commission_amount"]) expect(result).not.toHaveProperty(key);
     expect(result.equipment_ordered).toBe(true);
     expect(result.installation_at).toBe(original.installation_at);
+    expect(result).not.toHaveProperty("installer_name");
+    expect(result).not.toHaveProperty("installer");
     expect(original.workflow).toBeDefined();
   });
   it.each(["owner", "admin"])("retains workflow for %s", (role) => {
