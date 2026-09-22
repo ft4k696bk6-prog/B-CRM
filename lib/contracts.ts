@@ -21,14 +21,18 @@ export const MOUNTING_OPTIONS = [
 
 export const CONTRACT_STATUSES = [
   ["incomplete", "Umowa niekompletna"],
-  ["verification", "Do weryfikacji"],
-  ["equipment_to_order", "Sprzęt do zamówienia"],
-  ["installation_to_schedule", "Montaż do umówienia"],
+  ["verification", "Dział weryfikacji"],
+  ["equipment_ordered", "Sprzęt zamówiony"],
   ["installation_scheduled", "Montaż umówiony"],
-  ["installation_confirmation", "Potwierdź montaż"],
-  ["settlement", "Do rozliczenia"],
+  ["invoice_issued", "Faktura wystawiona"],
   ["settled", "Rozliczone"],
+  ["commission_paid", "Prowizja wypłacona"],
   ["resigned", "Rezygnacja"],
+  // Legacy statuses kept so historical snapshots still render correctly.
+  ["equipment_to_order", "Dział weryfikacji"],
+  ["installation_to_schedule", "Sprzęt zamówiony"],
+  ["installation_confirmation", "Montaż umówiony"],
+  ["settlement", "Faktura wystawiona"],
   ["paused", "Wstrzymana"],
 ] as const;
 export type ContractStatus = (typeof CONTRACT_STATUSES)[number][0];
@@ -36,9 +40,13 @@ export type ContractSubmissionStatus = "draft" | "submitted";
 export const ACTIVE_CONTRACT_STATUSES: ContractStatus[] = [
   "incomplete",
   "verification",
+  "equipment_ordered",
+  "installation_scheduled",
+  "invoice_issued",
+  "settled",
+  "commission_paid",
   "equipment_to_order",
   "installation_to_schedule",
-  "installation_scheduled",
   "installation_confirmation",
   "settlement",
 ];
@@ -155,18 +163,24 @@ export function contractProgress(
   contract: Pick<ContractRecord, "process_status"> | ContractTask[] = [],
 ) {
   if (Array.isArray(contract)) return 0;
+  const aliases: Partial<Record<ContractStatus, ContractStatus>> = {
+    equipment_to_order: "verification",
+    installation_to_schedule: "equipment_ordered",
+    installation_confirmation: "installation_scheduled",
+    settlement: "invoice_issued",
+  };
   const order: ContractStatus[] = [
     "incomplete",
     "verification",
-    "equipment_to_order",
-    "installation_to_schedule",
+    "equipment_ordered",
     "installation_scheduled",
-    "installation_confirmation",
-    "settlement",
+    "invoice_issued",
     "settled",
+    "commission_paid",
   ];
-  if (contract.process_status === "settled") return 100;
-  const index = order.indexOf(contract.process_status || "verification");
+  const status = aliases[contract.process_status || "verification"] || contract.process_status || "verification";
+  if (status === "commission_paid") return 100;
+  const index = order.indexOf(status);
   return Math.max(0, Math.round((index / (order.length - 1)) * 100));
 }
 

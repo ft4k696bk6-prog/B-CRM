@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Archive, CalendarDays, PackageCheck, RotateCcw } from "lucide-react";
+import { Archive, CalendarDays, RotateCcw } from "lucide-react";
 import { Alert, ModalShell } from "@/components/ui";
-import type { ContractRecord } from "@/lib/contracts";
+import { contractStatusLabel, type ContractRecord } from "@/lib/contracts";
 import { isArchived, type ArchiveReason, type WorkflowField } from "@/lib/contract-workflow";
 import { formatDateTime, toDatetimeLocalValue } from "@/lib/date";
 
@@ -16,16 +16,15 @@ export function WorkflowCheckbox({ contract, field, label, busy, onChange }: {
       aria-label={`${label}: ${contract.customer_name}`}
       title={field === "verified" ? "Kontakt działu weryfikacji zakończony zgodą klienta na realizację" : field === "settled" ? "Klient zapłacił całą kwotę" : label}
       checked={contract.workflow?.[field] === true}
-      disabled={busy || isArchived(contract) || contract.submission_status !== "submitted" || !contract.workflow}
+      disabled={busy || (isArchived(contract) && field !== "commission_paid") || contract.submission_status !== "submitted" || !contract.workflow}
       onChange={(event) => onChange(contract, field, event.target.checked)} />
   </label>;
 }
 
 export function ContractPublicProgress({ contract }: { contract: ContractRecord }) {
   return <div className="flex flex-wrap gap-2 text-xs font-semibold">
-    {contract.equipment_ordered ? <span className="inline-flex items-center gap-1 rounded-md bg-leaf/10 px-2 py-1 text-leaf"><PackageCheck className="h-3.5 w-3.5" />Sprzęt zamówiony</span> : null}
-    {contract.installation_scheduled && contract.installation_at ? <span className="inline-flex items-center gap-1 rounded-md bg-sky/10 px-2 py-1 text-sky"><CalendarDays className="h-3.5 w-3.5" />Montaż: {formatDateTime(contract.installation_at)} · Monter: {contract.installer_name || contract.installer?.full_name || "Nieprzypisany"}</span> : null}
-    {!contract.equipment_ordered && !contract.installation_scheduled ? <span className="text-muted">Oczekuje na realizację</span> : null}
+    <span className="inline-flex items-center rounded-md bg-leaf/10 px-2 py-1 text-leaf">Proces: {contractStatusLabel(contract.process_status)}</span>
+    {contract.installation_scheduled && contract.installation_at ? <span className="inline-flex items-center gap-1 rounded-md bg-sky/10 px-2 py-1 text-sky"><CalendarDays className="h-3.5 w-3.5" />Montaż: {formatDateTime(contract.installation_at)}</span> : null}
   </div>;
 }
 
