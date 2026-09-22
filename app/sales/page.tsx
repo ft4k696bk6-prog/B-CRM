@@ -9,7 +9,8 @@ import {
   ListChecks,
   PhoneCall,
   RefreshCw,
-  Target
+  Target,
+  ChevronDown
 } from "lucide-react";
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
@@ -36,7 +37,7 @@ function needsNextAction(lead: Pick<Lead, "status" | "callback_at" | "meeting_at
 export default function SalesDashboardPage() {
   const { loading, profile, session } = useAuth("handlowiec");
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [statusFilter, setStatusFilter] = useState<LeadStatus | "">("");
+  const [statusFilter, setStatusFilter] = useState<LeadStatus[]>([]);
   const [search, setSearch] = useState("");
   const [createdFrom, setCreatedFrom] = useState("");
   const [createdTo, setCreatedTo] = useState("");
@@ -46,6 +47,7 @@ export default function SalesDashboardPage() {
   const [campaign, setCampaign] = useState("");
   const [campaignOptions, setCampaignOptions] = useState<string[]>([]);
   const [sort, setSort] = useState<SortOption>({ column: "assigned_at", direction: "desc" });
+  const [showFilters, setShowFilters] = useState(false);
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
   const [quickLead, setQuickLead] = useState<Lead | null>(null);
@@ -117,7 +119,7 @@ export default function SalesDashboardPage() {
       if (commentLeadIds.length) terms.push(`id.in.(${commentLeadIds.join(",")})`);
       query = query.or(terms.join(","));
     }
-    if (statusFilter) query = query.eq("status", statusFilter);
+    if (statusFilter.length) query = query.in("status", statusFilter);
     if (createdFrom) query = query.gte("created_at", startOfDay(createdFrom));
     if (createdTo) query = query.lte("created_at", endOfDay(createdTo));
     if (postalCode.trim()) query = query.ilike("postal_code", `%${postalCode.trim()}%`);
@@ -159,6 +161,21 @@ export default function SalesDashboardPage() {
   }, [profile, loadLeads, loadCampaignOptions, loadContracts, loadQueueScope]);
 
   const scheduledLeadIdSet = useMemo(() => new Set(scheduledLeadIds), [scheduledLeadIds]);
+
+  const activeFilterCount = useMemo(
+    () =>
+      [
+        search.trim(),
+        createdFrom,
+        createdTo,
+        postalCode.trim(),
+        voivodeship,
+        county,
+        campaign,
+        statusFilter.length ? "status" : ""
+      ].filter(Boolean).length,
+    [search, createdFrom, createdTo, postalCode, voivodeship, county, campaign, statusFilter]
+  );
 
   useEffect(() => {
     function refreshLeads() {
@@ -308,29 +325,43 @@ export default function SalesDashboardPage() {
         </section> : null}
 
         {mandatoryCount === 0 ? <section className="app-card">
-          <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-bold text-ink">Filtry i sortowanie</h2>
-              <p className="mt-1 text-sm text-muted">Zawęź listę swoich leadów.</p>
+              <p className="mt-1 text-sm text-muted">Aktywne filtry: {activeFilterCount}</p>
             </div>
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={() => {
-                setSearch("");
-                setStatusFilter("");
-                setCreatedFrom("");
-                setCreatedTo("");
-                setPostalCode("");
-                setVoivodeship("");
-                setCounty("");
-                setCampaign("");
-                setSort({ column: "assigned_at", direction: "desc" });
-              }}
-            >
-              Wyczyść
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setShowFilters((value) => !value)}
+                className="btn-primary"
+              >
+                <ChevronDown
+                  className={`h-4 w-4 transition ${showFilters ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                />
+                {showFilters ? "Ukryj filtry" : "Pokaż filtry"}
+              </button>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => {
+                  setSearch("");
+                  setStatusFilter([]);
+                  setCreatedFrom("");
+                  setCreatedTo("");
+                  setPostalCode("");
+                  setVoivodeship("");
+                  setCounty("");
+                  setCampaign("");
+                  setSort({ column: "assigned_at", direction: "desc" });
+                }}
+              >
+                Wyczyść
+              </button>
+            </div>
           </div>
+          {showFilters ? (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             <label className="md:col-span-2 xl:col-span-4">
               <span className="label">Szukaj klienta</span>
@@ -362,21 +393,35 @@ export default function SalesDashboardPage() {
                 ))}
               </select>
             </label>
-            <label>
-              <span className="label">Status</span>
-              <select
-                className="field"
-                value={statusFilter}
-                onChange={(event) => setStatusFilter(event.target.value as LeadStatus | "")}
-              >
-                <option value="">Wszystkie moje leady</option>
+            <fieldset className="rounded-lg border border-line p-3 md:col-span-2">
+              <legend className="label px-1">Statusy ({statusFilter.length || "wszystkie"})</legend>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {LEAD_STATUSES.map((status) => (
-                  <option key={status} value={status}>
+                  <label key={status} className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={statusFilter.includes(status)}
+                      onChange={() =>
+                        setStatusFilter(
+                          statusFilter.includes(status)
+                            ? statusFilter.filter((item) => item !== status)
+                            : [...statusFilter, status]
+                        )
+                      }
+                    />
                     {status}
-                  </option>
+                  </label>
                 ))}
-              </select>
-            </label>
+              </div>
+              <div className="mt-3 flex gap-2">
+                <button type="button" className="btn-secondary" onClick={() => setStatusFilter([...LEAD_STATUSES])}>
+                  Zaznacz wszystkie
+                </button>
+                <button type="button" className="btn-secondary" onClick={() => setStatusFilter([])}>
+                  Wyczyść
+                </button>
+              </div>
+            </fieldset>
             <RegionFields
               className="md:col-span-2"
               voivodeship={voivodeship}
@@ -399,12 +444,14 @@ export default function SalesDashboardPage() {
                 <option value="created_at:desc">Dodane: najnowsze</option>
                 <option value="created_at:asc">Dodane: najstarsze</option>
                 <option value="updated_at:desc">Modyfikacja: najnowsza</option>
+                <option value="last_opened_at:desc">Ostatnie otwarcie</option>
                 <option value="full_name:asc">Imię i nazwisko</option>
                 <option value="postal_code:asc">Kod pocztowy</option>
                 <option value="status:asc">Status</option>
               </select>
             </label>
           </div>
+          ) : null}
         </section> : null}
 
         {mandatoryCount === 0 && error ? (
