@@ -77,8 +77,8 @@ export async function POST(request: Request) {
 
     const coldIds = foundLeads.filter((lead) => lead.is_cold_pool).map((lead) => lead.id);
     if (coldIds.length > 0) {
-      if (profile.role === "menadzer") {
-        return NextResponse.json({ error: "Zimna baza jest dostępna wyłącznie dla administratora." }, { status: 403 });
+      if (profile.role !== "owner") {
+        return NextResponse.json({ error: "Zimna baza jest dostępna wyłącznie dla właściciela." }, { status: 403 });
       }
       if (!assignedTo) {
         return NextResponse.json({ error: "Lead z zimnej bazy trzeba przypisać do handlowca." }, { status: 409 });
