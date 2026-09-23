@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     salespersonIds = (data || []).map((person) => person.id);
   }
 
-  const count = () => supabaseAdmin.from("leads").select("id", { count: "exact", head: true });
+  const count = () => supabaseAdmin.from("leads").select("id", { count: "exact", head: true }).eq("is_cold_pool", false);
 
   function scoped(query: ReturnType<typeof count>) {
     const environmentQuery = query.eq("crm_environment", profile.crm_environment);
@@ -48,10 +48,21 @@ export async function GET(request: Request) {
   if (failed?.error) return NextResponse.json({ error: failed.error.message }, { status: 400 });
   const values = results.map((result) => result.count || 0);
 
+  let cold = 0;
+  if (profile.role === "owner") {
+    const { count: coldCount, error: coldError } = await supabaseAdmin
+      .from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("crm_environment", profile.crm_environment)
+      .eq("is_cold_pool", true);
+    if (coldError) return NextResponse.json({ error: coldError.message }, { status: 400 });
+    cold = coldCount || 0;
+  }
+
   return NextResponse.json({
     stats: {
       all: values[0], unassigned: values[1], assigned: values[2], callbacks: values[3],
-      meetings: values[4], contracts: values[5], resignations: values[6], noNextAction: values[7]
+      meetings: values[4], contracts: values[5], resignations: values[6], cold, noNextAction: values[7]
     }
   });
 }
