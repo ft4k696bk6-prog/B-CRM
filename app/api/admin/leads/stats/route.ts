@@ -49,7 +49,7 @@ export async function GET(request: Request) {
   const values = results.map((result) => result.count || 0);
 
   let cold = 0;
-  if (profile.role === "owner") {
+  if (["owner", "admin"].includes(profile.role)) {
     const { count: coldCount, error: coldError } = await supabaseAdmin
       .from("leads")
       .select("id", { count: "exact", head: true })

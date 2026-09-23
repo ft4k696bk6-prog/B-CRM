@@ -760,7 +760,7 @@ export default function AdminDashboardPage() {
               >
                 Bieżąca praca
               </button>
-              {profile.role === "owner" ? (
+              {["owner", "admin"].includes(profile.role) ? (
                 <button
                   type="button"
                   onClick={() => { setLeadBucket("cold"); setFilters({ ...initialFilters, assignedTo: "" }); }}
