@@ -60,7 +60,7 @@ export async function POST(request: Request) {
 
     const { data: leads, error: leadsError } = await supabaseAdmin
       .from("leads")
-      .select("id,assigned_to,crm_environment,status")
+      .select("id,assigned_to,crm_environment,status,is_cold_pool")
       .eq("crm_environment", profile.crm_environment)
       .in("id", leadIds);
 
@@ -68,9 +68,40 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: leadsError.message }, { status: 400 });
     }
 
-    const foundLeads = (leads || []) as Pick<Lead, "id" | "assigned_to" | "crm_environment" | "status">[];
+    const foundLeads = (leads || []) as Array<
+      Pick<Lead, "id" | "assigned_to" | "crm_environment" | "status"> & { is_cold_pool: boolean }
+    >;
     if (foundLeads.length !== leadIds.length) {
       return NextResponse.json({ error: "Część leadów nie istnieje albo jest poza tym CRM." }, { status: 404 });
+    }
+
+    const coldIds = foundLeads.filter((lead) => lead.is_cold_pool).map((lead) => lead.id);
+    if (coldIds.length > 0) {
+      if (profile.role === "menadzer") {
+        return NextResponse.json({ error: "Zimna baza jest dostępna wyłącznie dla administratora." }, { status: 403 });
+      }
+      if (!assignedTo) {
+        return NextResponse.json({ error: "Lead z zimnej bazy trzeba przypisać do handlowca." }, { status: 409 });
+      }
+      if (coldIds.length !== leadIds.length) {
+        return NextResponse.json({ error: "Leadów z zimnej bazy nie łącz z innymi leadami w jednym przypisaniu." }, { status: 409 });
+      }
+
+      const { data: releasedCount, error: releaseError } = await supabaseAdmin.rpc("release_cold_leads", {
+        p_lead_ids: coldIds,
+        p_assigned_to: assignedTo,
+        p_released_by: profile.id,
+        p_crm_environment: profile.crm_environment
+      });
+
+      if (releaseError) {
+        return NextResponse.json({ error: releaseError.message }, { status: 400 });
+      }
+      if (Number(releasedCount || 0) !== coldIds.length) {
+        return NextResponse.json({ error: "Nie udało się zwolnić wszystkich leadów z zimnej bazy." }, { status: 409 });
+      }
+
+      return NextResponse.json({ updated: coldIds.length });
     }
 
     if (profile.role === "menadzer") {
