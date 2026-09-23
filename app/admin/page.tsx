@@ -96,7 +96,7 @@ export default function AdminDashboardPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionAnchorId, setSelectionAnchorId] = useState<string | null>(null);
   const [selectedSalesperson, setSelectedSalesperson] = useState("");
-  const [leadBucket, setLeadBucket] = useState<"all" | "active" | "resignations" | "contracts">("active");
+  const [leadBucket, setLeadBucket] = useState<"all" | "active" | "cold" | "resignations" | "contracts">("active");
   const [busy, setBusy] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
@@ -108,6 +108,7 @@ export default function AdminDashboardPage() {
     meetings: 0,
     contracts: 0,
     resignations: 0,
+    cold: 0,
     noNextAction: 0
   });
   const leadRequestId = useRef(0);
@@ -260,6 +261,7 @@ export default function AdminDashboardPage() {
     if (debouncedFilters.voivodeship) query = query.or(voivodeshipFilterTerms(debouncedFilters.voivodeship));
     if (debouncedFilters.county) query = query.ilike("county", `%${debouncedFilters.county}%`);
     if (debouncedFilters.campaign) query = query.eq("campaign", debouncedFilters.campaign);
+    query = query.eq("is_cold_pool", leadBucket === "cold");
     if (debouncedFilters.status.length) query = query.in("status", debouncedFilters.status);
     else {
       if (leadBucket === "active") query = query.not("status", "in", postgrestInValues(["Umowa", "Rezygnacja"]));
@@ -758,6 +760,15 @@ export default function AdminDashboardPage() {
               >
                 Bieżąca praca
               </button>
+              {["owner", "admin"].includes(profile.role) ? (
+                <button
+                  type="button"
+                  onClick={() => { setLeadBucket("cold"); setFilters({ ...initialFilters, assignedTo: "" }); }}
+                  className={leadBucket === "cold" ? "btn-primary" : "btn-secondary"}
+                >
+                  Zimna baza ({stats.cold})
+                </button>
+              ) : null}
               <button
                 type="button"
                 onClick={() => { setLeadBucket("resignations"); setFilters({ ...initialFilters, assignedTo: "" }); }}
