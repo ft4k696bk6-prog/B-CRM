@@ -1,21 +1,18 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   BriefcaseBusiness,
   Calculator,
   Hammer,
-  LogIn,
   ShieldCheck,
-  Sparkles,
   Truck,
   UsersRound
 } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { useLanguage } from "@/components/language-provider";
 import { Alert } from "@/components/ui";
-import { demoModeEnabled } from "@/lib/demo-mode";
 import { homePathForRole, normalizeRole } from "@/lib/roles";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
@@ -78,48 +75,26 @@ const demoOptions = [
 
 type DemoAccountKey = (typeof demoOptions)[number]["key"];
 
-function getDemoAccount(key: string) {
-  return demoOptions.find((account) => account.key === key);
-}
-
-function resolveCredentials(identifier: string, typedPassword: string) {
-  const normalizedIdentifier = identifier.trim().toLowerCase();
-  if (!demoModeEnabled) {
-    return { email: normalizedIdentifier, password: typedPassword };
-  }
-
-  const demoAccount = getDemoAccount(normalizedIdentifier);
-
-  if (!demoAccount) {
-    return { email: normalizedIdentifier, password: typedPassword };
-  }
-
-  return {
-    email: demoAccount.email,
-    password: typedPassword === "demo" ? demoAccount.password : typedPassword
-  };
-}
-
 export default function LoginPage() {
   const router = useRouter();
   const { language, t } = useLanguage();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showDemoMenu, setShowDemoMenu] = useState(true);
+  const [loadingKey, setLoadingKey] = useState<DemoAccountKey | null>(null);
 
-  async function finishLogin(signInEmail: string, signInPassword: string) {
+  async function onDemoLogin(key: DemoAccountKey) {
+    const account = demoOptions.find((item) => item.key === key);
+    if (!account) return;
+
     setError("");
-    setLoading(true);
+    setLoadingKey(key);
 
     const { data, error: signInError } = await supabase.auth.signInWithPassword({
-      email: signInEmail,
-      password: signInPassword
+      email: account.email,
+      password: account.password
     });
 
     if (signInError || !data.user) {
-      setLoading(false);
+      setLoadingKey(null);
       setError(t("loginError"));
       return;
     }
@@ -130,7 +105,7 @@ export default function LoginPage() {
       .eq("id", data.user.id)
       .single();
 
-    setLoading(false);
+    setLoadingKey(null);
     router.replace(
       homePathForRole(
         normalizeRole(
@@ -142,29 +117,17 @@ export default function LoginPage() {
     );
   }
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const credentials = resolveCredentials(email, password);
-    await finishLogin(credentials.email, credentials.password);
-  }
-
-  async function onDemoLogin(key: DemoAccountKey) {
-    const account = getDemoAccount(key);
-    if (!account) return;
-    await finishLogin(account.email, account.password);
-  }
-
   return (
     <main className="min-h-screen px-4 py-6 sm:py-10">
       <section className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-xl items-center justify-center">
         <div className="w-full rounded-lg border border-line bg-white p-5 shadow-soft sm:p-6">
-          <div className="mb-8 flex items-start justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <BrandMark />
-              <div>
-                <h1 className="text-xl font-bold text-ink">B-CRM DEMO</h1>
-                <p className="text-sm text-muted">{t("loginSubtitle")}</p>
-              </div>
+          <div className="mb-6 flex items-center gap-3">
+            <BrandMark />
+            <div>
+              <h1 className="text-xl font-bold text-ink">B-CRM DEMO</h1>
+              <p className="text-sm text-muted">
+                {language === "pl" ? "Wybierz konto demo" : "Choose a demo account"}
+              </p>
             </div>
           </div>
 
@@ -172,91 +135,40 @@ export default function LoginPage() {
             <Alert tone="warning" className="mb-4">{t("supabaseMissing")}</Alert>
           ) : null}
 
-          {demoModeEnabled ? (
-            <Alert tone="info" className="mb-4">{t("demoIntro")}</Alert>
-          ) : null}
-
           {error ? (
             <Alert tone="danger" className="mb-4">{error}</Alert>
           ) : null}
 
-          <form onSubmit={onSubmit} className="grid gap-4">
-            <label>
-              <span className="label">{t("email")}</span>
-              <input
-                className="field"
-                type="text"
-                autoComplete="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                required
-              />
-            </label>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {demoOptions.map((option) => {
+              const Icon = option.icon;
+              const loading = loadingKey === option.key;
 
-            <label>
-              <span className="label">{t("password")}</span>
-              <input
-                className="field"
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-              />
-            </label>
-
-            <button
-              type="submit"
-              disabled={loading || !isSupabaseConfigured}
-              className="btn-primary"
-            >
-              <LogIn className="h-4 w-4" aria-hidden="true" />
-              {loading ? t("signingIn") : t("signIn")}
-            </button>
-          </form>
-
-          {demoModeEnabled ? (
-            <div className="mt-5 border-t border-line pt-5">
-              <button
-                type="button"
-                onClick={() => setShowDemoMenu((value) => !value)}
-                disabled={loading || !isSupabaseConfigured}
-                className="btn-secondary w-full"
-              >
-                <Sparkles className="h-4 w-4" aria-hidden="true" />
-                {showDemoMenu ? t("hideDemo") : t("showDemo")}
-              </button>
-
-              {showDemoMenu ? (
-                <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                  {demoOptions.map((option) => {
-                    const Icon = option.icon;
-
-                    return (
-                      <button
-                        key={option.key}
-                        type="button"
-                        disabled={loading || !isSupabaseConfigured}
-                        onClick={() => onDemoLogin(option.key)}
-                        className="flex min-h-[74px] items-center gap-3 rounded-md border border-line bg-[#f9fbfd] px-3 py-3 text-left transition hover:-translate-y-px hover:border-ink hover:bg-white hover:shadow-sm disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        <span className="flex h-9 w-9 flex-none items-center justify-center rounded-md bg-white text-ink shadow-sm">
-                          <Icon className="h-4 w-4" aria-hidden="true" />
-                        </span>
-                        <span className="min-w-0">
-                          <span className="block text-sm font-bold text-ink">
-                            {language === "pl" ? option.labelPl : option.labelEn}
-                          </span>
-                          <span className="block truncate text-xs text-muted">{t(option.descriptionKey)}</span>
-                          <span className="mt-1 block text-[11px] font-bold text-muted">{option.key} / demo</span>
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : null}
-            </div>
-          ) : null}
+              return (
+                <button
+                  key={option.key}
+                  type="button"
+                  disabled={loadingKey !== null || !isSupabaseConfigured}
+                  onClick={() => onDemoLogin(option.key)}
+                  className="flex min-h-[82px] items-center gap-3 rounded-md border border-line bg-[#f9fbfd] px-3 py-3 text-left transition hover:-translate-y-px hover:border-ink hover:bg-white hover:shadow-sm disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <span className="flex h-10 w-10 flex-none items-center justify-center rounded-md bg-white text-ink shadow-sm">
+                    <Icon className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-bold text-ink">
+                      {language === "pl" ? option.labelPl : option.labelEn}
+                    </span>
+                    <span className="block truncate text-xs text-muted">
+                      {loading
+                        ? (language === "pl" ? "Otwieranie konta…" : "Opening account…")
+                        : t(option.descriptionKey)}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </section>
     </main>
