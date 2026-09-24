@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
@@ -63,7 +62,6 @@ type NavigationLink = {
   allowedRoles?: UserRole[];
   hideWhenAnyPermission?: Permission[];
   salesOnly?: boolean;
-  tourId?: string;
 };
 
 const navigationLinks: NavigationLink[] = [
@@ -79,8 +77,7 @@ const navigationLinks: NavigationLink[] = [
     labelKey: "navDashboard",
     groupKey: "main",
     icon: BarChart3,
-    permissions: ["dashboard:view:all"],
-    tourId: "tour-nav-dashboard"
+    permissions: ["dashboard:view:all"]
   },
   {
     href: "/admin",
@@ -88,8 +85,7 @@ const navigationLinks: NavigationLink[] = [
     groupKey: "main",
     icon: BarChart3,
     permissions: ["dashboard:view:team"],
-    hideWhenAnyPermission: ["dashboard:view:all"],
-    tourId: "tour-nav-dashboard"
+    hideWhenAnyPermission: ["dashboard:view:all"]
   },
   {
     href: "/sales",
@@ -104,8 +100,7 @@ const navigationLinks: NavigationLink[] = [
     labelKey: "navNewLead",
     groupKey: "sales",
     icon: UserPlus,
-    permissions: ["leads:create:own", "leads:create:pool"],
-    tourId: "tour-nav-new-lead"
+    permissions: ["leads:create:own", "leads:create:pool"]
   },
   {
     href: "/map",
@@ -120,11 +115,10 @@ const navigationLinks: NavigationLink[] = [
     groupKey: "operations",
     icon: FolderKanban,
     permissions: ["operations:view"],
-    allowedRoles: ["owner", "admin", "menadzer", "handlowiec", "finance", "viewer", "ksiegowosc", "logistyk", "monter"],
-    tourId: "tour-nav-process"
+    allowedRoles: ["owner", "admin", "menadzer", "handlowiec", "finance", "viewer", "ksiegowosc", "logistyk", "monter"]
   },
   { href: "/calendar", labelKey: "navCalendar", groupKey: "company", icon: CalendarDays, permissions: ["calendar:view"] },
-  { href: "/calculators", labelKey: "navCalculators", groupKey: "company", icon: Calculator, permissions: ["offers:calculate"], tourId: "tour-nav-calculators" },
+  { href: "/calculators", labelKey: "navCalculators", groupKey: "company", icon: Calculator, permissions: ["offers:calculate"] },
   { href: "/knowledge", labelKey: "navKnowledge", groupKey: "company", icon: BookOpen },
   { href: "/settings", labelKey: "navSettings", groupKey: "company", icon: Settings, permissions: ["settings:view"] },
   { href: "/admin/import", labelKey: "navImport", groupKey: "company", icon: FileUp, permissions: ["data:import"] },
@@ -150,10 +144,6 @@ const roleLabelsEn: Record<Profile["role"], string> = {
   monter: "Installer"
 };
 
-const DemoTour = dynamic(() => import("@/components/demo-tour").then((mod) => mod.DemoTour), {
-  ssr: false,
-  loading: () => null
-});
 
 export function AppShell({ profile, children, embedded = false }: AppShellProps) {
   const pathname = usePathname();
@@ -168,7 +158,6 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
   const homeHref = homePathForRole(profile.role);
   const roleLabel = language === "en" ? roleLabelsEn[profile.role] : ROLE_LABELS[profile.role];
   const isDemoProfile = demoModeEnabled && isDemoScope(profile.crm_environment);
-  const canRunDemoTour = isDemoProfile && isSystemAdminRole(profile.role);
   const links = navigationLinks.filter((link) => {
     if ((mandatoryLoading || mandatoryLeadIds.length > 0) && profile.role === "handlowiec" && link.href !== "/sales") return false;
     if (link.salesOnly && !isSalesRole(profile.role)) return false;
@@ -212,11 +201,6 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
   async function signOut() {
     await supabase.auth.signOut();
     router.replace("/login");
-  }
-
-  function startDemoTour() {
-    window.dispatchEvent(new Event("bcrm:demo-tour-start"));
-    setMobileOpen(false);
   }
 
   async function confirmReturnOpenLeads() {
@@ -285,7 +269,6 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
                   <a
                     key={`${link.href}-${link.labelKey}`}
                     href={link.href}
-                    data-tour-id={link.tourId}
                     onClick={() => closeOnClick && setMobileOpen(false)}
                     className={`flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-sm font-bold transition ${
                       active
@@ -365,17 +348,6 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
               >
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
                 <span className="hidden sm:inline">{t("returnLeads")}</span>
-              </button>
-            ) : null}
-            {canRunDemoTour ? (
-              <button
-                type="button"
-                onClick={startDemoTour}
-                className="btn-secondary h-11 w-11 px-0 sm:w-auto sm:px-3"
-                title={language === "en" ? "Start guided demo" : "Uruchom samouczek"}
-              >
-                <MousePointerClick className="h-4 w-4" aria-hidden="true" />
-                <span className="hidden sm:inline">{language === "en" ? "Demo tour" : "Samouczek"}</span>
               </button>
             ) : null}
             <button
@@ -459,9 +431,6 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
         onConfirm={confirmReturnOpenLeads}
         onClose={() => setReturnConfirmOpen(false)}
       />
-      {canRunDemoTour ? (
-        <DemoTour profile={profile} />
-      ) : null}
     </div>
   );
 }
