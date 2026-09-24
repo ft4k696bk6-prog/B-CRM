@@ -10,9 +10,9 @@ export type PriceRow = {
   prices: Record<PackageId, number>;
 };
 
-export const INCLUDED_TOTAL_MARGIN_NET = 15_000;
-export const DEFAULT_ADMIN_MARGIN_NET = 10_000;
-export const DEFAULT_SALES_MARGIN_NET = 5_000;
+export const INCLUDED_TOTAL_MARGIN_NET = 40_000;
+export const DEFAULT_ADMIN_MARGIN_NET = 35_000;
+export const DEFAULT_SALES_MARGIN_NET = 30_000;
 
 export const PACKAGE_OPTIONS: Array<{
   id: PackageId;
@@ -73,24 +73,24 @@ export const PACKAGE_OPTIONS: Array<{
 ];
 
 const PUBLISHED_PRICE_ROWS: PriceRow[] = [
-  { panelCount: 4, kwp: 2, prices: { "pv-only": 36873, "me-5": 44556, "me-10": 46955, "me-16": 48889, "me-20": 53347, "me-23": 54077, "me-28": 56002 } },
-  { panelCount: 5, kwp: 2.5, prices: { "pv-only": 37613, "me-5": 45296, "me-10": 47695, "me-16": 49629, "me-20": 54087, "me-23": 54817, "me-28": 56742 } },
-  { panelCount: 6, kwp: 3, prices: { "pv-only": 38353, "me-5": 46036, "me-10": 48435, "me-16": 50369, "me-20": 54827, "me-23": 55557, "me-28": 57482 } },
-  { panelCount: 7, kwp: 3.5, prices: { "pv-only": 39093, "me-5": 46776, "me-10": 49175, "me-16": 51109, "me-20": 55567, "me-23": 56297, "me-28": 58222 } },
-  { panelCount: 8, kwp: 4, prices: { "pv-only": 39833, "me-5": 47516, "me-10": 49915, "me-16": 51849, "me-20": 56307, "me-23": 57037, "me-28": 58962 } },
-  { panelCount: 9, kwp: 4.5, prices: { "pv-only": 40573, "me-5": 48256, "me-10": 50655, "me-16": 52589, "me-20": 57047, "me-23": 57777, "me-28": 59702 } },
-  { panelCount: 10, kwp: 5, prices: { "pv-only": 41313, "me-5": 48996, "me-10": 51395, "me-16": 53329, "me-20": 57787, "me-23": 58517, "me-28": 60442 } },
-  { panelCount: 11, kwp: 5.5, prices: { "pv-only": 43477, "me-5": 51160, "me-10": 53559, "me-16": 55493, "me-20": 59951, "me-23": 60681, "me-28": 62606 } },
-  { panelCount: 12, kwp: 6, prices: { "pv-only": 44217, "me-5": 51900, "me-10": 54299, "me-16": 56233, "me-20": 60691, "me-23": 61421, "me-28": 63346 } },
-  { panelCount: 13, kwp: 6.5, prices: { "pv-only": 46137, "me-5": 53820, "me-10": 56219, "me-16": 58153, "me-20": 62611, "me-23": 63341, "me-28": 65266 } },
-  { panelCount: 14, kwp: 7, prices: { "pv-only": 46877, "me-5": 54560, "me-10": 56959, "me-16": 58893, "me-20": 63351, "me-23": 64081, "me-28": 66006 } },
-  { panelCount: 15, kwp: 7.5, prices: { "pv-only": 47617, "me-5": 55300, "me-10": 57699, "me-16": 59633, "me-20": 64091, "me-23": 64821, "me-28": 66746 } },
-  { panelCount: 16, kwp: 8, prices: { "pv-only": 48357, "me-5": 56040, "me-10": 58439, "me-16": 60373, "me-20": 64831, "me-23": 65561, "me-28": 67486 } },
-  { panelCount: 17, kwp: 8.5, prices: { "pv-only": 49097, "me-5": 56780, "me-10": 59179, "me-16": 61113, "me-20": 65571, "me-23": 66301, "me-28": 68226 } },
-  { panelCount: 18, kwp: 9, prices: { "pv-only": 49837, "me-5": 57520, "me-10": 59919, "me-16": 61853, "me-20": 66311, "me-23": 67041, "me-28": 68966 } },
-  { panelCount: 19, kwp: 9.5, prices: { "pv-only": 50897, "me-5": 58580, "me-10": 60979, "me-16": 62913, "me-20": 67371, "me-23": 68101, "me-28": 70026 } },
-  { panelCount: 20, kwp: 10, prices: { "pv-only": 51637, "me-5": 59320, "me-10": 61719, "me-16": 63653, "me-20": 68111, "me-23": 68841, "me-28": 70766 } },
-  { panelCount: 21, kwp: 10.5, prices: { "pv-only": 52377, "me-5": 60060, "me-10": 62459, "me-16": 64393, "me-20": 68851, "me-23": 69581, "me-28": 71506 } }
+  { panelCount: 4, kwp: 2, prices: { "pv-only": 61873, "me-5": 69556, "me-10": 71955, "me-16": 73889, "me-20": 78347, "me-23": 79077, "me-28": 81002 } },
+  { panelCount: 5, kwp: 2.5, prices: { "pv-only": 62613, "me-5": 70296, "me-10": 72695, "me-16": 74629, "me-20": 79087, "me-23": 79817, "me-28": 81742 } },
+  { panelCount: 6, kwp: 3, prices: { "pv-only": 63353, "me-5": 71036, "me-10": 73435, "me-16": 75369, "me-20": 79827, "me-23": 80557, "me-28": 82482 } },
+  { panelCount: 7, kwp: 3.5, prices: { "pv-only": 64093, "me-5": 71776, "me-10": 74175, "me-16": 76109, "me-20": 80567, "me-23": 81297, "me-28": 83222 } },
+  { panelCount: 8, kwp: 4, prices: { "pv-only": 64833, "me-5": 72516, "me-10": 74915, "me-16": 76849, "me-20": 81307, "me-23": 82037, "me-28": 83962 } },
+  { panelCount: 9, kwp: 4.5, prices: { "pv-only": 65573, "me-5": 73256, "me-10": 75655, "me-16": 77589, "me-20": 82047, "me-23": 82777, "me-28": 84702 } },
+  { panelCount: 10, kwp: 5, prices: { "pv-only": 66313, "me-5": 73996, "me-10": 76395, "me-16": 78329, "me-20": 82787, "me-23": 83517, "me-28": 85442 } },
+  { panelCount: 11, kwp: 5.5, prices: { "pv-only": 68477, "me-5": 76160, "me-10": 78559, "me-16": 80493, "me-20": 84951, "me-23": 85681, "me-28": 87606 } },
+  { panelCount: 12, kwp: 6, prices: { "pv-only": 69217, "me-5": 76900, "me-10": 79299, "me-16": 81233, "me-20": 85691, "me-23": 86421, "me-28": 88346 } },
+  { panelCount: 13, kwp: 6.5, prices: { "pv-only": 71137, "me-5": 78820, "me-10": 81219, "me-16": 83153, "me-20": 87611, "me-23": 88341, "me-28": 90266 } },
+  { panelCount: 14, kwp: 7, prices: { "pv-only": 71877, "me-5": 79560, "me-10": 81959, "me-16": 83893, "me-20": 88351, "me-23": 89081, "me-28": 91006 } },
+  { panelCount: 15, kwp: 7.5, prices: { "pv-only": 72617, "me-5": 80300, "me-10": 82699, "me-16": 84633, "me-20": 89091, "me-23": 89821, "me-28": 91746 } },
+  { panelCount: 16, kwp: 8, prices: { "pv-only": 73357, "me-5": 81040, "me-10": 83439, "me-16": 85373, "me-20": 89831, "me-23": 90561, "me-28": 92486 } },
+  { panelCount: 17, kwp: 8.5, prices: { "pv-only": 74097, "me-5": 81780, "me-10": 84179, "me-16": 86113, "me-20": 90571, "me-23": 91301, "me-28": 93226 } },
+  { panelCount: 18, kwp: 9, prices: { "pv-only": 74837, "me-5": 82520, "me-10": 84919, "me-16": 86853, "me-20": 91311, "me-23": 92041, "me-28": 93966 } },
+  { panelCount: 19, kwp: 9.5, prices: { "pv-only": 75897, "me-5": 83580, "me-10": 85979, "me-16": 87913, "me-20": 92371, "me-23": 93101, "me-28": 95026 } },
+  { panelCount: 20, kwp: 10, prices: { "pv-only": 76637, "me-5": 84320, "me-10": 86719, "me-16": 88653, "me-20": 93111, "me-23": 93841, "me-28": 95766 } },
+  { panelCount: 21, kwp: 10.5, prices: { "pv-only": 77377, "me-5": 85060, "me-10": 87459, "me-16": 89393, "me-20": 93851, "me-23": 94581, "me-28": 96506 } }
 ];
 
 // Until the company supplies published rates above 10.5 kW, extend every
@@ -112,36 +112,36 @@ const FALLBACK_PRICE_ROWS: PriceRow[] = Array.from({ length: 19 }, (_, index) =>
 export const PRICE_ROWS: PriceRow[] = [...PUBLISHED_PRICE_ROWS, ...FALLBACK_PRICE_ROWS];
 
 export const STORAGE_NET_PRICES = [
-  { id: "kon-tec-5", brand: "Kon-TEC", label: "Kon-TEC ME 5,12 kWh", kwh: 5.12, net: 30683 },
-  { id: "kon-tec-10", brand: "Kon-TEC", label: "Kon-TEC ME 10,24 kWh", kwh: 10.24, net: 33082 },
-  { id: "kon-tec-16", brand: "Kon-TEC", label: "Kon-TEC ME 16 kWh", kwh: 16, net: 35016 },
-  { id: "kon-tec-20", brand: "Kon-TEC", label: "Kon-TEC ME 20 kWh", kwh: 20, net: 39474 },
-  { id: "deye-5", brand: "Deye", label: "Deye 5,12 kWh", kwh: 5.12, net: 30683 },
-  { id: "deye-10", brand: "Deye", label: "Deye 10,24 kWh", kwh: 10.24, net: 33082 },
-  { id: "deye-16", brand: "Deye", label: "Deye 16 kWh", kwh: 16, net: 35016 },
-  { id: "deye-20", brand: "Deye", label: "Deye 20 kWh", kwh: 20, net: 39474 },
-  { id: "felicity-23", brand: "Felicity", label: "Felicity 23,5 kWh", kwh: 23.5, net: 40204 },
-  { id: "felicity-28", brand: "Felicity", label: "Felicity 28 kWh", kwh: 28, net: 42129 }
+  { id: "kon-tec-5", brand: "Kon-TEC", label: "Kon-TEC ME 5,12 kWh", kwh: 5.12, net: 55683 },
+  { id: "kon-tec-10", brand: "Kon-TEC", label: "Kon-TEC ME 10,24 kWh", kwh: 10.24, net: 58082 },
+  { id: "kon-tec-16", brand: "Kon-TEC", label: "Kon-TEC ME 16 kWh", kwh: 16, net: 60016 },
+  { id: "kon-tec-20", brand: "Kon-TEC", label: "Kon-TEC ME 20 kWh", kwh: 20, net: 64474 },
+  { id: "deye-5", brand: "Deye", label: "Deye 5,12 kWh", kwh: 5.12, net: 55683 },
+  { id: "deye-10", brand: "Deye", label: "Deye 10,24 kWh", kwh: 10.24, net: 58082 },
+  { id: "deye-16", brand: "Deye", label: "Deye 16 kWh", kwh: 16, net: 60016 },
+  { id: "deye-20", brand: "Deye", label: "Deye 20 kWh", kwh: 20, net: 64474 },
+  { id: "felicity-23", brand: "Felicity", label: "Felicity 23,5 kWh", kwh: 23.5, net: 65204 },
+  { id: "felicity-28", brand: "Felicity", label: "Felicity 28 kWh", kwh: 28, net: 67129 }
 ];
 
 export const INVERTER_NET_PRICES = [
   { kw: 0, label: "Bez falownika", net: 0 },
-  { kw: 5, label: "Deye hybrydowy niskonapięciowy 5 kW", net: 6500 },
-  { kw: 8, label: "Deye hybrydowy niskonapięciowy 8 kW", net: 6700 },
-  { kw: 10, label: "Deye hybrydowy niskonapięciowy 10 kW", net: 6900 },
-  { kw: 12, label: "Deye hybrydowy niskonapięciowy 12 kW", net: 7100 }
+  { kw: 5, label: "Deye hybrydowy niskonapięciowy 5 kW", net: 31500 },
+  { kw: 8, label: "Deye hybrydowy niskonapięciowy 8 kW", net: 31700 },
+  { kw: 10, label: "Deye hybrydowy niskonapięciowy 10 kW", net: 31900 },
+  { kw: 12, label: "Deye hybrydowy niskonapięciowy 12 kW", net: 32100 }
 ];
 
 export const EXTRA_NET_PRICES = {
-  groundPerKw: 550,
-  ekierkiPerKw: 500,
-  boiler80: 1500,
-  boiler150: 2000,
-  backup: 1500,
-  cablePerMeterAbove8m: 15,
-  referralReward: 500,
-  rainwaterAbove2000: 3000,
-  rainwaterUnderground2000: 10000
+  groundPerKw: 25550,
+  ekierkiPerKw: 25500,
+  boiler80: 26500,
+  boiler150: 27000,
+  backup: 26500,
+  cablePerMeterAbove8m: 25015,
+  referralReward: 25500,
+  rainwaterAbove2000: 28000,
+  rainwaterUnderground2000: 35000
 };
 
 export function recommendedInverter(kwp: number) {
