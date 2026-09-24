@@ -247,7 +247,8 @@ export default function LoginPage() {
                           <span className="block text-sm font-bold text-ink">
                             {language === "pl" ? option.labelPl : option.labelEn}
                           </span>
-                          <span className="block truncate text-xs text-muted">{t(option.descriptionKey)}</span>\n                          <span className="mt-1 block text-[11px] font-bold text-muted">{option.key} / demo</span>
+                          <span className="block truncate text-xs text-muted">{t(option.descriptionKey)}</span>
+                          <span className="mt-1 block text-[11px] font-bold text-muted">{option.key} / demo</span>
                         </span>
                       </button>
                     );
