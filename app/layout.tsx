@@ -11,8 +11,8 @@ import "./ui-polish.css";
 import "./appearance.css";
 
 export const metadata: Metadata = {
-  title: "B-CRM",
-  description: "CRM sprzedażowo-operacyjny dla firm OZE",
+  title: "B-CRM DEMO",
+  description: "Demo CRM sprzedażowo-operacyjnego dla firm OZE",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "B-CRM"
+    title: "B-CRM DEMO"
   }
 };
 
