@@ -7,10 +7,10 @@ on:
 
 jobs:
   alias:
-    if: github.event.head_commit.message == 'Point stable demo alias to refreshed CRM'
+    if: github.event.head_commit.message == 'Publish simplified demo alias'
     runs-on: ubuntu-latest
     steps:
-      - name: Point stable demo alias to refreshed CRM
-        run: npx vercel alias set "https://b-8zqzncfoj-berni.vercel.app" "b-crm-demo-berni.vercel.app" --token "$VERCEL_TOKEN"
+      - name: Point stable demo alias to simplified CRM demo
+        run: npx vercel alias set "https://b-fsv94apli-berni.vercel.app" "b-crm-demo-berni.vercel.app" --token "$VERCEL_TOKEN"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
