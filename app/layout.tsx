@@ -30,15 +30,15 @@ export const metadata: Metadata = {
 const appearanceScript = `
   try {
     var saved = window.localStorage.getItem("bcrm-appearance");
-    var theme = saved === "light" || saved === "dark" || saved === "system" ? saved : "system";
-    var systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var theme = saved === "dark" ? "dark" : "light";
+    if (saved !== "dark" && saved !== "light") {
+      window.localStorage.setItem("bcrm-appearance", "light");
+    }
     document.documentElement.dataset.theme = theme;
-    document.documentElement.dataset.resolvedTheme =
-      theme === "system" ? (systemDark ? "dark" : "light") : theme;
+    document.documentElement.dataset.resolvedTheme = theme;
   } catch {
-    var fallbackDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    document.documentElement.dataset.theme = "system";
-    document.documentElement.dataset.resolvedTheme = fallbackDark ? "dark" : "light";
+    document.documentElement.dataset.theme = "light";
+    document.documentElement.dataset.resolvedTheme = "light";
   }
 `;
 
