@@ -20,7 +20,7 @@ export const themePacks = [
 
 export type ThemeName = (typeof themePacks)[number]["id"];
 
-export const defaultTheme: ThemeName = "system";
+export const defaultTheme: ThemeName = "light";
 
 export function isThemeName(value: string): value is ThemeName {
   return themePacks.some((theme) => theme.id === value);
