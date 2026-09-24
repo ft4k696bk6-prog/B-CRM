@@ -36,9 +36,9 @@ function isRealSupabaseKey(value?: string) {
   );
 }
 
-const hasRealSupabase = isRealSupabaseUrl(supabaseUrl) && isRealSupabaseKey(supabaseAnonKey);
+const hasRealSupabase = !demoModeEnabled && isRealSupabaseUrl(supabaseUrl) && isRealSupabaseKey(supabaseAnonKey);
 
-export const isDemoSupabaseFallback = demoModeEnabled && !hasRealSupabase;
+export const isDemoSupabaseFallback = demoModeEnabled || !hasRealSupabase;
 export const isSupabaseConfigured = hasRealSupabase || isDemoSupabaseFallback;
 
 const demoProfiles: DemoProfile[] = [
@@ -60,14 +60,58 @@ const demoPasswords: Record<string, string> = {
 };
 
 const now = Date.now();
-const demoLeads = [
-  lead("demo-lead-001", "Jan Kowalski", "+48 600 700 800", "20-001", "Lublin, ul. Energetyczna 12", "Umowa", "demo-sales", "B2C", "BCRM/05/2026/017", -8, -2),
-  lead("demo-lead-002", "Marta Wisniewska", "+48 501 220 330", "21-500", "Rokitno 18", "Spotkanie", "demo-sales", "polecenie", null, -5, -1),
-  lead("demo-lead-003", "GreenPack Sp. z o.o.", "+48 512 300 110", "23-400", "Bilgoraj, ul. Przemyslowa 5", "Call back", "demo-sales", "B2B", null, -3, -0.5),
-  lead("demo-lead-004", "Auto-Komfort", "+48 535 118 445", "08-500", "Ryki, ul. Serwisowa 14", "Nowy", "demo-sales", "B2B", null, -2, -1),
-  lead("demo-lead-005", "Justyna Sikora", "+48 537 908 222", "21-070", "Cycow, ul. Szkolna 2", "Nowy", null, "B2C", null, -1, -1),
-  lead("demo-lead-006", "Piotr Markowski", "+48 543 776 221", "24-220", "Niedrzwica Duza, ul. Lipowa 4", "Nie odebrał", "demo-sales", "wlasne", null, -6, -3)
+const demoCustomerNames = [
+  "Anna Nowak", "Michał Zieliński", "Katarzyna Wójcik", "Tomasz Kamiński", "Agnieszka Lewandowska",
+  "Paweł Dąbrowski", "Monika Szymańska", "Krzysztof Woźniak", "Natalia Kozłowska", "Marcin Jankowski",
+  "Karolina Mazur", "Łukasz Krawczyk", "Joanna Piotrowska", "Adam Grabowski", "Magdalena Pawłowska",
+  "Rafał Michalski", "Aleksandra Król", "Damian Wieczorek", "Patrycja Jabłońska", "Bartosz Wróbel",
+  "Ewa Nowicka", "Piotr Majewski", "Marta Olszewska", "Kamil Stępień", "Paulina Malinowska",
+  "Mateusz Górski", "Julia Jaworska", "Sebastian Adamczyk", "Weronika Dudek", "Jakub Zając",
+  "OZE Dom Demo Sp. z o.o.", "Energia Plus Demo", "Solar House Demo", "Eco Projekt Demo", "Green Dach Demo",
+  "Dom i Energia Demo", "Nowa Moc Demo", "Magazyn Domowy Demo", "PV Serwis Demo", "Energo Partner Demo",
+  "Iwona Lis", "Artur Baran", "Sylwia Sikora", "Dariusz Tomaszewski", "Emilia Czarnecka",
+  "Grzegorz Sawicki", "Olga Maciejewska", "Norbert Wysocki", "Beata Urbańska", "Filip Rutkowski"
 ];
+
+const demoLocations = [
+  ["35-001", "Rzeszów, ul. Demonstracyjna 12", "podkarpackie", "Rzeszów"],
+  ["20-001", "Lublin, ul. Testowa 8", "lubelskie", "Lublin"],
+  ["00-001", "Warszawa, ul. Przykładowa 21", "mazowieckie", "Warszawa"],
+  ["90-001", "Łódź, ul. Pokazowa 4", "łódzkie", "Łódź"],
+  ["15-001", "Białystok, ul. Wzorcowa 19", "podlaskie", "Białystok"],
+  ["25-001", "Kielce, ul. Demo 6", "świętokrzyskie", "Kielce"],
+  ["30-001", "Kraków, ul. Próbna 15", "małopolskie", "Kraków"],
+  ["37-700", "Przemyśl, ul. Modelowa 3", "podkarpackie", "Przemyśl"],
+  ["22-100", "Chełm, ul. Makietowa 11", "lubelskie", "Chełm"],
+  ["08-110", "Siedlce, ul. Prezentacyjna 7", "mazowieckie", "Siedlce"]
+] as const;
+
+const demoStatuses = ["Nowy", "Call back", "Spotkanie", "Nie odebrał", "Oferta", "Umowa"] as const;
+const demoSources = ["Meta Ads", "Polecenie", "Formularz WWW", "Baza własna", "Google Ads", "Targi"] as const;
+
+const demoLeads = demoCustomerNames.map((fullName, index) => {
+  const [postalCode, address, voivodeship, county] = demoLocations[index % demoLocations.length];
+  const status = demoStatuses[index % demoStatuses.length];
+  const assignedTo = index % 7 === 0 ? null : "demo-sales";
+  const contractNumber = status === "Umowa" ? `DEMO/09/2026/${String(index + 1).padStart(3, "0")}` : null;
+  return {
+    ...lead(
+      `demo-lead-${String(index + 1).padStart(3, "0")}`,
+      fullName,
+      `+48 000 000 ${String(index + 1).padStart(3, "0")}`,
+      postalCode,
+      address,
+      status,
+      assignedTo,
+      demoSources[index % demoSources.length],
+      contractNumber,
+      -(index + 1),
+      -((index % 20) + 1)
+    ),
+    voivodeship,
+    county
+  };
+})
 
 function lead(
   id: string,
