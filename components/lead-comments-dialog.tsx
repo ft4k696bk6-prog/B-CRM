@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { MessageSquareText, Send } from "lucide-react";
 import { Alert, EmptyState, ModalShell } from "@/components/ui";
+import { supabase } from "@/lib/supabase";
 import type { Lead, LeadActivity } from "@/lib/types";
 
 function formatCommentDate(value: string) {
@@ -29,20 +30,43 @@ export function LeadCommentsDialog({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  const requestWithSession = useCallback(
+    async (url: string, init: RequestInit = {}) => {
+      async function send(token: string) {
+        const headers = new Headers(init.headers);
+        headers.set("Authorization", `Bearer ${token}`);
+        return fetch(url, { ...init, headers });
+      }
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const currentToken = sessionData.session?.access_token || accessToken;
+
+      let response = await send(currentToken);
+      if (response.status !== 401) return response;
+
+      const { data: refreshedData } = await supabase.auth.refreshSession();
+      const refreshedToken = refreshedData.session?.access_token;
+      if (!refreshedToken) return response;
+
+      response = await send(refreshedToken);
+      return response;
+    },
+    [accessToken]
+  );
+
   const loadComments = useCallback(async () => {
     if (!lead || !accessToken) return;
     setLoading(true);
     setError("");
     const params = new URLSearchParams({ lead_id: lead.id, type: "comment" });
-    const response = await fetch(`/api/leads/activities?${params}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
+    const response = await requestWithSession(`/api/leads/activities?${params}`, {
       cache: "no-store"
     });
     const body = await response.json().catch(() => []);
     if (!response.ok) setError(body?.error || "Nie udało się pobrać komentarzy.");
     else setComments((body || []) as LeadActivity[]);
     setLoading(false);
-  }, [accessToken, lead]);
+  }, [accessToken, lead, requestWithSession]);
 
   useEffect(() => {
     setNote("");
@@ -60,11 +84,10 @@ export function LeadCommentsDialog({
     if (!description || saving) return;
     setSaving(true);
     setError("");
-    const response = await fetch("/api/leads/activities", {
+    const response = await requestWithSession("/api/leads/activities", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         lead_id: currentLead.id,
