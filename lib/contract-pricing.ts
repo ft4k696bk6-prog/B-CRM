@@ -26,6 +26,7 @@ export type ContractPricingInput = {
   ems?: boolean | null;
   cable_length_meters?: number | string | null;
   pricing_adjustment_net?: number | string | null;
+  company_margin_net?: number | string | null;
 };
 
 export type ContractPricingResult = {
@@ -256,12 +257,12 @@ export function calculateContractPricing(
     chargeableCableMeters * EXTRA_NET_PRICES.cablePerMeterAbove8m +
     (numberValue(input.pricing_adjustment_net) || 0);
 
-  const baseNet = money(
-    Math.max(
-      cennikNet + inverterAdjustmentNet - INCLUDED_TOTAL_MARGIN_NET + extrasNet,
-      0,
-    ),
+  const companyMarginNet = Math.max(numberValue(input.company_margin_net) || 0, 0);
+  const calculatorCostNet = Math.max(
+    cennikNet + inverterAdjustmentNet - INCLUDED_TOTAL_MARGIN_NET + extrasNet,
+    0,
   );
+  const baseNet = money(calculatorCostNet + companyMarginNet);
   const marginNet = money(saleNet - baseNet);
 
   return {
