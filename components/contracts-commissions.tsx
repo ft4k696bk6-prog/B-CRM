@@ -90,7 +90,7 @@ export function ContractsCommissions() {
   );
 
   const eligibleRows = useMemo(
-    () => rows.filter((item) => item.archive_reason !== "resigned"),
+    () => rows.filter((item) => item.archive_reason !== "resigned" && !item.commission_calc_error),
     [rows],
   );
 
