@@ -12,6 +12,7 @@ import {
   FolderKanban,
   Gauge,
   Landmark,
+  BadgeDollarSign,
   BookOpen,
   LogOut,
   MapPinned,
@@ -49,6 +50,7 @@ type NavigationLink = {
     | "navMyLeads"
     | "navWorkPanel"
     | "navOperations"
+    | "navCommissions"
     | "navNewLead"
     | "navMap"
     | "navCalendar"
@@ -122,6 +124,13 @@ const navigationLinks: NavigationLink[] = [
     permissions: ["operations:view"],
     allowedRoles: ["owner", "admin", "menadzer", "handlowiec", "finance", "viewer", "ksiegowosc", "logistyk", "monter"],
     tourId: "tour-nav-process"
+  },
+  {
+    href: "/realizacja/prowizje",
+    labelKey: "navCommissions",
+    groupKey: "operations",
+    icon: BadgeDollarSign,
+    allowedRoles: ["owner", "admin"]
   },
   { href: "/calendar", labelKey: "navCalendar", groupKey: "company", icon: CalendarDays, permissions: ["calendar:view"] },
   { href: "/calculators", labelKey: "navCalculators", groupKey: "company", icon: Calculator, permissions: ["offers:calculate"], tourId: "tour-nav-calculators" },
