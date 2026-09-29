@@ -51,14 +51,14 @@ function exactPriceRow(panelCount: number) {
 
 function packageForStorage(storageKwh: number): PackageId | null {
   const match = PACKAGE_OPTIONS.find(
-    (item) => item.id !== "pv-only" && Math.abs(item.storageKwh - storageKwh) < 0.02,
+    (item) => item.id !== "pv-only" && Math.abs(item.storageKwh - storageKwh) <= 0.3,
   );
   return match?.id || null;
 }
 
 function storagePrice(storageKwh: number) {
   return (
-    STORAGE_NET_PRICES.find((item) => Math.abs(item.kwh - storageKwh) < 0.02) ||
+    STORAGE_NET_PRICES.find((item) => Math.abs(item.kwh - storageKwh) <= 0.3) ||
     null
   );
 }
