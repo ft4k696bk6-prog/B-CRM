@@ -319,7 +319,7 @@ export async function POST(request: Request) {
     boiler_capacity: boilerCapacity,
     ems: bool(body, "ems"),
     cable_length_meters: number(body, "cable_length_meters") ?? 8,
-    pricing_adjustment_net: number(body, "pricing_adjustment_net") ?? 0,
+    pricing_adjustment_net: canManageContractWorkflow(profile.role) ? (number(body, "pricing_adjustment_net") ?? 0) : 0,
     additional_notes: text(body, "additional_notes") || null,
     created_by: profile.id,
     crm_environment: profile.crm_environment,
@@ -528,7 +528,7 @@ export async function PATCH(request: Request) {
       "boiler_capacity",
       "ems",
       "cable_length_meters",
-      "pricing_adjustment_net",
+      ...(canManageContractWorkflow(profile.role) ? ["pricing_adjustment_net"] : []),
       "additional_notes",
     ];
     const next = Object.fromEntries(
