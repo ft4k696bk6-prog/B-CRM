@@ -76,6 +76,26 @@ export function calculateContractPricing(
   const saleGross = Math.max(numberValue(input.gross_amount) || 0, 0);
   const saleNet = money(saleGross / (1 + CONTRACT_VAT_RATE / 100));
 
+  if (!["PV", "ME", "PV+ME"].includes(input.product_type)) {
+    return {
+      saleGross,
+      saleNet,
+      baseNet: null,
+      marginNet: null,
+      error: "Stara umowa nie ma konfiguracji zgodnej z aktualnym kalkulatorem.",
+    };
+  }
+
+  if (saleGross <= 0) {
+    return {
+      saleGross,
+      saleNet,
+      baseNet: null,
+      marginNet: null,
+      error: "Brakuje ceny sprzedaży brutto.",
+    };
+  }
+
   let cennikNet = 0;
   let inverterAdjustmentNet = 0;
   let pvKwp = 0;
