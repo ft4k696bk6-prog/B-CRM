@@ -132,6 +132,7 @@ export function publicContract(contract: ContractRecord, role: string): Contract
   delete result.management_notes;
   delete result.resignation_note;
   delete result.commission_sale_net;
+  delete result.commission_company_margin_net;
   delete result.commission_base_net;
   delete result.commission_margin_net;
   delete result.commission_percent;

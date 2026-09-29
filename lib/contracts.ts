@@ -126,6 +126,7 @@ export type ContractRecord = {
   resignation_note?: string | null;
   resigned_at?: string | null;
   commission_sale_net?: number | null;
+  commission_company_margin_net?: number | null;
   commission_base_net?: number | null;
   commission_margin_net?: number;
   commission_percent?: number;

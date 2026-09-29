@@ -94,10 +94,10 @@ export default function ContractPage() {
       </> : <ContractPublicProgress contract={contract} />}
     </section>
     <section className="app-card"><SectionHeader title="Dane umowy" /><dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{details.map(([label, value]) => <div key={label}><dt className="label">{label}</dt><dd className="font-semibold">{value}</dd></div>)}</dl></section>
-    {admin ? <section className="app-card"><SectionHeader title="Prowizja" description="Liczenie: cena sprzedaży netto (brutto / 1,08) − cena bazowa netto z kalkulatora = marża. Prowizja = dodatnia marża × % handlowca." />{contract.commission_calc_error ? <Alert tone="warning">{contract.commission_calc_error}</Alert> : <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
+    {admin ? <section className="app-card"><SectionHeader title="Prowizja" description="Cena bazowa zawiera koszt z kalkulatora, marżę firmy oraz płatne dodatki (m.in. backup, EMS, grunt/ekierki, bojler i kabel). Marża handlowca = sprzedaż netto − cena bazowa netto." />{contract.commission_calc_error ? <Alert tone="warning">{contract.commission_calc_error}</Alert> : <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
       <div className="rounded-lg border border-line p-3"><div className="label">Sprzedaż brutto</div><b>{money(Number(contract.gross_amount) || 0)}</b></div>
       <div className="rounded-lg border border-line p-3"><div className="label">Sprzedaż netto</div><b>{money(Number(contract.commission_sale_net) || 0)}</b></div>
-      <div className="rounded-lg border border-line p-3"><div className="label">Cena bazowa netto</div><b>{money(Number(contract.commission_base_net) || 0)}</b></div>
+      <div className="rounded-lg border border-line p-3"><div className="label">Cena bazowa netto</div><b>{money(Number(contract.commission_base_net) || 0)}</b><div className="mt-1 text-[11px] text-muted">w tym marża firmy {money(Number(contract.commission_company_margin_net) || 0)}</div></div>
       <div className="rounded-lg border border-line p-3"><div className="label">Marża netto</div><b>{money(Number(contract.commission_margin_net) || 0)}</b></div>
       <div className="rounded-lg border border-line p-3"><div className="label">% handlowca</div><b>{Number(contract.commission_percent) || 0}%</b></div>
       <div className="rounded-lg border border-leaf/30 bg-leaf/10 p-3"><div className="label">Prowizja</div><b className="text-leaf">{money(Number(contract.commission_amount) || 0)}</b></div>
