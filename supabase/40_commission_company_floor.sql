@@ -3,22 +3,21 @@ begin;
 alter table public.contracts
   add column if not exists commission_company_margin_net numeric(12,2);
 
-with recovered_ems as (
-  update public.contracts
-  set ems = true
-  where crm_environment = 'production'
-    and coalesce(ems, false) = false
-    and coalesce(additional_notes, '') ~* '(^|[^[:alpha:]])ems([^[:alpha:]]|$)'
-  returning id
-),
-source as (
+update public.contracts
+set ems = true
+where crm_environment = 'production'
+  and coalesce(ems, false) = false
+  and coalesce(additional_notes, '') ~* '(^|[^[:alpha:]])ems([^[:alpha:]]|$)';
+
+with source as (
   select
     c.id,
     coalesce(p.company_margin_net, 0) as company_margin_net,
     c.commission_sale_net as sale_net,
     c.commission_base_net as old_base_net,
     c.commission_percent as pct,
-    exists(select 1 from recovered_ems r where r.id = c.id) as recovered_ems
+    c.ems,
+    coalesce(c.additional_notes, '') ~* '(^|[^[:alpha:]])ems([^[:alpha:]]|$)' as ems_recovered_from_note
   from public.contracts c
   left join public.profiles p on p.id = c.created_by
   where c.crm_environment = 'production'
@@ -28,7 +27,12 @@ calculated as (
     *,
     case
       when old_base_net is null then null
-      else round(old_base_net + company_margin_net + case when recovered_ems then 3000 else 0 end, 2)
+      else round(
+        old_base_net
+        + company_margin_net
+        + case when ems_recovered_from_note then 3000 else 0 end,
+        2
+      )
     end as new_base_net
   from source
 )
