@@ -715,26 +715,24 @@ export default function UsersPage() {
 
         <CollapsibleSection
           icon={Save}
-          title="Indywidualna marża i prowizja"
-          description="Dla każdego użytkownika ustawiasz osobno marżę firmy, marżę handlowca i procent prowizji naliczany od marży handlowca. Te wartości są zapisywane na nowej umowie jako rozliczenie z chwili sprzedaży."
+          title="Cennik i prowizje handlowców"
+          description="Marża firmy i marża handlowca służą do budowania ceny w kalkulatorze. Prowizja na umowie nie jest od tej marży stałej: CRM liczy rzeczywistą marżę jako cena sprzedaży netto minus cena bazowa netto z kalkulatora, a potem mnoży ją przez ustawiony procent."
           defaultOpen
         >
           <div className="grid gap-3">
             {users.map((person) => {
               const draft = pricingDrafts[person.id] || { company: "10000", sales: "5000", commission: "0" };
               const update = (key: "company" | "sales" | "commission", value: string) => setPricingDrafts((current) => ({ ...current, [person.id]: { ...draft, [key]: value } }));
-              const salesMargin = Math.max(0, Number(draft.sales) || 0);
               const commissionPercent = Math.min(100, Math.max(0, Number(draft.commission) || 0));
-              const commissionAmount = Math.round(salesMargin * commissionPercent) / 100;
               return <article key={person.id} className="grid gap-3 rounded-lg border border-line bg-[#f9fbfd] p-4 lg:grid-cols-[minmax(220px,1fr)_160px_160px_180px_auto] lg:items-end">
                 <div>
                   <div className="font-black text-ink">{person.full_name}</div>
                   <div className="text-xs text-muted">{ROLE_LABELS[person.role]}</div>
-                  <div className="mt-2 text-xs font-bold text-leaf">Prowizja przy tych ustawieniach: {formatMoney(commissionAmount)} netto / umowę</div>
+                  <div className="mt-2 text-xs font-bold text-leaf">Prowizja: {commissionPercent}% rzeczywistej marży na każdej umowie</div>
                 </div>
                 <label><span className="label">Marża firmy netto</span><input className="field min-h-11" type="number" min="0" step="100" value={draft.company} onChange={(event) => update("company", event.target.value)} /></label>
-                <label><span className="label">Marża handlowca netto</span><input className="field min-h-11" type="number" min="0" step="100" value={draft.sales} onChange={(event) => update("sales", event.target.value)} /></label>
-                <label><span className="label">Prowizja od marży handlowca (%)</span><input className="field min-h-11" type="number" min="0" max="100" step="0.1" value={draft.commission} onChange={(event) => update("commission", event.target.value)} /></label>
+                <label><span className="label">Marża handlowca w kalkulatorze netto</span><input className="field min-h-11" type="number" min="0" step="100" value={draft.sales} onChange={(event) => update("sales", event.target.value)} /></label>
+                <label><span className="label">Prowizja od rzeczywistej marży (%)</span><input className="field min-h-11" type="number" min="0" max="100" step="0.1" value={draft.commission} onChange={(event) => update("commission", event.target.value)} /></label>
                 <button type="button" className="btn-primary min-h-11" disabled={busy} onClick={() => savePricing(person)}><Save className="h-4 w-4" />Zapisz rozliczenia</button>
               </article>;
             })}
