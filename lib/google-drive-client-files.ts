@@ -40,7 +40,11 @@ function escapeDriveQuery(value: string) {
 
 async function driveToken() {
   const delegatedUser = process.env.GOOGLE_WORKSPACE_DELEGATED_USER?.trim();
-  return googleWorkspaceToken(["https://www.googleapis.com/auth/drive"], delegatedUser || undefined);
+  return googleWorkspaceToken(
+    ["https://www.googleapis.com/auth/drive"],
+    delegatedUser || undefined,
+    { requireStorageQuota: true }
+  );
 }
 
 async function driveJson<T>(token: string, url: string, init?: RequestInit) {
@@ -60,7 +64,9 @@ async function driveJson<T>(token: string, url: string, init?: RequestInit) {
 async function findFolder(token: string, parentId: string, queryExtra: string) {
   const params = new URLSearchParams({
     pageSize: "10",
-    fields: "files(id,name,webViewLink,appProperties)"
+    fields: "files(id,name,webViewLink,appProperties)",
+    supportsAllDrives: "true",
+    includeItemsFromAllDrives: "true"
   });
   params.set(
     "q",
@@ -80,7 +86,9 @@ function normalizedFolderName(name: string) {
 async function findNamedFolder(token: string, parentId: string, name: string) {
   const params = new URLSearchParams({
     pageSize: "1000",
-    fields: "files(id,name,webViewLink,appProperties)"
+    fields: "files(id,name,webViewLink,appProperties)",
+    supportsAllDrives: "true",
+    includeItemsFromAllDrives: "true"
   });
   params.set(
     "q",
@@ -102,7 +110,7 @@ async function createFolder(
 ) {
   return driveJson<DriveFolder>(
     token,
-    "https://www.googleapis.com/drive/v3/files?fields=id,name,webViewLink",
+    "https://www.googleapis.com/drive/v3/files?fields=id,name,webViewLink&supportsAllDrives=true",
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -176,6 +184,63 @@ async function ensureClientFolder(
   return clientFolder;
 }
 
+async function uploadResumable(
+  token: string,
+  metadata: Record<string, unknown>,
+  mimeType: string,
+  bytes: ArrayBuffer
+) {
+  const createResponse = await fetch(
+    "https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true&fields=id,name,webViewLink",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json; charset=UTF-8",
+        "X-Upload-Content-Type": mimeType || "application/octet-stream",
+        "X-Upload-Content-Length": String(bytes.byteLength)
+      },
+      body: JSON.stringify(metadata),
+      cache: "no-store"
+    }
+  );
+
+  if (!createResponse.ok) {
+    const body = (await createResponse.json().catch(() => ({}))) as { error?: { message?: string } };
+    throw new Error(body.error?.message || `Google Drive HTTP ${createResponse.status}`);
+  }
+
+  const uploadUrl = createResponse.headers.get("location");
+  if (!uploadUrl) throw new Error("Google Drive nie zwrócił adresu do przesłania pliku.");
+
+  const uploadResponse = await fetch(uploadUrl, {
+    method: "PUT",
+    headers: {
+      "Content-Type": mimeType || "application/octet-stream",
+      "Content-Length": String(bytes.byteLength)
+    },
+    body: Buffer.from(bytes),
+    cache: "no-store"
+  });
+
+  const body = (await uploadResponse.json().catch(() => ({}))) as {
+    id?: string;
+    name?: string;
+    webViewLink?: string;
+    error?: { message?: string };
+  };
+
+  if (!uploadResponse.ok || !body.id || !body.name) {
+    throw new Error(body.error?.message || `Google Drive HTTP ${uploadResponse.status}`);
+  }
+
+  return {
+    id: body.id,
+    name: body.name,
+    webViewLink: body.webViewLink
+  };
+}
+
 export async function uploadClientAttachmentToDrive({
   leadId,
   contractId,
@@ -195,30 +260,20 @@ export async function uploadClientAttachmentToDrive({
 }): Promise<DriveFileResult> {
   const token = await driveToken();
   const folder = await ensureClientFolder(token, leadId, customerName, signedAt);
-  const boundary = `bcrm_${crypto.randomUUID().replace(/-/g, "")}`;
-  const metadata = JSON.stringify({
+  const metadata = {
     name: fileName,
     parents: [folder.id],
     appProperties: {
       bcrm_lead_id: leadId,
       bcrm_contract_id: contractId
     }
-  });
-  const prefix = Buffer.from(
-    `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${metadata}\r\n` +
-      `--${boundary}\r\nContent-Type: ${mimeType || "application/octet-stream"}\r\n\r\n`
-  );
-  const suffix = Buffer.from(`\r\n--${boundary}--\r\n`);
-  const body = Buffer.concat([prefix, Buffer.from(bytes), suffix]);
+  };
 
-  const response = await driveJson<{ id: string; name: string; webViewLink?: string }>(
+  const response = await uploadResumable(
     token,
-    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink",
-    {
-      method: "POST",
-      headers: { "Content-Type": `multipart/related; boundary=${boundary}` },
-      body
-    }
+    metadata,
+    mimeType || "application/octet-stream",
+    bytes
   );
 
   return {
