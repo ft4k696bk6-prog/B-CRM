@@ -18,6 +18,7 @@ type CommissionContract = {
   ems?: boolean | null;
   cable_length_meters?: number | string | null;
   pricing_adjustment_net?: number | string | null;
+  commission_company_margin_net?: number | string | null;
   commission_percent?: number | string | null;
 };
 
@@ -29,7 +30,7 @@ export async function recalculateContractCommission(
   const { data: contract, error: contractError } = await supabaseAdmin
     .from("contracts")
     .select(
-      "id,created_by,product_type,gross_amount,panels_count,storage_capacity_kwh,has_inverter,inverter_power_kw,mounting_locations,backup_power,boiler_capacity,ems,cable_length_meters,pricing_adjustment_net,commission_percent",
+      "id,created_by,product_type,gross_amount,panels_count,storage_capacity_kwh,has_inverter,inverter_power_kw,mounting_locations,backup_power,boiler_capacity,ems,cable_length_meters,pricing_adjustment_net,commission_company_margin_net,commission_percent",
     )
     .eq("id", contractId)
     .single();
@@ -40,21 +41,35 @@ export async function recalculateContractCommission(
 
   const typedContract = contract as CommissionContract;
   let commissionPercent = Number(typedContract.commission_percent) || 0;
+  let companyMarginNet = Number(typedContract.commission_company_margin_net);
 
-  if (options?.refreshPercent || !Number.isFinite(commissionPercent)) {
+  if (
+    options?.refreshPercent ||
+    !Number.isFinite(commissionPercent) ||
+    !Number.isFinite(companyMarginNet)
+  ) {
     const { data: creator, error: creatorError } = await supabaseAdmin
       .from("profiles")
-      .select("commission_percent")
+      .select("commission_percent,company_margin_net")
       .eq("id", typedContract.created_by)
       .single();
     if (creatorError || !creator) {
       throw new Error(creatorError?.message || "Nie znaleziono ustawień prowizji handlowca.");
     }
-    commissionPercent = Number(creator.commission_percent) || 0;
+    if (options?.refreshPercent || !Number.isFinite(commissionPercent)) {
+      commissionPercent = Number(creator.commission_percent) || 0;
+    }
+    if (options?.refreshPercent || !Number.isFinite(companyMarginNet)) {
+      companyMarginNet = Number(creator.company_margin_net) || 0;
+    }
   }
 
   commissionPercent = Math.min(Math.max(commissionPercent, 0), 100);
-  const pricing = calculateContractPricing(typedContract);
+  companyMarginNet = Math.max(Number(companyMarginNet) || 0, 0);
+  const pricing = calculateContractPricing({
+    ...typedContract,
+    company_margin_net: companyMarginNet,
+  });
   const marginNet = pricing.marginNet ?? 0;
   const commissionAmount =
     pricing.marginNet === null
@@ -63,6 +78,7 @@ export async function recalculateContractCommission(
 
   const patch = {
     commission_sale_net: pricing.saleNet,
+    commission_company_margin_net: companyMarginNet,
     commission_base_net: pricing.baseNet,
     commission_margin_net: marginNet,
     commission_percent: commissionPercent,
@@ -83,12 +99,18 @@ export async function recalculateContractCommission(
 export function commissionSnapshotForNewContract(
   input: CommissionContract,
   commissionPercent: number,
+  companyMarginNet: number,
 ) {
-  const pricing = calculateContractPricing(input);
+  const normalizedCompanyMarginNet = Math.max(Number(companyMarginNet) || 0, 0);
+  const pricing = calculateContractPricing({
+    ...input,
+    company_margin_net: normalizedCompanyMarginNet,
+  });
   const normalizedPercent = Math.min(Math.max(Number(commissionPercent) || 0, 0), 100);
   const marginNet = pricing.marginNet ?? 0;
   return {
     commission_sale_net: pricing.saleNet,
+    commission_company_margin_net: normalizedCompanyMarginNet,
     commission_base_net: pricing.baseNet,
     commission_margin_net: marginNet,
     commission_percent: normalizedPercent,
