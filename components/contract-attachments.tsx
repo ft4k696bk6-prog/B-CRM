@@ -178,7 +178,7 @@ export function ContractAttachments({
         Każdy dodany PDF, zdjęcie i wideo jest zapisywany w CRM oraz automatycznie kopiowany na Google Drive do folderu <b>Klienci CRM / {contract.customer_name}</b>.
       </div>
       <div className="grid gap-3 md:grid-cols-3">
-        {[["contract_pdf", "PDF umowy (25 MB)", "application/pdf"], ["photo", "Zdjęcia (15 MB każde)", "image/*"], ["video", "Wideo (50 MB)", "video/*"]].map(([kind, label, accept]) => (
+        {[["contract_pdf", "PDF umowy (25 MB)", "application/pdf"], ["photo", "Zdjęcia (15 MB każde)", "image/*"], ["video", "Wideo (250 MB)", "video/*"]].map(([kind, label, accept]) => (
           <div key={kind} className="rounded-lg border border-line p-3">
             <label>
               <span className="label">{label}</span>
