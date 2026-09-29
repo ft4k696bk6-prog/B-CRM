@@ -14,6 +14,8 @@ import { canManageContractWorkflow, isArchived, needsScheduling, WORKFLOW_CHECKB
 import { formatDate, formatDateTime } from "@/lib/date";
 import { useAuth } from "@/lib/use-auth";
 
+const money = (amount: number) => amount.toLocaleString("pl-PL", { style: "currency", currency: "PLN", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 export default function ContractPage() {
   const { id } = useParams<{ id: string }>();
   const { loading, profile, session } = useAuth();
@@ -70,6 +72,9 @@ export default function ContractPage() {
     ["Miejsce montażu", contract.mounting_locations?.join(", ") || "—"],
     ["Optymalizatory", String(contract.optimizer_count || 0)], ["Back-up", contract.backup_power ? "Tak" : "Nie"],
     ["Ochrona przepięciowa", contract.surge_protection ? "Tak" : "Nie"], ["Uziemienie", contract.grounding ? "Tak" : "Nie"],
+    ["EMS", contract.ems ? "Tak" : "Nie"],
+    ["Bojler", contract.boiler_capacity && contract.boiler_capacity !== "none" ? `${contract.boiler_capacity} l` : "Brak"],
+    ["Długość kabla", `${Number(contract.cable_length_meters) || 8} m`],
   ];
 
   return <AppShell profile={profile}><div className="grid gap-5">
@@ -89,6 +94,14 @@ export default function ContractPage() {
       </> : <ContractPublicProgress contract={contract} />}
     </section>
     <section className="app-card"><SectionHeader title="Dane umowy" /><dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{details.map(([label, value]) => <div key={label}><dt className="label">{label}</dt><dd className="font-semibold">{value}</dd></div>)}</dl></section>
+    {admin ? <section className="app-card"><SectionHeader title="Prowizja" description="Liczenie: cena sprzedaży netto (brutto / 1,08) − cena bazowa netto z kalkulatora = marża. Prowizja = dodatnia marża × % handlowca." />{contract.commission_calc_error ? <Alert tone="warning">{contract.commission_calc_error}</Alert> : <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
+      <div className="rounded-lg border border-line p-3"><div className="label">Sprzedaż brutto</div><b>{money(Number(contract.gross_amount) || 0)}</b></div>
+      <div className="rounded-lg border border-line p-3"><div className="label">Sprzedaż netto</div><b>{money(Number(contract.commission_sale_net) || 0)}</b></div>
+      <div className="rounded-lg border border-line p-3"><div className="label">Cena bazowa netto</div><b>{money(Number(contract.commission_base_net) || 0)}</b></div>
+      <div className="rounded-lg border border-line p-3"><div className="label">Marża netto</div><b>{money(Number(contract.commission_margin_net) || 0)}</b></div>
+      <div className="rounded-lg border border-line p-3"><div className="label">% handlowca</div><b>{Number(contract.commission_percent) || 0}%</b></div>
+      <div className="rounded-lg border border-leaf/30 bg-leaf/10 p-3"><div className="label">Prowizja</div><b className="text-leaf">{money(Number(contract.commission_amount) || 0)}</b></div>
+    </div>}</section> : null}
     <section className="app-card"><SectionHeader title="Instalacja i sprzęt" /><dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{equipment.map(([label, value]) => <div key={label} className="rounded-lg border border-line p-3"><dt className="label">{label}</dt><dd className="font-semibold">{value}</dd></div>)}</dl>{contract.additional_notes ? <p className="mt-4 whitespace-pre-wrap text-sm">{contract.additional_notes}</p> : null}</section>
     {admin ? <section className="app-card"><SectionHeader icon={MessageSquarePlus} title="Notatki wewnętrzne" /><div className="grid gap-2">{(contract.management_notes || []).map((note) => <div key={note.id} className="rounded-lg border border-line p-3"><b>{note.author}</b><p className="whitespace-pre-wrap">{note.content}</p><small className="text-muted">{formatDateTime(note.created_at)}</small></div>)}</div><label className="mt-4 block"><span className="label">Nowa notatka</span><textarea className="field" value={privateNote} onChange={(event) => setPrivateNote(event.target.value)} /></label><button className="btn-primary mt-3" disabled={noteBusy || !privateNote.trim()} onClick={() => void saveNote()}>{noteBusy ? "Zapisywanie…" : "Dodaj notatkę"}</button></section> : null}
     <ModalShell open={attachmentsOpen && canManageAttachments} title="Dodaj załączniki do umowy" description={contract.customer_name} size="xl" onClose={() => setAttachmentsOpen(false)}><ContractAttachments contract={contract} accessToken={session?.access_token || ""} mode="manage" onUploaded={(files) => setContract((current) => current ? { ...current, files: [...(current.files || []), ...files] } : current)} /></ModalShell>

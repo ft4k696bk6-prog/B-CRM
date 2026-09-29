@@ -89,6 +89,10 @@ export type ContractRecord = {
   optimizer_count: number;
   surge_protection: boolean;
   grounding: boolean;
+  boiler_capacity?: "none" | "80" | "150";
+  ems?: boolean;
+  cable_length_meters?: number;
+  pricing_adjustment_net?: number;
   additional_notes: string | null;
   installation_at: string | null;
   installer_id: string | null;
@@ -121,9 +125,13 @@ export type ContractRecord = {
   is_process_visible?: boolean;
   resignation_note?: string | null;
   resigned_at?: string | null;
+  commission_sale_net?: number | null;
+  commission_base_net?: number | null;
   commission_margin_net?: number;
   commission_percent?: number;
   commission_amount?: number;
+  commission_calc_error?: string | null;
+  commission_calculated_at?: string | null;
   management_notes?: Array<{
     id: string;
     author: string;

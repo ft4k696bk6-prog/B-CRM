@@ -131,9 +131,13 @@ export function publicContract(contract: ContractRecord, role: string): Contract
   delete result.process_note;
   delete result.management_notes;
   delete result.resignation_note;
+  delete result.commission_sale_net;
+  delete result.commission_base_net;
   delete result.commission_margin_net;
   delete result.commission_percent;
   delete result.commission_amount;
+  delete result.commission_calc_error;
+  delete result.commission_calculated_at;
   const privateResult = result as unknown as Record<string, unknown>;
   delete privateResult.installer_id;
   delete privateResult.installer_name;
