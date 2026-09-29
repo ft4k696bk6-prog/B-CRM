@@ -38,8 +38,10 @@ export function ContractsCommissions() {
   const rows = useMemo(() => items.filter((item) => item.submission_status === "submitted" && (!month || signingMonth(item.signed_at) === month) && (!salesperson || item.created_by === salesperson)).sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)), [items, month, salesperson]);
   const months = useMemo(() => [...new Set(items.map((item) => signingMonth(item.signed_at)))].filter((value) => value !== "unknown").sort().reverse(), [items]);
   const sellers = useMemo(() => [...new Map(items.map((item) => [item.created_by, item.creator?.full_name || "Nieprzypisane"])).entries()].sort((a, b) => a[1].localeCompare(b[1], "pl")), [items]);
-  const total = rows.reduce((sum, item) => sum + (Number(item.commission_amount) || 0), 0);
-  const settled = rows.filter((item) => item.workflow?.settled).reduce((sum, item) => sum + (Number(item.commission_amount) || 0), 0);
+  const eligibleRows = rows.filter((item) => item.archive_reason !== "resigned");
+  const total = eligibleRows.reduce((sum, item) => sum + (Number(item.commission_amount) || 0), 0);
+  const payable = eligibleRows.filter((item) => item.workflow?.settled && !item.workflow?.commission_paid).reduce((sum, item) => sum + (Number(item.commission_amount) || 0), 0);
+  const paid = eligibleRows.filter((item) => item.workflow?.commission_paid).reduce((sum, item) => sum + (Number(item.commission_amount) || 0), 0);
 
   if (loading || !profile) return <LoadingScreen />;
   if (!canManageContractWorkflow(profile.role)) return <AppShell profile={profile}><Alert tone="danger">Ta zakładka jest dostępna tylko dla właściciela i administratorów.</Alert></AppShell>;
