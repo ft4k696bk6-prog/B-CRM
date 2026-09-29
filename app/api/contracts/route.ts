@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { canAccessLeadWithTeam, requireApiProfile } from "@/lib/server-auth";
+import { recalculateContractCommission } from "@/lib/contract-commission-server";
 import {
   canViewContractForRole,
   type ContractRecord,
@@ -273,6 +274,9 @@ export async function POST(request: Request) {
     );
   const hasInverter = product !== "ME" || bool(body, "has_inverter");
   const inverterPhase = text(body, "inverter_phase");
+  const boilerCapacity = text(body, "boiler_capacity") || "none";
+  if (!["none", "80", "150"].includes(boilerCapacity))
+    return NextResponse.json({ error: "Niepoprawna pojemność bojlera." }, { status: 400 });
   if (hasInverter && !["1F", "3F"].includes(inverterPhase))
     return NextResponse.json(
       { error: "Wybierz, czy falownik jest 1F czy 3F." },
@@ -312,6 +316,10 @@ export async function POST(request: Request) {
     optimizer_count: number(body, "optimizer_count") || 0,
     surge_protection: bool(body, "surge_protection"),
     grounding: bool(body, "grounding"),
+    boiler_capacity: boilerCapacity,
+    ems: bool(body, "ems"),
+    cable_length_meters: number(body, "cable_length_meters") ?? 8,
+    pricing_adjustment_net: number(body, "pricing_adjustment_net") ?? 0,
     additional_notes: text(body, "additional_notes") || null,
     created_by: profile.id,
     crm_environment: profile.crm_environment,
@@ -344,7 +352,15 @@ export async function POST(request: Request) {
   const contract = insertResult.data as ContractRow | null;
   if (insertResult.error || !contract)
     return NextResponse.json({ error: insertResult.error?.message || "Nie udało się zapisać umowy." }, { status: 400 });
-  return NextResponse.json({ contract }, { status: 201 });
+  try {
+    await recalculateContractCommission(supabaseAdmin, contract.id, { refreshPercent: true });
+  } catch (commissionError) {
+    return NextResponse.json(
+      { error: commissionError instanceof Error ? commissionError.message : "Nie udało się wyliczyć prowizji." },
+      { status: 400 },
+    );
+  }
+  return GET(new Request(`${new URL(request.url).origin}/api/contracts?id=${contract.id}`, { headers: request.headers }));
 }
 
 export async function PATCH(request: Request) {
@@ -433,6 +449,14 @@ export async function PATCH(request: Request) {
         },
         { status: 409 },
       );
+    try {
+      await recalculateContractCommission(supabaseAdmin, id, { refreshPercent: true });
+    } catch (commissionError) {
+      return NextResponse.json(
+        { error: commissionError instanceof Error ? commissionError.message : "Nie udało się wyliczyć prowizji." },
+        { status: 400 },
+      );
+    }
     const { error: submitError } = await supabaseAdmin.rpc("submit_contract", {
       p_contract_id: id,
       p_actor_id: profile.id,
@@ -501,6 +525,10 @@ export async function PATCH(request: Request) {
       "optimizer_count",
       "surge_protection",
       "grounding",
+      "boiler_capacity",
+      "ems",
+      "cable_length_meters",
+      "pricing_adjustment_net",
       "additional_notes",
     ];
     const next = Object.fromEntries(
@@ -518,6 +546,14 @@ export async function PATCH(request: Request) {
         .eq("id", id);
       if (error)
         return NextResponse.json({ error: error.message }, { status: 400 });
+      try {
+        await recalculateContractCommission(supabaseAdmin, id);
+      } catch (commissionError) {
+        return NextResponse.json(
+          { error: commissionError instanceof Error ? commissionError.message : "Nie udało się przeliczyć prowizji." },
+          { status: 400 },
+        );
+      }
     }
   }
   if (!fallbackMode && Object.keys(pendingUpdates).length) {
