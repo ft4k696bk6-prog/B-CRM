@@ -100,13 +100,32 @@ async function googleUserOAuthToken() {
   return body.access_token;
 }
 
-export async function googleWorkspaceToken(scopes: string[], delegatedUser?: string) {
+export async function googleWorkspaceToken(
+  scopes: string[],
+  delegatedUser?: string,
+  options?: { requireStorageQuota?: boolean }
+) {
   let oauthError: unknown = null;
   try {
     const userToken = await googleUserOAuthToken();
     if (userToken) return userToken;
   } catch (error) {
     oauthError = error;
+  }
+
+  // A plain service account has no personal Google Drive storage quota.
+  // For write operations we may only fall back when domain-wide delegation
+  // impersonates a real Workspace user. Otherwise surface the OAuth problem
+  // instead of returning a token that is guaranteed to fail on file creation.
+  if (options?.requireStorageQuota && !delegatedUser) {
+    if (oauthError instanceof Error) {
+      throw new Error(
+        `Połączenie Google Drive wygasło albo zostało odłączone: ${oauthError.message}. Połącz konto Google ponownie w CRM.`
+      );
+    }
+    throw new Error(
+      "Google Drive nie ma aktywnego połączenia użytkownika. Połącz konto Google ponownie w CRM."
+    );
   }
 
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;

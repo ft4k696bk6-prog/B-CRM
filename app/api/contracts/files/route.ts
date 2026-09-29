@@ -7,6 +7,11 @@ export const runtime = "nodejs";
 export const maxDuration = 300;
 
 const CONTRACT_FILES_BUCKET = "contract-files";
+const FILE_LIMITS_MB: Record<string, number> = {
+  contract_pdf: 25,
+  photo: 15,
+  video: 250
+};
 
 async function ensureContractFilesBucket(
   storage: ReturnType<typeof import("@/lib/server-auth").getServiceClient>["storage"]
@@ -154,10 +159,10 @@ export async function POST(request: Request) {
   if (!leadId || !contractId || !fileName || !["contract_pdf", "photo", "video"].includes(kind)) {
     return NextResponse.json({ error: "Niepoprawny plik." }, { status: 400 });
   }
-  const limits: Record<string, number> = { contract_pdf: 25, photo: 15, video: 50 };
-  if (!Number.isFinite(size) || size <= 0 || size > limits[kind] * 1024 * 1024) {
+  const limitMb = FILE_LIMITS_MB[kind];
+  if (!Number.isFinite(size) || size <= 0 || size > limitMb * 1024 * 1024) {
     return NextResponse.json(
-      { error: `Plik przekracza limit ${limits[kind]} MB albo jest pusty.` },
+      { error: `Plik przekracza limit ${limitMb} MB albo jest pusty.` },
       { status: 400 }
     );
   }
