@@ -15,11 +15,12 @@ describe("contract commission pricing", () => {
       ems: false,
       cable_length_meters: 8,
       pricing_adjustment_net: 0,
+      company_margin_net: 5000,
     });
 
     expect(result.saleNet).toBe(37037.04);
-    expect(result.baseNet).toBe(24782);
-    expect(result.marginNet).toBe(12255.04);
+    expect(result.baseNet).toBe(29782);
+    expect(result.marginNet).toBe(7255.04);
     expect(result.error).toBeNull();
   });
 
@@ -36,8 +37,9 @@ describe("contract commission pricing", () => {
       ems: false,
       cable_length_meters: 8,
       pricing_adjustment_net: 0,
+      company_margin_net: 5000,
     });
-    expect(rounded.baseNet).toBe(24782);
+    expect(rounded.baseNet).toBe(29782);
     expect(rounded.error).toBeNull();
   });
 
@@ -54,11 +56,12 @@ describe("contract commission pricing", () => {
       ems: true,
       cable_length_meters: 18,
       pricing_adjustment_net: 250,
+      company_margin_net: 10000,
     });
 
-    // 41313 - 15000 + ground 5kWp*550 + backup 1500 + boiler 1500
-    // + EMS 3000 + 10 chargeable cable meters*15 + 250 adjustment.
-    expect(result.baseNet).toBe(35463);
+    // 41313 - 15000 + company margin 10000 + ground 5kWp*550
+    // + backup 1500 + boiler 1500 + EMS 3000 + cable + adjustment.
+    expect(result.baseNet).toBe(45463);
     expect(result.error).toBeNull();
   });
 });
