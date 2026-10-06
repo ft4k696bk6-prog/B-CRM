@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CheckCircle2, Clock3, RefreshCw } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
@@ -229,6 +230,9 @@ export default function SubmissionsPage() {
                       {addressFor(row) ? <div className="mt-3 text-sm text-muted">{addressFor(row)}</div> : null}
                       {row.phone ? <div className="mt-1 text-sm text-muted">Tel. {row.phone}</div> : null}
                       <div className="mt-3 text-xs text-muted">Rozliczona umowa · w kolejce zgłoszeń</div>
+                      <Link href={`/realizacja/${row.id}`} className="btn-secondary mt-3 w-fit">
+                        Otwórz umowę
+                      </Link>
                     </div>
 
                     <TaskCard
