@@ -207,6 +207,7 @@ async function requireAdmin(request: Request) {
     return {
       supabaseAdmin,
       user,
+      requesterRole,
       requesterEmail,
       requesterIsDemo: isDemoUserEmail(requesterEmail),
       requesterScope: normalizeCrmScope(profile?.crm_environment, requesterEmail)
@@ -287,6 +288,13 @@ export async function POST(request: Request) {
     if (auth.requesterIsDemo) {
       return NextResponse.json(
         { error: "Konto demo nie może tworzyć prawdziwych użytkowników." },
+        { status: 403 }
+      );
+    }
+
+    if ((role === "owner" || role === "admin") && auth.requesterRole !== "owner") {
+      return NextResponse.json(
+        { error: "Tylko właściciel może nadawać rolę właściciela lub admina." },
         { status: 403 }
       );
     }
@@ -427,9 +435,32 @@ export async function PATCH(request: Request) {
       );
     }
 
-    if (isSystemAdminRole(targetRole) && role !== targetRole && id !== auth.user.id) {
+    if (targetRole === "owner" && role !== targetRole && id !== auth.user.id) {
       return NextResponse.json(
-        { error: "Nie można odebrać roli właściciela lub admina innemu administratorowi." },
+        { error: "Nie można odebrać roli właściciela innemu właścicielowi." },
+        { status: 403 }
+      );
+    }
+
+    if (
+      targetRole === "admin" &&
+      role !== targetRole &&
+      id !== auth.user.id &&
+      auth.requesterRole !== "owner"
+    ) {
+      return NextResponse.json(
+        { error: "Tylko właściciel może odebrać rolę admina innemu użytkownikowi." },
+        { status: 403 }
+      );
+    }
+
+    if (
+      (role === "owner" || role === "admin") &&
+      role !== targetRole &&
+      auth.requesterRole !== "owner"
+    ) {
+      return NextResponse.json(
+        { error: "Tylko właściciel może nadawać rolę właściciela lub admina." },
         { status: 403 }
       );
     }
@@ -550,6 +581,20 @@ export async function DELETE(request: Request) {
     if (normalizeCrmScope(target.crm_environment, target.email) !== auth.requesterScope) {
       return NextResponse.json(
         { error: "Możesz usuwać wyłącznie użytkowników z tego samego środowiska CRM." },
+        { status: 403 }
+      );
+    }
+
+    const targetRole = normalizeRole(target.role, target.email);
+    if (targetRole === "owner") {
+      return NextResponse.json(
+        { error: "Nie można usunąć konta właściciela." },
+        { status: 403 }
+      );
+    }
+    if (targetRole === "admin" && auth.requesterRole !== "owner") {
+      return NextResponse.json(
+        { error: "Tylko właściciel może usunąć konto admina." },
         { status: 403 }
       );
     }
