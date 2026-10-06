@@ -79,6 +79,15 @@ export function useAuth(requiredRole?: UserRole | UserRole[]) {
         return;
       }
 
+      if (
+        profile.role === "backoffice" &&
+        pathname !== "/zgloszenia" &&
+        pathname !== "/realizacja/umowy"
+      ) {
+        router.replace("/zgloszenia");
+        return;
+      }
+
       if (isSalesRole(profile.role)) {
         const queueResponse = await fetch("/api/leads/mandatory-queue", {
           headers: { Authorization: `Bearer ${session.access_token}` },

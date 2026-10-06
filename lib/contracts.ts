@@ -55,6 +55,7 @@ export const CONTRACT_TASKS = [
   ["umowic_montaz", "Umówić montaż"],
   ["do_montazu", "Do montażu"],
   ["zglosic_pge", "Zgłosić PGE"],
+  ["zglosic_dotacje", "Zgłosić pod dotacje"],
   ["do_rozliczenia", "Do rozliczenia"],
 ] as const;
 

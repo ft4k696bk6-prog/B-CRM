@@ -7,7 +7,8 @@ export type UserRole =
   | "viewer"
   | "ksiegowosc"
   | "logistyk"
-  | "monter";
+  | "monter"
+  | "backoffice";
 
 export type LegacyUserRole =
   | "manager"

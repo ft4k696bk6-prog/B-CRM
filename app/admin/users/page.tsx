@@ -72,7 +72,8 @@ const roleToneClasses: Record<UserRole, string> = {
   viewer: "border-line bg-[#f8fafc] text-muted",
   ksiegowosc: "border-leaf/20 bg-leaf/10 text-leaf",
   logistyk: "border-warn/25 bg-warn/10 text-warn",
-  monter: "border-danger/20 bg-danger/10 text-danger"
+  monter: "border-danger/20 bg-danger/10 text-danger",
+  backoffice: "border-sky/20 bg-sky/10 text-sky"
 };
 
 const demoOrgMetaByEmail: Record<string, OrgMeta> = {
@@ -106,7 +107,8 @@ const fallbackOrgMeta: Record<UserRole, OrgMeta> = {
   viewer: { title: "Dostęp tylko do odczytu", department: "Podgląd" },
   ksiegowosc: { title: "Księgowość", department: "Księgowość" },
   logistyk: { title: "Logistyka", department: "Logistyka" },
-  monter: { title: "Montaż", department: "Montaż" }
+  monter: { title: "Montaż", department: "Montaż" },
+  backoffice: { title: "Back-Office", department: "Back-Office" }
 };
 
 function orgMetaFor(profile: Profile): OrgMeta {
@@ -468,7 +470,7 @@ export default function UsersPage() {
   const orgTree = buildOrgTree(users);
   const adminCount = users.filter((user) => user.role === "owner" || user.role === "admin").length;
   const operationsCount = users.filter((user) =>
-    ["finance", "ksiegowosc", "logistyk", "monter"].includes(user.role)
+    ["finance", "ksiegowosc", "logistyk", "monter", "backoffice"].includes(user.role)
   ).length;
 
   return (
