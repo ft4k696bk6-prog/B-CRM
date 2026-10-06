@@ -21,6 +21,9 @@ export type Permission =
   | "files:manage"
   | "calendar:view"
   | "operations:view"
+  | "contracts:view"
+  | "submissions:view"
+  | "submissions:manage"
   | "offers:calculate"
   | "offers:configure-margin"
   | "reports:view:own"
@@ -57,6 +60,9 @@ export const PERMISSIONS: PermissionMatrix = {
     "files:manage",
     "calendar:view",
     "operations:view",
+    "contracts:view",
+    "submissions:view",
+    "submissions:manage",
     "offers:calculate",
     "offers:configure-margin",
     "reports:view:own",
@@ -90,6 +96,9 @@ export const PERMISSIONS: PermissionMatrix = {
     "files:manage",
     "calendar:view",
     "operations:view",
+    "contracts:view",
+    "submissions:view",
+    "submissions:manage",
     "offers:calculate",
     "offers:configure-margin",
     "reports:view:own",
@@ -173,6 +182,11 @@ export const PERMISSIONS: PermissionMatrix = {
     "activities:view",
     "calendar:view",
     "operations:view"
+  ],
+  backoffice: [
+    "contracts:view",
+    "submissions:view",
+    "submissions:manage"
   ]
 };
 
