@@ -21,10 +21,12 @@ type PreparedLead = {
   phone: string;
   postal_code: string | null;
   voivodeship: string | null;
-  source: "B2C";
+  source: string;
+  source_before_resubmission: string | null;
   campaign: string | null;
   status: "Nowy";
   assigned_to: null;
+  assigned_at: string | null;
   crm_environment: CrmDataScope;
   created_at: string;
   address: null;
@@ -40,6 +42,9 @@ type ExistingLead = {
   phone: string;
   created_at: string;
   updated_at: string;
+  assigned_at: string | null;
+  source: string | null;
+  source_before_resubmission: string | null;
   last_form_submission_at: string | null;
   form_submission_count: number | null;
 };
@@ -295,7 +300,7 @@ async function fetchExistingLeadMap(supabase: SupabaseClient, crmEnvironment: Cr
   while (true) {
     const { data, error } = await supabase
       .from("leads")
-      .select("id,phone,created_at,updated_at,last_form_submission_at,form_submission_count")
+      .select("id,phone,created_at,updated_at,assigned_at,source,source_before_resubmission,last_form_submission_at,form_submission_count")
       .eq("crm_environment", crmEnvironment)
       .range(from, from + pageSize - 1);
 
@@ -434,9 +439,11 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
             postal_code: postalCode,
             voivodeship,
             source: "B2C",
+            source_before_resubmission: null,
             campaign,
             status: "Nowy",
             assigned_to: null,
+            assigned_at: null,
             crm_environment: crmEnvironment,
             created_at: submittedAt,
             address: null,
@@ -452,6 +459,8 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
 
       pending.lead.form_submission_count += 1;
       pending.lead.form_resubmission_pending = true;
+      pending.lead.source_before_resubmission = pending.lead.source_before_resubmission || "B2C";
+      pending.lead.source = "Ponowne zgłoszenie";
 
       if (timestampMs(submittedAt) < timestampMs(pending.lead.created_at)) {
         pending.lead.created_at = submittedAt;
@@ -467,6 +476,7 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
         pending.lead.voivodeship = voivodeship;
         pending.lead.campaign = campaign;
       }
+      pending.lead.assigned_at = pending.latestSubmittedAt;
     }
   }
 
@@ -489,13 +499,20 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
   for (const candidate of repeatCandidates.values()) {
     const previousCount = Math.max(candidate.lead.form_submission_count || 0, 1);
     const nextCount = previousCount + candidate.newSubmissionCount;
+    const originalSource =
+      candidate.lead.source_before_resubmission ||
+      (candidate.lead.source && candidate.lead.source !== "Ponowne zgłoszenie" ? candidate.lead.source : "B2C");
+
     const { error: updateError } = await supabase
       .from("leads")
       .update({
         last_form_submission_at: candidate.latestSubmittedAt,
         form_submission_count: nextCount,
         form_resubmission_pending: true,
-        attention_at: candidate.latestSubmittedAt
+        attention_at: candidate.latestSubmittedAt,
+        assigned_at: candidate.latestSubmittedAt,
+        source_before_resubmission: originalSource,
+        source: "Ponowne zgłoszenie"
       })
       .eq("id", candidate.lead.id)
       .eq("crm_environment", crmEnvironment);
