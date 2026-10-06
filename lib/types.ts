@@ -95,6 +95,7 @@ export type AdminLeadFilters = {
   voivodeship: string;
   county: string;
   campaign: string;
+  source: string;
   status: LeadStatus[];
   assignedTo: string;
 };

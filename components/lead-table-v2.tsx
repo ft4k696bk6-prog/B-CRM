@@ -40,6 +40,27 @@ function formatSource(source: string | null, language: "pl" | "en") {
   return source;
 }
 
+function RepeatSubmissionBadge({ lead, language }: { lead: Lead; language: "pl" | "en" }) {
+  const repeatCount = Math.max(Number(lead.form_submission_count || 0) - 1, 0);
+  if (repeatCount < 1) return null;
+
+  const label = lead.form_resubmission_pending
+    ? (language === "en" ? "New repeat submission" : "Ponownie wypełnił formularz")
+    : (language === "en" ? `Repeat ×${repeatCount}` : `Ponowne ×${repeatCount}`);
+  const title = lead.last_form_submission_at
+    ? `${label} · ${formatDateTime(lead.last_form_submission_at)}`
+    : label;
+
+  return (
+    <span
+      className={`rounded-md border px-1.5 py-0.5 ${lead.form_resubmission_pending ? "border-danger/30 bg-danger/10 text-danger" : "border-warn/30 bg-warn/10 text-[#8a5a00]"}`}
+      title={title}
+    >
+      {label}
+    </span>
+  );
+}
+
 function dialHref(phone: string) {
   const normalized = normalizePhoneForDial(phone);
   return normalized ? `tel:${normalized}` : undefined;
@@ -209,12 +230,13 @@ export function LeadTable({
               </thead>
               <tbody>
                 {leads.map((lead) => (
-                  <tr key={lead.id}>
+                  <tr key={lead.id} className={lead.form_resubmission_pending ? "bg-danger/[0.03]" : undefined}>
                     {selectable ? <td><input type="checkbox" checked={selectedIds.includes(lead.id)} onChange={() => onToggle?.(lead.id)} aria-label={`${labels.selectLead} ${lead.full_name}`} /></td> : null}
                     <td className="min-w-[210px]">
                       <button type="button" onClick={() => setOpenLeadId(lead.id)} className="font-black text-ink hover:text-sky">{lead.full_name}</button>
-                      <div className="mt-1.5 flex max-w-[260px] flex-wrap gap-1 text-[11px] font-bold">
+                      <div className="mt-1.5 flex max-w-[300px] flex-wrap gap-1 text-[11px] font-bold">
                         <span className="rounded-md border border-sky/20 bg-sky/10 px-1.5 py-0.5 text-sky">{formatSource(lead.source, language)}</span>
+                        <RepeatSubmissionBadge lead={lead} language={language} />
                         {lead.campaign ? <span className="max-w-[170px] truncate rounded-md border border-solar/25 bg-solar/10 px-1.5 py-0.5 text-[#8a5a00]" title={lead.campaign}>{lead.campaign}</span> : null}
                         <span className="px-1 py-0.5 text-muted">{lead.postal_code || "—"}</span>
                       </div>
@@ -240,12 +262,13 @@ export function LeadTable({
             {leads.map((lead) => {
               const expanded = expandedLeadId === lead.id;
               return (
-                <article key={lead.id} className={`min-w-0 overflow-hidden rounded-2xl border bg-white p-3 shadow-sm transition ${expanded ? "border-sky/40 shadow-md" : "border-line"}`}>
+                <article key={lead.id} className={`min-w-0 overflow-hidden rounded-2xl border bg-white p-3 shadow-sm transition ${lead.form_resubmission_pending ? "border-danger/35" : expanded ? "border-sky/40 shadow-md" : "border-line"}`}>
                   <div className="flex min-w-0 items-start justify-between gap-2">
                     <button type="button" onClick={() => toggleExpanded(lead.id)} className="min-w-0 flex-1 text-left" aria-expanded={expanded}>
                       <span className="block max-w-full truncate text-base font-black text-ink">{lead.full_name}</span>
                       <span className="mt-1.5 flex min-w-0 flex-wrap items-center gap-1.5 text-[11px] font-bold">
                         <span className="rounded-md border border-sky/20 bg-sky/10 px-1.5 py-0.5 text-sky">{formatSource(lead.source, language)}</span>
+                        <RepeatSubmissionBadge lead={lead} language={language} />
                         {lead.campaign ? <span className="max-w-[min(58vw,260px)] truncate rounded-md border border-solar/25 bg-solar/10 px-1.5 py-0.5 text-[#8a5a00]" title={lead.campaign}>{lead.campaign}</span> : null}
                         <span className="text-muted">{lead.postal_code || "—"}</span>
                       </span>
@@ -310,7 +333,7 @@ export function LeadTable({
                 </header>
                 <div className="grid min-h-24 gap-2.5">
                   {stageLeads.map((lead) => (
-                    <article key={lead.id} className="min-w-0 overflow-hidden rounded-2xl border border-line bg-white p-3 shadow-sm transition hover:border-sky/30 hover:shadow-md">
+                    <article key={lead.id} className={`min-w-0 overflow-hidden rounded-2xl border bg-white p-3 shadow-sm transition hover:shadow-md ${lead.form_resubmission_pending ? "border-danger/35" : "border-line hover:border-sky/30"}`}>
                       <div className="flex items-start justify-between gap-2">
                         <button type="button" onClick={() => setOpenLeadId(lead.id)} className="min-w-0 flex-1 text-left">
                           <span className="block truncate font-black text-ink hover:text-sky">{lead.full_name}</span>
@@ -318,6 +341,7 @@ export function LeadTable({
                         </button>
                         {selectable ? <input type="checkbox" checked={selectedIds.includes(lead.id)} onChange={() => onToggle?.(lead.id)} className="mt-0.5 h-5 w-5 flex-none rounded border-line text-ink focus:ring-ink" /> : null}
                       </div>
+                      {lead.form_submission_count > 1 ? <div className="mt-2 flex"><RepeatSubmissionBadge lead={lead} language={language} /></div> : null}
                       {lead.campaign ? <div className="mt-2 truncate rounded-md border border-solar/25 bg-solar/10 px-2 py-1 text-[11px] font-bold text-[#8a5a00]" title={lead.campaign}>{lead.campaign}</div> : null}
                       <a href={dialHref(lead.phone)} className="mt-2.5 inline-flex min-h-9 items-center gap-1.5 text-sm font-black text-ink"><Phone className="h-4 w-4 text-muted" />{formatPhoneReadable(lead.phone)}</a>
                       <div className="mt-2 border-t border-line/70 pt-2"><MetaLine lead={lead} showAssignee={showAssignee} labels={labels} /></div>

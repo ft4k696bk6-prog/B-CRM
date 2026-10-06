@@ -59,10 +59,47 @@ export async function GET(request: Request) {
     cold = coldCount || 0;
   }
 
+  let repeatClients = 0;
+  let repeatSubmissions = 0;
+  const repeatPageSize = 1000;
+  let repeatFrom = 0;
+
+  while (true) {
+    let repeatQuery = supabaseAdmin
+      .from("leads")
+      .select("form_submission_count")
+      .eq("crm_environment", profile.crm_environment)
+      .eq("is_cold_pool", false)
+      .gt("form_submission_count", 1)
+      .range(repeatFrom, repeatFrom + repeatPageSize - 1);
+
+    if (profile.role === "menadzer") {
+      repeatQuery = repeatQuery.or(
+        salespersonIds.length
+          ? `assigned_to.in.(${salespersonIds.join(",")}),assigned_to.is.null`
+          : "assigned_to.is.null"
+      );
+    }
+
+    const { data: repeatRows, error: repeatError } = await repeatQuery;
+    if (repeatError) return NextResponse.json({ error: repeatError.message }, { status: 400 });
+
+    const rows = repeatRows || [];
+    repeatClients += rows.length;
+    repeatSubmissions += rows.reduce(
+      (sum, row) => sum + Math.max(Number(row.form_submission_count || 0) - 1, 0),
+      0
+    );
+
+    if (rows.length < repeatPageSize) break;
+    repeatFrom += repeatPageSize;
+  }
+
   return NextResponse.json({
     stats: {
       all: values[0], unassigned: values[1], assigned: values[2], callbacks: values[3],
-      meetings: values[4], contracts: values[5], resignations: values[6], cold, noNextAction: values[7]
+      meetings: values[4], contracts: values[5], resignations: values[6], cold, noNextAction: values[7],
+      repeatClients, repeatSubmissions
     }
   });
 }

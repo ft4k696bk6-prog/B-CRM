@@ -202,14 +202,6 @@ function timestampMs(value: string | null | undefined) {
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
-function latestTimestamp(...values: Array<string | null | undefined>) {
-  return values.reduce<string | null>((latest, value) => {
-    if (!value) return latest;
-    if (!latest || timestampMs(value) > timestampMs(latest)) return value;
-    return latest;
-  }, null);
-}
-
 function csvUrl(spreadsheetId: string, sheetName: string) {
   const params = new URLSearchParams({
     tqx: "out:csv",
@@ -392,11 +384,7 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
       const existing = existingLeads.get(key);
 
       if (existing) {
-        const baseline = latestTimestamp(
-          existing.created_at,
-          existing.updated_at,
-          existing.last_form_submission_at
-        );
+        const baseline = existing.last_form_submission_at || existing.created_at;
 
         if (!baseline || timestampMs(submittedAt) <= timestampMs(baseline)) {
           result.skipped += 1;
@@ -459,8 +447,6 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
 
       pending.lead.form_submission_count += 1;
       pending.lead.form_resubmission_pending = true;
-      pending.lead.source_before_resubmission = pending.lead.source_before_resubmission || "B2C";
-      pending.lead.source = "Ponowne zgłoszenie";
 
       if (timestampMs(submittedAt) < timestampMs(pending.lead.created_at)) {
         pending.lead.created_at = submittedAt;
@@ -476,7 +462,6 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
         pending.lead.voivodeship = voivodeship;
         pending.lead.campaign = campaign;
       }
-      pending.lead.assigned_at = pending.latestSubmittedAt;
     }
   }
 
@@ -499,21 +484,20 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
   for (const candidate of repeatCandidates.values()) {
     const previousCount = Math.max(candidate.lead.form_submission_count || 0, 1);
     const nextCount = previousCount + candidate.newSubmissionCount;
-    const originalSource =
-      candidate.lead.source_before_resubmission ||
-      (candidate.lead.source && candidate.lead.source !== "Ponowne zgłoszenie" ? candidate.lead.source : "B2C");
+    const historicalBackfill = !candidate.lead.last_form_submission_at && (candidate.lead.form_submission_count || 0) <= 1;
+    const updatePayload: Record<string, unknown> = {
+      last_form_submission_at: candidate.latestSubmittedAt,
+      form_submission_count: nextCount
+    };
+
+    if (!historicalBackfill) {
+      updatePayload.form_resubmission_pending = true;
+      updatePayload.attention_at = candidate.latestSubmittedAt;
+    }
 
     const { error: updateError } = await supabase
       .from("leads")
-      .update({
-        last_form_submission_at: candidate.latestSubmittedAt,
-        form_submission_count: nextCount,
-        form_resubmission_pending: true,
-        attention_at: candidate.latestSubmittedAt,
-        assigned_at: candidate.latestSubmittedAt,
-        source_before_resubmission: originalSource,
-        source: "Ponowne zgłoszenie"
-      })
+      .update(updatePayload)
       .eq("id", candidate.lead.id)
       .eq("crm_environment", crmEnvironment);
 
@@ -531,8 +515,12 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
       lead_id: candidate.lead.id,
       user_id: null,
       activity_type: "form_resubmitted",
-      title: "Ponownie wypełnił formularz",
-      description: details ? `Klient ponownie wypełnił formularz. ${details}` : "Klient ponownie wypełnił formularz.",
+      title: historicalBackfill ? "Historyczne ponowne zgłoszenie" : "Ponownie wypełnił formularz",
+      description: historicalBackfill
+        ? `Wykryto historyczne ponowne zgłoszenie klienta${details ? `. ${details}` : "."}`
+        : details
+          ? `Klient ponownie wypełnił formularz. ${details}`
+          : "Klient ponownie wypełnił formularz.",
       old_value: { form_submission_count: previousCount },
       new_value: {
         form_submission_count: nextCount,
@@ -544,7 +532,8 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
         campaign: candidate.campaign,
         form_name: candidate.formName,
         platform: candidate.platform,
-        new_submission_count: candidate.newSubmissionCount
+        new_submission_count: candidate.newSubmissionCount,
+        historical_backfill: historicalBackfill
       },
       created_at: candidate.latestSubmittedAt
     });
