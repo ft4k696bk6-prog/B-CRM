@@ -61,6 +61,7 @@ export type Lead = {
   last_opened_at: string | null;
   last_form_submission_at: string | null;
   form_submission_count: number;
+  form_resubmission_pending: boolean;
   attention_at: string;
   source: string | null;
   campaign?: string | null;
