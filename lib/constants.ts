@@ -43,6 +43,7 @@ export const ACTION_LABELS: Record<string, string> = {
   assigned: "Przypisanie",
   unassigned: "Odznaczenie",
   lead_created: "Dodanie leada",
+  form_resubmitted: "Ponowne zgłoszenie",
   callback_set: "Call-back",
   meeting_set: "Spotkanie",
   meeting_address: "Adres spotkania",
