@@ -29,12 +29,42 @@ type PreparedLead = {
   created_at: string;
   address: null;
   county: null;
+  last_form_submission_at: string;
+  form_submission_count: number;
+  form_resubmission_pending: boolean;
+  attention_at: string;
+};
+
+type ExistingLead = {
+  id: string;
+  phone: string;
+  created_at: string;
+  updated_at: string;
+  last_form_submission_at: string | null;
+  form_submission_count: number | null;
+};
+
+type RepeatCandidate = {
+  lead: ExistingLead;
+  latestSubmittedAt: string;
+  newSubmissionCount: number;
+  sourceSubmissionId: string | null;
+  campaign: string | null;
+  formName: string | null;
+  platform: string | null;
+  sheetName: string;
+};
+
+type PendingNewLead = {
+  lead: PreparedLead;
+  latestSubmittedAt: string;
 };
 
 type ImportResult = {
   scanned: number;
   prepared: number;
   inserted: number;
+  resubmitted: number;
   skipped: number;
   errors: string[];
 };
@@ -161,6 +191,20 @@ function createdAtFromMeta(value: unknown) {
   return Number.isNaN(parsed.getTime()) ? new Date().toISOString() : parsed.toISOString();
 }
 
+function timestampMs(value: string | null | undefined) {
+  if (!value) return 0;
+  const parsed = new Date(value).getTime();
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function latestTimestamp(...values: Array<string | null | undefined>) {
+  return values.reduce<string | null>((latest, value) => {
+    if (!value) return latest;
+    if (!latest || timestampMs(value) > timestampMs(latest)) return value;
+    return latest;
+  }, null);
+}
+
 function csvUrl(spreadsheetId: string, sheetName: string) {
   const params = new URLSearchParams({
     tqx: "out:csv",
@@ -175,8 +219,6 @@ async function googleAccessToken() {
   try {
     return await googleWorkspaceToken(["https://www.googleapis.com/auth/spreadsheets.readonly"]);
   } catch {
-    // If Google credentials are temporarily unavailable, the importer can still
-    // read a link-accessible sheet through the public CSV endpoint below.
     return null;
   }
 }
@@ -245,29 +287,29 @@ async function fetchSheetRows(spreadsheetId: string, sheetName: string, accessTo
   return fetchSheetRowsViaPublicCsv(spreadsheetId, sheetName);
 }
 
-async function fetchExistingPhoneKeys(supabase: SupabaseClient, crmEnvironment: CrmDataScope) {
-  const keys = new Set<string>();
+async function fetchExistingLeadMap(supabase: SupabaseClient, crmEnvironment: CrmDataScope) {
+  const leads = new Map<string, ExistingLead>();
   const pageSize = 1000;
   let from = 0;
 
   while (true) {
     const { data, error } = await supabase
       .from("leads")
-      .select("phone")
+      .select("id,phone,created_at,updated_at,last_form_submission_at,form_submission_count")
       .eq("crm_environment", crmEnvironment)
       .range(from, from + pageSize - 1);
 
     if (error) throw error;
     for (const row of data || []) {
       const key = phoneKey(row.phone);
-      if (key) keys.add(key);
+      if (key && !leads.has(key)) leads.set(key, row as ExistingLead);
     }
 
     if (!data || data.length < pageSize) break;
     from += pageSize;
   }
 
-  return keys;
+  return leads;
 }
 
 function chunk<T>(items: T[], size: number) {
@@ -291,15 +333,17 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
     scanned: 0,
     prepared: 0,
     inserted: 0,
+    resubmitted: 0,
     skipped: 0,
     errors: []
   };
 
   const supabase = adminClient();
   const accessToken = await googleAccessToken();
-  const existingPhoneKeys = await fetchExistingPhoneKeys(supabase, crmEnvironment);
-  const batchPhoneKeys = new Set<string>();
-  const leads: PreparedLead[] = [];
+  const existingLeads = await fetchExistingLeadMap(supabase, crmEnvironment);
+  const pendingNew = new Map<string, PendingNewLead>();
+  const repeatCandidates = new Map<string, RepeatCandidate>();
+  const seenSubmissionIds = new Set<string>();
 
   for (const sheetName of sheetNames) {
     let rows: SheetRow[] = [];
@@ -315,41 +359,123 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
     for (const row of rows) {
       result.scanned += 1;
 
+      const sourceSubmissionId = typeof row.id === "string" && row.id.trim() ? row.id.trim() : null;
+      if (sourceSubmissionId && seenSubmissionIds.has(sourceSubmissionId)) {
+        result.skipped += 1;
+        continue;
+      }
+      if (sourceSubmissionId) seenSubmissionIds.add(sourceSubmissionId);
+
       const fullName = typeof row.full_name === "string" ? row.full_name.trim().slice(0, 180) : "";
       const phone = normalizePhoneDisplay(row.phone_number).slice(0, 60);
       const key = phoneKey(phone);
 
-      if (!fullName || !phone || !key || existingPhoneKeys.has(key) || batchPhoneKeys.has(key)) {
+      if (!fullName || !phone || !key) {
         result.skipped += 1;
         continue;
       }
 
+      const submittedAt = createdAtFromMeta(row.created_time);
       const postalCode = normalizePostalCode(row.post_code).slice(0, 20) || null;
       const voivodeship =
         voivodeshipFromSheetName(sheetName) ||
         voivodeshipFromPostalCode(postalCode) ||
         normalizeVoivodeship(row["Województwo"]);
+      const campaign = (typeof row.campaign_name === "string" ? row.campaign_name.trim() : "") || sheetName;
+      const formName = (typeof row.form_name === "string" ? row.form_name.trim() : "") || null;
+      const platform = (typeof row.platform === "string" ? row.platform.trim() : "") || null;
+      const existing = existingLeads.get(key);
 
-      leads.push({
-        full_name: fullName,
-        phone,
-        postal_code: postalCode,
-        voivodeship,
-        source: "B2C",
-        campaign: (typeof row.campaign_name === "string" ? row.campaign_name.trim() : "") || sheetName,
-        status: "Nowy",
-        assigned_to: null,
-        crm_environment: crmEnvironment,
-        created_at: createdAtFromMeta(row.created_time),
-        address: null,
-        county: null
-      });
-      batchPhoneKeys.add(key);
+      if (existing) {
+        const baseline = latestTimestamp(
+          existing.created_at,
+          existing.updated_at,
+          existing.last_form_submission_at
+        );
+
+        if (!baseline || timestampMs(submittedAt) <= timestampMs(baseline)) {
+          result.skipped += 1;
+          continue;
+        }
+
+        const candidate = repeatCandidates.get(key);
+        if (!candidate) {
+          repeatCandidates.set(key, {
+            lead: existing,
+            latestSubmittedAt: submittedAt,
+            newSubmissionCount: 1,
+            sourceSubmissionId,
+            campaign,
+            formName,
+            platform,
+            sheetName
+          });
+        } else {
+          candidate.newSubmissionCount += 1;
+          if (timestampMs(submittedAt) > timestampMs(candidate.latestSubmittedAt)) {
+            candidate.latestSubmittedAt = submittedAt;
+            candidate.sourceSubmissionId = sourceSubmissionId;
+            candidate.campaign = campaign;
+            candidate.formName = formName;
+            candidate.platform = platform;
+            candidate.sheetName = sheetName;
+          }
+        }
+        continue;
+      }
+
+      const pending = pendingNew.get(key);
+      if (!pending) {
+        pendingNew.set(key, {
+          latestSubmittedAt: submittedAt,
+          lead: {
+            full_name: fullName,
+            phone,
+            postal_code: postalCode,
+            voivodeship,
+            source: "B2C",
+            campaign,
+            status: "Nowy",
+            assigned_to: null,
+            crm_environment: crmEnvironment,
+            created_at: submittedAt,
+            address: null,
+            county: null,
+            last_form_submission_at: submittedAt,
+            form_submission_count: 1,
+            form_resubmission_pending: false,
+            attention_at: submittedAt
+          }
+        });
+        continue;
+      }
+
+      pending.lead.form_submission_count += 1;
+      pending.lead.form_resubmission_pending = true;
+
+      if (timestampMs(submittedAt) < timestampMs(pending.lead.created_at)) {
+        pending.lead.created_at = submittedAt;
+      }
+
+      if (timestampMs(submittedAt) > timestampMs(pending.latestSubmittedAt)) {
+        pending.latestSubmittedAt = submittedAt;
+        pending.lead.last_form_submission_at = submittedAt;
+        pending.lead.attention_at = submittedAt;
+        pending.lead.full_name = fullName;
+        pending.lead.phone = phone;
+        pending.lead.postal_code = postalCode;
+        pending.lead.voivodeship = voivodeship;
+        pending.lead.campaign = campaign;
+      }
     }
   }
 
+  const leads = Array.from(pendingNew.values()).map((entry) => entry.lead);
   result.prepared = leads.length;
-  console.info("Google Sheets lead import prepared", result);
+  console.info("Google Sheets lead import prepared", {
+    ...result,
+    repeatCandidates: repeatCandidates.size
+  });
 
   for (const leadChunk of chunk(leads, 500)) {
     const { error } = await supabase.from("leads").insert(leadChunk);
@@ -358,6 +484,59 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
       continue;
     }
     result.inserted += leadChunk.length;
+  }
+
+  for (const candidate of repeatCandidates.values()) {
+    const previousCount = Math.max(candidate.lead.form_submission_count || 0, 1);
+    const nextCount = previousCount + candidate.newSubmissionCount;
+    const { error: updateError } = await supabase
+      .from("leads")
+      .update({
+        last_form_submission_at: candidate.latestSubmittedAt,
+        form_submission_count: nextCount,
+        form_resubmission_pending: true,
+        attention_at: candidate.latestSubmittedAt
+      })
+      .eq("id", candidate.lead.id)
+      .eq("crm_environment", crmEnvironment);
+
+    if (updateError) {
+      result.errors.push(`Ponowne zgłoszenie ${candidate.lead.id}: ${updateError.message}`);
+      continue;
+    }
+
+    const details = [
+      candidate.formName ? `formularz: ${candidate.formName}` : null,
+      candidate.campaign ? `kampania: ${candidate.campaign}` : null
+    ].filter(Boolean).join(" · ");
+
+    const { error: activityError } = await supabase.from("lead_activities").insert({
+      lead_id: candidate.lead.id,
+      user_id: null,
+      activity_type: "form_resubmitted",
+      title: "Ponownie wypełnił formularz",
+      description: details ? `Klient ponownie wypełnił formularz. ${details}` : "Klient ponownie wypełnił formularz.",
+      old_value: { form_submission_count: previousCount },
+      new_value: {
+        form_submission_count: nextCount,
+        last_form_submission_at: candidate.latestSubmittedAt
+      },
+      metadata: {
+        source_submission_id: candidate.sourceSubmissionId,
+        source_sheet: candidate.sheetName,
+        campaign: candidate.campaign,
+        form_name: candidate.formName,
+        platform: candidate.platform,
+        new_submission_count: candidate.newSubmissionCount
+      },
+      created_at: candidate.latestSubmittedAt
+    });
+
+    if (activityError) {
+      result.errors.push(`Historia ponownego zgłoszenia ${candidate.lead.id}: ${activityError.message}`);
+    }
+
+    result.resubmitted += 1;
   }
 
   return result;
