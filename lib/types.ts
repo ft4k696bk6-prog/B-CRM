@@ -59,6 +59,10 @@ export type Lead = {
   created_at: string;
   updated_at: string;
   last_opened_at: string | null;
+  last_form_submission_at: string | null;
+  form_submission_count: number;
+  form_resubmission_pending: boolean;
+  attention_at: string;
   source: string | null;
   campaign?: string | null;
   resignation_reason: string | null;
@@ -98,10 +102,12 @@ export type AdminLeadFilters = {
 export type SortOption = {
   column: keyof Pick<
     Lead,
+    | "attention_at"
     | "assigned_at"
     | "created_at"
     | "updated_at"
     | "last_opened_at"
+    | "last_form_submission_at"
     | "full_name"
     | "postal_code"
     | "status"
@@ -121,7 +127,8 @@ export type ActivityType =
   | "file_deleted"
   | "assigned"
   | "unassigned"
-  | "lead_created";
+  | "lead_created"
+  | "form_resubmitted";
 
 export type LeadActivity = {
   id: string;
