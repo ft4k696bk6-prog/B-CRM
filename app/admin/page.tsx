@@ -748,13 +748,6 @@ export default function AdminDashboardPage() {
               </button>
               <button
                 type="button"
-                onClick={() => { setLeadBucket("active"); setFilters({ ...initialFilters, assignedTo: "__unassigned" }); }}
-                className="btn-secondary"
-              >
-                Baza leadów
-              </button>
-              <button
-                type="button"
                 onClick={() => { setLeadBucket("active"); setFilters({ ...initialFilters, assignedTo: "" }); }}
                 className={leadBucket === "active" ? "btn-primary" : "btn-secondary"}
               >
