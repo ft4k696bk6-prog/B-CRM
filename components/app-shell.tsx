@@ -8,6 +8,7 @@ import {
   BarChart3,
   Calculator,
   CalendarDays,
+  ClipboardCheck,
   FileUp,
   FolderKanban,
   Gauge,
@@ -50,6 +51,7 @@ type NavigationLink = {
     | "navMyLeads"
     | "navWorkPanel"
     | "navOperations"
+    | "navSubmissions"
     | "navCommissions"
     | "navNewLead"
     | "navMap"
@@ -121,9 +123,17 @@ const navigationLinks: NavigationLink[] = [
     labelKey: "navOperations",
     groupKey: "operations",
     icon: FolderKanban,
-    permissions: ["operations:view"],
-    allowedRoles: ["owner", "admin", "menadzer", "handlowiec", "finance", "viewer", "ksiegowosc", "logistyk", "monter"],
+    permissions: ["operations:view", "contracts:view"],
+    allowedRoles: ["owner", "admin", "menadzer", "handlowiec", "finance", "viewer", "ksiegowosc", "logistyk", "monter", "backoffice"],
     tourId: "tour-nav-process"
+  },
+  {
+    href: "/zgloszenia",
+    labelKey: "navSubmissions",
+    groupKey: "operations",
+    icon: ClipboardCheck,
+    permissions: ["submissions:view"],
+    allowedRoles: ["owner", "admin", "backoffice"]
   },
   {
     href: "/realizacja/prowizje",
@@ -156,7 +166,8 @@ const roleLabelsEn: Record<Profile["role"], string> = {
   viewer: "Viewer",
   ksiegowosc: "Accounting",
   logistyk: "Logistics",
-  monter: "Installer"
+  monter: "Installer",
+  backoffice: "Back Office"
 };
 
 const DemoTour = dynamic(() => import("@/components/demo-tour").then((mod) => mod.DemoTour), {
@@ -179,6 +190,7 @@ export function AppShell({ profile, children, embedded = false }: AppShellProps)
   const isDemoProfile = demoModeEnabled && isDemoScope(profile.crm_environment);
   const canRunDemoTour = isDemoProfile && isSystemAdminRole(profile.role);
   const links = navigationLinks.filter((link) => {
+    if (profile.role === "backoffice" && link.href !== "/realizacja/umowy" && link.href !== "/zgloszenia") return false;
     if ((mandatoryLoading || mandatoryLeadIds.length > 0) && profile.role === "handlowiec" && link.href !== "/sales") return false;
     if (link.salesOnly && !isSalesRole(profile.role)) return false;
     if (link.hideWhenAnyPermission && hasAnyPermission(profile.role, link.hideWhenAnyPermission)) return false;
