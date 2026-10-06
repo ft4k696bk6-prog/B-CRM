@@ -9,7 +9,8 @@ export const USER_ROLES = [
   "viewer",
   "ksiegowosc",
   "logistyk",
-  "monter"
+  "monter",
+  "backoffice"
 ] as const satisfies readonly UserRole[];
 
 export const ROLE_LABELS: Record<UserRole, string> = {
@@ -21,7 +22,8 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   viewer: "Podgląd",
   ksiegowosc: "Księgowość",
   logistyk: "Logistyka",
-  monter: "Monter"
+  monter: "Monter",
+  backoffice: "Back-Office"
 };
 
 export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
@@ -33,7 +35,8 @@ export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
   viewer: "Bezpieczny tryb tylko do odczytu dla audytu, zarządu lub obserwatorów.",
   ksiegowosc: "Obsługuje dokumenty, faktury, aneksy i rozliczenia po podpisaniu umowy.",
   logistyk: "Koordynuje zamówienia, kompletację oraz przygotowanie realizacji.",
-  monter: "Obsługuje etap montażu i potwierdza wykonanie prac w terenie."
+  monter: "Obsługuje etap montażu i potwierdza wykonanie prac w terenie.",
+  backoffice: "Obsługuje wyłącznie umowy oraz zgłoszenia PGE i dotacyjne po rozliczeniu umowy."
 };
 
 const DEMO_EMAIL_ROLES: Record<string, UserRole> = {
@@ -77,6 +80,7 @@ function mapRole(role?: RoleInput | null): UserRole | null {
     case "ksiegowosc":
     case "logistyk":
     case "monter":
+    case "backoffice":
       return role;
     case "manager":
       return "menadzer";
@@ -152,6 +156,10 @@ export function isInstallerRole(role?: RoleInput | null) {
   return normalizeRole(role) === "monter";
 }
 
+export function isBackOfficeRole(role?: RoleInput | null) {
+  return normalizeRole(role) === "backoffice";
+}
+
 export function canManageLeads(role?: RoleInput | null) {
   const normalized = normalizeRole(role);
   return normalized === "owner" || normalized === "admin" || normalized === "menadzer";
@@ -203,5 +211,6 @@ export function homePathForRole(role?: RoleInput | null) {
   if (normalized === "ksiegowosc") return "/accounting";
   if (normalized === "logistyk") return "/logistics";
   if (normalized === "monter") return "/installation";
+  if (normalized === "backoffice") return "/zgloszenia";
   return "/admin";
 }
