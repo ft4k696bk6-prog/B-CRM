@@ -50,11 +50,13 @@ const initialFilters: AdminLeadFilters = {
   voivodeship: "",
   county: "",
   campaign: "",
+  source: "",
   status: [],
   assignedTo: ""
 };
 
 const sortOptions: Array<SortOption & { label: string }> = [
+  { label: "Ostatnia aktywność / ponowne zgłoszenie", column: "attention_at", direction: "desc" },
   { label: "Przypisane handlowcowi: najnowsze", column: "assigned_at", direction: "desc" },
   { label: "Przypisane handlowcowi: najstarsze", column: "assigned_at", direction: "asc" },
   { label: "Dodane: najnowsze", column: "created_at", direction: "desc" },
@@ -88,6 +90,7 @@ export default function AdminDashboardPage() {
   const [salespeople, setSalespeople] = useState<Profile[]>([]);
   const [salespeopleLoaded, setSalespeopleLoaded] = useState(false);
   const [campaignOptions, setCampaignOptions] = useState<string[]>([]);
+  const [sourceOptions, setSourceOptions] = useState<string[]>([]);
   const [teamPerformanceLeads, setTeamPerformanceLeads] = useState<Array<Pick<Lead, "id" | "phone" | "status" | "assigned_to" | "callback_at" | "meeting_at">>>([]);
   const [filters, setFilters] = useState<AdminLeadFilters>(initialFilters);
   const [sort, setSort] = useState<SortOption>(sortOptions[0]);
@@ -96,7 +99,7 @@ export default function AdminDashboardPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionAnchorId, setSelectionAnchorId] = useState<string | null>(null);
   const [selectedSalesperson, setSelectedSalesperson] = useState("");
-  const [leadBucket, setLeadBucket] = useState<"all" | "active" | "cold" | "resignations" | "contracts">("active");
+  const [leadBucket, setLeadBucket] = useState<"all" | "active" | "cold" | "resignations" | "contracts" | "repeat">("active");
   const [busy, setBusy] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
@@ -109,7 +112,9 @@ export default function AdminDashboardPage() {
     contracts: 0,
     resignations: 0,
     cold: 0,
-    noNextAction: 0
+    noNextAction: 0,
+    repeatClients: 0,
+    repeatSubmissions: 0
   });
   const leadRequestId = useRef(0);
 
@@ -157,7 +162,7 @@ export default function AdminDashboardPage() {
       .select("campaign")
       .eq("crm_environment", crmEnvironment)
       .not("campaign", "is", null)
-      .limit(2000);
+      .limit(5000);
 
     if (isManager) {
       query = query.or(
@@ -177,6 +182,36 @@ export default function AdminDashboardPage() {
     ).sort((a, b) => a.localeCompare(b, "pl", { sensitivity: "base" }));
 
     setCampaignOptions(options);
+  }, [crmEnvironment, isManager, salespersonScopeKey]);
+
+  const loadSourceOptions = useCallback(async () => {
+    if (!crmEnvironment) return;
+
+    let query = supabase
+      .from("leads")
+      .select("source")
+      .eq("crm_environment", crmEnvironment)
+      .not("source", "is", null)
+      .limit(5000);
+
+    if (isManager) {
+      query = query.or(
+        salespersonScopeKey
+          ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null`
+          : "assigned_to.is.null"
+      );
+    }
+
+    const { data } = await query;
+    const options = Array.from(
+      new Set(
+        (data || [])
+          .map((row) => String(row.source || "").trim())
+          .filter((source) => source.length > 0 && source !== "Ponowne zgłoszenie" && source.length <= 160)
+      )
+    ).sort((a, b) => a.localeCompare(b, "pl", { sensitivity: "base" }));
+
+    setSourceOptions(options);
   }, [crmEnvironment, isManager, salespersonScopeKey]);
 
   const loadTeamPerformanceLeads = useCallback(async () => {
@@ -230,14 +265,17 @@ export default function AdminDashboardPage() {
   }, [session?.access_token]);
 
   const buildLeadQuery = useCallback((from: number, commentLeadIds: string[] = []) => {
+    const orderColumn = leadBucket === "repeat" ? "last_form_submission_at" : sort.column;
+    const orderAscending = leadBucket === "repeat" ? false : sort.direction === "asc";
+
     let query = supabase
       .from("leads")
       .select(
-        "id,full_name,postal_code,phone,address,voivodeship,county,status,assigned_to,assigned_at,created_at,updated_at,last_opened_at,source,campaign,resignation_reason,callback_at,meeting_at,meeting_address,meeting_note,contract_number,crm_environment,assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)",
+        "id,full_name,postal_code,phone,address,voivodeship,county,status,assigned_to,assigned_at,created_at,updated_at,last_opened_at,last_form_submission_at,form_submission_count,form_resubmission_pending,attention_at,source,campaign,resignation_reason,callback_at,meeting_at,meeting_address,meeting_note,contract_number,crm_environment,assigned_profile:profiles!leads_assigned_to_fkey(id,email,full_name,role,crm_environment)",
         { count: "exact" }
       )
       .eq("crm_environment", crmEnvironment!)
-      .order(sort.column, { ascending: sort.direction === "asc", nullsFirst: false })
+      .order(orderColumn, { ascending: orderAscending, nullsFirst: false })
       .order("id", { ascending: true })
       .range(from, from + LEADS_PAGE_SIZE - 1);
 
@@ -249,7 +287,8 @@ export default function AdminDashboardPage() {
         `phone.ilike.%${search}%`,
         `address.ilike.%${search}%`,
         `meeting_address.ilike.%${search}%`,
-        `campaign.ilike.%${search}%`
+        `campaign.ilike.%${search}%`,
+        `source.ilike.%${search}%`
       ];
       if (digits.length >= 5) terms.push(`phone.ilike.%${digits}%`, `phone_key.ilike.%${digits}%`);
       if (commentLeadIds.length) terms.push(`id.in.(${commentLeadIds.join(",")})`);
@@ -261,7 +300,9 @@ export default function AdminDashboardPage() {
     if (debouncedFilters.voivodeship) query = query.or(voivodeshipFilterTerms(debouncedFilters.voivodeship));
     if (debouncedFilters.county) query = query.ilike("county", `%${debouncedFilters.county}%`);
     if (debouncedFilters.campaign) query = query.eq("campaign", debouncedFilters.campaign);
+    if (debouncedFilters.source) query = query.eq("source", debouncedFilters.source);
     query = query.eq("is_cold_pool", leadBucket === "cold");
+    if (leadBucket === "repeat") query = query.gt("form_submission_count", 1);
     if (debouncedFilters.status.length) query = query.in("status", debouncedFilters.status);
     else {
       if (leadBucket === "active") query = query.not("status", "in", postgrestInValues(["Umowa", "Rezygnacja"]));
@@ -297,11 +338,11 @@ export default function AdminDashboardPage() {
     const { data, error: leadsError, count } = await buildLeadQuery(0, commentLeadIds);
     if (requestId !== leadRequestId.current) return;
 
-      if (leadsError) {
-        setError(leadsError.message);
-        setBusy(false);
-        return;
-      }
+    if (leadsError) {
+      setError(leadsError.message);
+      setBusy(false);
+      return;
+    }
 
     const page = (data || []) as unknown as Lead[];
     setLeads(page);
@@ -343,7 +384,8 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     if (!salespeopleReady) return;
     void loadCampaignOptions();
-  }, [loadCampaignOptions, salespeopleReady]);
+    void loadSourceOptions();
+  }, [loadCampaignOptions, loadSourceOptions, salespeopleReady]);
 
   useEffect(() => {
     if (!salespeopleReady) return;
@@ -352,10 +394,10 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (!salespeopleReady) return;
-    const refreshCurrentView = () => { void Promise.all([loadLeads(), loadStats(), loadCampaignOptions(), loadTeamPerformanceLeads()]); };
+    const refreshCurrentView = () => { void Promise.all([loadLeads(), loadStats(), loadCampaignOptions(), loadSourceOptions(), loadTeamPerformanceLeads()]); };
     window.addEventListener("leads:changed", refreshCurrentView);
     return () => window.removeEventListener("leads:changed", refreshCurrentView);
-  }, [loadCampaignOptions, loadLeads, loadStats, loadTeamPerformanceLeads, salespeopleReady]);
+  }, [loadCampaignOptions, loadLeads, loadSourceOptions, loadStats, loadTeamPerformanceLeads, salespeopleReady]);
 
   const selectedCount = selectedIds.length;
   const activeFilterCount = useMemo(
@@ -446,6 +488,8 @@ export default function AdminDashboardPage() {
       "Spotkanie",
       "Źródło",
       "Kampania",
+      "Liczba zgłoszeń",
+      "Ostatni formularz",
       "Utworzony",
       "Zaktualizowany"
     ];
@@ -461,6 +505,8 @@ export default function AdminDashboardPage() {
       lead.meeting_at,
       lead.source,
       lead.campaign,
+      lead.form_submission_count,
+      lead.last_form_submission_at,
       lead.created_at,
       lead.updated_at
     ]);
@@ -764,6 +810,14 @@ export default function AdminDashboardPage() {
               ) : null}
               <button
                 type="button"
+                title={`${stats.repeatClients} klientów z więcej niż jednym formularzem`}
+                onClick={() => { setLeadBucket("repeat"); setFilters({ ...initialFilters, assignedTo: "" }); }}
+                className={leadBucket === "repeat" ? "btn-primary" : "btn-secondary"}
+              >
+                Ponowne zgłoszenia ({stats.repeatSubmissions})
+              </button>
+              <button
+                type="button"
                 onClick={() => { setLeadBucket("resignations"); setFilters({ ...initialFilters, assignedTo: "" }); }}
                 className={leadBucket === "resignations" ? "btn-primary" : "btn-secondary"}
               >
@@ -797,7 +851,7 @@ export default function AdminDashboardPage() {
                 className="field"
                 value={filters.search}
                 onChange={(event) => updateFilter("search", event.target.value)}
-                placeholder="Imię i nazwisko, telefon, adres albo kampania"
+                placeholder="Imię i nazwisko, telefon, adres, źródło albo kampania"
               />
             </label>
             <label>
@@ -838,6 +892,21 @@ export default function AdminDashboardPage() {
                 {campaignOptions.map((campaign) => (
                   <option key={campaign} value={campaign}>
                     {campaign}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span className="label">Źródło</span>
+              <select
+                className="field"
+                value={filters.source}
+                onChange={(event) => updateFilter("source", event.target.value)}
+              >
+                <option value="">Wszystkie źródła</option>
+                {sourceOptions.map((source) => (
+                  <option key={source} value={source}>
+                    {source}
                   </option>
                 ))}
               </select>
@@ -962,7 +1031,9 @@ export default function AdminDashboardPage() {
               <Search className="h-4 w-4" aria-hidden="true" />
               {busy
                 ? `${isEnglish ? "Refreshing" : "Odświeżanie"}: ${loadedLeadCount}${totalLeadCount ? ` / ${totalLeadCount}` : ""}`
-                : `${totalLeadCount} ${isEnglish ? "records" : "rekordów"}`}
+                : leadBucket === "repeat"
+                  ? `${totalLeadCount} klientów z ponownymi formularzami`
+                  : `${totalLeadCount} ${isEnglish ? "records" : "rekordów"}`}
             </div>
           </div>
           <LeadTable
