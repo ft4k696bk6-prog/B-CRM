@@ -79,10 +79,12 @@ export function useAuth(requiredRole?: UserRole | UserRole[]) {
         return;
       }
 
+      const isBackOfficeContractDetail = /^\/realizacja\/[0-9a-f-]{36}$/i.test(pathname);
       if (
         profile.role === "backoffice" &&
         pathname !== "/zgloszenia" &&
-        pathname !== "/realizacja/umowy"
+        pathname !== "/realizacja/umowy" &&
+        !isBackOfficeContractDetail
       ) {
         router.replace("/zgloszenia");
         return;
