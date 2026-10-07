@@ -1,7 +1,7 @@
 "use client";
 
 import { BellRing, LogOut, RefreshCw } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 type State = "hidden" | "checking" | "required" | "blocked" | "unsupported" | "working" | "error";
@@ -17,10 +17,31 @@ function supported() {
   return typeof window !== "undefined" && "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
 }
 
+function verifiedKey(userId: string) {
+  return `bcrm:push-verified:${userId}`;
+}
+
+function wasVerifiedThisSession(userId: string) {
+  try {
+    return window.sessionStorage.getItem(verifiedKey(userId)) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markVerifiedThisSession(userId: string) {
+  try {
+    window.sessionStorage.setItem(verifiedKey(userId), "1");
+  } catch {
+    // sessionStorage may be unavailable in restricted browser modes.
+  }
+}
+
 export function MandatoryPushGate() {
   const [state, setState] = useState<State>("hidden");
   const [publicKey, setPublicKey] = useState("");
   const [message, setMessage] = useState("");
+  const checkingUserRef = useRef<string | null>(null);
 
   const token = useCallback(async () => (await supabase.auth.getSession()).data.session?.access_token || null, []);
 
@@ -50,31 +71,43 @@ export function MandatoryPushGate() {
     setMessage("");
     const session = (await supabase.auth.getSession()).data.session;
     if (!session) return setState("hidden");
+
+    const userId = session.user.id;
+    if (wasVerifiedThisSession(userId) || checkingUserRef.current === userId) return setState("hidden");
+    checkingUserRef.current = userId;
     setState("checking");
 
-    const { data: profile } = await supabase.from("profiles").select("crm_environment").eq("id", session.user.id).maybeSingle();
-    if (!profile || profile.crm_environment !== "production") return setState("hidden");
+    try {
+      const { data: profile } = await supabase.from("profiles").select("crm_environment").eq("id", userId).maybeSingle();
+      if (!profile || profile.crm_environment !== "production") return setState("hidden");
 
-    const response = await fetch("/api/push/subscriptions", { headers: { Authorization: `Bearer ${session.access_token}` }, cache: "no-store" });
-    const body = (await response.json().catch(() => ({}))) as Config;
-    if (!response.ok || !body.publicKey) {
-      setMessage(body.error || "Nie udało się sprawdzić powiadomień.");
-      return setState("error");
-    }
-    setPublicKey(body.publicKey);
-    if ((body.subscriptions || []).some((item) => item.enabled)) return setState("hidden");
-    if (!supported()) return setState("unsupported");
-    if (Notification.permission === "denied") return setState("blocked");
-    if (Notification.permission === "granted") {
-      try {
-        setState("working");
-        await register(body.publicKey);
-        return setState("hidden");
-      } catch (error) {
-        setMessage(error instanceof Error ? error.message : "Nie udało się aktywować powiadomień.");
+      const response = await fetch("/api/push/subscriptions", { headers: { Authorization: `Bearer ${session.access_token}` }, cache: "no-store" });
+      const body = (await response.json().catch(() => ({}))) as Config;
+      if (!response.ok || !body.publicKey) {
+        setMessage(body.error || "Nie udało się sprawdzić powiadomień.");
+        return setState("error");
       }
+      setPublicKey(body.publicKey);
+      if ((body.subscriptions || []).some((item) => item.enabled)) {
+        markVerifiedThisSession(userId);
+        return setState("hidden");
+      }
+      if (!supported()) return setState("unsupported");
+      if (Notification.permission === "denied") return setState("blocked");
+      if (Notification.permission === "granted") {
+        try {
+          setState("working");
+          await register(body.publicKey);
+          markVerifiedThisSession(userId);
+          return setState("hidden");
+        } catch (error) {
+          setMessage(error instanceof Error ? error.message : "Nie udało się aktywować powiadomień.");
+        }
+      }
+      setState("required");
+    } finally {
+      checkingUserRef.current = null;
     }
-    setState("required");
   }, [register]);
 
   useEffect(() => {
@@ -94,6 +127,8 @@ export function MandatoryPushGate() {
       if (permission === "denied") return setState("blocked");
       if (permission !== "granted") return setState("required");
       await register(publicKey);
+      const session = (await supabase.auth.getSession()).data.session;
+      if (session) markVerifiedThisSession(session.user.id);
       setState("hidden");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Nie udało się aktywować powiadomień.");
@@ -102,6 +137,14 @@ export function MandatoryPushGate() {
   }
 
   async function logout() {
+    const session = (await supabase.auth.getSession()).data.session;
+    if (session) {
+      try {
+        window.sessionStorage.removeItem(verifiedKey(session.user.id));
+      } catch {
+        // Ignore storage cleanup errors during logout.
+      }
+    }
     await supabase.auth.signOut();
     location.href = "/login";
   }
