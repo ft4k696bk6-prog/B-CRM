@@ -3,6 +3,26 @@ import type { LeadStatus } from "@/lib/types";
 export const LEAD_OUTCOMES = ["callback", "meeting", "no_answer", "return", "contract", "resignation", "meeting_no_show"] as const;
 export type LeadOutcome = (typeof LEAD_OUTCOMES)[number];
 
+function warsawDateKey(value: Date) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Warsaw",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(value);
+  const pick = (type: "year" | "month" | "day") => parts.find((part) => part.type === type)?.value || "";
+  return `${pick("year")}-${pick("month")}-${pick("day")}`;
+}
+
+function nextBusinessDateKey(value: Date) {
+  const [year, month, day] = warsawDateKey(value).split("-").map(Number);
+  const cursor = new Date(Date.UTC(year, month - 1, day + 1));
+  while (cursor.getUTCDay() === 0 || cursor.getUTCDay() === 6) {
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+  return `${cursor.getUTCFullYear()}-${String(cursor.getUTCMonth() + 1).padStart(2, "0")}-${String(cursor.getUTCDate()).padStart(2, "0")}`;
+}
+
 export function isAfterMeeting(status: LeadStatus, meetingAt?: string | null, now = new Date()) {
   return status === "Po spotkaniu" || (status === "Spotkanie" && Boolean(meetingAt) && new Date(meetingAt!).getTime() <= now.getTime());
 }
@@ -60,7 +80,16 @@ export function validateLeadOutcome(
 
 export function isMandatoryLead(lead: { status: LeadStatus; callback_at: string | null; meeting_at: string | null }, now = new Date()) {
   if (lead.status === "Umowa" || lead.status === "Rezygnacja") return false;
+
   const callbackDue = lead.status === "Call back" && Boolean(lead.callback_at) && new Date(lead.callback_at!).getTime() <= now.getTime();
-  const meetingDue = lead.status === "Spotkanie" && Boolean(lead.meeting_at) && new Date(lead.meeting_at!).getTime() <= now.getTime();
+
+  let meetingDue = false;
+  if (lead.status === "Spotkanie" && lead.meeting_at) {
+    const meetingDate = new Date(lead.meeting_at);
+    if (!Number.isNaN(meetingDate.getTime()) && meetingDate.getTime() <= now.getTime()) {
+      meetingDue = warsawDateKey(now) >= nextBusinessDateKey(meetingDate);
+    }
+  }
+
   return callbackDue || meetingDue;
 }
