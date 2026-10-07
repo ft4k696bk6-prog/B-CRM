@@ -15,6 +15,7 @@ describe("lead activity authentication", () => {
     vi.resetAllMocks();
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://project.supabase.co";
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role-key";
 
     const query = {
       insert: vi.fn(),
@@ -27,11 +28,11 @@ describe("lead activity authentication", () => {
       data: { id: "activity", description: "Testowa notatka" },
       error: null,
     });
-    getUser.mockResolvedValue({ data: { user: { id: "user-id" } } });
+    getUser.mockResolvedValue({ data: { user: { id: "user-id" } }, error: null });
     createClient.mockReturnValue({ auth: { getUser }, from: vi.fn(() => query) });
   });
 
-  it("validates the bearer token instead of looking for a missing server session", async () => {
+  it("validates the bearer token with the server-side service client", async () => {
     const response = await POST(new Request("https://crm.test/api/leads/activities", {
       method: "POST",
       headers: {
@@ -48,5 +49,15 @@ describe("lead activity authentication", () => {
 
     expect(response.status).toBe(200);
     expect(getUser).toHaveBeenCalledWith("current-access-token");
+    expect(createClient).toHaveBeenCalledWith(
+      "https://project.supabase.co",
+      "test-service-role-key",
+      expect.objectContaining({
+        auth: expect.objectContaining({
+          autoRefreshToken: false,
+          persistSession: false,
+        }),
+      })
+    );
   });
 });
