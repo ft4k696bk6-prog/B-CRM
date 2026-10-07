@@ -123,6 +123,7 @@ export async function POST(request: Request) {
   if (!config || hashPushSecret(token) !== config.cron_token_hash) {
     return NextResponse.json({ error: "Brak autoryzacji." }, { status: 403 });
   }
+  const pushConfig = config;
 
   const now = new Date();
   const nowMs = now.getTime();
@@ -223,9 +224,9 @@ export async function POST(request: Request) {
         { endpoint: subscription.endpoint, p256dh: subscription.p256dh, auth: subscription.auth },
         payload,
         {
-          publicKey: config.vapid_public_key,
-          privateJwk: config.vapid_private_jwk,
-          subject: config.vapid_subject
+          publicKey: pushConfig.vapid_public_key,
+          privateJwk: pushConfig.vapid_private_jwk,
+          subject: pushConfig.vapid_subject
         }
       );
 
