@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { enumValue, optionalRecord, optionalString, requiredString, uuidString } from "@/lib/api-validation";
+import { getServiceClient } from "@/lib/server-auth";
 
 type CreateActivityBody = {
   lead_id: string;
@@ -124,11 +125,16 @@ export async function POST(request: Request) {
 
     const supabase = getSupabaseClient(token);
 
-    // This server-side client does not persist a browser session. Validate the
-    // bearer token that was actually presented with the request.
-    const { data: user } = await supabase.auth.getUser(token);
+    // Validate the browser bearer token with the server-side service client.
+    // The public/publishable key is correct for PostgREST requests, but using it
+    // to validate /auth/v1/user can return 401 for an otherwise valid session.
+    const supabaseAdmin = getServiceClient();
+    const {
+      data: { user },
+      error: userError
+    } = await supabaseAdmin.auth.getUser(token);
 
-    if (!user.user) {
+    if (userError || !user) {
       return NextResponse.json({ error: "Sesja wygasła" }, { status: 401 });
     }
 
@@ -149,7 +155,7 @@ export async function POST(request: Request) {
       .from("lead_activities")
       .insert({
         lead_id: leadId.data!,
-        user_id: user.user.id,
+        user_id: user.id,
         activity_type: type.data!,
         title: title.data!,
         description: description.data!,
