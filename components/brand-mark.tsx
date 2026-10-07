@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 type BrandMarkProps = {
   size?: "sm" | "md";
 };
@@ -13,7 +11,7 @@ export function BrandMark({ size = "md" }: BrandMarkProps) {
       className={`inline-flex ${box} flex-none items-center justify-center`}
       aria-hidden="true"
     >
-      <Image
+      <img
         src="/icons/bcrm-logo-transparent.png"
         alt=""
         width={pixels}
