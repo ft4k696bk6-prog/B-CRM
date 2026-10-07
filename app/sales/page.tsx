@@ -311,7 +311,7 @@ export default function SalesDashboardPage() {
           </div>
         </section>
 
-        {mandatoryCount === 0 ? <section className="app-card">
+        <section className="app-card">
           <SectionHeader icon={FileSignature} title="Moje umowy" description="Wersje robocze i aktualny etap wysłanych umów." tone="leaf" className="mb-3" />
           <div className="grid gap-2">
             {contracts.map((contract) => (
@@ -322,9 +322,9 @@ export default function SalesDashboardPage() {
             ))}
             {contracts.length === 0 ? <EmptyState title="Brak umów" description="Zapisane wersje robocze i wysłane umowy pojawią się tutaj." /> : null}
           </div>
-        </section> : null}
+        </section>
 
-        {mandatoryCount === 0 ? <section className="app-card">
+        <section className="app-card">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-bold text-ink">Filtry i sortowanie</h2>
@@ -452,21 +452,21 @@ export default function SalesDashboardPage() {
             </label>
           </div>
           ) : null}
-        </section> : null}
+        </section>
 
-        {mandatoryCount === 0 && error ? (
+        {error ? (
           <Alert tone="danger">
             {error}
           </Alert>
         ) : null}
 
-        {mandatoryCount === 0 ? <section className="grid gap-3">
+        <section className="grid gap-3">
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-base font-bold text-ink">Moje leady</h2>
             <div className="text-sm text-muted">{busy ? "Odświeżanie" : `${leads.length} rekordów`}</div>
           </div>
           <LeadTable leads={leads} onQuickAction={setQuickLead} />
-        </section> : null}
+        </section>
       </div>
       <LeadQuickActionDialog lead={quickLead} accessToken={session?.access_token || ""} onClose={() => setQuickLead(null)} onCompleted={async () => { await Promise.all([loadLeads(), loadContracts(), loadQueueScope()]); window.dispatchEvent(new Event("leads:changed")); }} />
     </AppShell>
