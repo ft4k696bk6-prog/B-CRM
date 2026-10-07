@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import {
   allowedOutcomes,
+  isAfterMeeting,
   type LeadOutcome,
   validateLeadOutcome,
 } from "@/lib/lead-outcomes";
 import { hasAnyPermission } from "@/lib/permissions";
+import { isSalesRole } from "@/lib/roles";
 import { canAccessLeadWithTeam, requireApiProfile } from "@/lib/server-auth";
 import { getMandatoryLeads } from "@/lib/server-lead-work";
 import type { Lead } from "@/lib/types";
@@ -25,6 +27,7 @@ const outcomeLabels: Record<LeadOutcome, string> = {
   return: "Zwrócono leada do puli.",
   contract: "Rozpoczęto przygotowanie umowy.",
   resignation: "Zapisano rezygnację klienta.",
+  meeting_no_show: "Spotkanie nie odbyło się. Lead wrócił do statusu Nowy.",
 };
 
 const commentTitles: Record<LeadOutcome, string> = {
@@ -34,6 +37,7 @@ const commentTitles: Record<LeadOutcome, string> = {
   return: "Komentarz przy zwrocie leada",
   contract: "Notatka po spotkaniu",
   resignation: "Powód rezygnacji",
+  meeting_no_show: "Spotkanie nie odbyło się",
 };
 
 export async function POST(request: Request) {
@@ -82,7 +86,10 @@ export async function POST(request: Request) {
     );
   }
 
-  if (auth.profile.role === "handlowiec") {
+  // Handlowiec i menadżer muszą najpierw rozliczyć własne zaległe
+  // callbacki/spotkania. Menadżer zachowuje przy tym dostęp do zespołu,
+  // ale jego własna zaległa kolejka blokuje normalną pracę sprzedażową.
+  if (isSalesRole(auth.profile.role)) {
     const mandatory = await getMandatoryLeads(auth.supabaseAdmin, auth.profile);
     if (
       mandatory.length > 0 &&
@@ -98,11 +105,13 @@ export async function POST(request: Request) {
     }
   }
 
+  const now = new Date();
+  const afterMeeting = isAfterMeeting(lead.status, lead.meeting_at, now);
   const validationError = validateLeadOutcome(
     lead.status,
     outcome,
     { callbackAt, meetingAt, address, note },
-    new Date(),
+    now,
     lead.meeting_at,
   );
   if (validationError)
@@ -116,12 +125,15 @@ export async function POST(request: Request) {
 
   const clearSchedule = { callback_at: null, meeting_at: null };
   let patch: Record<string, unknown> = {};
+
   if (outcome === "callback")
     patch = {
       ...clearSchedule,
       status: "Call back",
       callback_at: new Date(callbackAt).toISOString(),
+      ...(afterMeeting ? { meeting_note: note } : {}),
     };
+
   if (outcome === "meeting")
     patch = {
       ...clearSchedule,
@@ -129,31 +141,58 @@ export async function POST(request: Request) {
       meeting_at: new Date(meetingAt).toISOString(),
       meeting_address: address.trim(),
       address: address.trim(),
+      ...(afterMeeting ? { meeting_note: note } : {}),
     };
+
   if (outcome === "no_answer")
     patch = { ...clearSchedule, status: "Nie odebrał" };
-  if (outcome === "return")
+
+  if (outcome === "meeting_no_show")
     patch = {
       ...clearSchedule,
       status: "Nowy",
-      assigned_to: null,
       meeting_address: null,
       meeting_note: null,
-      resignation_reason: null,
-      contract_number: null,
-      last_opened_at: null,
+      // assigned_to intentionally remains unchanged. The salesperson may retry
+      // today; the 22:00 takeback will return it if their takeback is enabled.
     };
+
+  if (outcome === "return") {
+    patch = afterMeeting
+      ? {
+          ...clearSchedule,
+          status: "Po spotkaniu",
+          assigned_to: null,
+          assigned_at: null,
+          meeting_note: note,
+          last_opened_at: null,
+        }
+      : {
+          ...clearSchedule,
+          status: "Nowy",
+          assigned_to: null,
+          assigned_at: null,
+          meeting_address: null,
+          meeting_note: null,
+          resignation_reason: null,
+          contract_number: null,
+          last_opened_at: null,
+        };
+  }
+
   if (outcome === "contract")
     patch = {
       ...clearSchedule,
       status: "Po spotkaniu",
       meeting_note: note,
     };
+
   if (outcome === "resignation")
     patch = {
       ...clearSchedule,
       status: "Rezygnacja",
       resignation_reason: note,
+      ...(afterMeeting ? { meeting_note: note } : {}),
     };
 
   const { error: updateError } = await auth.supabaseAdmin

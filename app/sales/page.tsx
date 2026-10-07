@@ -10,7 +10,8 @@ import {
   PhoneCall,
   RefreshCw,
   Target,
-  ChevronDown
+  ChevronDown,
+  UsersRound
 } from "lucide-react";
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
@@ -53,6 +54,7 @@ export default function SalesDashboardPage() {
   const [quickLead, setQuickLead] = useState<Lead | null>(null);
   const [contracts, setContracts] = useState<ContractRecord[]>([]);
   const [scheduledLeadIds, setScheduledLeadIds] = useState<string[]>([]);
+  const [mandatoryLeadIds, setMandatoryLeadIds] = useState<string[]>([]);
 
   const loadCampaignOptions = useCallback(async function loadCampaignOptions() {
     if (!profile) return;
@@ -148,8 +150,11 @@ export default function SalesDashboardPage() {
   const loadQueueScope = useCallback(async function loadQueueScope() {
     if (!session?.access_token) return;
     const response = await fetch("/api/leads/mandatory-queue", { headers: { Authorization: `Bearer ${session.access_token}` }, cache: "no-store" });
-    const result = (await response.json().catch(() => ({}))) as { scheduledLeadIds?: string[] };
-    if (response.ok) setScheduledLeadIds(result.scheduledLeadIds || []);
+    const result = (await response.json().catch(() => ({}))) as { leads?: Array<{ id: string }>; scheduledLeadIds?: string[] };
+    if (response.ok) {
+      setScheduledLeadIds(result.scheduledLeadIds || []);
+      setMandatoryLeadIds((result.leads || []).map((lead) => lead.id));
+    }
   }, [session?.access_token]);
 
   useEffect(() => {
@@ -161,6 +166,7 @@ export default function SalesDashboardPage() {
   }, [profile, loadLeads, loadCampaignOptions, loadContracts, loadQueueScope]);
 
   const scheduledLeadIdSet = useMemo(() => new Set(scheduledLeadIds), [scheduledLeadIds]);
+  const mandatoryLeadIdSet = useMemo(() => new Set(mandatoryLeadIds), [mandatoryLeadIds]);
 
   const activeFilterCount = useMemo(
     () =>
@@ -191,14 +197,14 @@ export default function SalesDashboardPage() {
   const overdueCallbacks = useMemo(
     () =>
       leads.filter(
-        (lead) => scheduledLeadIdSet.has(lead.id) && lead.status === "Call back" && lead.callback_at && isPast(lead.callback_at)
+        (lead) => mandatoryLeadIdSet.has(lead.id) && lead.status === "Call back" && lead.callback_at
       ),
-    [leads, scheduledLeadIdSet]
+    [leads, mandatoryLeadIdSet]
   );
 
   const overdueMeetings = useMemo(
-    () => leads.filter((lead) => scheduledLeadIdSet.has(lead.id) && lead.status === "Spotkanie" && lead.meeting_at && isPast(lead.meeting_at)),
-    [leads, scheduledLeadIdSet]
+    () => leads.filter((lead) => mandatoryLeadIdSet.has(lead.id) && lead.status === "Spotkanie" && lead.meeting_at),
+    [leads, mandatoryLeadIdSet]
   );
   const mandatoryCount = overdueCallbacks.length + overdueMeetings.length;
 
@@ -220,24 +226,29 @@ export default function SalesDashboardPage() {
     [leads, scheduledLeadIdSet]
   );
 
-  const leadsWithoutNextAction = useMemo(
-    () => leads.filter(needsNextAction),
+  const ordinaryLeads = useMemo(
+    () => leads.filter((lead) => lead.status !== "Call back" && lead.status !== "Spotkanie"),
     [leads]
+  );
+
+  const leadsWithoutNextAction = useMemo(
+    () => ordinaryLeads.filter(needsNextAction),
+    [ordinaryLeads]
   );
 
   const workQueue = useMemo(
     () => {
       const items = mandatoryCount > 0 ? [
         ...overdueCallbacks.map((lead) => ({ lead, reason: `Zaległy call-back · ${formatDateTime(lead.callback_at)}`, overdue: true })),
-        ...overdueMeetings.map((lead) => ({ lead, reason: `Zaległe spotkanie · ${formatDateTime(lead.meeting_at)}`, overdue: true })),
+        ...overdueMeetings.map((lead) => ({ lead, reason: `Rozlicz spotkanie · ${formatDateTime(lead.meeting_at)}`, overdue: true })),
       ] : [
         ...todayCallbacks.filter((lead) => !overdueCallbacks.some((item) => item.id === lead.id)).map((lead) => ({ lead, reason: `Call-back dzisiaj · ${formatDateTime(lead.callback_at)}`, overdue: false })),
         ...todayMeetings.filter((lead) => !overdueMeetings.some((item) => item.id === lead.id)).map((lead) => ({ lead, reason: `Spotkanie dzisiaj · ${formatDateTime(lead.meeting_at)}`, overdue: false })),
       ];
       return items.sort((a, b) => {
-      const aDate = a.lead.callback_at || a.lead.meeting_at || "";
-      const bDate = b.lead.callback_at || b.lead.meeting_at || "";
-      return aDate.localeCompare(bDate);
+        const aDate = a.lead.callback_at || a.lead.meeting_at || "";
+        const bDate = b.lead.callback_at || b.lead.meeting_at || "";
+        return aDate.localeCompare(bDate);
       });
     },
     [todayCallbacks, todayMeetings, overdueCallbacks, overdueMeetings, mandatoryCount]
@@ -249,18 +260,26 @@ export default function SalesDashboardPage() {
     <AppShell profile={profile}>
       <div className="grid gap-5">
         <PageHeader
-          title="Panel handlowca"
-          description="Leady, call-backi i spotkania."
+          title={profile.role === "menadzer" ? "Moja praca" : "Panel handlowca"}
+          description="Leady do bieżącej obsługi, call-backi i spotkania."
           actions={
-            <button type="button" onClick={loadLeads} className="btn-secondary">
-              <RefreshCw className="h-4 w-4" aria-hidden="true" />
-              Odśwież
-            </button>
+            <>
+              {profile.role === "menadzer" ? (
+                <Link href="/admin" className="btn-secondary">
+                  <UsersRound className="h-4 w-4" aria-hidden="true" />
+                  Zespół
+                </Link>
+              ) : null}
+              <button type="button" onClick={loadLeads} className="btn-secondary">
+                <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                Odśwież
+              </button>
+            </>
           }
         />
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          <StatTile label="Moje leady" value={busy ? "—" : leads.length} icon={ClipboardList} tone="sky" />
+          <StatTile label="Bieżąca praca" value={busy ? "—" : ordinaryLeads.length} icon={ClipboardList} tone="sky" />
           <StatTile
             label="Call-back"
             value={busy ? "—" : upcomingCallbacks.length}
@@ -275,7 +294,7 @@ export default function SalesDashboardPage() {
           />
           <StatTile
             label="Zaległe zadania"
-            value={busy ? "—" : overdueCallbacks.length + overdueMeetings.length}
+            value={busy ? "—" : mandatoryCount}
             icon={AlertTriangle}
             tone="danger"
           />
@@ -291,7 +310,7 @@ export default function SalesDashboardPage() {
           <SectionHeader
             icon={Target}
             title="Obowiązkowa kolejka"
-            description="Najpierw obsłuż zaległe pozycje, potem zadania na dziś."
+            description="Najpierw obsłuż zaległe pozycje, potem zadania na dziś. Spotkanie staje się obowiązkowe od następnego dnia roboczego."
             tone="sky"
             className="mb-3"
           />
@@ -462,10 +481,10 @@ export default function SalesDashboardPage() {
 
         <section className="grid gap-3">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-base font-bold text-ink">Moje leady</h2>
-            <div className="text-sm text-muted">{busy ? "Odświeżanie" : `${leads.length} rekordów`}</div>
+            <h2 className="text-base font-bold text-ink">Bieżąca praca</h2>
+            <div className="text-sm text-muted">{busy ? "Odświeżanie" : `${ordinaryLeads.length} rekordów`}</div>
           </div>
-          <LeadTable leads={leads} onQuickAction={setQuickLead} />
+          <LeadTable leads={ordinaryLeads} onQuickAction={setQuickLead} />
         </section>
       </div>
       <LeadQuickActionDialog lead={quickLead} accessToken={session?.access_token || ""} onClose={() => setQuickLead(null)} onCompleted={async () => { await Promise.all([loadLeads(), loadContracts(), loadQueueScope()]); window.dispatchEvent(new Event("leads:changed")); }} />

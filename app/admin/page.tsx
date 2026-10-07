@@ -99,7 +99,7 @@ export default function AdminDashboardPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionAnchorId, setSelectionAnchorId] = useState<string | null>(null);
   const [selectedSalesperson, setSelectedSalesperson] = useState("");
-  const [leadBucket, setLeadBucket] = useState<"all" | "active" | "cold" | "resignations" | "contracts" | "repeat">("active");
+  const [leadBucket, setLeadBucket] = useState<"all" | "active" | "after_meeting" | "cold" | "resignations" | "contracts" | "repeat">("active");
   const [busy, setBusy] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
@@ -111,6 +111,7 @@ export default function AdminDashboardPage() {
     meetings: 0,
     contracts: 0,
     resignations: 0,
+    afterMeeting: 0,
     cold: 0,
     noNextAction: 0,
     repeatClients: 0,
@@ -143,16 +144,12 @@ export default function AdminDashboardPage() {
     const { data } = await query;
     const assignablePeople =
       isManager && profileId
-        ? ((data || []) as Profile[]).filter((person) => person.id === profileId || person.manager_id === profileId)
+        ? ((data || []) as Profile[]).filter((person) => person.manager_id === profileId)
         : ((data || []) as Profile[]);
-    const peopleWithManager =
-      isManager && profile && !assignablePeople.some((person) => person.id === profile.id)
-        ? [...assignablePeople, profile].sort((a, b) => a.full_name.localeCompare(b.full_name, "pl"))
-        : assignablePeople;
 
-    setSalespeople(peopleWithManager);
+    setSalespeople(assignablePeople);
     setSalespeopleLoaded(true);
-  }, [crmEnvironment, isManager, profile, profileId]);
+  }, [crmEnvironment, isManager, profileId]);
 
   const loadCampaignOptions = useCallback(async () => {
     if (!crmEnvironment) return;
@@ -167,7 +164,7 @@ export default function AdminDashboardPage() {
     if (isManager) {
       query = query.or(
         salespersonScopeKey
-          ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null`
+          ? `assigned_to.in.(${salespersonScopeKey})`
           : "assigned_to.is.null"
       );
     }
@@ -197,7 +194,7 @@ export default function AdminDashboardPage() {
     if (isManager) {
       query = query.or(
         salespersonScopeKey
-          ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null`
+          ? `assigned_to.in.(${salespersonScopeKey})`
           : "assigned_to.is.null"
       );
     }
@@ -300,16 +297,18 @@ export default function AdminDashboardPage() {
     if (debouncedFilters.voivodeship) query = query.or(voivodeshipFilterTerms(debouncedFilters.voivodeship));
     if (debouncedFilters.county) query = query.ilike("county", `%${debouncedFilters.county}%`);
     if (debouncedFilters.campaign) query = query.eq("campaign", debouncedFilters.campaign);
-    if (debouncedFilters.source) query = query.eq("source", debouncedFilters.source);
+    if (debouncedFilters.source === "__repeat") query = query.gt("form_submission_count", 1);
+    else if (debouncedFilters.source) query = query.eq("source", debouncedFilters.source);
     query = query.eq("is_cold_pool", leadBucket === "cold");
     if (leadBucket === "repeat") query = query.gt("form_submission_count", 1);
     if (debouncedFilters.status.length) query = query.in("status", debouncedFilters.status);
     else {
-      if (leadBucket === "active") query = query.not("status", "in", postgrestInValues(["Umowa", "Rezygnacja"]));
+      if (leadBucket === "active") query = query.not("status", "in", postgrestInValues(["Umowa", "Rezygnacja", "Po spotkaniu"]));
+      if (leadBucket === "after_meeting") query = query.eq("status", "Po spotkaniu");
       if (leadBucket === "contracts") query = query.eq("status", "Umowa");
       if (leadBucket === "resignations") query = query.eq("status", "Rezygnacja");
     }
-    if (isManager && !debouncedFilters.assignedTo) query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey}),assigned_to.is.null` : "assigned_to.is.null");
+    if (isManager && !debouncedFilters.assignedTo) query = query.or(salespersonScopeKey ? `assigned_to.in.(${salespersonScopeKey})` : "assigned_to.is.null");
     if (debouncedFilters.assignedTo === "__unassigned") query = query.is("assigned_to", null);
     else if (debouncedFilters.assignedTo) query = query.eq("assigned_to", debouncedFilters.assignedTo);
     return query;
@@ -558,7 +557,7 @@ export default function AdminDashboardPage() {
 
   const dashboardCopy = isEnglish
     ? {
-        managerDescription: "Team leads, lead pool and current statuses.",
+        managerDescription: "Team leads and current statuses.",
         adminDescription: "All leads, assignments and current statuses.",
         exportCsv: "Export CSV",
         refresh: "Refresh",
@@ -587,7 +586,7 @@ export default function AdminDashboardPage() {
         noAction: "No action"
       }
     : {
-        managerDescription: "Leady zespołu, baza do rozdania i bieżące statusy.",
+        managerDescription: "Leady zespołu i bieżące statusy. Twoja własna praca jest osobno w widoku Moja praca.",
         adminDescription: "Wszystkie leady, przypisania i bieżące statusy.",
         exportCsv: "Eksport CSV",
         refresh: "Odśwież",
@@ -624,29 +623,31 @@ export default function AdminDashboardPage() {
             title={
               isEnglish
                 ? profile.role === "menadzer"
-                  ? "Manager dashboard"
+                  ? "Team"
                   : profile.role === "finance"
                     ? "Finance dashboard"
                     : profile.role === "viewer"
                       ? "Viewer dashboard"
                       : "Admin dashboard"
-                : `Panel ${
-                    profile.role === "menadzer"
-                      ? "menadżera"
-                      : profile.role === "finance"
+                : profile.role === "menadzer"
+                  ? "Zespół"
+                  : `Panel ${
+                      profile.role === "finance"
                         ? "finansowy"
                         : profile.role === "viewer"
                           ? "podglądu"
                           : "admina"
-                  }`
+                    }`
             }
-            description={
-              isManager
-                ? dashboardCopy.managerDescription
-                : dashboardCopy.adminDescription
-            }
+            description={isManager ? dashboardCopy.managerDescription : dashboardCopy.adminDescription}
             actions={
               <>
+              {isManager ? (
+                <Link href="/sales" className="btn-secondary">Moja praca</Link>
+              ) : null}
+              {["owner", "admin"].includes(profile.role) ? (
+                <Link href="/admin/workflow" className="btn-secondary">Automatyzacja</Link>
+              ) : null}
               {canExportCurrentView ? (
                 <button type="button" onClick={exportCurrentView} className="btn-secondary">
                   <FileDown className="h-4 w-4" aria-hidden="true" />
@@ -694,22 +695,13 @@ export default function AdminDashboardPage() {
                   {showTeamResults ? (
                     <p className="mt-1 text-sm leading-6 text-muted">{dashboardCopy.teamDescription}</p>
                   ) : (
-                    <p className="mt-1 text-sm text-muted">
-                      {teamPerformance.length} {isEnglish ? "people" : "osób"}
-                    </p>
+                    <p className="mt-1 text-sm text-muted">{teamPerformance.length} {isEnglish ? "people" : "osób"}</p>
                   )}
                 </div>
               </div>
               <div className="flex flex-wrap gap-2 sm:justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowTeamResults((value) => !value)}
-                  className="btn-secondary"
-                >
-                  <ChevronDown
-                    className={`h-4 w-4 transition ${showTeamResults ? "rotate-180" : ""}`}
-                    aria-hidden="true"
-                  />
+                <button type="button" onClick={() => setShowTeamResults((value) => !value)} className="btn-secondary">
+                  <ChevronDown className={`h-4 w-4 transition ${showTeamResults ? "rotate-180" : ""}`} aria-hidden="true" />
                   {showTeamResults ? dashboardCopy.hideTeam : dashboardCopy.showTeam}
                 </button>
               </div>
@@ -718,16 +710,7 @@ export default function AdminDashboardPage() {
               <>
                 <div className="hidden overflow-x-auto md:block">
                   <table className="app-table min-w-[720px]">
-                    <thead>
-                      <tr>
-                        <th className="px-3 py-3">{dashboardCopy.salesperson}</th>
-                        <th className="px-3 py-3">{dashboardCopy.leads}</th>
-                        <th className="px-3 py-3">{dashboardCopy.meetings}</th>
-                        <th className="px-3 py-3">{dashboardCopy.contracts}</th>
-                        <th className="px-3 py-3">{dashboardCopy.overdueCallbacks}</th>
-                        <th className="px-3 py-3">{dashboardCopy.noAction}</th>
-                      </tr>
-                    </thead>
+                    <thead><tr><th className="px-3 py-3">{dashboardCopy.salesperson}</th><th className="px-3 py-3">{dashboardCopy.leads}</th><th className="px-3 py-3">{dashboardCopy.meetings}</th><th className="px-3 py-3">{dashboardCopy.contracts}</th><th className="px-3 py-3">{dashboardCopy.overdueCallbacks}</th><th className="px-3 py-3">{dashboardCopy.noAction}</th></tr></thead>
                     <tbody>
                       {teamPerformance.map((row) => (
                         <tr key={row.person.id}>
@@ -747,22 +730,10 @@ export default function AdminDashboardPage() {
                     <article key={row.person.id} className="rounded-lg border border-line bg-[#f8fafc] p-4">
                       <div className="font-black text-ink">{row.person.full_name}</div>
                       <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                        <div className="rounded-md bg-white p-3">
-                          <div className="text-xs font-bold text-muted">{dashboardCopy.leads}</div>
-                          <div className="mt-1 font-black text-ink">{row.leads}</div>
-                        </div>
-                        <div className="rounded-md bg-white p-3">
-                          <div className="text-xs font-bold text-muted">{dashboardCopy.contracts}</div>
-                          <div className="mt-1 font-black text-leaf">{row.contracts}</div>
-                        </div>
-                        <div className="rounded-md bg-white p-3">
-                          <div className="text-xs font-bold text-muted">{dashboardCopy.meetings}</div>
-                          <div className="mt-1 font-black text-ink">{row.meetings}</div>
-                        </div>
-                        <div className="rounded-md bg-white p-3">
-                          <div className="text-xs font-bold text-muted">{dashboardCopy.noAction}</div>
-                          <div className="mt-1 font-black text-warn">{row.noNextAction}</div>
-                        </div>
+                        <div className="rounded-md bg-white p-3"><div className="text-xs font-bold text-muted">{dashboardCopy.leads}</div><div className="mt-1 font-black text-ink">{row.leads}</div></div>
+                        <div className="rounded-md bg-white p-3"><div className="text-xs font-bold text-muted">{dashboardCopy.contracts}</div><div className="mt-1 font-black text-leaf">{row.contracts}</div></div>
+                        <div className="rounded-md bg-white p-3"><div className="text-xs font-bold text-muted">{dashboardCopy.meetings}</div><div className="mt-1 font-black text-ink">{row.meetings}</div></div>
+                        <div className="rounded-md bg-white p-3"><div className="text-xs font-bold text-muted">{dashboardCopy.noAction}</div><div className="mt-1 font-black text-warn">{row.noNextAction}</div></div>
                       </div>
                     </article>
                   ))}
@@ -776,70 +747,21 @@ export default function AdminDashboardPage() {
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-bold text-ink">Filtry i sortowanie</h2>
-              <p className="mt-1 text-sm text-muted">
-                {isEnglish ? "Active filters" : "Aktywne filtry"}: {activeFilterCount}
-              </p>
+              <p className="mt-1 text-sm text-muted">{isEnglish ? "Active filters" : "Aktywne filtry"}: {activeFilterCount}</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => setShowFilters((value) => !value)}
-                className="btn-primary"
-              >
-                <ChevronDown
-                  className={`h-4 w-4 transition ${showFilters ? "rotate-180" : ""}`}
-                  aria-hidden="true"
-                />
+              <button type="button" onClick={() => setShowFilters((value) => !value)} className="btn-primary">
+                <ChevronDown className={`h-4 w-4 transition ${showFilters ? "rotate-180" : ""}`} aria-hidden="true" />
                 {showFilters ? "Ukryj filtry" : "Pokaż filtry"}
               </button>
-              <button
-                type="button"
-                onClick={() => { setLeadBucket("active"); setFilters({ ...initialFilters, assignedTo: "" }); }}
-                className={leadBucket === "active" ? "btn-primary" : "btn-secondary"}
-              >
-                Bieżąca praca
-              </button>
+              <button type="button" onClick={() => { setLeadBucket("active"); setFilters({ ...initialFilters, assignedTo: "" }); }} className={leadBucket === "active" ? "btn-primary" : "btn-secondary"}>Bieżąca praca</button>
+              <button type="button" onClick={() => { setLeadBucket("after_meeting"); setFilters({ ...initialFilters, assignedTo: "" }); }} className={leadBucket === "after_meeting" ? "btn-primary" : "btn-secondary"}>Po spotkaniu ({stats.afterMeeting})</button>
               {["owner", "admin"].includes(profile.role) ? (
-                <button
-                  type="button"
-                  onClick={() => { setLeadBucket("cold"); setFilters({ ...initialFilters, assignedTo: "" }); }}
-                  className={leadBucket === "cold" ? "btn-primary" : "btn-secondary"}
-                >
-                  Zimna baza ({stats.cold})
-                </button>
+                <button type="button" onClick={() => { setLeadBucket("cold"); setFilters({ ...initialFilters, assignedTo: "" }); }} className={leadBucket === "cold" ? "btn-primary" : "btn-secondary"}>Baza leadów ({stats.cold})</button>
               ) : null}
-              <button
-                type="button"
-                title={`${stats.repeatClients} klientów z więcej niż jednym formularzem`}
-                onClick={() => { setLeadBucket("repeat"); setFilters({ ...initialFilters, assignedTo: "" }); }}
-                className={leadBucket === "repeat" ? "btn-primary" : "btn-secondary"}
-              >
-                Ponowne zgłoszenia ({stats.repeatSubmissions})
-              </button>
-              <button
-                type="button"
-                onClick={() => { setLeadBucket("resignations"); setFilters({ ...initialFilters, assignedTo: "" }); }}
-                className={leadBucket === "resignations" ? "btn-primary" : "btn-secondary"}
-              >
-                Koszyk rezygnacji ({stats.resignations})
-              </button>
-              <button
-                type="button"
-                onClick={() => { setLeadBucket("contracts"); setFilters({ ...initialFilters, assignedTo: "" }); }}
-                className={leadBucket === "contracts" ? "btn-primary" : "btn-secondary"}
-              >
-                Koszyk umów ({stats.contracts})
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setLeadBucket("all");
-                  setFilters({ ...initialFilters, assignedTo: "" });
-                }}
-                className="btn-secondary"
-              >
-                Wyczyść
-              </button>
+              <button type="button" onClick={() => { setLeadBucket("resignations"); setFilters({ ...initialFilters, assignedTo: "" }); }} className={leadBucket === "resignations" ? "btn-primary" : "btn-secondary"}>Rezygnacje ({stats.resignations})</button>
+              <button type="button" onClick={() => { setLeadBucket("contracts"); setFilters({ ...initialFilters, assignedTo: "" }); }} className={leadBucket === "contracts" ? "btn-primary" : "btn-secondary"}>Umowy ({stats.contracts})</button>
+              <button type="button" onClick={() => { setLeadBucket("all"); setFilters({ ...initialFilters, assignedTo: "" }); }} className="btn-secondary">Wyczyść</button>
             </div>
           </div>
 
@@ -847,77 +769,27 @@ export default function AdminDashboardPage() {
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             <label className="md:col-span-2 xl:col-span-4">
               <span className="label">Szukaj klienta</span>
-              <input
-                className="field"
-                value={filters.search}
-                onChange={(event) => updateFilter("search", event.target.value)}
-                placeholder="Imię i nazwisko, telefon, adres, źródło albo kampania"
-              />
+              <input className="field" value={filters.search} onChange={(event) => updateFilter("search", event.target.value)} placeholder="Imię i nazwisko, telefon, adres, źródło albo kampania" />
             </label>
-            <label>
-              <span className="label">Dodane od</span>
-              <input
-                className="field"
-                type="date"
-                value={filters.createdFrom}
-                onChange={(event) => updateFilter("createdFrom", event.target.value)}
-              />
-            </label>
-            <label>
-              <span className="label">Dodane do</span>
-              <input
-                className="field"
-                type="date"
-                value={filters.createdTo}
-                onChange={(event) => updateFilter("createdTo", event.target.value)}
-              />
-            </label>
-            <label>
-              <span className="label">Kod pocztowy</span>
-              <input
-                className="field"
-                value={filters.postalCode}
-                onChange={(event) => updateFilter("postalCode", event.target.value)}
-                placeholder="np. 30-001"
-              />
-            </label>
+            <label><span className="label">Dodane od</span><input className="field" type="date" value={filters.createdFrom} onChange={(event) => updateFilter("createdFrom", event.target.value)} /></label>
+            <label><span className="label">Dodane do</span><input className="field" type="date" value={filters.createdTo} onChange={(event) => updateFilter("createdTo", event.target.value)} /></label>
+            <label><span className="label">Kod pocztowy</span><input className="field" value={filters.postalCode} onChange={(event) => updateFilter("postalCode", event.target.value)} placeholder="np. 30-001" /></label>
             <label>
               <span className="label">Kampania</span>
-              <select
-                className="field"
-                value={filters.campaign}
-                onChange={(event) => updateFilter("campaign", event.target.value)}
-              >
+              <select className="field" value={filters.campaign} onChange={(event) => updateFilter("campaign", event.target.value)}>
                 <option value="">Wszystkie kampanie</option>
-                {campaignOptions.map((campaign) => (
-                  <option key={campaign} value={campaign}>
-                    {campaign}
-                  </option>
-                ))}
+                {campaignOptions.map((campaign) => <option key={campaign} value={campaign}>{campaign}</option>)}
               </select>
             </label>
             <label>
               <span className="label">Źródło</span>
-              <select
-                className="field"
-                value={filters.source}
-                onChange={(event) => updateFilter("source", event.target.value)}
-              >
+              <select className="field" value={filters.source} onChange={(event) => updateFilter("source", event.target.value)}>
                 <option value="">Wszystkie źródła</option>
-                {sourceOptions.map((source) => (
-                  <option key={source} value={source}>
-                    {source}
-                  </option>
-                ))}
+                <option value="__repeat">Ponowne zgłoszenie</option>
+                {sourceOptions.map((source) => <option key={source} value={source}>{source}</option>)}
               </select>
             </label>
-            <RegionFields
-              className="md:col-span-2"
-              voivodeship={filters.voivodeship}
-              county={filters.county}
-              onVoivodeshipChange={(value) => updateFilter("voivodeship", value)}
-              onCountyChange={(value) => updateFilter("county", value)}
-            />
+            <RegionFields className="md:col-span-2" voivodeship={filters.voivodeship} county={filters.county} onVoivodeshipChange={(value) => updateFilter("voivodeship", value)} onCountyChange={(value) => updateFilter("county", value)} />
             <fieldset className="rounded-lg border border-line p-3 md:col-span-2">
               <legend className="label px-1">Statusy ({filters.status.length || "wszystkie"})</legend>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -927,38 +799,16 @@ export default function AdminDashboardPage() {
             </fieldset>
             <label>
               <span className="label">Handlowiec</span>
-              <select
-                className="field"
-                value={filters.assignedTo}
-                onChange={(event) => updateFilter("assignedTo", event.target.value)}
-              >
+              <select className="field" value={filters.assignedTo} onChange={(event) => updateFilter("assignedTo", event.target.value)}>
                 <option value="">Wszyscy</option>
                 <option value="__unassigned">Nieprzypisane</option>
-                {salespeople.map((person) => (
-                  <option key={person.id} value={person.id}>
-                    {person.full_name}
-                  </option>
-                ))}
+                {salespeople.map((person) => <option key={person.id} value={person.id}>{person.full_name}</option>)}
               </select>
             </label>
             <label>
               <span className="label">Sortowanie</span>
-              <select
-                className="field"
-                value={`${sort.column}:${sort.direction}`}
-                onChange={(event) => {
-                  const [column, direction] = event.target.value.split(":");
-                  setSort({ column: column as SortOption["column"], direction: direction as "asc" | "desc" });
-                }}
-              >
-                {sortOptions.map((option) => (
-                  <option
-                    key={`${option.column}:${option.direction}`}
-                    value={`${option.column}:${option.direction}`}
-                  >
-                    {option.label}
-                  </option>
-                ))}
+              <select className="field" value={`${sort.column}:${sort.direction}`} onChange={(event) => { const [column, direction] = event.target.value.split(":"); setSort({ column: column as SortOption["column"], direction: direction as "asc" | "desc" }); }}>
+                {sortOptions.map((option) => <option key={`${option.column}:${option.direction}`} value={`${option.column}:${option.direction}`}>{option.label}</option>)}
               </select>
             </label>
           </div>
@@ -968,86 +818,36 @@ export default function AdminDashboardPage() {
         {canAssignLeads ? (
         <section className="app-card">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <h2 className="text-base font-bold text-ink">Masowe przypisanie</h2>
-              <p className="mt-1 text-sm text-muted">
-                {isEnglish ? "Selected leads" : "Zaznaczone leady"}: {selectedCount}
-              </p>
-            </div>
+            <div><h2 className="text-base font-bold text-ink">Masowe przypisanie</h2><p className="mt-1 text-sm text-muted">{isEnglish ? "Selected leads" : "Zaznaczone leady"}: {selectedCount}</p></div>
             <div className="grid gap-2 sm:grid-cols-[minmax(200px,260px)_auto_auto]">
-              <select
-                className="field"
-                value={selectedSalesperson}
-                onChange={(event) => setSelectedSalesperson(event.target.value)}
-              >
+              <select className="field" value={selectedSalesperson} onChange={(event) => setSelectedSalesperson(event.target.value)}>
                 <option value="">Wybierz handlowca</option>
-                {salespeople.map((person) => (
-                  <option key={person.id} value={person.id}>
-                    {person.full_name}
-                  </option>
-                ))}
+                {salespeople.map((person) => <option key={person.id} value={person.id}>{person.full_name}</option>)}
               </select>
-              <button
-                type="button"
-                onClick={() => assignSelected(false)}
-                disabled={busy || !selectedSalesperson || selectedIds.length === 0}
-                className="btn-primary"
-              >
-                <UserCheck className="h-4 w-4" aria-hidden="true" />
-                Przypisz ({selectedIds.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => assignSelected(true)}
-                disabled={busy || selectedIds.length === 0}
-                className="btn-secondary border-danger/30 text-danger hover:border-danger"
-              >
-                <Ban className="h-4 w-4" aria-hidden="true" />
-                Zabierz handlowcowi
-              </button>
+              <button type="button" onClick={() => assignSelected(false)} disabled={busy || !selectedSalesperson || selectedIds.length === 0} className="btn-primary"><UserCheck className="h-4 w-4" aria-hidden="true" />Przypisz ({selectedIds.length})</button>
+              <button type="button" onClick={() => assignSelected(true)} disabled={busy || selectedIds.length === 0} className="btn-secondary border-danger/30 text-danger hover:border-danger"><Ban className="h-4 w-4" aria-hidden="true" />Zabierz handlowcowi</button>
             </div>
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-line pt-4">
-            <span className="text-sm font-bold text-muted">
-              {selectionAnchorId ? "Zaznacz od ostatnio klikniętego leada:" : "Najpierw kliknij checkbox leada:"}
-            </span>
-            {ASSIGNMENT_BATCH_SIZES.map((size) => (
-              <button key={size} type="button" className="btn-secondary min-h-11" disabled={!selectionAnchorId || busy} onClick={() => selectFromAnchor(size)}>
-                +{size}
-              </button>
-            ))}
+            <span className="text-sm font-bold text-muted">{selectionAnchorId ? "Zaznacz od ostatnio klikniętego leada:" : "Najpierw kliknij checkbox leada:"}</span>
+            {ASSIGNMENT_BATCH_SIZES.map((size) => <button key={size} type="button" className="btn-secondary min-h-11" disabled={!selectionAnchorId || busy} onClick={() => selectFromAnchor(size)}>+{size}</button>)}
           </div>
         </section>
         ) : null}
 
-        {error ? (
-          <Alert tone="danger">{error}</Alert>
-        ) : null}
+        {error ? <Alert tone="danger">{error}</Alert> : null}
 
         <section className="grid gap-3">
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-base font-bold text-ink">Leady</h2>
             <div className="flex items-center gap-2 text-sm text-muted">
               <Search className="h-4 w-4" aria-hidden="true" />
-              {busy
-                ? `${isEnglish ? "Refreshing" : "Odświeżanie"}: ${loadedLeadCount}${totalLeadCount ? ` / ${totalLeadCount}` : ""}`
-                : leadBucket === "repeat"
-                  ? `${totalLeadCount} klientów z ponownymi formularzami`
-                  : `${totalLeadCount} ${isEnglish ? "records" : "rekordów"}`}
+              {busy ? `${isEnglish ? "Refreshing" : "Odświeżanie"}: ${loadedLeadCount}${totalLeadCount ? ` / ${totalLeadCount}` : ""}` : `${totalLeadCount} ${isEnglish ? "records" : "rekordów"}`}
             </div>
           </div>
-          <LeadTable
-            leads={leads}
-            selectable={canAssignLeads}
-            selectedIds={selectedIds}
-            onToggle={toggleLead}
-            onToggleAll={toggleAllVisible}
-            showAssignee
-          />
+          <LeadTable leads={leads} selectable={canAssignLeads} selectedIds={selectedIds} onToggle={toggleLead} onToggleAll={toggleAllVisible} showAssignee />
           {loadedLeadCount < totalLeadCount ? (
-            <button type="button" className="btn-secondary mx-auto" onClick={loadMoreLeads} disabled={loadingMore}>
-              {loadingMore ? "Pobieranie…" : `Pokaż kolejne ${Math.min(LEADS_PAGE_SIZE, totalLeadCount - loadedLeadCount)}`}
-            </button>
+            <button type="button" className="btn-secondary mx-auto" onClick={loadMoreLeads} disabled={loadingMore}>{loadingMore ? "Pobieranie…" : `Pokaż kolejne ${Math.min(LEADS_PAGE_SIZE, totalLeadCount - loadedLeadCount)}`}</button>
           ) : null}
         </section>
       </div>

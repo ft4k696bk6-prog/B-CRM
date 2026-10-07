@@ -206,7 +206,7 @@ export function canCreateManualLead(role?: RoleInput | null) {
 
 export function homePathForRole(role?: RoleInput | null) {
   const normalized = normalizeRole(role);
-  if (normalized === "handlowiec") return "/sales";
+  if (normalized === "handlowiec" || normalized === "menadzer") return "/sales";
   if (normalized === "finance") return "/finance";
   if (normalized === "ksiegowosc") return "/accounting";
   if (normalized === "logistyk") return "/logistics";
