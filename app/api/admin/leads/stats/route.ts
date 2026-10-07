@@ -41,6 +41,7 @@ export async function GET(request: Request) {
     scoped(count()).eq("status", "Spotkanie"),
     scoped(count()).eq("status", "Umowa"),
     scoped(count()).eq("status", "Rezygnacja"),
+    scoped(count()).eq("status", "Po spotkaniu"),
     scoped(count()).not("status", "in", '("Umowa","Rezygnacja")').is("callback_at", null).is("meeting_at", null)
   ]);
 
@@ -98,8 +99,8 @@ export async function GET(request: Request) {
   return NextResponse.json({
     stats: {
       all: values[0], unassigned: values[1], assigned: values[2], callbacks: values[3],
-      meetings: values[4], contracts: values[5], resignations: values[6], cold, noNextAction: values[7],
-      repeatClients, repeatSubmissions
+      meetings: values[4], contracts: values[5], resignations: values[6], afterMeeting: values[7],
+      cold, noNextAction: values[8], repeatClients, repeatSubmissions
     }
   });
 }
