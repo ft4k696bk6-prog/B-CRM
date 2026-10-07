@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireApiProfile } from "@/lib/server-auth";
 
+const EMPTY_UUID = "00000000-0000-0000-0000-000000000000";
+
 export async function GET(request: Request) {
   const auth = await requireApiProfile(request);
   if ("error" in auth) return auth.error;
@@ -9,14 +11,14 @@ export async function GET(request: Request) {
   if (!["owner", "admin", "menadzer", "finance", "viewer"].includes(profile.role)) {
     return NextResponse.json({ error: "Brak uprawnień." }, { status: 403 });
   }
-  let salespersonIds: string[] = [];
 
+  let salespersonIds: string[] = [];
   if (profile.role === "menadzer") {
     const { data, error } = await supabaseAdmin
       .from("profiles")
       .select("id")
       .eq("crm_environment", profile.crm_environment)
-      .or(`id.eq.${profile.id},manager_id.eq.${profile.id}`);
+      .eq("manager_id", profile.id);
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     salespersonIds = (data || []).map((person) => person.id);
   }
@@ -26,11 +28,9 @@ export async function GET(request: Request) {
   function scoped(query: ReturnType<typeof count>) {
     const environmentQuery = query.eq("crm_environment", profile.crm_environment);
     if (profile.role !== "menadzer") return environmentQuery;
-    return environmentQuery.or(
-      salespersonIds.length
-        ? `assigned_to.in.(${salespersonIds.join(",")}),assigned_to.is.null`
-        : "assigned_to.is.null"
-    );
+    return salespersonIds.length
+      ? environmentQuery.in("assigned_to", salespersonIds)
+      : environmentQuery.eq("assigned_to", EMPTY_UUID);
   }
 
   const results = await Promise.all([
@@ -75,11 +75,9 @@ export async function GET(request: Request) {
       .range(repeatFrom, repeatFrom + repeatPageSize - 1);
 
     if (profile.role === "menadzer") {
-      repeatQuery = repeatQuery.or(
-        salespersonIds.length
-          ? `assigned_to.in.(${salespersonIds.join(",")}),assigned_to.is.null`
-          : "assigned_to.is.null"
-      );
+      repeatQuery = salespersonIds.length
+        ? repeatQuery.in("assigned_to", salespersonIds)
+        : repeatQuery.eq("assigned_to", EMPTY_UUID);
     }
 
     const { data: repeatRows, error: repeatError } = await repeatQuery;
