@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { sendEventPushToProfiles } from "@/lib/push-events";
 import { requireApiProfile } from "@/lib/server-auth";
 import type { Lead, Profile } from "@/lib/types";
 
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
 
     const { data: teamMembers, error: teamError } = await supabaseAdmin
       .from("profiles")
-      .select("id,role,manager_id,crm_environment")
+      .select("id,full_name,role,manager_id,crm_environment")
       .eq("crm_environment", profile.crm_environment)
       .in("role", assignableRoles);
 
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: teamError.message }, { status: 400 });
     }
 
-    const people = (teamMembers || []) as Pick<Profile, "id" | "role" | "manager_id" | "crm_environment">[];
+    const people = (teamMembers || []) as Pick<Profile, "id" | "full_name" | "role" | "manager_id" | "crm_environment">[];
     const teamIds = new Set(people.filter((person) => person.manager_id === profile.id).map((person) => person.id));
     const target = assignedTo ? people.find((person) => person.id === assignedTo) : null;
 
@@ -75,6 +76,42 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Część leadów nie istnieje albo jest poza tym CRM." }, { status: 404 });
     }
 
+    const newlyAssignedCount = assignedTo
+      ? foundLeads.filter((lead) => lead.assigned_to !== assignedTo).length
+      : 0;
+
+    async function notifyNewAssignment(count: number) {
+      if (!assignedTo || !target || count <= 0) return;
+      const actor = profile.full_name || "Administrator";
+      const eventId = `${assignedTo}-${Date.now()}`;
+
+      await sendEventPushToProfiles(
+        supabaseAdmin,
+        profile.crm_environment,
+        [assignedTo],
+        {
+          title: count === 1 ? "Nowy lead w B-CRM" : "Nowe leady w B-CRM",
+          body: `${actor} przypisał Ci ${count === 1 ? "nowy lead" : `${count} nowych leadów`}.`,
+          url: "/sales",
+          tag: `bcrm-leads-assigned-${eventId}`,
+        },
+      );
+
+      if (target.manager_id && target.manager_id !== assignedTo) {
+        await sendEventPushToProfiles(
+          supabaseAdmin,
+          profile.crm_environment,
+          [target.manager_id],
+          {
+            title: "Nowe leady w zespole",
+            body: `${actor} przypisał ${count === 1 ? "1 nowy lead" : `${count} nowych leadów`} do: ${target.full_name}.`,
+            url: "/sales",
+            tag: `bcrm-manager-leads-assigned-${eventId}`,
+          },
+        );
+      }
+    }
+
     const coldIds = foundLeads.filter((lead) => lead.is_cold_pool).map((lead) => lead.id);
     if (coldIds.length > 0) {
       if (!["owner", "admin"].includes(profile.role)) {
@@ -101,6 +138,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Nie udało się zwolnić wszystkich leadów z zimnej bazy." }, { status: 409 });
       }
 
+      await notifyNewAssignment(newlyAssignedCount || coldIds.length);
       return NextResponse.json({ updated: coldIds.length });
     }
 
@@ -155,6 +193,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: updateError.message }, { status: 400 });
     }
 
+    await notifyNewAssignment(newlyAssignedCount);
     return NextResponse.json({ updated: leadIds.length });
   } catch (error) {
     return NextResponse.json(
