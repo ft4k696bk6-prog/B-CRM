@@ -16,10 +16,7 @@ export const metadata: Metadata = {
   description: "CRM sprzedażowo-operacyjny dla firm OZE",
   manifest: "/manifest.webmanifest",
   icons: {
-    icon: [
-      { url: "/icons/bcrm-icon.svg", type: "image/svg+xml" },
-      { url: "/icons/bcrm-icon-192.png", sizes: "192x192", type: "image/png" }
-    ],
+    icon: [{ url: "/icons/bcrm-icon-192.png", sizes: "192x192", type: "image/png" }],
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }]
   },
   appleWebApp: {
