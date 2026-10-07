@@ -11,13 +11,15 @@ import "./mobile-ux.css";
 import "./ui-polish.css";
 import "./appearance.css";
 
+const iconVersion = "20261007b";
+
 export const metadata: Metadata = {
   title: "B-CRM",
   description: "CRM sprzedażowo-operacyjny dla firm OZE",
-  manifest: "/manifest.webmanifest",
+  manifest: `/manifest.webmanifest?v=${iconVersion}`,
   icons: {
-    icon: [{ url: "/icons/bcrm-icon-192.png", sizes: "192x192", type: "image/png" }],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }]
+    icon: [{ url: `/icons/bcrm-icon-192.png?v=${iconVersion}`, sizes: "192x192", type: "image/png" }],
+    apple: [{ url: `/icons/bcrm-icon-192.png?v=${iconVersion}`, sizes: "192x192", type: "image/png" }]
   },
   appleWebApp: {
     capable: true,
