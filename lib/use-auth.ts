@@ -90,20 +90,6 @@ export function useAuth(requiredRole?: UserRole | UserRole[]) {
         return;
       }
 
-      if (isSalesRole(profile.role)) {
-        const queueResponse = await fetch("/api/leads/mandatory-queue", {
-          headers: { Authorization: `Bearer ${session.access_token}` },
-          cache: "no-store"
-        });
-        const queueBody = (await queueResponse.json().catch(() => ({}))) as { leads?: Array<{ id: string }> };
-        const mandatoryIds = queueResponse.ok ? (queueBody.leads || []).map((lead) => lead.id) : [];
-        const allowedMandatoryPath = pathname === "/sales" || mandatoryIds.some((id) => pathname === `/leads/${id}`);
-        if (mandatoryIds.length > 0 && !allowedMandatoryPath) {
-          router.replace("/sales");
-          return;
-        }
-      }
-
       if (mounted) setState({ loading: false, session, profile });
     }
 
