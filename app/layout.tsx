@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { LanguageProvider } from "@/components/language-provider";
+import { MandatoryPushGate } from "@/components/mandatory-push-gate";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import "./mobile-ux.css";
@@ -50,7 +51,10 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       </head>
       <body>
         <LanguageProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            {children}
+            <MandatoryPushGate />
+          </ThemeProvider>
         </LanguageProvider>
         <Suspense fallback={null}>
           <GoogleAnalytics />
