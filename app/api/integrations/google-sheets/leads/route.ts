@@ -8,6 +8,19 @@ export const runtime = "nodejs";
 export const maxDuration = 300;
 
 const SUPABASE_SYNC_TOKEN_HASH = "b01528855d06983f19f808323650d407b4da2fe1620cd225757e7ffdc3857dbc";
+const REQUIRED_SHEETS = [
+  "Podkarpackie dotacje i rabaty magazyny",
+  "FORMULARZ PODKARPACKIE PRZEGLĄDY",
+  "FORMULARZ PODKARPACKIE PRZEGLĄDY v2"
+];
+
+function ensureRequiredLeadSheets() {
+  const configured = (process.env.GOOGLE_SHEETS_LEADS_SHEET_NAMES || "")
+    .split(",")
+    .map((sheet) => sheet.trim())
+    .filter(Boolean);
+  process.env.GOOGLE_SHEETS_LEADS_SHEET_NAMES = Array.from(new Set([...configured, ...REQUIRED_SHEETS])).join(",");
+}
 
 function hasImportSecret(request: Request) {
   const authHeader = request.headers.get("authorization");
@@ -41,6 +54,7 @@ async function runImport(request: Request) {
   }
 
   try {
+    ensureRequiredLeadSheets();
     const result = await importGoogleSheetsLeads();
     return NextResponse.json(result, { status: result.errors.length > 0 ? 207 : 200 });
   } catch (error) {
