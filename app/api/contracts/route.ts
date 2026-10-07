@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { canAccessLeadWithTeam, requireApiProfile } from "@/lib/server-auth";
 import { recalculateContractCommission } from "@/lib/contract-commission-server";
+import { sendEventPushToRole } from "@/lib/push-events";
 import {
   canViewContractForRole,
   type ContractRecord,
@@ -377,12 +378,47 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Oznaczeniami i archiwum zarządza właściciel lub administrator." }, { status: 403 });
     const validationError = validateWorkflowCommand(body);
     if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
+
+    let settlementPush: { contractNumber: string; customerName: string } | null = null;
+    if (text(body, "action") === "workflow" && body.field === "settled" && body.value === true) {
+      const { data: settlementContract } = await supabaseAdmin
+        .from("contracts")
+        .select("contract_number,customer_name,workflow:contract_workflow(settled)")
+        .eq("id", id)
+        .eq("crm_environment", profile.crm_environment)
+        .maybeSingle();
+      const currentWorkflow = Array.isArray(settlementContract?.workflow)
+        ? settlementContract.workflow[0]
+        : settlementContract?.workflow;
+      if (settlementContract && currentWorkflow?.settled !== true) {
+        settlementPush = {
+          contractNumber: settlementContract.contract_number,
+          customerName: settlementContract.customer_name,
+        };
+      }
+    }
+
     const { error } = await supabaseAdmin.rpc("update_contract_workflow", {
       p_contract_id: id, p_actor_id: profile.id, p_command: body,
     });
     if (error) return NextResponse.json({ error: error.message }, {
       status: error.code === "42501" ? 403 : error.code === "40001" ? 409 : 400,
     });
+
+    if (settlementPush) {
+      await sendEventPushToRole(
+        supabaseAdmin,
+        profile.crm_environment,
+        "backoffice",
+        {
+          title: "Nowe zgłoszenie do obsługi",
+          body: `Umowa ${settlementPush.contractNumber} · ${settlementPush.customerName} została rozliczona. Zrób zgłoszenie PGE i dotacyjne.`,
+          url: "/zgloszenia",
+          tag: `bcrm-backoffice-settled-${id}`,
+        },
+      );
+    }
+
     return GET(new Request(`${new URL(request.url).origin}/api/contracts?id=${id}`, { headers: request.headers }));
   }
   if (["process_status", "task_key", "installation_at"].some((key) => key in body))
