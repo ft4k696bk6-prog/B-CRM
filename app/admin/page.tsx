@@ -397,7 +397,6 @@ export default function AdminDashboardPage() {
     window.addEventListener("leads:changed", refreshCurrentView);
     return () => window.removeEventListener("leads:changed", refreshCurrentView);
   }, [loadCampaignOptions, loadLeads, loadSourceOptions, loadStats, loadTeamPerformanceLeads, salespeopleReady]);
-
   const selectedCount = selectedIds.length;
   const activeFilterCount = useMemo(
     () => Object.values(filters).filter((value) => Array.isArray(value) ? value.length > 0 : Boolean(value)).length,
@@ -426,7 +425,7 @@ export default function AdminDashboardPage() {
         if (!row) continue;
         const leadKey = lead.id;
 
-        row.leadKeys.add(leadKey);
+        if (!["Umowa", "Rezygnacja", "Po spotkaniu"].includes(lead.status)) row.leadKeys.add(leadKey);
         if (lead.status === "Spotkanie") row.meetingKeys.add(leadKey);
         if (lead.status === "Umowa") row.contractKeys.add(leadKey);
         if (lead.status === "Call back" && lead.callback_at && new Date(lead.callback_at).getTime() < now) {
