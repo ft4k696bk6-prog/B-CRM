@@ -40,7 +40,6 @@ import { useAuth } from "@/lib/use-auth";
 
 function getSalesStatusPath(lead: Lead): LeadStatus[] {
   if (lead.status === "Umowa") return ["Umowa"];
-  if (lead.status === "Rezygnacja") return ["Rezygnacja"];
 
   const base: LeadStatus[] = [
     "Nowy",
@@ -233,8 +232,11 @@ export default function LeadDetailsPage() {
     setError("");
 
     const patch: Partial<Lead> = { status };
-    const isClosedLead =
-      lead.status === "Umowa" || lead.status === "Rezygnacja";
+    const reopeningResignation =
+      lead.status === "Rezygnacja" && status !== "Rezygnacja";
+    if (reopeningResignation) patch.resignation_reason = null;
+
+    const isClosedLead = lead.status === "Umowa";
     const availableStatuses =
       isClosedLead && !canManage
         ? [lead.status]
@@ -249,12 +251,13 @@ export default function LeadDetailsPage() {
     }
 
     if (
-      status === "Rezygnacja" ||
-      (profile.role === "handlowiec" &&
-        status !== "Po spotkaniu" &&
-        (status !== lead.status ||
-          status === "Call back" ||
-          status === "Spotkanie"))
+      !reopeningResignation &&
+      (status === "Rezygnacja" ||
+        (profile.role === "handlowiec" &&
+          status !== "Po spotkaniu" &&
+          (status !== lead.status ||
+            status === "Call back" ||
+            status === "Spotkanie")))
     ) {
       if (!session?.access_token) {
         setError("Sesja wygasła. Zaloguj się ponownie.");
@@ -508,7 +511,7 @@ export default function LeadDetailsPage() {
 
   if (loading || !profile) return <LoadingScreen />;
   const availableStatuses = lead
-    ? (lead.status === "Umowa" || lead.status === "Rezygnacja") && !canManage
+    ? lead.status === "Umowa" && !canManage
       ? [lead.status]
       : canManage
         ? LEAD_STATUSES
