@@ -15,12 +15,21 @@ type SubscriptionRow = {
   notification_time: string;
 };
 
-type Task = {
+type ReminderTask = {
+  id: string;
   at: string;
-  label: string;
+  kind: "meeting" | "callback";
   name: string;
   url: string;
 };
+
+type ProfileSchedule = {
+  tasks: ReminderTask[];
+  pendingMeetingNotes: number;
+};
+
+const REMINDER_OFFSETS = [60, 30, 5] as const;
+const REMINDER_WINDOW_MINUTES = 3;
 
 function warsawParts(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -56,20 +65,47 @@ function targetMinutes(value: string) {
   return hour * 60 + minute;
 }
 
-function taskSummary(tasks: Task[]) {
-  const callbacks = tasks.filter((task) => task.label === "Call back").length;
-  const meetings = tasks.filter((task) => task.label === "Spotkanie").length;
-  const internal = tasks.length - callbacks - meetings;
-  const counts = [
-    callbacks ? `${callbacks} call-back${callbacks === 1 ? "" : "i"}` : "",
-    meetings ? `${meetings} spotkanie${meetings === 1 ? "" : meetings < 5 ? "ia" : "ń"}` : "",
-    internal ? `${internal} inne` : ""
-  ].filter(Boolean).join(", ");
-  const preview = tasks.slice(0, 3).map((task) => `${timeWarsaw(task.at)} ${task.name}`).join(" · ");
+function plCount(count: number, one: string, few: string, many: string) {
+  if (count === 1) return `1 ${one}`;
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return `${count} ${few}`;
+  return `${count} ${many}`;
+}
+
+function dailySummary(schedule: ProfileSchedule) {
+  const meetings = schedule.tasks.filter((task) => task.kind === "meeting").length;
+  const callbacks = schedule.tasks.filter((task) => task.kind === "callback").length;
+  const parts = [
+    meetings ? plCount(meetings, "spotkanie", "spotkania", "spotkań") : "",
+    callbacks ? plCount(callbacks, "callback", "callbacki", "callbacków") : "",
+    schedule.pendingMeetingNotes ? `${plCount(schedule.pendingMeetingNotes, "notatka", "notatki", "notatek")} po spotkaniach do uzupełnienia` : ""
+  ].filter(Boolean);
+
+  if (!parts.length) return null;
   return {
-    title: `B-CRM · dziś: ${counts || "brak zadań"}`,
-    body: preview || "Na dziś nie masz zaplanowanych call-backów ani spotkań."
+    title: "B-CRM · plan na dziś",
+    body: parts.join(" · ")
   };
+}
+
+function reminderOffset(task: ReminderTask, nowMs: number) {
+  const atMs = new Date(task.at).getTime();
+  if (!Number.isFinite(atMs)) return null;
+  const minutesUntil = (atMs - nowMs) / 60_000;
+  return REMINDER_OFFSETS.find((offset) => Math.abs(minutesUntil - offset) < REMINDER_WINDOW_MINUTES) ?? null;
+}
+
+function reminderCopy(task: ReminderTask, offset: number) {
+  const label = task.kind === "meeting" ? "Spotkanie" : "Callback";
+  return {
+    title: `${label} za ${offset} min`,
+    body: `${timeWarsaw(task.at)} · ${task.name}`
+  };
+}
+
+function profileKey(profileId: string, environment: string) {
+  return `${profileId}:${environment}`;
 }
 
 export async function POST(request: Request) {
@@ -88,121 +124,203 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Brak autoryzacji." }, { status: 403 });
   }
 
-  const { dateKey, minutes } = warsawParts();
+  const now = new Date();
+  const nowMs = now.getTime();
+  const { dateKey, minutes } = warsawParts(now);
   const { data: allSubscriptions, error: subscriptionsError } = await supabase
     .from("push_subscriptions")
     .select("id,profile_id,crm_environment,endpoint,p256dh,auth,notification_time")
     .eq("enabled", true);
   if (subscriptionsError) return NextResponse.json({ error: subscriptionsError.message }, { status: 500 });
 
-  const due = ((allSubscriptions || []) as SubscriptionRow[]).filter((subscription) => {
-    const delta = minutes - targetMinutes(subscription.notification_time);
-    return delta >= 0 && delta < 10;
-  });
-  if (!due.length) return NextResponse.json({ checked: 0, sent: 0 });
+  const subscriptions = (allSubscriptions || []) as SubscriptionRow[];
+  if (!subscriptions.length) return NextResponse.json({ checked: 0, sent: 0 });
 
-  const subscriptionIds = due.map((item) => item.id);
-  const { data: sentRows } = await supabase
-    .from("push_delivery_log")
-    .select("subscription_id")
-    .in("subscription_id", subscriptionIds)
-    .eq("delivery_date", dateKey)
-    .eq("delivery_kind", "daily_calendar");
-  const alreadySent = new Set((sentRows || []).map((row) => row.subscription_id));
-  const pending = due.filter((item) => !alreadySent.has(item.id));
-  if (!pending.length) return NextResponse.json({ checked: due.length, sent: 0 });
+  const scheduleMap = new Map<string, ProfileSchedule>();
+  const uniqueProfiles = Array.from(
+    new Map(subscriptions.map((item) => [profileKey(item.profile_id, item.crm_environment), item])).values()
+  );
 
-  const profileIds = Array.from(new Set(pending.map((item) => item.profile_id)));
-  const environmentByProfile = new Map(pending.map((item) => [item.profile_id, item.crm_environment]));
-
-  const taskMap = new Map<string, Task[]>();
-  for (const profileId of profileIds) {
-    const environment = environmentByProfile.get(profileId) || "production";
-    const [{ data: callbackRows }, { data: meetingRows }, { data: internalRows }] = await Promise.all([
+  for (const subscription of uniqueProfiles) {
+    const [{ data: callbackRows }, { data: meetingRows }] = await Promise.all([
       supabase.from("leads")
-        .select("id,full_name,callback_at")
-        .eq("crm_environment", environment)
-        .eq("assigned_to", profileId)
+        .select("id,full_name,status,callback_at")
+        .eq("crm_environment", subscription.crm_environment)
+        .eq("assigned_to", subscription.profile_id)
+        .eq("status", "Call back")
         .not("callback_at", "is", null)
         .limit(1500),
       supabase.from("leads")
-        .select("id,full_name,meeting_at")
-        .eq("crm_environment", environment)
-        .eq("assigned_to", profileId)
+        .select("id,full_name,status,meeting_at")
+        .eq("crm_environment", subscription.crm_environment)
+        .eq("assigned_to", subscription.profile_id)
+        .eq("status", "Spotkanie")
         .not("meeting_at", "is", null)
-        .limit(1500),
-      supabase.from("calendar_events")
-        .select("id,title,starts_at")
-        .eq("crm_environment", environment)
-        .eq("owner_id", profileId)
-        .limit(1000)
+        .limit(1500)
     ]);
 
-    const tasks: Task[] = [];
+    const tasks: ReminderTask[] = [];
     for (const lead of callbackRows || []) {
       if (lead.callback_at && dateKeyWarsaw(lead.callback_at) === dateKey) {
-        tasks.push({ at: lead.callback_at, label: "Call back", name: lead.full_name, url: `/leads/${lead.id}?returnTo=%2Fcalendar` });
+        tasks.push({
+          id: lead.id,
+          at: lead.callback_at,
+          kind: "callback",
+          name: lead.full_name,
+          url: `/leads/${lead.id}?returnTo=%2Fcalendar`
+        });
       }
     }
     for (const lead of meetingRows || []) {
       if (lead.meeting_at && dateKeyWarsaw(lead.meeting_at) === dateKey) {
-        tasks.push({ at: lead.meeting_at, label: "Spotkanie", name: lead.full_name, url: `/leads/${lead.id}?returnTo=%2Fcalendar` });
-      }
-    }
-    for (const event of internalRows || []) {
-      if (event.starts_at && dateKeyWarsaw(event.starts_at) === dateKey) {
-        tasks.push({ at: event.starts_at, label: "Inne", name: event.title, url: "/calendar" });
+        tasks.push({
+          id: lead.id,
+          at: lead.meeting_at,
+          kind: "meeting",
+          name: lead.full_name,
+          url: `/leads/${lead.id}?returnTo=%2Fcalendar`
+        });
       }
     }
     tasks.sort((a, b) => a.at.localeCompare(b.at));
-    taskMap.set(profileId, tasks);
+
+    const pendingMeetingNotes = (meetingRows || []).filter((lead) => {
+      if (!lead.meeting_at) return false;
+      const meetingMs = new Date(lead.meeting_at).getTime();
+      return Number.isFinite(meetingMs) && meetingMs < nowMs;
+    }).length;
+
+    scheduleMap.set(profileKey(subscription.profile_id, subscription.crm_environment), {
+      tasks,
+      pendingMeetingNotes
+    });
   }
+
+  const subscriptionIds = subscriptions.map((item) => item.id);
+  const { data: sentRows } = await supabase
+    .from("push_delivery_log")
+    .select("subscription_id,delivery_kind")
+    .in("subscription_id", subscriptionIds)
+    .eq("delivery_date", dateKey);
+  const alreadySent = new Set((sentRows || []).map((row) => `${row.subscription_id}:${row.delivery_kind}`));
 
   let sent = 0;
   let disabled = 0;
+  let dailySent = 0;
+  let reminderSent = 0;
   const failures: string[] = [];
-  for (const subscription of pending) {
-    const tasks = taskMap.get(subscription.profile_id) || [];
-    const summary = taskSummary(tasks);
+
+  async function deliver(
+    subscription: SubscriptionRow,
+    payload: { title: string; body: string; url: string; tag: string },
+    deliveryKind: string
+  ) {
+    const logKey = `${subscription.id}:${deliveryKind}`;
+    if (alreadySent.has(logKey)) return false;
+
     try {
-      if (tasks.length) {
-        const result = await sendWebPush(
-          { endpoint: subscription.endpoint, p256dh: subscription.p256dh, auth: subscription.auth },
+      const result = await sendWebPush(
+        { endpoint: subscription.endpoint, p256dh: subscription.p256dh, auth: subscription.auth },
+        payload,
+        {
+          publicKey: config.vapid_public_key,
+          privateJwk: config.vapid_private_jwk,
+          subject: config.vapid_subject
+        }
+      );
+
+      if (!result.ok) {
+        if (result.status === 404 || result.status === 410) {
+          await supabase
+            .from("push_subscriptions")
+            .update({ enabled: false, updated_at: new Date().toISOString() })
+            .eq("id", subscription.id);
+          disabled += 1;
+        } else {
+          failures.push(`${subscription.id}: HTTP ${result.status}`);
+        }
+        return false;
+      }
+
+      const { error: logError } = await supabase.from("push_delivery_log").upsert({
+        subscription_id: subscription.id,
+        delivery_date: dateKey,
+        delivery_kind: deliveryKind,
+        sent_at: new Date().toISOString()
+      }, { onConflict: "subscription_id,delivery_date,delivery_kind" });
+      if (logError) failures.push(`${subscription.id}: ${logError.message}`);
+
+      alreadySent.add(logKey);
+      sent += 1;
+      return true;
+    } catch (error) {
+      failures.push(`${subscription.id}: ${error instanceof Error ? error.message : String(error)}`);
+      return false;
+    }
+  }
+
+  for (const subscription of subscriptions) {
+    const schedule = scheduleMap.get(profileKey(subscription.profile_id, subscription.crm_environment)) || {
+      tasks: [],
+      pendingMeetingNotes: 0
+    };
+
+    const dailyDelta = minutes - targetMinutes(subscription.notification_time);
+    const dailyDue = dailyDelta >= 0 && dailyDelta < 5;
+    const dailyKind = "daily_calendar";
+
+    if (dailyDue && !alreadySent.has(`${subscription.id}:${dailyKind}`)) {
+      const summary = dailySummary(schedule);
+      if (summary) {
+        const ok = await deliver(
+          subscription,
           {
             title: summary.title,
             body: summary.body,
             url: "/calendar",
-            tag: `bcrm-calendar-${dateKey}`
+            tag: `bcrm-daily-${dateKey}`
           },
-          {
-            publicKey: config.vapid_public_key,
-            privateJwk: config.vapid_private_jwk,
-            subject: config.vapid_subject
-          }
+          dailyKind
         );
-        if (!result.ok) {
-          if (result.status === 404 || result.status === 410) {
-            await supabase.from("push_subscriptions").update({ enabled: false, updated_at: new Date().toISOString() }).eq("id", subscription.id);
-            disabled += 1;
-          } else {
-            failures.push(`${subscription.id}: HTTP ${result.status}`);
-            continue;
-          }
-        } else {
-          sent += 1;
-        }
+        if (ok) dailySent += 1;
+      } else {
+        await supabase.from("push_delivery_log").upsert({
+          subscription_id: subscription.id,
+          delivery_date: dateKey,
+          delivery_kind: dailyKind,
+          sent_at: new Date().toISOString()
+        }, { onConflict: "subscription_id,delivery_date,delivery_kind" });
+        alreadySent.add(`${subscription.id}:${dailyKind}`);
       }
+    }
 
-      await supabase.from("push_delivery_log").upsert({
-        subscription_id: subscription.id,
-        delivery_date: dateKey,
-        delivery_kind: "daily_calendar",
-        sent_at: new Date().toISOString()
-      }, { onConflict: "subscription_id,delivery_date,delivery_kind" });
-    } catch (error) {
-      failures.push(`${subscription.id}: ${error instanceof Error ? error.message : String(error)}`);
+    for (const task of schedule.tasks) {
+      const offset = reminderOffset(task, nowMs);
+      if (!offset) continue;
+
+      const deliveryKind = `reminder_${task.kind}_${task.id}_${offset}`;
+      if (alreadySent.has(`${subscription.id}:${deliveryKind}`)) continue;
+      const copy = reminderCopy(task, offset);
+      const ok = await deliver(
+        subscription,
+        {
+          title: copy.title,
+          body: copy.body,
+          url: task.url,
+          tag: `bcrm-${task.kind}-${task.id}-${offset}-${dateKey}`
+        },
+        deliveryKind
+      );
+      if (ok) reminderSent += 1;
     }
   }
 
-  return NextResponse.json({ checked: due.length, pending: pending.length, sent, disabled, failures });
+  return NextResponse.json({
+    checked: subscriptions.length,
+    sent,
+    dailySent,
+    reminderSent,
+    disabled,
+    failures
+  });
 }
