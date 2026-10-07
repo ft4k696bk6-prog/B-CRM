@@ -9,8 +9,8 @@ self.addEventListener("push", (event) => {
   const title = data.title || "B-CRM";
   const options = {
     body: data.body || "Masz zaplanowane zadania w CRM.",
-    icon: "/icons/bcrm-icon-192.png",
-    badge: "/icons/bcrm-icon-192.png",
+    icon: "/icons/bcrm-icon-192.png?v=20261007b",
+    badge: "/icons/bcrm-icon-192.png?v=20261007b",
     tag: data.tag || "bcrm-calendar",
     renotify: true,
     data: { url: data.url || "/calendar" }
