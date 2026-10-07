@@ -90,6 +90,32 @@ export function useAuth(requiredRole?: UserRole | UserRole[]) {
         return;
       }
 
+      // The same mandatory-work rule applies to salespeople and managers.
+      // A due callback or meeting follow-up blocks normal CRM work until it is
+      // resolved. The salesperson may still open the exact mandatory lead.
+      if (isSalesRole(profile.role) && pathname !== "/sales") {
+        try {
+          const response = await fetch("/api/leads/mandatory-queue", {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+            cache: "no-store",
+          });
+          if (response.ok) {
+            const result = (await response.json().catch(() => ({}))) as { leads?: Array<{ id: string }> };
+            const mandatoryIds = (result.leads || []).map((lead) => lead.id);
+            if (mandatoryIds.length > 0) {
+              const leadMatch = pathname.match(/^\/leads\/([0-9a-f-]{36})$/i);
+              const currentLeadId = leadMatch?.[1] || null;
+              if (!currentLeadId || !mandatoryIds.includes(currentLeadId)) {
+                router.replace("/sales");
+                return;
+              }
+            }
+          }
+        } catch {
+          // Do not lock a user out of the CRM on a transient queue request failure.
+        }
+      }
+
       if (mounted) setState({ loading: false, session, profile });
     }
 
