@@ -156,7 +156,7 @@ export function LeadQuickActionDialog({
         ) : null}
 
         {afterMeeting && meetingOccurred === false ? (
-          <Alert tone="warn">
+          <Alert tone="warning">
             Lead zostanie ustawiony jako <strong>Nowy</strong>, ale pozostanie u Ciebie do końca dnia. Możesz od razu ponownie zadzwonić, ustawić call back, nowe spotkanie albo zwrócić go ręcznie. Jeśli nic nie zrobisz, nocny reset odbierze go o 22:00 (jeśli masz włączone automatyczne zabieranie).
           </Alert>
         ) : null}
