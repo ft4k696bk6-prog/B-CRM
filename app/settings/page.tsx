@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { FileText, KeyRound, Paintbrush2, Save, Settings } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { LoadingScreen } from "@/components/loading-screen";
+import { OwnerOneOffPush } from "@/components/owner-one-off-push";
 import { useTheme } from "@/components/theme-provider";
 import { Alert, PageHeader, SectionHeader } from "@/components/ui";
 import { usePricingSettings } from "@/lib/pricing-settings";
@@ -131,6 +132,8 @@ export default function SettingsPage() {
           title="Ustawienia"
           description="Wygląd interfejsu i preferencje używane przy ofertach."
         />
+
+        <OwnerOneOffPush />
 
         <section className="app-card">
           <SectionHeader
