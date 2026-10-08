@@ -14,7 +14,6 @@ type MapLeadRow = Pick<
 type MapUser = Pick<Profile, "id" | "full_name" | "role" | "manager_id">;
 type MapView = "active" | "cold" | "contracts" | "resignations" | "after_meeting";
 
-const ACTIVE_EXCLUDED_STATUSES = ["Umowa", "Rezygnacja", "Po spotkaniu"] as const;
 const MAP_PAGE_SIZE = 1000;
 const MAP_MAX_LEADS = 3000;
 const SALES_ROLES = new Set(["handlowiec", "sales", "menadzer", "manager"]);
@@ -113,7 +112,10 @@ export async function GET(request: Request) {
       } else {
         query = query.eq("is_cold_pool", false);
         if (view === "active") {
-          query = query.not("status", "in", `(${ACTIVE_EXCLUDED_STATUSES.join(",")})`);
+          query = query
+            .neq("status", "Umowa")
+            .neq("status", "Rezygnacja")
+            .neq("status", "Po spotkaniu");
         } else if (view === "contracts") {
           query = query.eq("status", "Umowa");
         } else if (view === "resignations") {
