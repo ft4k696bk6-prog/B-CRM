@@ -10,6 +10,7 @@ type SheetRow = Record<string, string | undefined> & {
   phone_number?: string;
   campaign_name?: string;
   form_name?: string;
+  ad_name?: string;
 };
 
 type LeadRef = {
@@ -84,6 +85,11 @@ function submittedAt(value: unknown) {
 }
 
 function formNoteFromRow(row: SheetRow) {
+  const formName = String(row.form_name || "").trim() || null;
+  const campaign = friendlyCampaign(String(row.campaign_name || "").trim() || null);
+  const adName = String(row.ad_name || "").trim() || null;
+  const sourceOnlyMagazynyAi = adName?.toLowerCase() === "magazyny ai";
+
   const answers = Object.entries(row)
     .filter(([column, rawValue]) => {
       const value = String(rawValue || "").trim();
@@ -98,9 +104,16 @@ function formNoteFromRow(row: SheetRow) {
     .slice(0, 40)
     .map(([column, rawValue]) => `${prettify(column)}: ${prettify(String(rawValue || "")).slice(0, 1000)}`);
 
-  if (!answers.length) return null;
-  const formName = String(row.form_name || "").trim() || null;
-  const campaign = friendlyCampaign(String(row.campaign_name || "").trim() || null);
+  if (!answers.length && !sourceOnlyMagazynyAi) return null;
+
+  if (!answers.length && sourceOnlyMagazynyAi) {
+    return [
+      "Zgłoszenie z formularza:",
+      "Oferta: Magazyny energii",
+      `Reklama: ${adName}`,
+      formName ? `Formularz: ${formName}` : null
+    ].filter(Boolean).join("\n").slice(0, 12000);
+  }
 
   return [
     "Odpowiedzi z formularza:",
@@ -222,19 +235,21 @@ export async function backfillGoogleSheetsFormNotes(sheetNames: string[]) {
     const end = new Date(start.getTime() + 1000);
     const { data: existing, error: checkError } = await supabase
       .from("lead_history")
-      .select("id")
+      .select("id,description")
       .eq("lead_id", candidate.lead_id)
       .eq("action_type", "comment")
       .gte("created_at", start.toISOString())
       .lt("created_at", end.toISOString())
-      .ilike("description", "Odpowiedzi z formularza:%")
-      .limit(1);
+      .limit(10);
 
     if (checkError) {
       console.warn("Form-note backfill duplicate check failed", checkError.message);
       continue;
     }
-    if (existing && existing.length > 0) continue;
+    if ((existing || []).some((row) => {
+      const description = String(row.description || "");
+      return description.startsWith("Odpowiedzi z formularza:") || description.startsWith("Zgłoszenie z formularza:");
+    })) continue;
 
     const { error: insertError } = await supabase.from("lead_history").insert({
       lead_id: candidate.lead_id,
