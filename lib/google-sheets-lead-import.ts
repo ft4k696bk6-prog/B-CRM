@@ -1,10 +1,11 @@
 import Papa from "papaparse";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { googleWorkspaceToken } from "@/lib/google-workspace";
+import { sendEventPushToProfiles } from "@/lib/push-events";
 import { normalizeCrmScope } from "@/lib/scope";
 import type { CrmDataScope } from "@/lib/types";
 
-type SheetRow = {
+type SheetRow = Record<string, string | undefined> & {
   id?: string;
   created_time?: string;
   full_name?: string;
@@ -58,11 +59,20 @@ type RepeatCandidate = {
   formName: string | null;
   platform: string | null;
   sheetName: string;
+  formNote: string | null;
 };
 
 type PendingNewLead = {
   lead: PreparedLead;
   latestSubmittedAt: string;
+  formNote: string | null;
+};
+
+type InsertedLead = {
+  id: string;
+  full_name: string;
+  phone: string;
+  campaign: string | null;
 };
 
 type ImportResult = {
@@ -103,6 +113,31 @@ const VALID_VOIVODESHIPS = new Set([
   "warminsko-mazurskie",
   "wielkopolskie",
   "zachodniopomorskie"
+]);
+
+const META_FORM_COLUMNS = new Set([
+  "id",
+  "created_time",
+  "full_name",
+  "first_name",
+  "last_name",
+  "phone_number",
+  "phone",
+  "email",
+  "email_address",
+  "post_code",
+  "postal_code",
+  "województwo",
+  "campaign_id",
+  "campaign_name",
+  "adset_id",
+  "adset_name",
+  "ad_id",
+  "ad_name",
+  "form_id",
+  "form_name",
+  "platform",
+  "is_organic"
 ]);
 
 function adminClient() {
@@ -202,6 +237,39 @@ function timestampMs(value: string | null | undefined) {
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
+function normalizeColumnName(value: string) {
+  return value.trim().replace(/^\uFEFF/, "").toLowerCase();
+}
+
+function questionLabel(value: string) {
+  const trimmed = value.trim().replace(/^\uFEFF/, "");
+  return trimmed.includes("_") ? trimmed.replace(/_+/g, " ") : trimmed;
+}
+
+function formNoteFromRow(row: SheetRow, formName: string | null, campaign: string | null) {
+  const answers = Object.entries(row)
+    .filter(([column, rawValue]) => {
+      const value = String(rawValue || "").trim();
+      const normalized = normalizeColumnName(column);
+      return Boolean(value)
+        && !META_FORM_COLUMNS.has(normalized)
+        && !normalized.startsWith("utm_")
+        && normalized !== "fbclid"
+        && normalized !== "gclid";
+    })
+    .slice(0, 40)
+    .map(([column, rawValue]) => `${questionLabel(column)}: ${String(rawValue || "").trim().slice(0, 1000)}`);
+
+  if (!answers.length) return null;
+
+  return [
+    "Odpowiedzi z formularza:",
+    formName ? `Formularz: ${formName}` : null,
+    campaign ? `Kampania: ${campaign}` : null,
+    ...answers
+  ].filter(Boolean).join("\n").slice(0, 12000);
+}
+
 function csvUrl(spreadsheetId: string, sheetName: string) {
   const params = new URLSearchParams({
     tqx: "out:csv",
@@ -226,7 +294,7 @@ function rowsFromValues(values: string[][]) {
 
   return rows.map((row) =>
     normalizedHeaders.reduce<SheetRow>((record, header, index) => {
-      if (header) record[header as keyof SheetRow] = row[index] || "";
+      if (header) record[header] = row[index] || "";
       return record;
     }, {})
   );
@@ -317,6 +385,50 @@ function chunk<T>(items: T[], size: number) {
   return chunks;
 }
 
+async function notifyNewLeadWatchers(
+  supabase: SupabaseClient,
+  crmEnvironment: CrmDataScope,
+  insertedLeads: InsertedLead[]
+) {
+  if (!insertedLeads.length) return;
+
+  try {
+    const { data: profiles, error } = await supabase
+      .from("profiles")
+      .select("id,role,can_view_lead_pool")
+      .eq("crm_environment", crmEnvironment);
+
+    if (error) {
+      console.error("New lead push recipients:", error.message);
+      return;
+    }
+
+    const recipientIds = (profiles || [])
+      .filter((person) => person.role === "owner" || person.role === "admin" || person.can_view_lead_pool === true)
+      .map((person) => person.id);
+
+    if (!recipientIds.length) return;
+
+    const first = insertedLeads[0];
+    const count = insertedLeads.length;
+    await sendEventPushToProfiles(
+      supabase,
+      crmEnvironment,
+      recipientIds,
+      {
+        title: count === 1 ? "Nowy lead w CRM" : `Nowe leady w CRM: ${count}`,
+        body: count === 1
+          ? `${first.full_name}${first.campaign ? ` · ${first.campaign}` : ""} czeka na obsługę.`
+          : `${count} nowych leadów czeka na obsługę lub przypisanie.`,
+        url: count === 1 ? `/leads/${first.id}` : "/admin",
+        tag: `new-leads-${first.id}`
+      }
+    );
+  } catch (error) {
+    console.error("New lead push:", error);
+  }
+}
+
 export async function importGoogleSheetsLeads(): Promise<ImportResult> {
   const spreadsheetId = process.env.GOOGLE_SHEETS_LEADS_SPREADSHEET_ID || DEFAULT_SPREADSHEET_ID;
   const configuredSheetNames = (process.env.GOOGLE_SHEETS_LEADS_SHEET_NAMES || "")
@@ -381,6 +493,7 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
       const campaign = (typeof row.campaign_name === "string" ? row.campaign_name.trim() : "") || sheetName;
       const formName = (typeof row.form_name === "string" ? row.form_name.trim() : "") || null;
       const platform = (typeof row.platform === "string" ? row.platform.trim() : "") || null;
+      const formNote = formNoteFromRow(row, formName, campaign);
       const existing = existingLeads.get(key);
 
       if (existing) {
@@ -401,7 +514,8 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
             campaign,
             formName,
             platform,
-            sheetName
+            sheetName,
+            formNote
           });
         } else {
           candidate.newSubmissionCount += 1;
@@ -412,6 +526,7 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
             candidate.formName = formName;
             candidate.platform = platform;
             candidate.sheetName = sheetName;
+            candidate.formNote = formNote;
           }
         }
         continue;
@@ -421,6 +536,7 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
       if (!pending) {
         pendingNew.set(key, {
           latestSubmittedAt: submittedAt,
+          formNote,
           lead: {
             full_name: fullName,
             phone,
@@ -454,6 +570,7 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
 
       if (timestampMs(submittedAt) > timestampMs(pending.latestSubmittedAt)) {
         pending.latestSubmittedAt = submittedAt;
+        pending.formNote = formNote;
         pending.lead.last_form_submission_at = submittedAt;
         pending.lead.attention_at = submittedAt;
         pending.lead.full_name = fullName;
@@ -465,21 +582,50 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
     }
   }
 
-  const leads = Array.from(pendingNew.values()).map((entry) => entry.lead);
-  result.prepared = leads.length;
+  const pendingEntries = Array.from(pendingNew.values());
+  result.prepared = pendingEntries.length;
   console.info("Google Sheets lead import prepared", {
     ...result,
     repeatCandidates: repeatCandidates.size
   });
 
-  for (const leadChunk of chunk(leads, 500)) {
-    const { error } = await supabase.from("leads").insert(leadChunk);
+  const insertedLeads: InsertedLead[] = [];
+
+  for (const pendingChunk of chunk(pendingEntries, 500)) {
+    const { data: insertedData, error } = await supabase
+      .from("leads")
+      .insert(pendingChunk.map((entry) => entry.lead))
+      .select("id,full_name,phone,campaign");
+
     if (error) {
       result.errors.push(error.message);
       continue;
     }
-    result.inserted += leadChunk.length;
+
+    const insertedRows = (insertedData || []) as InsertedLead[];
+    result.inserted += insertedRows.length;
+    insertedLeads.push(...insertedRows);
+
+    const pendingByPhone = new Map(pendingChunk.map((entry) => [phoneKey(entry.lead.phone), entry]));
+    const noteRows = insertedRows.flatMap((inserted) => {
+      const pending = pendingByPhone.get(phoneKey(inserted.phone));
+      if (!pending?.formNote) return [];
+      return [{
+        lead_id: inserted.id,
+        user_id: null,
+        action_type: "comment",
+        description: pending.formNote,
+        created_at: pending.latestSubmittedAt
+      }];
+    });
+
+    if (noteRows.length) {
+      const { error: noteError } = await supabase.from("lead_history").insert(noteRows);
+      if (noteError) result.errors.push(`Notatki z formularzy: ${noteError.message}`);
+    }
   }
+
+  await notifyNewLeadWatchers(supabase, crmEnvironment, insertedLeads);
 
   for (const candidate of repeatCandidates.values()) {
     const previousCount = Math.max(candidate.lead.form_submission_count || 0, 1);
@@ -540,6 +686,17 @@ export async function importGoogleSheetsLeads(): Promise<ImportResult> {
 
     if (activityError) {
       result.errors.push(`Historia ponownego zgłoszenia ${candidate.lead.id}: ${activityError.message}`);
+    }
+
+    if (candidate.formNote) {
+      const { error: noteError } = await supabase.from("lead_history").insert({
+        lead_id: candidate.lead.id,
+        user_id: null,
+        action_type: "comment",
+        description: candidate.formNote,
+        created_at: candidate.latestSubmittedAt
+      });
+      if (noteError) result.errors.push(`Notatka ponownego zgłoszenia ${candidate.lead.id}: ${noteError.message}`);
     }
 
     result.resubmitted += 1;

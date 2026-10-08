@@ -12,11 +12,13 @@ type MapLeadRow = Pick<
 };
 
 type MapUser = Pick<Profile, "id" | "full_name" | "role" | "manager_id">;
+type MapView = "active" | "cold" | "contracts" | "resignations" | "after_meeting";
 
-const ACTIVE_EXCLUDED_STATUSES = new Set(["Umowa", "Rezygnacja"]);
 const MAP_PAGE_SIZE = 1000;
 const MAP_MAX_LEADS = 3000;
-const SALES_ROLES = new Set(["handlowiec", "sales"]);
+const SALES_ROLES = new Set(["handlowiec", "sales", "menadzer", "manager"]);
+const MANAGER_ROLES = new Set(["menadzer", "manager"]);
+const MAP_VIEWS = new Set<MapView>(["active", "cold", "contracts", "resignations", "after_meeting"]);
 
 function validCoords(lat: number | null, lng: number | null) {
   if (lat === null || lng === null) return false;
@@ -36,12 +38,35 @@ function normalizePostalCode(value: string | null) {
   return match ? `${match[1]}-${match[2]}` : undefined;
 }
 
+function requestedView(request: Request): MapView {
+  const raw = new URL(request.url).searchParams.get("view") as MapView | null;
+  return raw && MAP_VIEWS.has(raw) ? raw : "active";
+}
+
+function canSeeLead(
+  lead: MapLeadRow,
+  profile: { id: string; role: string },
+  teamIds: Set<string> | undefined
+) {
+  if (profile.role === "owner" || profile.role === "admin") return true;
+  if (profile.role === "menadzer") {
+    return lead.assigned_to === null
+      || lead.assigned_to === profile.id
+      || Boolean(lead.assigned_to && teamIds?.has(lead.assigned_to));
+  }
+  return lead.assigned_to === profile.id;
+}
+
 export async function GET(request: Request) {
   try {
     const auth = await requireApiProfile(request);
     if ("error" in auth) return auth.error;
 
     const { supabaseAdmin, profile } = auth;
+    const url = new URL(request.url);
+    const focusLeadId = url.searchParams.get("leadId")?.trim() || "";
+    const view = requestedView(request);
+
     const { data: peopleData, error: peopleError } = await supabaseAdmin
       .from("profiles")
       .select("id,full_name,role,manager_id")
@@ -61,14 +86,17 @@ export async function GET(request: Request) {
 
     const assignableUsers = people.filter((person) => {
       if (!SALES_ROLES.has(person.role)) return false;
-      if (profile.role === "menadzer") return person.manager_id === profile.id;
+      if (profile.role === "menadzer") {
+        return person.id === profile.id
+          || (!MANAGER_ROLES.has(person.role) && person.manager_id === profile.id);
+      }
       if (profile.role === "handlowiec") return person.id === profile.id;
       return true;
     });
 
     const collected: MapLeadRow[] = [];
     for (let from = 0; from < MAP_MAX_LEADS; from += MAP_PAGE_SIZE) {
-      const { data, error } = await supabaseAdmin
+      let query = supabaseAdmin
         .from("leads")
         .select("id,full_name,phone,postal_code,address,status,assigned_to,map_lat,map_lng,is_cold_pool")
         .eq("crm_environment", profile.crm_environment)
@@ -77,25 +105,35 @@ export async function GET(request: Request) {
         .order("updated_at", { ascending: false })
         .range(from, Math.min(from + MAP_PAGE_SIZE - 1, MAP_MAX_LEADS - 1));
 
+      if (focusLeadId) {
+        query = query.eq("id", focusLeadId);
+      } else if (view === "cold") {
+        query = query.eq("is_cold_pool", true);
+      } else {
+        query = query.eq("is_cold_pool", false);
+        if (view === "contracts") {
+          query = query.eq("status", "Umowa");
+        } else if (view === "resignations") {
+          query = query.eq("status", "Rezygnacja");
+        } else if (view === "after_meeting") {
+          query = query.eq("status", "Po spotkaniu");
+        }
+      }
+
+      const { data, error } = await query;
       if (error) return NextResponse.json({ error: error.message }, { status: 400 });
       const page = (data || []) as MapLeadRow[];
       collected.push(...page);
-      if (page.length < MAP_PAGE_SIZE) break;
+      if (page.length < MAP_PAGE_SIZE || focusLeadId) break;
     }
 
-    const visible = collected.filter((lead) => {
-      if (lead.is_cold_pool || ACTIVE_EXCLUDED_STATUSES.has(lead.status)) return false;
-      if (!validCoords(lead.map_lat, lead.map_lng)) return false;
-      if (profile.role === "owner" || profile.role === "admin") return true;
-      if (profile.role === "menadzer") {
-        return lead.assigned_to === null || lead.assigned_to === profile.id || Boolean(lead.assigned_to && teamIds?.has(lead.assigned_to));
-      }
-      return lead.assigned_to === profile.id;
-    });
+    const visible = collected.filter((lead) => validCoords(lead.map_lat, lead.map_lng) && canSeeLead(lead, profile, teamIds));
 
     return NextResponse.json({
-      canAssign: ["owner", "admin", "menadzer"].includes(profile.role),
-      truncated: collected.length >= MAP_MAX_LEADS,
+      canAssign: ["owner", "admin", "menadzer"].includes(profile.role) && view !== "active" && !focusLeadId,
+      truncated: !focusLeadId && collected.length >= MAP_MAX_LEADS,
+      view,
+      focused: Boolean(focusLeadId),
       leads: visible.map((lead) => ({
         id: lead.id,
         name: lead.full_name,

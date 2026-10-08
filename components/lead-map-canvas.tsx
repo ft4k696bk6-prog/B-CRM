@@ -34,11 +34,13 @@ type Props = {
 };
 
 type MapUser = { id: string; full_name: string };
+type AllLeadMapView = "active" | "cold" | "contracts" | "resignations" | "after_meeting" | "focus";
 type AllMapResponse = {
   leads?: LeadMapPoint[];
   users?: MapUser[];
   canAssign?: boolean;
   truncated?: boolean;
+  focused?: boolean;
   error?: string;
 };
 
@@ -93,6 +95,13 @@ type DrawPoint = { x: number; y: number };
 
 const EMPTY_MEETINGS: MeetingMapPoint[] = [];
 const EMPTY_ROUTE_COORDINATES: Array<[number, number]> = [];
+const ALL_LEAD_VIEW_OPTIONS: Array<{ value: Exclude<AllLeadMapView, "focus">; label: string }> = [
+  { value: "active", label: "Wszystkie leady" },
+  { value: "cold", label: "Baza leadów" },
+  { value: "contracts", label: "Umowy" },
+  { value: "resignations", label: "Rezygnacje" },
+  { value: "after_meeting", label: "Po spotkaniu" }
+];
 
 declare global {
   interface Window {
@@ -148,6 +157,8 @@ function statusColor(status: string) {
   if (status === "Call back") return "#7c3aed";
   if (status === "Nie odebrał") return "#64748b";
   if (status === "Po spotkaniu") return "#0891b2";
+  if (status === "Umowa") return "#16a34a";
+  if (status === "Rezygnacja") return "#dc2626";
   return "#2563eb";
 }
 
@@ -251,11 +262,13 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
   const [error, setError] = useState("");
   const [openLeadId, setOpenLeadId] = useState<string | null>(null);
   const [showAllLeads, setShowAllLeads] = useState(false);
+  const [allView, setAllView] = useState<AllLeadMapView>("active");
+  const [focusedLeadId, setFocusedLeadId] = useState<string | null>(null);
   const [allLeads, setAllLeads] = useState<LeadMapPoint[]>([]);
   const [mapUsers, setMapUsers] = useState<MapUser[]>([]);
   const [canAssign, setCanAssign] = useState(false);
   const [allBusy, setAllBusy] = useState(false);
-  const [allLoaded, setAllLoaded] = useState(false);
+  const [loadedKey, setLoadedKey] = useState("");
   const [allTruncated, setAllTruncated] = useState(false);
   const [drawMode, setDrawMode] = useState(false);
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
@@ -268,6 +281,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
   const mapMeetings = showAllLeads ? EMPTY_MEETINGS : meetings;
   const mapRouteCoordinates = showAllLeads ? EMPTY_ROUTE_COORDINATES : routeCoordinates;
   const mapStartPoint = showAllLeads ? null : startPoint;
+  const bulkAssignmentEnabled = showAllLeads && canAssign && (allView === "active" || allView === "cold");
 
   function rememberView(map = mapRef.current) {
     if (!map) return;
@@ -337,55 +351,80 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
     return data.session?.access_token || "";
   }
 
-  async function loadAllMapLeads(force = false) {
-    if (allLoaded && !force) return true;
+  async function loadAllMapLeads(view: AllLeadMapView, leadId?: string, force = false) {
+    const requestKey = view === "focus" ? `focus:${leadId || ""}` : view;
+    if (loadedKey === requestKey && !force) return true;
+
     const token = await authToken();
     if (!token) {
       setActionError("Sesja wygasła. Odśwież CRM i spróbuj ponownie.");
       return false;
     }
 
+    if (view === "focus" && !leadId) return false;
+
     setAllBusy(true);
     setActionError("");
     try {
-      const response = await fetch("/api/map/leads", {
+      const params = new URLSearchParams();
+      if (view === "focus" && leadId) params.set("leadId", leadId);
+      else params.set("view", view);
+
+      const response = await fetch(`/api/map/leads?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store"
       });
       const body = (await response.json().catch(() => ({}))) as AllMapResponse;
-      if (!response.ok) throw new Error(body.error || "Nie udało się pobrać wszystkich leadów.");
-      setAllLeads(body.leads || []);
+      if (!response.ok) throw new Error(body.error || "Nie udało się pobrać leadów do mapy.");
+
+      const nextLeads = body.leads || [];
+      setAllLeads(nextLeads);
       setMapUsers(body.users || []);
       setCanAssign(Boolean(body.canAssign));
       setAllTruncated(Boolean(body.truncated));
-      setAllLoaded(true);
-      setAssignTargetId((current) => current || body.users?.[0]?.id || "");
+      setLoadedKey(requestKey);
+      setAssignTargetId((current) => body.users?.some((user) => user.id === current) ? current : body.users?.[0]?.id || "");
+
+      if (view === "focus" && leadId && !nextLeads.some((lead) => lead.id === leadId)) {
+        setActionError("Ten lead nie ma jeszcze punktu na mapie albo nie masz do niego dostępu.");
+      }
       return true;
     } catch (loadError) {
-      setActionError(loadError instanceof Error ? loadError.message : "Nie udało się pobrać wszystkich leadów.");
+      setActionError(loadError instanceof Error ? loadError.message : "Nie udało się pobrać leadów do mapy.");
       return false;
     } finally {
       setAllBusy(false);
     }
   }
 
-  async function toggleAllLeads() {
-    if (showAllLeads) {
-      if (assignmentMadeRef.current) {
-        window.location.reload();
-        return;
-      }
-      clearAreaSelection();
-      setShowAllLeads(false);
-      setActionMessage("");
+  async function selectAllLeadView(view: AllLeadMapView, leadId?: string) {
+    clearAreaSelection();
+    const loaded = await loadAllMapLeads(view, leadId);
+    if (!loaded) return;
+
+    viewStateRef.current = null;
+    activePopupKeyRef.current = null;
+    setAllView(view);
+    setFocusedLeadId(view === "focus" ? leadId || null : null);
+    setShowAllLeads(true);
+  }
+
+  function returnToSalesperson() {
+    if (!showAllLeads) return;
+    if (assignmentMadeRef.current) {
+      window.location.reload();
       return;
     }
 
     clearAreaSelection();
-    const loaded = await loadAllMapLeads();
-    if (loaded) {
-      viewStateRef.current = null;
-      setShowAllLeads(true);
+    setShowAllLeads(false);
+    setAllView("active");
+    setFocusedLeadId(null);
+    setActionMessage("");
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("lead")) {
+      url.searchParams.delete("lead");
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
     }
   }
 
@@ -468,7 +507,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
   }
 
   async function assignSelectedLeads() {
-    if (!canAssign || selectedLeadIds.length === 0 || !assignTargetId || assignBusy) return;
+    if (!bulkAssignmentEnabled || selectedLeadIds.length === 0 || !assignTargetId || assignBusy) return;
     if (selectedLeadIds.length > 1000) {
       setActionError("Zaznacz mniejszy obszar — jednorazowo można przypisać maksymalnie 1000 leadów.");
       return;
@@ -525,6 +564,12 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
       });
     });
   }
+
+  useEffect(() => {
+    const leadId = new URLSearchParams(window.location.search).get("lead")?.trim();
+    if (!leadId) return;
+    void selectAllLeadView("focus", leadId);
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -619,6 +664,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
         localMap.on("zoomend", rememberLocalView);
 
         const bounds: Array<[number, number]> = [];
+        let focusedPopupKey: string | null = null;
 
         for (const group of leadGroups(mapLeads)) {
           const first = group.leads[0];
@@ -642,6 +688,9 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
             if (!returnContextRef.current && activePopupKeyRef.current === groupKey) activePopupKeyRef.current = null;
           });
           popupLayersRef.current.set(groupKey, marker);
+          if (allView === "focus" && focusedLeadId && group.leads.some((lead) => lead.id === focusedLeadId)) {
+            focusedPopupKey = groupKey;
+          }
         }
 
         for (const meeting of mapMeetings) {
@@ -695,13 +744,14 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
         if (savedView) {
           localMap.setView(savedView.center, savedView.zoom, { animate: false });
         } else if (bounds.length > 0) {
-          localMap.fitBounds(L.latLngBounds(bounds), { padding: [32, 32], maxZoom: 14 });
+          localMap.fitBounds(L.latLngBounds(bounds), { padding: [32, 32], maxZoom: allView === "focus" ? 16 : 14 });
         } else {
           localMap.setView([52.1, 19.4], 6);
         }
 
-        const popupKeyToRestore = returnContext?.popupKey || activePopupKeyRef.current;
+        const popupKeyToRestore = focusedPopupKey || returnContext?.popupKey || activePopupKeyRef.current;
         if (popupKeyToRestore) {
+          activePopupKeyRef.current = popupKeyToRestore;
           window.requestAnimationFrame(() => {
             popupLayersRef.current.get(popupKeyToRestore)?.openPopup?.();
           });
@@ -720,7 +770,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
       }
       if (mapRef.current === localMap) mapRef.current = null;
     };
-  }, [mapLeads, mapMeetings, mapRouteCoordinates, mapStartPoint]);
+  }, [allView, focusedLeadId, mapLeads, mapMeetings, mapRouteCoordinates, mapStartPoint]);
 
   if (error) {
     return <div className="flex min-h-[58vh] items-center justify-center rounded-xl border border-line bg-panel p-6 text-sm font-semibold text-red-700">{error}</div>;
@@ -729,25 +779,40 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
   return (
     <>
       <div className="mb-2 flex flex-wrap items-center gap-2 rounded-xl border border-line bg-white p-2 shadow-sm">
-        <button type="button" className={showAllLeads ? "btn-primary" : "btn-secondary"} onClick={toggleAllLeads} disabled={allBusy}>
-          {allBusy ? "Ładuję leady…" : showAllLeads ? "Wróć do handlowca" : "Pokaż wszystkie leady"}
+        <button type="button" className={!showAllLeads ? "btn-primary" : "btn-secondary"} onClick={returnToSalesperson} disabled={allBusy}>
+          Widok handlowca
         </button>
+        {ALL_LEAD_VIEW_OPTIONS.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            className={showAllLeads && allView === option.value ? "btn-primary" : "btn-secondary"}
+            onClick={() => void selectAllLeadView(option.value)}
+            disabled={allBusy}
+          >
+            {option.label}
+          </button>
+        ))}
+        {showAllLeads && allView === "focus" ? (
+          <span className="rounded-lg border border-sky/20 bg-sky/10 px-3 py-2 text-xs font-black text-sky">Wybrany lead</span>
+        ) : null}
+        {allBusy ? <span className="text-xs font-semibold text-muted">Ładuję leady…</span> : null}
         {showAllLeads ? (
           <>
             <span className="rounded-lg bg-[#eef2f6] px-3 py-2 text-xs font-black text-ink">Na mapie: {mapLeads.length} leadów</span>
-            {allTruncated ? <span className="text-xs font-semibold text-amber-700">Pokazuję maks. 3000 najnowszych leadów.</span> : null}
-            {canAssign ? (
+            {allTruncated ? <span className="text-xs font-semibold text-amber-700">Pokazuję maks. 3000 najnowszych leadów z tego widoku.</span> : null}
+            {bulkAssignmentEnabled ? (
               <button type="button" className={drawMode ? "btn-primary" : "btn-secondary"} onClick={drawMode ? () => clearAreaSelection() : startDrawingMode} disabled={mapLeads.length === 0}>
                 {drawMode ? "Anuluj rysowanie" : "Zaznacz pętlą"}
               </button>
             ) : null}
           </>
         ) : (
-          <span className="text-xs font-semibold text-muted">Tryb handlowca: leady + spotkania + trasa.</span>
+          <span className="text-xs font-semibold text-muted">Leady wybranego handlowca + spotkania + trasa.</span>
         )}
       </div>
 
-      {showAllLeads && canAssign && (selectedLeadIds.length > 0 || actionMessage || actionError) ? (
+      {bulkAssignmentEnabled && (selectedLeadIds.length > 0 || actionMessage || actionError) ? (
         <div className="mb-2 grid gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(180px,280px)_auto_auto] sm:items-end">
           <div>
             <div className="text-xs font-black uppercase tracking-wide text-amber-900">Zaznaczony obszar</div>
@@ -770,13 +835,13 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
         </div>
       ) : null}
 
-      {showAllLeads && drawMode ? (
+      {bulkAssignmentEnabled && drawMode ? (
         <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-bold text-amber-900">
           Przyłóż palec do mapy i narysuj zamkniętą pętlę wokół leadów. Po puszczeniu palca CRM zaznaczy wszystkie leady wewnątrz.
         </div>
       ) : null}
 
-      {actionError && !(showAllLeads && canAssign && (selectedLeadIds.length > 0 || actionMessage || actionError)) ? (
+      {actionError && !(bulkAssignmentEnabled && (selectedLeadIds.length > 0 || actionMessage || actionError)) ? (
         <div className="mb-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-800">{actionError}</div>
       ) : null}
 
