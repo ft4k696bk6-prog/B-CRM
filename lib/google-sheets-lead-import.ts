@@ -246,30 +246,43 @@ function questionLabel(value: string) {
   return trimmed.includes("_") ? trimmed.replace(/_+/g, " ") : trimmed;
 }
 
+function answerLabel(value: string) {
+  return value.replace(/_+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function isReviewForm(formName: string | null, campaign: string | null) {
+  const source = `${formName || ""} ${campaign || ""}`
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  return source.includes("przegl");
+}
+
 function formNoteFromRow(row: SheetRow, formName: string | null, campaign: string | null) {
+  if (!isReviewForm(formName, campaign)) return null;
+
   const answers = Object.entries(row)
     .filter(([column, rawValue]) => {
       const value = String(rawValue || "").trim();
       const normalized = normalizeColumnName(column);
       return Boolean(value)
         && !META_FORM_COLUMNS.has(normalized)
+        && !["inbox_url", "lead_status", "priority", "created", "created_at", "updated", "updated_at", "status"].includes(normalized)
         && !normalized.startsWith("utm_")
         && normalized !== "fbclid"
-        && normalized !== "gclid";
+        && normalized !== "gclid"
+        && !value.startsWith("<test lead:");
     })
     .slice(0, 40)
-    .map(([column, rawValue]) => `${questionLabel(column)}: ${String(rawValue || "").trim().slice(0, 1000)}`);
+    .map(([column, rawValue]) => `${questionLabel(column)} - ${answerLabel(String(rawValue || "")).slice(0, 1000)}`);
 
   if (!answers.length) return null;
 
   return [
     "Odpowiedzi z formularza:",
-    formName ? `Formularz: ${formName}` : null,
-    campaign ? `Kampania: ${campaign}` : null,
     ...answers
-  ].filter(Boolean).join("\n").slice(0, 12000);
+  ].join("\n").slice(0, 12000);
 }
-
 function csvUrl(spreadsheetId: string, sheetName: string) {
   const params = new URLSearchParams({
     tqx: "out:csv",

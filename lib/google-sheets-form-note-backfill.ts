@@ -87,8 +87,12 @@ function submittedAt(value: unknown) {
 function formNoteFromRow(row: SheetRow) {
   const formName = String(row.form_name || "").trim() || null;
   const campaign = friendlyCampaign(String(row.campaign_name || "").trim() || null);
-  const adName = String(row.ad_name || "").trim() || null;
-  const sourceOnlyMagazynyAi = adName?.toLowerCase() === "magazyny ai";
+  const source = `${formName || ""} ${campaign || ""}`
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  if (!source.includes("przegl")) return null;
 
   const answers = Object.entries(row)
     .filter(([column, rawValue]) => {
@@ -96,33 +100,22 @@ function formNoteFromRow(row: SheetRow) {
       const normalized = normalizeColumnName(column);
       return Boolean(value)
         && !META_FORM_COLUMNS.has(normalized)
+        && !["created", "created_at", "updated", "updated_at", "status"].includes(normalized)
         && !normalized.startsWith("utm_")
         && normalized !== "fbclid"
         && normalized !== "gclid"
         && !value.startsWith("<test lead:");
     })
     .slice(0, 40)
-    .map(([column, rawValue]) => `${prettify(column)}: ${prettify(String(rawValue || "")).slice(0, 1000)}`);
+    .map(([column, rawValue]) => `${prettify(column)} - ${prettify(String(rawValue || "")).slice(0, 1000)}`);
 
-  if (!answers.length && !sourceOnlyMagazynyAi) return null;
-
-  if (!answers.length && sourceOnlyMagazynyAi) {
-    return [
-      "Zgłoszenie z formularza:",
-      "Oferta: Magazyny energii",
-      `Reklama: ${adName}`,
-      formName ? `Formularz: ${formName}` : null
-    ].filter(Boolean).join("\n").slice(0, 12000);
-  }
+  if (!answers.length) return null;
 
   return [
     "Odpowiedzi z formularza:",
-    formName ? `Formularz: ${formName}` : null,
-    campaign ? `Kampania: ${campaign}` : null,
     ...answers
-  ].filter(Boolean).join("\n").slice(0, 12000);
+  ].join("\n").slice(0, 12000);
 }
-
 async function googleAccessToken() {
   try {
     return await googleWorkspaceToken(["https://www.googleapis.com/auth/spreadsheets.readonly"]);
