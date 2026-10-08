@@ -1,5 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
+import { backfillGoogleSheetsFormNotes } from "@/lib/google-sheets-form-note-backfill";
 import { importGoogleSheetsLeads } from "@/lib/google-sheets-lead-import";
 import { requireApiProfile } from "@/lib/server-auth";
 
@@ -56,7 +57,11 @@ async function runImport(request: Request) {
   try {
     ensureRequiredLeadSheets();
     const result = await importGoogleSheetsLeads();
-    return NextResponse.json(result, { status: result.errors.length > 0 ? 207 : 200 });
+    const formNotes = await backfillGoogleSheetsFormNotes(REQUIRED_SHEETS);
+    return NextResponse.json(
+      { ...result, form_notes_scanned: formNotes.scanned, form_notes_inserted: formNotes.inserted },
+      { status: result.errors.length > 0 ? 207 : 200 }
+    );
   } catch (error) {
     console.error("Google Sheets lead import failed", error);
     return NextResponse.json(
