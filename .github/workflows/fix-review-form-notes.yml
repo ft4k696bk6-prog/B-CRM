@@ -76,7 +76,7 @@ jobs:
           }
           '''
           pattern = r'function questionLabel\(value: string\) \{.*?\n\}\n\nfunction formNoteFromRow\(row: SheetRow, formName: string \| null, campaign: string \| null\) \{.*?\n\}\n(?=\nfunction csvUrl)'
-          text, count = re.subn(pattern, replacement.rstrip(), text, count=1, flags=re.S)
+          text, count = re.subn(pattern, lambda _: replacement.rstrip(), text, count=1, flags=re.S)
           if count != 1:
             raise SystemExit(f'lead import patch matched {count} blocks')
           import_file.write_text(text)
@@ -117,7 +117,7 @@ jobs:
           }
           '''
           pattern = r'function formNoteFromRow\(row: SheetRow\) \{.*?\n\}\n(?=\nasync function googleAccessToken)'
-          text, count = re.subn(pattern, replacement.rstrip(), text, count=1, flags=re.S)
+          text, count = re.subn(pattern, lambda _: replacement.rstrip(), text, count=1, flags=re.S)
           if count != 1:
             raise SystemExit(f'backfill patch matched {count} blocks')
           backfill_file.write_text(text)
