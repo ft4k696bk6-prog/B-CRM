@@ -111,12 +111,7 @@ export async function GET(request: Request) {
         query = query.eq("is_cold_pool", true);
       } else {
         query = query.eq("is_cold_pool", false);
-        if (view === "active") {
-          query = query
-            .neq("status", "Umowa")
-            .neq("status", "Rezygnacja")
-            .neq("status", "Po spotkaniu");
-        } else if (view === "contracts") {
+        if (view === "contracts") {
           query = query.eq("status", "Umowa");
         } else if (view === "resignations") {
           query = query.eq("status", "Rezygnacja");
@@ -135,7 +130,7 @@ export async function GET(request: Request) {
     const visible = collected.filter((lead) => validCoords(lead.map_lat, lead.map_lng) && canSeeLead(lead, profile, teamIds));
 
     return NextResponse.json({
-      canAssign: ["owner", "admin", "menadzer"].includes(profile.role),
+      canAssign: ["owner", "admin", "menadzer"].includes(profile.role) && view !== "active" && !focusLeadId,
       truncated: !focusLeadId && collected.length >= MAP_MAX_LEADS,
       view,
       focused: Boolean(focusLeadId),
