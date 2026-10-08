@@ -45,7 +45,7 @@ function requestedView(request: Request): MapView {
 
 function canSeeLead(
   lead: MapLeadRow,
-  profile: Profile,
+  profile: { id: string; role: string },
   teamIds: Set<string> | undefined
 ) {
   if (profile.role === "owner" || profile.role === "admin") return true;
