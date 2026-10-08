@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export type LeadMapPoint = {
   id: string;
@@ -11,6 +12,7 @@ export type LeadMapPoint = {
   lng: number;
   address: string;
   postalCode?: string;
+  assigneeName?: string;
 };
 
 export type MeetingMapPoint = {
@@ -31,6 +33,15 @@ type Props = {
   startPoint: { lat: number; lng: number; label: string } | null;
 };
 
+type MapUser = { id: string; full_name: string };
+type AllMapResponse = {
+  leads?: LeadMapPoint[];
+  users?: MapUser[];
+  canAssign?: boolean;
+  truncated?: boolean;
+  error?: string;
+};
+
 type LeafletLatLng = { lat: number; lng: number };
 
 type LeafletLayer = {
@@ -38,6 +49,7 @@ type LeafletLayer = {
   bindPopup?: (html: string, options?: Record<string, unknown>) => LeafletLayer;
   openPopup?: () => LeafletLayer;
   on?: (event: string, handler: () => void) => LeafletLayer;
+  remove?: () => void;
 };
 
 type LeafletMap = {
@@ -45,6 +57,7 @@ type LeafletMap = {
   setView: (point: [number, number], zoom: number, options?: Record<string, unknown>) => void;
   getCenter: () => LeafletLatLng;
   getZoom: () => number;
+  containerPointToLatLng: (point: [number, number]) => LeafletLatLng;
   on: (event: string, handler: () => void) => LeafletMap;
   remove: () => void;
 };
@@ -55,6 +68,7 @@ type LeafletApi = {
   marker: (point: [number, number], options?: Record<string, unknown>) => LeafletLayer;
   circleMarker: (point: [number, number], options?: Record<string, unknown>) => LeafletLayer;
   polyline: (points: Array<[number, number]>, options?: Record<string, unknown>) => LeafletLayer;
+  polygon: (points: Array<[number, number]>, options?: Record<string, unknown>) => LeafletLayer;
   divIcon: (options?: Record<string, unknown>) => unknown;
   latLngBounds: (points: Array<[number, number]>) => unknown;
 };
@@ -74,6 +88,11 @@ type LeadGroup = {
   basePoint: [number, number];
   point: [number, number];
 };
+
+type DrawPoint = { x: number; y: number };
+
+const EMPTY_MEETINGS: MeetingMapPoint[] = [];
+const EMPTY_ROUTE_COORDINATES: Array<[number, number]> = [];
 
 declare global {
   interface Window {
@@ -189,6 +208,7 @@ function clusterPopup(leads: LeadMapPoint[], popupKey: string) {
       `<strong>${escapeHtml(lead.name)}</strong>` +
       `<span style="display:block;font-size:12px;color:#111827;margin-top:2px">Tel. ${escapeHtml(lead.phone || "—")}</span>` +
       `<span style="display:block;font-size:12px;color:#667085;margin-top:2px">${escapeHtml(lead.status)}</span>` +
+      (lead.assigneeName ? `<span style="display:block;font-size:12px;color:#475569;margin-top:2px">Handlowiec: ${escapeHtml(lead.assigneeName)}</span>` : "") +
     `</a>`
   ).join("");
   const extra = leads.length > shown.length
@@ -201,15 +221,53 @@ function clusterPopup(leads: LeadMapPoint[], popupKey: string) {
   `</div>`;
 }
 
+function pointInPolygon(lat: number, lng: number, polygon: Array<[number, number]>) {
+  let inside = false;
+  for (let index = 0, previous = polygon.length - 1; index < polygon.length; previous = index++) {
+    const yi = polygon[index][0];
+    const xi = polygon[index][1];
+    const yj = polygon[previous][0];
+    const xj = polygon[previous][1];
+    const crosses = ((yi > lat) !== (yj > lat))
+      && (lng < ((xj - xi) * (lat - yi)) / ((yj - yi) || Number.EPSILON) + xi);
+    if (crosses) inside = !inside;
+  }
+  return inside;
+}
+
 export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const drawingCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const popupLayersRef = useRef<Map<string, LeafletLayer>>(new Map());
+  const selectionLayerRef = useRef<LeafletLayer | null>(null);
   const viewStateRef = useRef<MapViewState | null>(null);
   const activePopupKeyRef = useRef<string | null>(null);
   const returnContextRef = useRef<ReturnContext | null>(null);
+  const drawingPointsRef = useRef<DrawPoint[]>([]);
+  const drawingGeoPointsRef = useRef<Array<[number, number]>>([]);
+  const drawingPointerIdRef = useRef<number | null>(null);
+  const assignmentMadeRef = useRef(false);
   const [error, setError] = useState("");
   const [openLeadId, setOpenLeadId] = useState<string | null>(null);
+  const [showAllLeads, setShowAllLeads] = useState(false);
+  const [allLeads, setAllLeads] = useState<LeadMapPoint[]>([]);
+  const [mapUsers, setMapUsers] = useState<MapUser[]>([]);
+  const [canAssign, setCanAssign] = useState(false);
+  const [allBusy, setAllBusy] = useState(false);
+  const [allLoaded, setAllLoaded] = useState(false);
+  const [allTruncated, setAllTruncated] = useState(false);
+  const [drawMode, setDrawMode] = useState(false);
+  const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
+  const [assignTargetId, setAssignTargetId] = useState("");
+  const [assignBusy, setAssignBusy] = useState(false);
+  const [actionMessage, setActionMessage] = useState("");
+  const [actionError, setActionError] = useState("");
+
+  const mapLeads = showAllLeads ? allLeads : leads;
+  const mapMeetings = showAllLeads ? EMPTY_MEETINGS : meetings;
+  const mapRouteCoordinates = showAllLeads ? EMPTY_ROUTE_COORDINATES : routeCoordinates;
+  const mapStartPoint = showAllLeads ? null : startPoint;
 
   function rememberView(map = mapRef.current) {
     if (!map) return;
@@ -218,6 +276,235 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
       center: [center.lat, center.lng],
       zoom: map.getZoom()
     };
+  }
+
+  function clearCanvas() {
+    const canvas = drawingCanvasRef.current;
+    if (!canvas) return;
+    canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function syncCanvasSize() {
+    const canvas = drawingCanvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const width = Math.max(1, Math.round(rect.width));
+    const height = Math.max(1, Math.round(rect.height));
+    if (canvas.width !== width) canvas.width = width;
+    if (canvas.height !== height) canvas.height = height;
+  }
+
+  function drawCanvasPath(points: DrawPoint[], close = false) {
+    const canvas = drawingCanvasRef.current;
+    if (!canvas) return;
+    syncCanvasSize();
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    if (points.length < 2) return;
+    context.beginPath();
+    context.moveTo(points[0].x, points[0].y);
+    for (const point of points.slice(1)) context.lineTo(point.x, point.y);
+    if (close) context.closePath();
+    context.lineWidth = 4;
+    context.lineJoin = "round";
+    context.lineCap = "round";
+    context.strokeStyle = "#f59e0b";
+    context.stroke();
+    if (close) {
+      context.fillStyle = "rgba(245, 158, 11, 0.12)";
+      context.fill();
+    }
+  }
+
+  function clearAreaSelection(clearMessage = true) {
+    selectionLayerRef.current?.remove?.();
+    selectionLayerRef.current = null;
+    drawingPointsRef.current = [];
+    drawingGeoPointsRef.current = [];
+    drawingPointerIdRef.current = null;
+    setSelectedLeadIds([]);
+    setDrawMode(false);
+    if (clearMessage) {
+      setActionMessage("");
+      setActionError("");
+    }
+    clearCanvas();
+  }
+
+  async function authToken() {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token || "";
+  }
+
+  async function loadAllMapLeads(force = false) {
+    if (allLoaded && !force) return true;
+    const token = await authToken();
+    if (!token) {
+      setActionError("Sesja wygasła. Odśwież CRM i spróbuj ponownie.");
+      return false;
+    }
+
+    setAllBusy(true);
+    setActionError("");
+    try {
+      const response = await fetch("/api/map/leads", {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store"
+      });
+      const body = (await response.json().catch(() => ({}))) as AllMapResponse;
+      if (!response.ok) throw new Error(body.error || "Nie udało się pobrać wszystkich leadów.");
+      setAllLeads(body.leads || []);
+      setMapUsers(body.users || []);
+      setCanAssign(Boolean(body.canAssign));
+      setAllTruncated(Boolean(body.truncated));
+      setAllLoaded(true);
+      setAssignTargetId((current) => current || body.users?.[0]?.id || "");
+      return true;
+    } catch (loadError) {
+      setActionError(loadError instanceof Error ? loadError.message : "Nie udało się pobrać wszystkich leadów.");
+      return false;
+    } finally {
+      setAllBusy(false);
+    }
+  }
+
+  async function toggleAllLeads() {
+    if (showAllLeads) {
+      if (assignmentMadeRef.current) {
+        window.location.reload();
+        return;
+      }
+      clearAreaSelection();
+      setShowAllLeads(false);
+      setActionMessage("");
+      return;
+    }
+
+    clearAreaSelection();
+    const loaded = await loadAllMapLeads();
+    if (loaded) {
+      viewStateRef.current = null;
+      setShowAllLeads(true);
+    }
+  }
+
+  function startDrawingMode() {
+    clearAreaSelection();
+    syncCanvasSize();
+    setActionMessage("");
+    setActionError("");
+    setDrawMode(true);
+  }
+
+  function canvasPoint(event: React.PointerEvent<HTMLCanvasElement>) {
+    const canvas = drawingCanvasRef.current;
+    if (!canvas) return null;
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return null;
+    return {
+      x: ((event.clientX - rect.left) / rect.width) * canvas.width,
+      y: ((event.clientY - rect.top) / rect.height) * canvas.height
+    };
+  }
+
+  function beginArea(event: React.PointerEvent<HTMLCanvasElement>) {
+    if (!drawMode || !mapRef.current) return;
+    const point = canvasPoint(event);
+    if (!point) return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    drawingPointerIdRef.current = event.pointerId;
+    drawingPointsRef.current = [point];
+    const geo = mapRef.current.containerPointToLatLng([point.x, point.y]);
+    drawingGeoPointsRef.current = [[geo.lat, geo.lng]];
+    drawCanvasPath(drawingPointsRef.current);
+  }
+
+  function extendArea(event: React.PointerEvent<HTMLCanvasElement>) {
+    if (!drawMode || drawingPointerIdRef.current !== event.pointerId || !mapRef.current) return;
+    const point = canvasPoint(event);
+    if (!point) return;
+    event.preventDefault();
+    const previous = drawingPointsRef.current[drawingPointsRef.current.length - 1];
+    if (previous && Math.hypot(point.x - previous.x, point.y - previous.y) < 4) return;
+    drawingPointsRef.current.push(point);
+    const geo = mapRef.current.containerPointToLatLng([point.x, point.y]);
+    drawingGeoPointsRef.current.push([geo.lat, geo.lng]);
+    drawCanvasPath(drawingPointsRef.current);
+  }
+
+  function finishArea(event: React.PointerEvent<HTMLCanvasElement>) {
+    if (!drawMode || drawingPointerIdRef.current !== event.pointerId || !mapRef.current) return;
+    event.preventDefault();
+    drawingPointerIdRef.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+
+    const polygon = drawingGeoPointsRef.current;
+    if (polygon.length < 3) {
+      setActionError("Narysuj większą pętlę wokół leadów.");
+      clearAreaSelection(false);
+      return;
+    }
+
+    drawCanvasPath(drawingPointsRef.current, true);
+    selectionLayerRef.current?.remove?.();
+    selectionLayerRef.current = window.L?.polygon(polygon, {
+      color: "#f59e0b",
+      weight: 4,
+      opacity: 0.95,
+      fillColor: "#f59e0b",
+      fillOpacity: 0.12
+    }).addTo(mapRef.current) || null;
+
+    const ids = mapLeads
+      .filter((lead) => pointInPolygon(lead.lat, lead.lng, polygon))
+      .map((lead) => lead.id);
+    setSelectedLeadIds(ids);
+    setDrawMode(false);
+    clearCanvas();
+    setActionError(ids.length === 0 ? "W zaznaczonym obszarze nie ma leadów." : "");
+    if (ids.length > 0) setActionMessage(`Zaznaczono ${ids.length} ${ids.length === 1 ? "lead" : "leadów"}.`);
+  }
+
+  async function assignSelectedLeads() {
+    if (!canAssign || selectedLeadIds.length === 0 || !assignTargetId || assignBusy) return;
+    if (selectedLeadIds.length > 1000) {
+      setActionError("Zaznacz mniejszy obszar — jednorazowo można przypisać maksymalnie 1000 leadów.");
+      return;
+    }
+
+    const token = await authToken();
+    if (!token) {
+      setActionError("Sesja wygasła. Odśwież CRM i spróbuj ponownie.");
+      return;
+    }
+
+    setAssignBusy(true);
+    setActionError("");
+    try {
+      const response = await fetch("/api/leads/assign", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ leadIds: selectedLeadIds, assignedTo: assignTargetId })
+      });
+      const body = (await response.json().catch(() => ({}))) as { updated?: number; error?: string };
+      if (!response.ok) throw new Error(body.error || "Nie udało się przypisać leadów.");
+
+      const targetName = mapUsers.find((user) => user.id === assignTargetId)?.full_name || "wybranego handlowca";
+      const selectedSet = new Set(selectedLeadIds);
+      setAllLeads((current) => current.map((lead) => selectedSet.has(lead.id) ? { ...lead, assigneeName: targetName } : lead));
+      assignmentMadeRef.current = true;
+      clearAreaSelection(false);
+      setActionMessage(`Przypisano ${body.updated || selectedSet.size} ${selectedSet.size === 1 ? "lead" : "leadów"} do: ${targetName}.`);
+    } catch (assignError) {
+      setActionError(assignError instanceof Error ? assignError.message : "Nie udało się przypisać leadów.");
+    } finally {
+      setAssignBusy(false);
+    }
   }
 
   function closeLeadModal() {
@@ -295,6 +582,14 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
   }, [openLeadId]);
 
   useEffect(() => {
+    if (!drawMode) return;
+    syncCanvasSize();
+    const resize = () => syncCanvasSize();
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, [drawMode]);
+
+  useEffect(() => {
     let active = true;
     let localMap: LeafletMap | null = null;
 
@@ -304,6 +599,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
         const L = await ensureLeaflet();
         if (!active || !containerRef.current) return;
 
+        selectionLayerRef.current = null;
         if (mapRef.current) {
           rememberView(mapRef.current);
           mapRef.current.remove();
@@ -324,7 +620,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
 
         const bounds: Array<[number, number]> = [];
 
-        for (const group of leadGroups(leads)) {
+        for (const group of leadGroups(mapLeads)) {
           const first = group.leads[0];
           const point = group.point;
           const groupKey = `lead-group:${group.key}`;
@@ -348,7 +644,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
           popupLayersRef.current.set(groupKey, marker);
         }
 
-        for (const meeting of meetings) {
+        for (const meeting of mapMeetings) {
           const point: [number, number] = [meeting.lat, meeting.lng];
           const popupKey = `meeting:${meeting.id}`;
           bounds.push(point);
@@ -375,8 +671,8 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
           popupLayersRef.current.set(popupKey, marker);
         }
 
-        if (startPoint) {
-          const point: [number, number] = [startPoint.lat, startPoint.lng];
+        if (mapStartPoint) {
+          const point: [number, number] = [mapStartPoint.lat, mapStartPoint.lng];
           bounds.push(point);
           const icon = L.divIcon({
             className: "",
@@ -384,11 +680,11 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
             iconSize: [34, 34],
             iconAnchor: [17, 17]
           });
-          L.marker(point, { icon, zIndexOffset: 1200 }).addTo(localMap).bindPopup?.(`<strong>${escapeHtml(startPoint.label)}</strong>`);
+          L.marker(point, { icon, zIndexOffset: 1200 }).addTo(localMap).bindPopup?.(`<strong>${escapeHtml(mapStartPoint.label)}</strong>`);
         }
 
-        if (routeCoordinates.length >= 2) {
-          L.polyline(routeCoordinates, { color: "#111827", weight: 5, opacity: 0.78 }).addTo(localMap);
+        if (mapRouteCoordinates.length >= 2) {
+          L.polyline(mapRouteCoordinates, { color: "#111827", weight: 5, opacity: 0.78 }).addTo(localMap);
         }
 
         const returnContext = returnContextRef.current;
@@ -424,7 +720,7 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
       }
       if (mapRef.current === localMap) mapRef.current = null;
     };
-  }, [leads, meetings, routeCoordinates, startPoint]);
+  }, [mapLeads, mapMeetings, mapRouteCoordinates, mapStartPoint]);
 
   if (error) {
     return <div className="flex min-h-[58vh] items-center justify-center rounded-xl border border-line bg-panel p-6 text-sm font-semibold text-red-700">{error}</div>;
@@ -432,7 +728,73 @@ export function LeadMapCanvas({ leads, meetings, routeCoordinates, startPoint }:
 
   return (
     <>
-      <div ref={containerRef} className="h-[64dvh] min-h-[520px] w-full overflow-hidden rounded-xl border border-line bg-[#eef2f6] shadow-sm" />
+      <div className="mb-2 flex flex-wrap items-center gap-2 rounded-xl border border-line bg-white p-2 shadow-sm">
+        <button type="button" className={showAllLeads ? "btn-primary" : "btn-secondary"} onClick={toggleAllLeads} disabled={allBusy}>
+          {allBusy ? "Ładuję leady…" : showAllLeads ? "Wróć do handlowca" : "Pokaż wszystkie leady"}
+        </button>
+        {showAllLeads ? (
+          <>
+            <span className="rounded-lg bg-[#eef2f6] px-3 py-2 text-xs font-black text-ink">Na mapie: {mapLeads.length} leadów</span>
+            {allTruncated ? <span className="text-xs font-semibold text-amber-700">Pokazuję maks. 3000 najnowszych leadów.</span> : null}
+            {canAssign ? (
+              <button type="button" className={drawMode ? "btn-primary" : "btn-secondary"} onClick={drawMode ? () => clearAreaSelection() : startDrawingMode} disabled={mapLeads.length === 0}>
+                {drawMode ? "Anuluj rysowanie" : "Zaznacz pętlą"}
+              </button>
+            ) : null}
+          </>
+        ) : (
+          <span className="text-xs font-semibold text-muted">Tryb handlowca: leady + spotkania + trasa.</span>
+        )}
+      </div>
+
+      {showAllLeads && canAssign && (selectedLeadIds.length > 0 || actionMessage || actionError) ? (
+        <div className="mb-2 grid gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(180px,280px)_auto_auto] sm:items-end">
+          <div>
+            <div className="text-xs font-black uppercase tracking-wide text-amber-900">Zaznaczony obszar</div>
+            <div className="mt-1 text-sm font-bold text-ink">
+              {selectedLeadIds.length > 0 ? `${selectedLeadIds.length} ${selectedLeadIds.length === 1 ? "lead" : "leadów"}` : actionMessage || "Brak zaznaczenia"}
+            </div>
+            {actionError ? <div className="mt-1 text-xs font-semibold text-red-700">{actionError}</div> : null}
+            {!actionError && actionMessage ? <div className="mt-1 text-xs font-semibold text-emerald-700">{actionMessage}</div> : null}
+          </div>
+          <label>
+            <span className="label">Przypisz do handlowca</span>
+            <select className="field" value={assignTargetId} onChange={(event) => setAssignTargetId(event.target.value)} disabled={assignBusy || mapUsers.length === 0}>
+              {mapUsers.map((user) => <option key={user.id} value={user.id}>{user.full_name}</option>)}
+            </select>
+          </label>
+          <button type="button" className="btn-primary" onClick={assignSelectedLeads} disabled={assignBusy || selectedLeadIds.length === 0 || selectedLeadIds.length > 1000 || !assignTargetId}>
+            {assignBusy ? "Przypisuję…" : "Przypisz leady"}
+          </button>
+          <button type="button" className="btn-secondary" onClick={() => clearAreaSelection()} disabled={assignBusy}>Wyczyść</button>
+        </div>
+      ) : null}
+
+      {showAllLeads && drawMode ? (
+        <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-bold text-amber-900">
+          Przyłóż palec do mapy i narysuj zamkniętą pętlę wokół leadów. Po puszczeniu palca CRM zaznaczy wszystkie leady wewnątrz.
+        </div>
+      ) : null}
+
+      {actionError && !(showAllLeads && canAssign && (selectedLeadIds.length > 0 || actionMessage || actionError)) ? (
+        <div className="mb-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-800">{actionError}</div>
+      ) : null}
+
+      <div className="relative">
+        <div ref={containerRef} className="h-[64dvh] min-h-[520px] w-full overflow-hidden rounded-xl border border-line bg-[#eef2f6] shadow-sm" />
+        <canvas
+          ref={drawingCanvasRef}
+          className="absolute inset-0 z-[900] h-full w-full rounded-xl"
+          style={{ pointerEvents: drawMode ? "auto" : "none", touchAction: "none", cursor: drawMode ? "crosshair" : "default" }}
+          onPointerDown={beginArea}
+          onPointerMove={extendArea}
+          onPointerUp={finishArea}
+          onPointerCancel={(event) => {
+            if (drawingPointerIdRef.current === event.pointerId) clearAreaSelection(false);
+          }}
+          aria-label="Rysowanie obszaru wyboru leadów"
+        />
+      </div>
 
       {openLeadId ? (
         <div className="fixed inset-0 z-[2000] flex items-center justify-center p-2 sm:p-4" role="dialog" aria-modal="true" aria-label="Szczegóły leada">
